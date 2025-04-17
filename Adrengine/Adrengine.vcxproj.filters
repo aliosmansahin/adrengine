@@ -17,6 +17,9 @@
     <Filter Include="Files\glad">
       <UniqueIdentifier>{c4da0bb9-93c2-4f7a-8e68-92e339f8a0cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Files\Engine\Graphics">
+      <UniqueIdentifier>{97d1e815-0817-44f4-8091-642c8a3c34f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp">
@@ -34,6 +37,9 @@
     <ClCompile Include="..\..\..\Dev Dependencies\glad\src\glad.c">
       <Filter>Files\glad</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Files\Engine\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -44,6 +50,9 @@
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Files\Engine\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,22 +1,23 @@
 #pragma once
 
-#include "Graphics.h"
+#include <glad/glad.h> 
+#include <GLFW/glfw3.h>
+
 #include "Logger.h"
 
-class Engine
+class Graphics
 {
 public:
 	//main funcs
-	~Engine();
-	bool InitEngine(GLFWwindow* window);
-	void Update();
-	void Draw();
+	bool InitGraphics(GLFWwindow* window);
+public:
+	//context
+	void Clear();
 public:
 	//getters
 	GLFWwindow* GetWindow() { return window; }
 private:
 	//glfw
 	GLFWwindow* window = nullptr;
-	Graphics* graphics = nullptr;
-};
 
+};
