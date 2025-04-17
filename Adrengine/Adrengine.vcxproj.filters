@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Files\Window">
+      <UniqueIdentifier>{99063361-e6f9-4d0e-9ae2-8ad741fbdcf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Logger">
+      <UniqueIdentifier>{8dd5f199-d50d-4a43-94d9-aec2e6d85d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine">
+      <UniqueIdentifier>{e30f237b-bcb2-4b81-82ce-1389ace6be95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\glad">
+      <UniqueIdentifier>{c4da0bb9-93c2-4f7a-8e68-92e339f8a0cb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Adrengine.cpp">
+      <Filter>Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Files\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Dev Dependencies\glad\src\glad.c">
+      <Filter>Files\glad</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Window.h">
+      <Filter>Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Files\Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
