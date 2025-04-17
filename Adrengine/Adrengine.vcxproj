@@ -132,9 +132,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Dev Dependencies\glad\src\glad.c" />
     <ClCompile Include="Adrengine.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="glad.c" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Window.cpp" />

@@ -34,11 +34,11 @@
     <ClCompile Include="Engine.cpp">
       <Filter>Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Dev Dependencies\glad\src\glad.c">
-      <Filter>Files\glad</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics.cpp">
       <Filter>Files\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Files\glad</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
