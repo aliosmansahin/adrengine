@@ -1,5 +1,11 @@
 #include "Graphics.h"
 
+Graphics::~Graphics()
+{
+    if (shaderManager) delete shaderManager;
+    Logger::Log("P", "Cleared graphics");
+}
+
 bool Graphics::InitGraphics(GLFWwindow* window)
 {
     Logger::Log("P", "Initalizing graphics");
@@ -15,6 +21,17 @@ bool Graphics::InitGraphics(GLFWwindow* window)
     }
 
     Logger::Log("P", "Loaded OpenGL Version 3.3");
+
+    //init shader manager
+    Logger::Log("P", "Initializing shader manager");
+    shaderManager = new ShaderManager();
+    if (!shaderManager->InitShaderManager())
+        return false;
+    if (!shaderManager->InitShaders(SHADER_2D))
+        return false;
+
+    glViewport(0, 0, 800, 600);
+
     return true;
 }
 

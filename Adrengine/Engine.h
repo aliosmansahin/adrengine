@@ -2,6 +2,7 @@
 
 #include "Graphics.h"
 #include "Logger.h"
+#include "EntityManager.h"
 
 class Engine
 {
@@ -17,6 +18,8 @@ public:
 private:
 	//glfw
 	GLFWwindow* window = nullptr;
+	//instances for each engine
 	Graphics* graphics = nullptr;
+	EntityManager* entityManager = nullptr;
 };
 

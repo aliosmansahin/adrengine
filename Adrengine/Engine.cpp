@@ -3,7 +3,9 @@
 
 Engine::~Engine()
 {
-    Logger::Log("P", "Clearing engine");
+    if (graphics) delete graphics;
+    if (entityManager) delete entityManager;
+    Logger::Log("P", "Cleared engine");
 }
 
 bool Engine::InitEngine(GLFWwindow* window)
@@ -17,15 +19,30 @@ bool Engine::InitEngine(GLFWwindow* window)
     if (!graphics->InitGraphics(window))
         return false;
 
+    //entity manager
+    entityManager = new EntityManager();
+    if (!entityManager->InitEntityManager())
+        return false;
+
+    //simple entity
+    std::string entityId = entityManager->CreateEntity();
+
+    //Logger::Log("P", entityId.c_str());
+
+    //entityManager->RemoveEntity("0");
+
     return true;
 }
 
 void Engine::Update()
 {
+    entityManager->UpdateEntities();
 }
 
 void Engine::Draw()
 {
     /* Render here */
     graphics->Clear();
+
+    entityManager->DrawEntities();
 }

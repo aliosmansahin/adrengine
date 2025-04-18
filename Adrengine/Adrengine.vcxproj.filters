@@ -20,6 +20,21 @@
     <Filter Include="Files\Engine\Graphics">
       <UniqueIdentifier>{97d1e815-0817-44f4-8091-642c8a3c34f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Files\Engine\EntityManager">
+      <UniqueIdentifier>{c1b84825-9dca-428b-b411-f8196fc06692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\EntityManager\Entity">
+      <UniqueIdentifier>{c8fe6b1e-0ffd-499f-bb4a-74cc9965381f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\Graphics\ShaderManager">
+      <UniqueIdentifier>{00244607-9ade-44a0-b4a9-0403d4e6643f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\Graphics\ShaderManager\Shader">
+      <UniqueIdentifier>{29706e35-421d-4cca-b69a-65e0442ab20e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\Graphics\ShaderManager\2DShaders">
+      <UniqueIdentifier>{518e59d7-09ca-4d4a-ba15-0f40dd95cbdc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp">
@@ -40,6 +55,18 @@
     <ClCompile Include="glad.c">
       <Filter>Files\glad</Filter>
     </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Files\Engine\EntityManager\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>Files\Engine\EntityManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Files\Engine\Graphics\ShaderManager\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Files\Engine\Graphics\ShaderManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -54,5 +81,25 @@
     <ClInclude Include="Graphics.h">
       <Filter>Files\Engine\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Files\Engine\EntityManager\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>Files\Engine\EntityManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Files\Engine\Graphics\ShaderManager\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Files\Engine\Graphics\ShaderManager</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FragmentShader.glsl">
+      <Filter>Files\Engine\Graphics\ShaderManager\2DShaders</Filter>
+    </None>
+    <None Include="VertexShader.glsl">
+      <Filter>Files\Engine\Graphics\ShaderManager\2DShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
