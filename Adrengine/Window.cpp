@@ -30,6 +30,8 @@ bool Window::CreateWindow(int width, int height, const char* title)
         return false;
     }
 
+    glfwSetWindowUserPointer(window, this);
+
     return true;
 }
 

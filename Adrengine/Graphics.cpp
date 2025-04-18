@@ -30,9 +30,14 @@ bool Graphics::InitGraphics(GLFWwindow* window)
     if (!shaderManager->InitShaders(SHADER_2D))
         return false;
 
-    glViewport(0, 0, 800, 600);
-
+    //window size callback
+    glfwSetWindowSizeCallback(window, StaticWindowSizeCallback);
     return true;
+}
+
+void Graphics::WindowSizeCallback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
 }
 
 void Graphics::Clear()
