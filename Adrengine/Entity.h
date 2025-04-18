@@ -1,20 +1,23 @@
 #pragma once
 
-#include "Logger.h"
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "Logger.h"
+#include "ShaderManager.h"
+
+struct EntityParams {
+	virtual ~EntityParams() {}
+};
 
 class Entity
 {
 public:
 	//main funcs
-	~Entity();
-	bool CreateEntity();
-	void DeleteEntity();
-	void Update();
-	void Draw();
-private:
-	unsigned int VBO;
-	unsigned int VAO;
-	unsigned int EBO;
+	virtual bool CreateEntity(EntityParams* params) = 0;
+	virtual void DeleteEntity() = 0;
+	virtual void Update() = 0;
+	virtual void Draw() = 0;
 };
 

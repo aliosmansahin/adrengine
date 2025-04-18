@@ -30,7 +30,5 @@ public:
 private:
 	//glfw
 	GLFWwindow* window = nullptr;
-private:
-	ShaderManager* shaderManager = nullptr;
 
 };

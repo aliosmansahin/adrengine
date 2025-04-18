@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 
-#include "Entity.h"
+#include "Sprite2D.h"
 #include "Logger.h"
 
 class EntityManager

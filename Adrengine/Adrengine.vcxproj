@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glad\include;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glad\include;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -141,6 +141,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="Sprite2D.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +152,7 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="Sprite2D.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

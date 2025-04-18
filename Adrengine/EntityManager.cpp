@@ -22,8 +22,10 @@ void EntityManager::UpdateEntities()
 
 std::string EntityManager::CreateEntity()
 {
-	Entity* entity = new Entity();
-	if (!entity->CreateEntity())
+	Sprite2D* entity = new Sprite2D();
+	Sprite2DParams* params = new Sprite2DParams();
+
+	if (!entity->CreateEntity(params))
 		return "";
 
 	std::string entityId = std::to_string(entities.size());

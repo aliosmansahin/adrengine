@@ -35,6 +35,9 @@
     <Filter Include="Files\Engine\Graphics\ShaderManager\2DShaders">
       <UniqueIdentifier>{518e59d7-09ca-4d4a-ba15-0f40dd95cbdc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Files\Engine\EntityManager\Entity\Sprite2D">
+      <UniqueIdentifier>{c9bafd1f-c4e4-40e0-ac6a-c97dbf8af861}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp">
@@ -67,6 +70,9 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Files\Engine\Graphics\ShaderManager</Filter>
     </ClCompile>
+    <ClCompile Include="Sprite2D.cpp">
+      <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -92,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>Files\Engine\Graphics\ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2D.h">
+      <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

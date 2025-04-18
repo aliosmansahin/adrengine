@@ -2,7 +2,7 @@
 
 Graphics::~Graphics()
 {
-    if (shaderManager) delete shaderManager;
+    ShaderManager::GetInstance().ReleaseShaderManager();
     Logger::Log("P", "Cleared graphics");
 }
 
@@ -24,20 +24,27 @@ bool Graphics::InitGraphics(GLFWwindow* window)
 
     //init shader manager
     Logger::Log("P", "Initializing shader manager");
-    shaderManager = new ShaderManager();
-    if (!shaderManager->InitShaderManager())
+
+    if (!ShaderManager::GetInstance().InitShaderManager())
         return false;
-    if (!shaderManager->InitShaders(SHADER_2D))
+    if (!ShaderManager::GetInstance().InitShaders(SHADER_2D))
         return false;
+    
+
+    int windowW, windowH;
+    glfwGetFramebufferSize(window, &windowW, &windowH);
+    ShaderManager::GetInstance().UpdateProjectionMatrix(windowW, windowH);
 
     //window size callback
     glfwSetWindowSizeCallback(window, StaticWindowSizeCallback);
+
     return true;
 }
 
 void Graphics::WindowSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+    ShaderManager::GetInstance().UpdateProjectionMatrix(width, height);
 }
 
 void Graphics::Clear()
