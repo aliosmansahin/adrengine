@@ -10,11 +10,21 @@
 
 class EntityManager
 {
+private:
+	//singleton
+	EntityManager() = default;
+	~EntityManager() = default;
+	EntityManager(const EntityManager&) = delete;
+	EntityManager& operator=(const EntityManager&) = delete;
+public:
+	//getter for the instance
+	static EntityManager& GetInstance();
 public:
 	//main funcs
 	bool InitEntityManager();
 	void DrawEntities();
 	void UpdateEntities();
+	void ReleaseEntityManager();
 
 	//management for an entity
 	std::string CreateEntity();

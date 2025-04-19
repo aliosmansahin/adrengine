@@ -1,5 +1,11 @@
 #include "EntityManager.h"
 
+EntityManager& EntityManager::GetInstance()
+{
+	static EntityManager manager;
+	return manager;
+}
+
 bool EntityManager::InitEntityManager()
 {
 	Logger::Log("P", "Initalizing entity manager");
@@ -18,6 +24,11 @@ void EntityManager::UpdateEntities()
 	for (auto& entity : entities) {
 		entity.second->Update();
 	}
+}
+
+void EntityManager::ReleaseEntityManager()
+{
+	entities.clear();
 }
 
 std::string EntityManager::CreateEntity()

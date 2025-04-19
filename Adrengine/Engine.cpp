@@ -5,7 +5,7 @@ Engine::~Engine()
 {
     if (interfaceManager) delete interfaceManager;
     Graphics::GetInstance().ReleaseGraphics();
-    if (entityManager) delete entityManager;
+    EntityManager::GetInstance().ReleaseEntityManager();
     Logger::Log("P", "Cleared engine");
 }
 
@@ -25,12 +25,11 @@ bool Engine::InitEngine(GLFWwindow* window)
         return false;
 
     //entity manager
-    entityManager = new EntityManager();
-    if (!entityManager->InitEntityManager())
+    if (!EntityManager::GetInstance().InitEntityManager())
         return false;
 
     //simple entity
-    std::string entityId = entityManager->CreateEntity();
+    std::string entityId = EntityManager::GetInstance().CreateEntity();
 
     //Logger::Log("P", entityId.c_str());
 
@@ -41,7 +40,7 @@ bool Engine::InitEngine(GLFWwindow* window)
 
 void Engine::Update()
 {
-    entityManager->UpdateEntities();
+    EntityManager::GetInstance().UpdateEntities();
 }
 
 void Engine::Draw()
@@ -49,7 +48,7 @@ void Engine::Draw()
     /* Render here */
     Graphics::GetInstance().Clear();
 
-    entityManager->DrawEntities();
+    EntityManager::GetInstance().DrawEntities();
 
     interfaceManager->StartFrame();
     interfaceManager->DrawInterface();
