@@ -3,6 +3,7 @@
 #include "Graphics.h"
 #include "Logger.h"
 #include "EntityManager.h"
+#include "InterfaceManager.h"
 
 class Engine
 {
@@ -21,5 +22,6 @@ private:
 	//instances for each engine
 	Graphics* graphics = nullptr;
 	EntityManager* entityManager = nullptr;
+	InterfaceManager* interfaceManager = nullptr;
 };
 

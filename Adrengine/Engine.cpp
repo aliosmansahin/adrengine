@@ -3,6 +3,7 @@
 
 Engine::~Engine()
 {
+    if (interfaceManager) delete interfaceManager;
     if (graphics) delete graphics;
     if (entityManager) delete entityManager;
     Logger::Log("P", "Cleared engine");
@@ -17,6 +18,11 @@ bool Engine::InitEngine(GLFWwindow* window)
     //graphics engine
     graphics = new Graphics();
     if (!graphics->InitGraphics(window))
+        return false;
+
+    //interface manager
+    interfaceManager = new InterfaceManager();
+    if (!interfaceManager->InitInterface(window))
         return false;
 
     //entity manager
@@ -45,4 +51,8 @@ void Engine::Draw()
     graphics->Clear();
 
     entityManager->DrawEntities();
+
+    interfaceManager->StartFrame();
+    interfaceManager->DrawInterface();
+    interfaceManager->EndFrame();
 }
