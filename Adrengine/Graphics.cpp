@@ -1,11 +1,5 @@
 #include "Graphics.h"
 
-Graphics::~Graphics()
-{
-    ShaderManager::GetInstance().ReleaseShaderManager();
-    Logger::Log("P", "Cleared graphics");
-}
-
 bool Graphics::InitGraphics(GLFWwindow* window)
 {
     Logger::Log("P", "Initalizing graphics");
@@ -39,6 +33,18 @@ bool Graphics::InitGraphics(GLFWwindow* window)
     glfwSetWindowSizeCallback(window, StaticWindowSizeCallback);
 
     return true;
+}
+
+void Graphics::ReleaseGraphics()
+{
+    ShaderManager::GetInstance().ReleaseShaderManager();
+    Logger::Log("P", "Cleared graphics");
+}
+
+Graphics& Graphics::GetInstance()
+{
+    static Graphics graphics;
+    return graphics;
 }
 
 void Graphics::WindowSizeCallback(GLFWwindow* window, int width, int height)

@@ -20,7 +20,7 @@ private:
 	//glfw
 	GLFWwindow* window = nullptr;
 	//instances for each engine
-	Graphics* graphics = nullptr;
+	//Graphics* graphics = nullptr; //The class graphics was become singleton
 	EntityManager* entityManager = nullptr;
 	InterfaceManager* interfaceManager = nullptr;
 };

@@ -10,8 +10,17 @@ class Graphics
 {
 public:
 	//main funcs
-	~Graphics();
 	bool InitGraphics(GLFWwindow* window);
+	void ReleaseGraphics();
+public:
+	//getter for the instance
+	static Graphics& GetInstance();
+private:
+	//singleton
+	Graphics() = default;
+	~Graphics() = default;
+	Graphics(const Graphics&) = delete;
+	Graphics& operator=(const Graphics&) = delete;
 public:
 	//callback funcs
 	void WindowSizeCallback(GLFWwindow* window, int width, int height);

@@ -4,7 +4,7 @@
 Engine::~Engine()
 {
     if (interfaceManager) delete interfaceManager;
-    if (graphics) delete graphics;
+    Graphics::GetInstance().ReleaseGraphics();
     if (entityManager) delete entityManager;
     Logger::Log("P", "Cleared engine");
 }
@@ -16,8 +16,7 @@ bool Engine::InitEngine(GLFWwindow* window)
     this->window = window;
 
     //graphics engine
-    graphics = new Graphics();
-    if (!graphics->InitGraphics(window))
+    if (!Graphics::GetInstance().InitGraphics(window))
         return false;
 
     //interface manager
@@ -48,7 +47,7 @@ void Engine::Update()
 void Engine::Draw()
 {
     /* Render here */
-    graphics->Clear();
+    Graphics::GetInstance().Clear();
 
     entityManager->DrawEntities();
 
