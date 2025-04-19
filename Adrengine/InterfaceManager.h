@@ -11,11 +11,20 @@
 class InterfaceManager
 {
 public:
-	~InterfaceManager();
+	//main funcs
 	bool InitInterface(GLFWwindow* window);
 	void CloseInterface();
+	//drawing
 	void StartFrame();
 	void EndFrame();
 	void DrawInterface();
-	
+public:
+	//getter for the instance
+	static InterfaceManager& GetInstance();
+private:
+	//singleton
+	InterfaceManager() = default;
+	~InterfaceManager() = default;
+	InterfaceManager(const InterfaceManager&) = delete;
+	InterfaceManager& operator=(const InterfaceManager&) = delete;
 };

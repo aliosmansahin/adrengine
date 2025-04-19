@@ -1,11 +1,5 @@
 #include "InterfaceManager.h"
 
-InterfaceManager::~InterfaceManager()
-{
-	CloseInterface();
-	Logger::Log("P", "Released interface");
-}
-
 bool InterfaceManager::InitInterface(GLFWwindow* window)
 {
 	//initialize interface
@@ -31,6 +25,7 @@ void InterfaceManager::CloseInterface()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+	Logger::Log("P", "Released interface");
 }
 
 void InterfaceManager::StartFrame()
@@ -53,4 +48,10 @@ void InterfaceManager::DrawInterface()
 	if(WindowProjectSettings::GetInstance().showWindow)
 		WindowProjectSettings::GetInstance().DrawWindow();
 
+}
+
+InterfaceManager& InterfaceManager::GetInstance()
+{
+	static InterfaceManager manager;
+	return manager;
 }

@@ -22,6 +22,6 @@ private:
 	//instances for each engine
 	//Graphics* graphics = nullptr; //The class graphics was become singleton
 	//EntityManager* entityManager = nullptr; //The class entitymanager was become singleton
-	InterfaceManager* interfaceManager = nullptr;
+	//InterfaceManager* interfaceManager = nullptr; //The class interfacemanager was become singleton
 };
 
