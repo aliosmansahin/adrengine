@@ -1,14 +1,5 @@
 #include "Engine.h"
 
-
-Engine::~Engine()
-{
-    InterfaceManager::GetInstance().CloseInterface();
-    Graphics::GetInstance().ReleaseGraphics();
-    EntityManager::GetInstance().ReleaseEntityManager();
-    Logger::Log("P", "Cleared engine");
-}
-
 bool Engine::InitEngine(GLFWwindow* window)
 {
     Logger::Log("P", "Starting engine");
@@ -52,4 +43,18 @@ void Engine::Draw()
     InterfaceManager::GetInstance().StartFrame();
     InterfaceManager::GetInstance().DrawInterface();
     InterfaceManager::GetInstance().EndFrame();
+}
+
+void Engine::CloseEngine()
+{
+    InterfaceManager::GetInstance().CloseInterface();
+    Graphics::GetInstance().ReleaseGraphics();
+    EntityManager::GetInstance().ReleaseEntityManager();
+    Logger::Log("P", "Cleared engine");
+}
+
+Engine& Engine::GetInstance()
+{
+    static Engine engine;
+    return engine;
 }

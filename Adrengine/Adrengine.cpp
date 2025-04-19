@@ -9,23 +9,22 @@ int main(void)
         return -1;
 
     //engine
-    Engine* engine = new Engine();
-    if (!engine->InitEngine(window->GetWindow()))
+    if (!Engine::GetInstance().InitEngine(window->GetWindow()))
         return -1;
 
     /* main loop */
     while (!window->ShouldClose())
     {
         //calling engine funcs
-        engine->Update();
-        engine->Draw();
+        Engine::GetInstance().Update();
+        Engine::GetInstance().Draw();
 
         //window msgs and swapping buffers
         window->SwapBuffers();
         window->PollEvents();
     }
 
-    delete engine;
+    Engine::GetInstance().CloseEngine();
     delete window;
     return 0;
 }
