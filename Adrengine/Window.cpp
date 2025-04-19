@@ -1,10 +1,5 @@
 #include "Window.h"
 
-Window::~Window()
-{
-    CloseWindow();
-}
-
 bool Window::CreateWindow(int width, int height, const char* title)
 {
     /* Initialize the library */
@@ -33,6 +28,12 @@ bool Window::CreateWindow(int width, int height, const char* title)
     glfwSetWindowUserPointer(window, this);
 
     return true;
+}
+
+Window& Window::GetInstance()
+{
+    static Window window;
+    return window;
 }
 
 void Window::CloseWindow()

@@ -8,17 +8,23 @@ class Window
 {
 public:
 	//main funcs
-	~Window();
 	bool CreateWindow(int width, int height, const char* title);
+	void CloseWindow();
 public:
 	//getters
 	bool ShouldClose() { return glfwWindowShouldClose(window); }
 	void SwapBuffers() { return glfwSwapBuffers(window); }
 	void PollEvents() { return glfwPollEvents(); }
 	GLFWwindow* GetWindow() { return window; }
-	//closing function
+public:
+	//getter for the instance
+	static Window& GetInstance();
 private:
-	void CloseWindow();
+	//singleton
+	Window() = default;
+	~Window() = default;
+	Window(const Window&) = delete;
+	Window& operator=(const Window&) = delete;
 private:
 	//glfw
 	GLFWwindow* window = nullptr;

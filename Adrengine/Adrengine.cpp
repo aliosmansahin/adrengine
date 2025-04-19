@@ -4,27 +4,26 @@
 int main(void)
 {
     //window
-    Window* window = new Window();
-    if (!window->CreateWindow(800, 600, "Adrengine"))
+    if (!Window::GetInstance().CreateWindow(800, 600, "Adrengine"))
         return -1;
 
     //engine
-    if (!Engine::GetInstance().InitEngine(window->GetWindow()))
+    if (!Engine::GetInstance().InitEngine(Window::GetInstance().GetWindow()))
         return -1;
 
     /* main loop */
-    while (!window->ShouldClose())
+    while (!Window::GetInstance().ShouldClose())
     {
         //calling engine funcs
         Engine::GetInstance().Update();
         Engine::GetInstance().Draw();
 
         //window msgs and swapping buffers
-        window->SwapBuffers();
-        window->PollEvents();
+        Window::GetInstance().SwapBuffers();
+        Window::GetInstance().PollEvents();
     }
 
     Engine::GetInstance().CloseEngine();
-    delete window;
+    Window::GetInstance().CloseWindow();
     return 0;
 }
