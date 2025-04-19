@@ -6,6 +6,8 @@
 
 #include "Logger.h"
 
+#include "MenuBar.h"
+
 class InterfaceManager
 {
 public:
@@ -15,5 +17,5 @@ public:
 	void StartFrame();
 	void EndFrame();
 	void DrawInterface();
-	bool showDemoFrame = true;
+	
 };

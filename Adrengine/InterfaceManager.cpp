@@ -20,7 +20,7 @@ bool InterfaceManager::InitInterface(GLFWwindow* window)
 	ImGui::StyleColorsDark();
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init();
+	ImGui_ImplOpenGL3_Init("#version 330 core");
  
 	return true;
 }
@@ -48,6 +48,9 @@ void InterfaceManager::EndFrame()
 
 void InterfaceManager::DrawInterface()
 {
-	if (showDemoFrame)
-		ImGui::ShowDemoWindow(&showDemoFrame);
+	MenuBar::GetInstance().DrawMenuBar();
+	
+	if(WindowProjectSettings::GetInstance().showWindow)
+		WindowProjectSettings::GetInstance().DrawWindow();
+
 }

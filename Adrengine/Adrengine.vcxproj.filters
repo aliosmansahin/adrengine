@@ -44,6 +44,12 @@
     <Filter Include="Files\imgui">
       <UniqueIdentifier>{05c9699d-5e90-43fa-a0b9-54b710a390c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\MenuBar">
+      <UniqueIdentifier>{7c13811f-09f7-49f3-99e3-64faa9532503}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowProjectSettings">
+      <UniqueIdentifier>{153e2e78-04dc-47a2-8773-8cf2b70c5556}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp">
@@ -106,6 +112,12 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Files\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="MenuBar.cpp">
+      <Filter>Files\Engine\InterfaceManager\MenuBar</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowProjectSettings.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowProjectSettings</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -167,6 +179,12 @@
     </ClInclude>
     <ClInclude Include="imgui\imstb_textedit.h">
       <Filter>Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuBar.h">
+      <Filter>Files\Engine\InterfaceManager\MenuBar</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowProjectSettings.h">
+      <Filter>Files\Engine\InterfaceManager\WindowProjectSettings</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
