@@ -145,6 +145,8 @@ bool SceneManager::DeleteScene(std::string sceneId)
             SceneManager::GetInstance().currentScene = nullptr;
         }
         InterfaceManager::GetInstance().tabs.erase(tabIter);
+        if (InterfaceManager::GetInstance().openedTab)
+            InterfaceManager::GetInstance().openedTab = nullptr;
     }
 
     std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";

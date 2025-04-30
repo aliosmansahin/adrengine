@@ -43,7 +43,7 @@ bool Engine::InitEngine(GLFWwindow* window)
     screenHeight = mode->height;
 
     //loading existing project
-    LoadProject();
+    //LoadProject();
 
     return true;
 }
