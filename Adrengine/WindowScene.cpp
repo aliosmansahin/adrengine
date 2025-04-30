@@ -6,13 +6,13 @@ void WindowScene::DrawWindow()
 	ImGui::Begin(Localization::Get().GetString("interface_main_menu_item_scene"), &showWindow);
 	ImGui::SetWindowFontScale(1.5f);
 	//caption
-	int windowWidth = ImGui::GetWindowSize().x;
+	int windowWidth = (int)ImGui::GetWindowSize().x;
 	int buttonWidth = 100;
 	int padding = 10;
 	ImGui::TextColored(ImVec4(0, 255, 0, 255), "Entities");
 	ImGui::SameLine();
-	ImGui::SetCursorPosX(windowWidth - buttonWidth - padding);
-	if (ImGui::Button("Add", ImVec2(buttonWidth, 0))) {
+	ImGui::SetCursorPosX(float(windowWidth - buttonWidth - padding));
+	if (ImGui::Button("Add", ImVec2((float)buttonWidth, 0))) {
 		WindowAddEntity::GetInstance().showWindow = true;
 		WindowAddEntity::GetInstance().shouldFocus = true;
 	}

@@ -9,20 +9,20 @@ void WindowEditorSettings::DrawWindow()
         InterfaceManager::GetInstance().SetDarkTheme();
     }
 
-    int contentX = ImGui::GetContentRegionAvail().x;
-    int contentY = ImGui::GetContentRegionAvail().y;
+    int contentX = (int)ImGui::GetContentRegionAvail().x;
+    int contentY = (int)ImGui::GetContentRegionAvail().y;
     int buttonWidth = 100;
     int buttonHeight = 50;
     int padding = 10;
 
     int startY = contentY - buttonHeight + padding * 4;
-    ImGui::SetCursorPosY(startY);
+    ImGui::SetCursorPosY((float)startY);
     ImGui::Separator();
     int startX = contentX - buttonWidth;
     startY += padding;
-    ImGui::SetCursorPosX(startX);
-    ImGui::SetCursorPosY(startY);
-    ImGui::Button("Done", ImVec2(buttonWidth, buttonHeight));
+    ImGui::SetCursorPosX((float)startX);
+    ImGui::SetCursorPosY((float)startY);
+    ImGui::Button("Done", ImVec2((float)buttonWidth, (float)buttonHeight));
 
     ImGui::End();
 }

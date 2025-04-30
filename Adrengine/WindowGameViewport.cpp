@@ -23,18 +23,18 @@ void WindowGameViewport::DrawWindow()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    ImGui::BeginChild("Toolbar", ImVec2(viewport->WorkSize.x, toolbarHeight), 0, window_flags);
+    ImGui::BeginChild("Toolbar", ImVec2(viewport->WorkSize.x, (float)toolbarHeight), 0, window_flags);
     ImGui::SetWindowFontScale(1.5f);
 
     ImGui::PopStyleVar(3);
 
     if (isPlaying) {
-        if (ImGui::Selectable("Stop", false, ImGuiSelectableFlags_None, ImVec2(100, toolbarHeight))) {
+        if (ImGui::Selectable("Stop", false, ImGuiSelectableFlags_None, ImVec2(100, (float)toolbarHeight))) {
             isPlaying = false;
         }
     }
     else {
-        if (ImGui::Selectable("Play", false, ImGuiSelectableFlags_None, ImVec2(100, toolbarHeight))) {
+        if (ImGui::Selectable("Play", false, ImGuiSelectableFlags_None, ImVec2(100, (float)toolbarHeight))) {
             VisualScriptManager::GetInstance().RunScriptsBegin();
             isPlaying = true;
         }
@@ -44,9 +44,9 @@ void WindowGameViewport::DrawWindow()
 
     window_width = ImGui::GetContentRegionAvail().x;
     window_height = ImGui::GetContentRegionAvail().y;
-    Graphics::GetInstance().RescaleFramebuffer(window_width, window_height);
-    glViewport(0, 0, window_width, window_height);
-    ShaderManager::GetInstance().UpdateProjectionMatrix(window_width, window_height, SceneManager::GetInstance().currentScene->cameraX, SceneManager::GetInstance().currentScene->cameraY);
+    Graphics::GetInstance().RescaleFramebuffer((int)window_width, (int)window_height);
+    glViewport(0, 0, (GLsizei)window_width, (GLsizei)window_height);
+    ShaderManager::GetInstance().UpdateProjectionMatrix((int)window_width, (int)window_height, (int)SceneManager::GetInstance().currentScene->cameraX, (int)SceneManager::GetInstance().currentScene->cameraY);
 
     ImVec2 pos = ImGui::GetCursorScreenPos();
     ImGui::GetWindowDrawList()->AddImage(

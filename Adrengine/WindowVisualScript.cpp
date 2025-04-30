@@ -3,9 +3,9 @@
 void WindowVisualScript::DrawWindow()
 {
     // Compile toolbar
-    int windowHeight = ImGui::GetWindowHeight();
+    int windowHeight = (int)ImGui::GetWindowHeight();
     int toolbarWidth = 100;
-    int toolbarHeight = ImGui::GetContentRegionAvail().y - InterfaceManager::GetInstance().tabHeight;
+    int toolbarHeight = (int)ImGui::GetContentRegionAvail().y - InterfaceManager::GetInstance().tabHeight;
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -13,7 +13,7 @@ void WindowVisualScript::DrawWindow()
     ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
     float titleHeight = ImGui::GetFontSize() + windowPadding.y;
     ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y + InterfaceManager::GetInstance().tabHeight + titleHeight));
-    ImGui::SetNextWindowSize(ImVec2(toolbarWidth, viewport->WorkSize.y - InterfaceManager::GetInstance().tabHeight - titleHeight));
+    ImGui::SetNextWindowSize(ImVec2((float)toolbarWidth, viewport->WorkSize.y - InterfaceManager::GetInstance().tabHeight - titleHeight));
     //ImGui::SetNextWindowViewport(viewport->ID);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -25,7 +25,7 @@ void WindowVisualScript::DrawWindow()
     ImGui::PopStyleVar(3);
 
     static int selected = false;
-    if (ImGui::Selectable("Compile", selected, ImGuiSelectableFlags_None, ImVec2(toolbarWidth, 50))) {
+    if (ImGui::Selectable("Compile", selected, ImGuiSelectableFlags_None, ImVec2((float)toolbarWidth, 50))) {
         std::string result = VisualScriptManager::GetInstance().CompileScript();
         if (result.empty())
             Logger::Log("P", "Current script was compiled successfully");
@@ -142,7 +142,7 @@ void WindowVisualScript::DrawWindow()
 
                 std::cout << "id: " << node->GetId() << std::endl;
 
-                node->SetPos(pos.x, pos.y);
+                node->SetPos((int)pos.x, (int)pos.y);
                 nodes[node->GetId()] = node;
                 nextId += node->GetIdPass();
 

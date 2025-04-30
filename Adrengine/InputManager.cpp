@@ -5,8 +5,8 @@ std::unordered_map<int, bool> InputManager::previousKeys;
 std::unordered_map<int, bool> InputManager::currentMouseButtons;
 std::unordered_map<int, bool> InputManager::previousMouseButtons;
 bool InputManager::mouseVisibility = true;
-int InputManager::mouseX = 0.0;
-int InputManager::mouseY = 0.0;
+int InputManager::mouseX = 0;
+int InputManager::mouseY = 0;
 
 bool InputManager::InitEngine(GLFWwindow* window)
 {
@@ -105,8 +105,8 @@ void InputManager::CursorPositionCallback(GLFWwindow* window, double xpos, doubl
     if(mouseVisibility)
         ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 
-    mouseX = xpos;
-    mouseY = ypos;
+    mouseX = (int)xpos;
+    mouseY = (int)ypos;
 }
 
 void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)

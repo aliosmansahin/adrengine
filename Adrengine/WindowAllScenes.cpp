@@ -4,13 +4,13 @@ void WindowAllScenes::DrawWindow()
 {
 	ImGui::Begin("All Scenes", &showWindow);
 	ImGui::SetWindowFontScale(1.5f);
-	int windowWidth = ImGui::GetWindowSize().x;
+	int windowWidth = (int)ImGui::GetWindowSize().x;
 	int buttonWidth = 100;
 	int padding = 10;
 	ImGui::TextColored(ImVec4(0, 255, 0, 255), "Select and edit");
 	ImGui::SameLine();
-	ImGui::SetCursorPosX(windowWidth - buttonWidth - padding);
-	if (ImGui::Button("Add", ImVec2(buttonWidth, 0))) {
+	ImGui::SetCursorPosX(float(windowWidth - buttonWidth - padding));
+	if (ImGui::Button("Add", ImVec2((float)buttonWidth, 0.0f))) {
 	 	SceneManager::GetInstance().CreateScene();
 		WindowEntityProperties::GetInstance().currentEntity = nullptr;
 		WindowScene::GetInstance().selectedId = "";

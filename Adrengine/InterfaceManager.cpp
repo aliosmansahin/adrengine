@@ -57,14 +57,14 @@ void InterfaceManager::DrawInterface()
 {
 	MenuBar::GetInstance().DrawMenuBar();
 
-	int windowHeight = ImGui::GetWindowHeight();
-	int tabWidth = ImGui::GetContentRegionAvail().x;
-	int titleHeight = ImGui::GetContentRegionAvail().y;
+	int windowHeight = (int)ImGui::GetWindowHeight();
+	int tabWidth = (int)ImGui::GetContentRegionAvail().x;
+	int titleHeight = (int)ImGui::GetContentRegionAvail().y;
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport->WorkPos);
-	ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, tabHeight));
+	ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, (float)tabHeight));
 	////ImGui::SetNextWindowViewport(viewport->ID);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -82,27 +82,30 @@ void InterfaceManager::DrawInterface()
 		if (openedTab) {
 			selected = tab->id == openedTab->id;
 		}
-		if (ImGui::Selectable(tab->id.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(100, tabHeight))) {
-			SceneManager::GetInstance().currentScene = nullptr;
-			VisualScriptManager::GetInstance().currentScript = nullptr;
-			if (tab->tabType == SceneEditor) {
-				auto openedScene = SceneManager::GetInstance().openedScenes.find(tab->id);
-				if (openedScene != SceneManager::GetInstance().openedScenes.end()) {
-					SceneManager::GetInstance().currentScene = openedScene->second.get();
-					openedTab = tab;
+		if (tab && tab->id.c_str()) {
+			if (ImGui::Selectable(tab->id.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(100, (float)tabHeight))) {
+				SceneManager::GetInstance().currentScene = nullptr;
+				VisualScriptManager::GetInstance().currentScript = nullptr;
+				if (tab->tabType == SceneEditor) {
+					auto openedScene = SceneManager::GetInstance().openedScenes.find(tab->id);
+					if (openedScene != SceneManager::GetInstance().openedScenes.end()) {
+						SceneManager::GetInstance().currentScene = openedScene->second.get();
+						openedTab = tab;
+					}
+				}
+				else if (tab->tabType == VisualScriptEditor) {
+					auto openedScript = VisualScriptManager::GetInstance().openedScripts.find(tab->id);
+					if (openedScript != VisualScriptManager::GetInstance().openedScripts.end()) {
+						VisualScriptManager::GetInstance().currentScript = openedScript->second;
+						openedTab = tab;
+					}
 				}
 			}
-			else if(tab->tabType == VisualScriptEditor) {
-				auto openedScript = VisualScriptManager::GetInstance().openedScripts.find(tab->id);
-				if (openedScript != VisualScriptManager::GetInstance().openedScripts.end()) {
-					VisualScriptManager::GetInstance().currentScript = openedScript->second;
-					openedTab = tab;
-				}
+
+			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+				deleteTabId = tab->id;
+				pendingTabDelete = true;
 			}
-		}
-		if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
-			deleteTabId = tab->id;
-			pendingTabDelete = true;
 		}
 		ImGui::SameLine();
 	}

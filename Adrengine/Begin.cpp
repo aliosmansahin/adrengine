@@ -3,7 +3,7 @@
 void Begin::Draw()
 {
     if (first) {
-        ImNodes::SetNodeScreenSpacePos(id, ImVec2(x, y));
+        ImNodes::SetNodeScreenSpacePos(id, ImVec2((float)x, (float)y));
         first = false;
     }
     ImNodes::BeginNode(id);
