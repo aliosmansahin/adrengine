@@ -12,6 +12,8 @@ public:
 	//main funcs
 	bool InitGraphics(GLFWwindow* window);
 	void ReleaseGraphics();
+	void CreateFramebuffer(int width, int height);
+	void RescaleFramebuffer(int width, int height);
 public:
 	//getter for the instance
 	static Graphics& GetInstance();
@@ -33,11 +35,18 @@ public:
 public:
 	//context
 	void Clear();
+	void BindFramebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, FBO); }
+	void UnbindFramebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 public:
 	//getters
 	GLFWwindow* GetWindow() { return window; }
+	unsigned int GetFrameBufferTex() { return frameBufferTex; }
 private:
 	//glfw
 	GLFWwindow* window = nullptr;
+	//framebuffer
+	unsigned int FBO;
+	unsigned int RBO;
+	unsigned int frameBufferTex;
 
 };

@@ -2,6 +2,7 @@
 
 //#include <fstream>
 #include <iostream>
+#include "Localization.h"
 
 class Logger
 {

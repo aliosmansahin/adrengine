@@ -5,19 +5,22 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Logger.h"
-#include "ShaderManager.h"
 
-struct EntityParams {
-	virtual ~EntityParams() {}
-};
+#include "EntityParams.h"
 
 class Entity
 {
 public:
 	//main funcs
-	virtual bool CreateEntity(EntityParams* params) = 0;
-	virtual void DeleteEntity() = 0;
-	virtual void Update() = 0;
-	virtual void Draw() = 0;
+	virtual bool CreateEntity(std::shared_ptr<EntityParams> params);
+	virtual void DeleteEntity();
+	virtual void Update();
+	virtual void Draw();
+	virtual std::shared_ptr<Entity> clone() const {
+		return std::make_shared<Entity>(*this);
+	}
+	virtual EntityParams* GetEntityParams();
+	virtual nlohmann::json ToJson();
+private:
+	std::shared_ptr<EntityParams> params;
 };
-

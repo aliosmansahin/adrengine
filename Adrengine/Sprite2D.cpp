@@ -1,13 +1,13 @@
 #include "Sprite2D.h"
 
-bool Sprite2D::CreateEntity(EntityParams* entityParams)
+bool Sprite2D::CreateEntity(std::shared_ptr<EntityParams> params)
 {
-	Sprite2DParams* params = dynamic_cast<Sprite2DParams*>(entityParams);
-	if (!params) {
+	auto casted = std::dynamic_pointer_cast<Sprite2DParams>(params);
+	if (!casted) {
 		Logger::Log("E", "Casting failed at dynamic_cast<Sprite2DParams*>(params)");
 		return false;
 	}
-	this->params = params;
+	this->params = casted;
 
 	//some vertices
 	float vertices[] = {
@@ -41,7 +41,6 @@ bool Sprite2D::CreateEntity(EntityParams* entityParams)
 	//release buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
 	return true;
 }
 
@@ -50,8 +49,6 @@ void Sprite2D::DeleteEntity()
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 	glDeleteVertexArrays(1, &VAO);
-
-	delete params;
 }
 
 void Sprite2D::Update()
@@ -69,4 +66,20 @@ void Sprite2D::Draw()
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+EntityParams* Sprite2D::GetEntityParams()
+{
+	return params.get();
+}
+
+nlohmann::json Sprite2D::ToJson()
+{
+	nlohmann::json j;
+
+	if (params) {
+		j = params->ToJson();  // EntityParams'ý JSON'a çevir
+	}
+	return j;
+
 }

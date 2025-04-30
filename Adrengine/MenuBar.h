@@ -7,6 +7,15 @@
 #include "Logger.h"
 
 #include "WindowProjectSettings.h"
+#include "WindowEditorSettings.h"
+#include "WindowScene.h"
+#include "WindowGameViewport.h"
+#include "WindowEntityProperties.h"
+#include "WindowAddEntity.h"
+#include "WindowAllScenes.h"
+#include "WindowVisualScript.h"
+#include "FileIO.h"
+#include "AssetSaver.h"
 
 class MenuBar
 {

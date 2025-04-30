@@ -50,6 +50,78 @@
     <Filter Include="Files\Engine\InterfaceManager\WindowProjectSettings">
       <UniqueIdentifier>{153e2e78-04dc-47a2-8773-8cf2b70c5556}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Files\Localization">
+      <UniqueIdentifier>{8000953f-809c-47ac-a759-1c71c5b85783}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Localization\languages">
+      <UniqueIdentifier>{50fb74df-48dc-4d42-aea6-132588de7c5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowScene">
+      <UniqueIdentifier>{878beb64-e927-4f1c-bfde-1900f72fb0be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowGameViewport">
+      <UniqueIdentifier>{149c5411-8c6b-4240-869d-d9d84a0f7134}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowEntityProperties">
+      <UniqueIdentifier>{41d009dd-4088-4855-8084-7ead7b836098}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowEditorSettings">
+      <UniqueIdentifier>{4314b0da-5973-42be-9f64-293806e80523}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowAddEntity">
+      <UniqueIdentifier>{f46a713a-f066-49af-a9cf-ea331f336b10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowAllScenes">
+      <UniqueIdentifier>{be1450b5-a724-44b0-9945-df89cc12535b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\SceneManager">
+      <UniqueIdentifier>{b32a8cff-4037-4a22-b248-2b07c3a188f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\SceneManager\Scene">
+      <UniqueIdentifier>{2f9185c7-9ca3-4966-b536-5787b3f20b65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\FileIO">
+      <UniqueIdentifier>{ab9c2b89-5692-4484-9f9f-81b8ae42d792}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowVisualScript">
+      <UniqueIdentifier>{4ccd2d3d-31b1-48a3-99e5-1b8c93280837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\imnodes">
+      <UniqueIdentifier>{da2a23a9-643e-4f93-a208-ba32b1444a90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\VisualScriptManager">
+      <UniqueIdentifier>{b936b90e-dca8-40e2-a9a0-c564983250ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\VisualScriptManager\VisualScript">
+      <UniqueIdentifier>{7d2111d5-a933-42f4-bc8c-7d7dbdba9819}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\nlohmann_json">
+      <UniqueIdentifier>{762c4a46-8bce-4d82-aac2-fe19a48093ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Asset">
+      <UniqueIdentifier>{41fd0e5c-85d1-4904-ab75-8c34a69d47ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Asset\AssetSaver">
+      <UniqueIdentifier>{24e3e2b9-5a1e-4410-a242-7f0a35bb8b5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\VisualScriptManager\VisualScript\Node">
+      <UniqueIdentifier>{f5ce2b29-4629-4a4d-8139-a64157ef58f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\VisualScriptManager\VisualScript\Node\Print">
+      <UniqueIdentifier>{26fa8556-36e5-499f-9d71-9367103ff1a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\VisualScriptManager\VisualScript\Node\Begin">
+      <UniqueIdentifier>{2bc4712e-9a33-4e7d-ba44-2da4db3a8478}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\VisualScriptManager\VisualScript\Node\Return">
+      <UniqueIdentifier>{6ec356fd-296d-4f70-a0dd-0c3e8469f4aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InputManager">
+      <UniqueIdentifier>{94fca1e8-31c0-4a5a-91a9-269fff3fc6e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\stbi">
+      <UniqueIdentifier>{d981e577-7c83-4cef-b13b-7f0553c8ff5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp">
@@ -117,6 +189,69 @@
     </ClCompile>
     <ClCompile Include="WindowProjectSettings.cpp">
       <Filter>Files\Engine\InterfaceManager\WindowProjectSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="Localization.cpp">
+      <Filter>Files\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowScene.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowScene</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowGameViewport.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowGameViewport</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowEntityProperties.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowEntityProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowEditorSettings.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowEditorSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowAddEntity.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowAddEntity</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowAllScenes.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowAllScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Files\Engine\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Files\Engine\SceneManager\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="FileIO.cpp">
+      <Filter>Files\FileIO</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowVisualScript.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowVisualScript</Filter>
+    </ClCompile>
+    <ClCompile Include="imnodes\imnodes.cpp">
+      <Filter>Files\imnodes</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualScriptManager.cpp">
+      <Filter>Files\Engine\VisualScriptManager</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualScript.cpp">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityParams.cpp">
+      <Filter>Files\Engine\EntityManager\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetSaver.cpp">
+      <Filter>Files\Asset\AssetSaver</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="Print.cpp">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Print</Filter>
+    </ClCompile>
+    <ClCompile Include="Begin.cpp">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Begin</Filter>
+    </ClCompile>
+    <ClCompile Include="Return.cpp">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Return</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Files\Engine\InputManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -186,13 +321,98 @@
     <ClInclude Include="WindowProjectSettings.h">
       <Filter>Files\Engine\InterfaceManager\WindowProjectSettings</Filter>
     </ClInclude>
+    <ClInclude Include="Localization.h">
+      <Filter>Files\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowScene.h">
+      <Filter>Files\Engine\InterfaceManager\WindowScene</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowGameViewport.h">
+      <Filter>Files\Engine\InterfaceManager\WindowGameViewport</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowEntityProperties.h">
+      <Filter>Files\Engine\InterfaceManager\WindowEntityProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowEditorSettings.h">
+      <Filter>Files\Engine\InterfaceManager\WindowEditorSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowAddEntity.h">
+      <Filter>Files\Engine\InterfaceManager\WindowAddEntity</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowAllScenes.h">
+      <Filter>Files\Engine\InterfaceManager\WindowAllScenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Files\Engine\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Files\Engine\SceneManager\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="FileIO.h">
+      <Filter>Files\FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowVisualScript.h">
+      <Filter>Files\Engine\InterfaceManager\WindowVisualScript</Filter>
+    </ClInclude>
+    <ClInclude Include="imnodes\imnodes.h">
+      <Filter>Files\imnodes</Filter>
+    </ClInclude>
+    <ClInclude Include="imnodes\imnodes_internal.h">
+      <Filter>Files\imnodes</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualScriptManager.h">
+      <Filter>Files\Engine\VisualScriptManager</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualScript.h">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript</Filter>
+    </ClInclude>
+    <ClInclude Include="nlohmann_json\json.hpp">
+      <Filter>Files\nlohmann_json</Filter>
+    </ClInclude>
+    <ClInclude Include="nlohmann_json\json_fwd.hpp">
+      <Filter>Files\nlohmann_json</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityParams.h">
+      <Filter>Files\Engine\EntityManager\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetSaver.h">
+      <Filter>Files\Asset\AssetSaver</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Print.h">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Print</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Begin.h">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Begin</Filter>
+    </ClInclude>
+    <ClInclude Include="Return.h">
+      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Return</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Files\Engine\InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Files\stbi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="FragmentShader.glsl">
+    <None Include="shaders\FragmentShader.glsl">
       <Filter>Files\Engine\Graphics\ShaderManager\2DShaders</Filter>
     </None>
-    <None Include="VertexShader.glsl">
+    <None Include="shaders\VertexShader.glsl">
       <Filter>Files\Engine\Graphics\ShaderManager\2DShaders</Filter>
     </None>
+    <None Include="localization\english">
+      <Filter>Files\Localization\languages</Filter>
+    </None>
+    <None Include="localization\current">
+      <Filter>Files\Localization\languages</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Adrengine.rc" />
   </ItemGroup>
 </Project>

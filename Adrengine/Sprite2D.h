@@ -1,26 +1,55 @@
 #pragma once
 
 #include "Entity.h"
+#include "ShaderManager.h"
 
 struct Sprite2DParams : public EntityParams {
-	float x = 0.0f, y = 0.0f;
-	float sx = 1.0f, sy = 1.0f;
-	float rx = 0.0f, ry = 0.0f;
-	unsigned int texture;
-	float r, b, g, a;
+	std::string GetType() override {
+		return "Sprite2D";
+	}
+	std::shared_ptr<EntityParams> clone() const override {
+		return std::make_shared<Sprite2DParams>(*this);
+	}
+
+	nlohmann::json ToJson() override {
+		auto j = EntityParams::ToJson();
+		//texture path
+		j["r"] = r;
+		j["g"] = r;
+		j["b"] = r;
+		j["a"] = r;
+		j["type"] = GetType();
+
+		return j;
+	};
+
+	void FromJson(const nlohmann::json& j) override {
+		EntityParams::FromJson(j);
+		r = j["r"];
+		g = j["g"];
+		b = j["b"];
+		a = j["a"];
+	}
+	unsigned int texture = 0;
+	float r = 0, b = 0, g = 0, a = 0;
 };
 
 class Sprite2D : public Entity
 {
 public:
-	bool CreateEntity(EntityParams* entityParams) override;
+	bool CreateEntity(std::shared_ptr<EntityParams> params) override;
 	void DeleteEntity() override;
 	void Update() override;
 	void Draw() override;
+	std::shared_ptr<Entity> clone() const override {
+		return std::make_shared<Sprite2D>(*this);
+	}
+	EntityParams* GetEntityParams() override;
+	nlohmann::json ToJson() override;
 private:
 	unsigned int VBO;
 	unsigned int VAO;
 	unsigned int EBO;
-	Sprite2DParams* params;
+	std::shared_ptr<Sprite2DParams> params;
 };
 

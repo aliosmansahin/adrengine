@@ -8,7 +8,7 @@ bool ShaderManager::InitShaders(ShaderType shaderType)
     if (shaderType == SHADER_2D) {
         Logger::Log("P", "Initializing SHADER_2D");
         shader = new Shader();
-        if (!shader->CreateShader("VertexShader.glsl", "FragmentShader.glsl"))
+        if (!shader->CreateShader("shaders/VertexShader.glsl", "shaders/FragmentShader.glsl"))
             return false;
     }
     else {
@@ -45,7 +45,7 @@ void ShaderManager::ApplyTransformMatrix(const char* uniformName, glm::mat4 mat)
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
-void ShaderManager::UpdateProjectionMatrix(int windowWidth, int windowHeight)
+void ShaderManager::UpdateProjectionMatrix(int windowWidth, int windowHeight, int cameraX, int cameraY)
 {
     float aspect = (float)windowWidth / (float)windowHeight;
 
@@ -54,7 +54,10 @@ void ShaderManager::UpdateProjectionMatrix(int windowWidth, int windowHeight)
 
     glm::mat4 projection = glm::ortho(0.0f, orthoWidth, orthoHeight, 0.0f);
 
-    ApplyTransformMatrix("uProjection", projection);
+    glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(cameraX, cameraY, 0));
+
+    ApplyTransformMatrix("uProjection", projection * translate);
+    
 }
 
 void ShaderManager::ReleaseShaderManager()

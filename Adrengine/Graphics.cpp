@@ -24,11 +24,6 @@ bool Graphics::InitGraphics(GLFWwindow* window)
     if (!ShaderManager::GetInstance().InitShaders(SHADER_2D))
         return false;
     
-
-    int windowW, windowH;
-    glfwGetFramebufferSize(window, &windowW, &windowH);
-    ShaderManager::GetInstance().UpdateProjectionMatrix(windowW, windowH);
-
     //window size callback
     glfwSetWindowSizeCallback(window, StaticWindowSizeCallback);
 
@@ -41,6 +36,44 @@ void Graphics::ReleaseGraphics()
     Logger::Log("P", "Cleared graphics");
 }
 
+void Graphics::CreateFramebuffer(int width, int height)
+{
+    glGenFramebuffers(1, &FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+    glGenTextures(1, &frameBufferTex);
+    glBindTexture(GL_TEXTURE_2D, frameBufferTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTex, 0);
+
+    glGenRenderbuffers(1, &RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        Logger::Log("E", "Framebuffer is not complete");
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+}
+
+void Graphics::RescaleFramebuffer(int width, int height)
+{
+    glBindTexture(GL_TEXTURE_2D, frameBufferTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTex, 0);
+
+    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+}
+
 Graphics& Graphics::GetInstance()
 {
     static Graphics graphics;
@@ -50,7 +83,6 @@ Graphics& Graphics::GetInstance()
 void Graphics::WindowSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
-    ShaderManager::GetInstance().UpdateProjectionMatrix(width, height);
 }
 
 void Graphics::Clear()

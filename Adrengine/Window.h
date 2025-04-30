@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 
 #include "Logger.h"
+#include "Localization.h"
+
 
 class Window
 {

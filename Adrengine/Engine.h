@@ -2,8 +2,14 @@
 
 #include "Graphics.h"
 #include "Logger.h"
+#include "SceneManager.h"
 #include "EntityManager.h"
 #include "InterfaceManager.h"
+#include "VisualScriptManager.h"
+#include "InputManager.h"
+
+class Scene;
+struct Tab;
 
 class Engine
 {
@@ -13,6 +19,9 @@ public:
 	void Update();
 	void Draw();
 	void CloseEngine();
+	void LoadProject();
+	void SaveProject();
+	void SyncTabAndScene(Scene* scene, Tab* tab, std::string currentSceneId);
 public:
 	//getters
 	GLFWwindow* GetWindow() { return window; }
@@ -32,5 +41,13 @@ private:
 	//Graphics* graphics = nullptr; //The class graphics was become singleton
 	//EntityManager* entityManager = nullptr; //The class entitymanager was become singleton
 	//InterfaceManager* interfaceManager = nullptr; //The class interfacemanager was become singleton
+public:
+	//project specifications
+	std::string projectName = "project";
+	std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\";
+	int screenWidth = 0;
+	int screenHeight = 0;
+
+	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>> entityTypes;
 };
 
