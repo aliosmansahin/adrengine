@@ -42,6 +42,8 @@ bool Engine::InitEngine(GLFWwindow* window)
     screenWidth = mode->width;
     screenHeight = mode->height;
 
+    Graphics::GetInstance().LoadTexture("texture", "icon.png");
+
     //loading existing project
     LoadProject();
 
@@ -138,12 +140,14 @@ void Engine::LoadProject()
     file >> projectJson;
     file.close();
 
+    //TODO: load texture ids
+
+
     for (auto& scene : projectJson["scenes"]) {
         SceneManager::GetInstance().scenes.insert(std::pair<std::string, std::string>(scene, scene));
     }
     for (auto& script : projectJson["scripts"]) {
         VisualScriptManager::GetInstance().LoadScript(script);
-        //TODO: compile script
     }
     for (auto& tab : projectJson["opened-tabs"]) {
         //TODO: tablarý ve sahneleri sync etmek, selectedTab daki deðiþiklikleri kontrol et, deðiþiklik varsa currentScene ve ya currentScript deðiþkenlerini kontrol et.

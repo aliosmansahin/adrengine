@@ -66,6 +66,7 @@ std::string EntityManager::CreateEntity(std::string type, Entity* parent, bool n
 	params->parent = std::shared_ptr<Entity>(parent);
 	params->id = entityId;
 	params->name = entityId;
+		
 
 	if (!entity->CreateEntity(params))
 		return "";

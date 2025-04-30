@@ -1,5 +1,7 @@
 #include "Graphics.h"
 
+#include "stb_image.h"
+
 bool Graphics::InitGraphics(GLFWwindow* window)
 {
     Logger::Log("P", "Initalizing graphics");
@@ -72,6 +74,56 @@ void Graphics::RescaleFramebuffer(int width, int height)
     glBindRenderbuffer(GL_RENDERBUFFER, RBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+}
+
+bool Graphics::LoadTexture(const char* id, const char* path)
+{
+    unsigned int texture;
+    glGenTextures(1, &texture);                  // Texture ID oluþtur
+    glBindTexture(GL_TEXTURE_2D, texture);       // Texture'u baðla
+
+    // Texture parametreleri
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // S (X) yönünde tekrar
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // T (Y) yönünde tekrar
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Küçültme filtresi
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // Büyütme filtresi
+
+    // Görseli yükle
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+    if (data) {
+        // RGBA mý RGB mi kontrol et
+        GLenum format = nrChannels == 4 ? GL_RGBA : GL_RGB;
+
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D); // Mipmap oluþtur
+    }
+    else {
+        std::string str = "Could not load texture \"";
+        str += path;
+        str += "\"";
+
+        Logger::Log("E", str.c_str());
+        return false;
+    }
+    stbi_image_free(data); // Belleði serbest býrak
+
+    textures.insert({ id, texture });
+
+    std::string str = "Loaded texture \"";
+    str += path;
+    str += "\"";
+
+    Logger::Log("P", str.c_str());
+    return texture;
+}
+
+unsigned int Graphics::GetTexture(std::string id)
+{
+    auto textureIter = textures.find(id);
+    if (textureIter == textures.end())
+        return 0;
+    return textureIter->second;
 }
 
 Graphics& Graphics::GetInstance()

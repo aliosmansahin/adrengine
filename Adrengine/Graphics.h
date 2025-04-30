@@ -14,6 +14,8 @@ public:
 	void ReleaseGraphics();
 	void CreateFramebuffer(int width, int height);
 	void RescaleFramebuffer(int width, int height);
+	bool LoadTexture(const char* id, const char* path);
+	unsigned int GetTexture(std::string id);
 public:
 	//getter for the instance
 	static Graphics& GetInstance();
@@ -48,5 +50,5 @@ private:
 	unsigned int FBO;
 	unsigned int RBO;
 	unsigned int frameBufferTex;
-
+	std::unordered_map<std::string, unsigned int> textures;
 };

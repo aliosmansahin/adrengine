@@ -90,6 +90,33 @@ void WindowEntityProperties::DrawWindow()
                 InterfaceManager::GetInstance().selectedTabId = result.second->id;
             }
         }
+
+        if (currentEntity->GetEntityParams()->GetType() == "Sprite2D") {
+            ImGui::Separator();
+            ImGui::SeparatorText("Texture");
+            auto casted = dynamic_cast<Sprite2DParams*>(currentEntity->GetEntityParams());
+            if (casted) {
+                std::string textureIdStr = casted->textureId; // store entity id
+
+                static char textureIdBuf[32] = "";
+
+                if (textureIdBuf != textureIdStr) { // if the entity id changed
+                    strncpy_s(textureIdBuf, textureIdStr.c_str(), sizeof(textureIdBuf));
+                    textureIdBuf[sizeof(textureIdBuf) - 1] = '\0';
+                }
+
+                if (ImGui::InputText("Texture Id", textureIdBuf, sizeof(textureIdBuf), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                    if (textureIdBuf[0] == '\0') {// if the input is empty
+                        strncpy_s(textureIdBuf, currentEntity->GetEntityParams()->name.c_str(), sizeof(textureIdBuf));
+                        textureIdBuf[sizeof(textureIdBuf) - 1] = '\0';
+                    }
+                    else {//otherwise change the entity id
+                        casted->textureId = std::string(textureIdBuf);
+                        casted->texture = Graphics::GetInstance().GetTexture(std::string(textureIdBuf));
+                    }
+                }
+            }
+        }
     }
     else {
         ImGui::TextColored(ImVec4(0, 255, 0, 255), "Select an entity to modify");

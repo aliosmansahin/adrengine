@@ -41,7 +41,6 @@ void WindowAddEntity::DrawWindow()
 		if (ImGui::Selectable(type.c_str())) {
 			std::string id = SceneManager::GetInstance().currentScene->GetEntityManager()->CreateEntity(type, WindowScene::GetInstance().addParent);
 			std::string findId = SceneManager::GetInstance().currentScene->GetEntityManager()->GetEntities().find(id)->second->GetEntityParams()->id;
-			std::cout << findId << std::endl;
 			showWindow = false;
 			memset(typeBuf, 0, sizeof(typeBuf));
 			types.clear();

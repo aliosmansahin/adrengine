@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 #include "ShaderManager.h"
+#include "Graphics.h"
 
 struct Sprite2DParams : public EntityParams {
 	std::string GetType() override {
@@ -18,6 +19,8 @@ struct Sprite2DParams : public EntityParams {
 		j["g"] = r;
 		j["b"] = r;
 		j["a"] = r;
+		if(!textureId.empty())
+			j["texture-id"] = textureId;
 		j["type"] = GetType();
 
 		return j;
@@ -29,7 +32,10 @@ struct Sprite2DParams : public EntityParams {
 		g = j["g"];
 		b = j["b"];
 		a = j["a"];
+		textureId = j.value("texture-id", "");
+		texture = Graphics::GetInstance().GetTexture(textureId);
 	}
+	std::string textureId = "";
 	unsigned int texture = 0;
 	float r = 0, b = 0, g = 0, a = 0;
 };

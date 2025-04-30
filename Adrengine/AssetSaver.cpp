@@ -104,6 +104,9 @@ void AssetSaver::SaveProjectToFile(const std::string& filepath)
         j["current-tab"] = InterfaceManager::GetInstance().openedTab->id;
         //std::cout << InterfaceManager::GetInstance().openedTab->id << std::endl;
     }
+
+    //TODO: save texture ids and paths
+    
     for (auto& sceneIter : SceneManager::GetInstance().scenes) {
         auto& scene = sceneIter.first;
         j["scenes"].push_back(scene);

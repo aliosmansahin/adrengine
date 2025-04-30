@@ -45,6 +45,12 @@ void ShaderManager::ApplyTransformMatrix(const char* uniformName, glm::mat4 mat)
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
+void ShaderManager::ApplyTexture()
+{
+    unsigned int textureLoc = glGetUniformLocation(program, "texture1");
+    glUniform1i(textureLoc, 0);
+}
+
 void ShaderManager::UpdateProjectionMatrix(int windowWidth, int windowHeight, int cameraX, int cameraY)
 {
     float aspect = (float)windowWidth / (float)windowHeight;

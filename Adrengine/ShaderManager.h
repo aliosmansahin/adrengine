@@ -17,6 +17,7 @@ public:
 	bool InitShaderManager();
 	bool InitShaders(ShaderType shaderType);
 	void ApplyTransformMatrix(const char* uniformName, glm::mat4 mat);
+	void ApplyTexture();
 	void UpdateProjectionMatrix(int windowWidth, int windowHeight, int cameraX, int cameraY);
 	void ReleaseShaderManager();
 	//getter for the instance of class
