@@ -22,7 +22,4 @@ private:
 	WindowVisualScript& operator=(const WindowVisualScript&) = delete;
 public:
 	bool showWindow = true;
-	//nodes
-	std::unordered_map<int, std::shared_ptr<Node>> nodes;
-	std::unordered_map<int, std::pair<int, int>> links;
 };

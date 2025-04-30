@@ -26,7 +26,8 @@ void WindowVisualScript::DrawWindow()
 
     static int selected = false;
     if (ImGui::Selectable("Compile", selected, ImGuiSelectableFlags_None, ImVec2((float)toolbarWidth, 50))) {
-        std::string result = VisualScriptManager::GetInstance().CompileScript();
+        VisualScriptManager::GetInstance().SaveScript(VisualScriptManager::GetInstance().currentScript);
+        std::string result = VisualScriptManager::GetInstance().CompileScript(VisualScriptManager::GetInstance().currentScript.get());
         if (result.empty())
             Logger::Log("P", "Current script was compiled successfully");
         else
@@ -43,11 +44,11 @@ void WindowVisualScript::DrawWindow()
 
     ImNodes::BeginNodeEditor();
 
-    for (auto& node : nodes) {
+    for (auto& node : VisualScriptManager::GetInstance().currentScript->nodes) {
         node.second->Draw();
     }
 
-    for (auto& link : links) {
+    for (auto& link : VisualScriptManager::GetInstance().currentScript->links) {
         ImNodes::Link(link.first, link.second.first, link.second.second);
     }
 
@@ -58,16 +59,14 @@ void WindowVisualScript::DrawWindow()
     static int maxLinkId = 0;
     int start_attr, end_attr;
     if (ImNodes::IsLinkCreated(&start_attr, &end_attr)) {
-        maxLinkId = std::max(maxLinkId + 1, (int)links.size());
-        links.insert(std::pair<int, std::pair<int, int>>(maxLinkId, std::make_pair(start_attr, end_attr)));
-        std::cout << links.size() << std::endl;
+        maxLinkId = std::max(maxLinkId + 1, (int)VisualScriptManager::GetInstance().currentScript->links.size());
+        VisualScriptManager::GetInstance().currentScript->links.insert(std::pair<int, std::pair<int, int>>(maxLinkId, std::make_pair(start_attr, end_attr)));
     }
     int linkId;
     if (ImNodes::IsLinkHovered(&linkId) && ImGui::IsKeyReleased(ImGuiKey_Delete)) {
-        auto link = links.find(linkId);
-        if (link != links.end())
-            links.erase(link);
-        std::cout << links.size() << std::endl;
+        auto link = VisualScriptManager::GetInstance().currentScript->links.find(linkId);
+        if (link != VisualScriptManager::GetInstance().currentScript->links.end())
+            VisualScriptManager::GetInstance().currentScript->links.erase(link);
     }
 
     ImGui::End();
@@ -143,7 +142,7 @@ void WindowVisualScript::DrawWindow()
                 std::cout << "id: " << node->GetId() << std::endl;
 
                 node->SetPos((int)pos.x, (int)pos.y);
-                nodes[node->GetId()] = node;
+                VisualScriptManager::GetInstance().currentScript->nodes[node->GetId()] = node;
                 nextId += node->GetIdPass();
 
                 showAddNode = false;

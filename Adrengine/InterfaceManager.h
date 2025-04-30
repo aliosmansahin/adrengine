@@ -49,7 +49,7 @@ public:
 	std::string deleteTabId = "";
 	std::string selectedTabId = "";
 	Tab* openedTab = nullptr;
-	std::unordered_map<std::string, std::unique_ptr<Tab>> tabs;
+	std::unordered_map<std::string, std::shared_ptr<Tab>> tabs;
 	int tabHeight = 40;
 private:
 };

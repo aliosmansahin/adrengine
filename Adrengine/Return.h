@@ -24,6 +24,8 @@ public:
 	int GetId() override {
 		return id;
 	}
+	nlohmann::json ToJson() override;
+	bool FromJson(nlohmann::json json) override;
 private:
 	int id = 0;
 	int x, y;

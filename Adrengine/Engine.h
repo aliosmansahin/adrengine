@@ -8,6 +8,8 @@
 #include "VisualScriptManager.h"
 #include "InputManager.h"
 
+//TODO: ADD SCRIPT SAVING / LOADING
+
 class Scene;
 struct Tab;
 

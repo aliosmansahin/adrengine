@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "WindowVisualScript.h"
+
 #include "nlohmann_json/json.hpp"
 
 class VisualScript
@@ -19,5 +21,8 @@ public:
 	std::string belongsScene = "";
 
 	std::vector<std::function<void()>> compiled;
+	//nodes
+	std::unordered_map<int, std::shared_ptr<Node>> nodes;
+	std::unordered_map<int, std::pair<int, int>> links;
 };
 

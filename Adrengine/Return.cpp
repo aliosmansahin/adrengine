@@ -33,3 +33,25 @@ std::function<void()> Return::Call(Input* input)
 {
     return std::function<void()>();
 }
+
+nlohmann::json Return::ToJson()
+{
+    nlohmann::json j;
+    j["id"] = id;
+    j["x"] = x;
+    j["y"] = y;
+    j["type"] = GetType();
+    return j;
+}
+
+bool Return::FromJson(nlohmann::json json)
+{
+    int id = json.value("id", -1);
+    if (id == -1)
+        return false;
+
+    this->id = id;
+    x = json.value("x", 0);
+    y = json.value("y", 0);
+    return true;
+}

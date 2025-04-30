@@ -83,8 +83,11 @@ void WindowEntityProperties::DrawWindow()
             ImGui::Text(currentEntity->GetEntityParams()->scriptId.c_str());
             ImGui::SameLine();
             if (ImGui::Button("Edit Script")) {
-                VisualScriptManager::GetInstance().OpenScript(currentEntity->GetEntityParams()->scriptId);
+                auto result = VisualScriptManager::GetInstance().OpenScript(currentEntity->GetEntityParams()->scriptId);
                 InterfaceManager::GetInstance().selectedTabId = currentEntity->GetEntityParams()->scriptId;
+                VisualScriptManager::GetInstance().currentScript = result.first;
+                InterfaceManager::GetInstance().openedTab = result.second.get();
+                InterfaceManager::GetInstance().selectedTabId = result.second->id;
             }
         }
     }

@@ -52,3 +52,30 @@ std::function<void()> Print::Call(Input* input)
 		};
 	return func;
 }
+
+nlohmann::json Print::ToJson()
+{
+    nlohmann::json j;
+    j["id"] = id;
+    j["x"] = x;
+    j["y"] = y;
+    j["type"] = GetType();
+    j["text"] = std::string(buf);
+    return j;
+}
+
+bool Print::FromJson(nlohmann::json json)
+{
+    int id = json.value("id", -1);
+    if (id == -1)
+        return false;
+
+    this->id = id;
+    x = json.value("x", 0);
+    y = json.value("y", 0);
+    std::string text = json.value("text", "");
+    strncpy_s(buf, sizeof(buf), text.c_str(), _TRUNCATE);
+    buf[31] = '\0';
+
+    return true;
+}

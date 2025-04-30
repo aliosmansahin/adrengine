@@ -4,6 +4,7 @@
 #include "VisualScript.h"
 
 class Scene;
+struct Tab;
 
 struct ScriptBelongsTo {
 	Entity* entity = nullptr;
@@ -15,12 +16,13 @@ class VisualScriptManager
 public:
 	bool InitManager();
 	void ReleaseManager();
-	std::shared_ptr<VisualScript> OpenScript(std::string scriptId);
+	std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Tab>> OpenScript(std::string scriptId);
 	bool LoadScript(std::string scriptId);
 	bool CloseScript(std::string scriptId);
 	bool CreateScript(ScriptBelongsTo sbt);
 	bool DeleteScript(std::string scriptId, ScriptBelongsTo sbt);
-	std::string CompileScript();
+	bool SaveScript(std::shared_ptr<VisualScript> script);
+	std::string CompileScript(VisualScript* script);
 	void RunScriptsBegin();
 	static VisualScriptManager& GetInstance();
 private:

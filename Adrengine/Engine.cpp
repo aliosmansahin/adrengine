@@ -43,7 +43,7 @@ bool Engine::InitEngine(GLFWwindow* window)
     screenHeight = mode->height;
 
     //loading existing project
-    //LoadProject();
+    LoadProject();
 
     return true;
 }
@@ -143,9 +143,11 @@ void Engine::LoadProject()
     }
     for (auto& script : projectJson["scripts"]) {
         VisualScriptManager::GetInstance().LoadScript(script);
+        //TODO: compile script
     }
     for (auto& tab : projectJson["opened-tabs"]) {
         //TODO: tablarý ve sahneleri sync etmek, selectedTab daki deðiþiklikleri kontrol et, deðiþiklik varsa currentScene ve ya currentScript deðiþkenlerini kontrol et.
+        //TODO: loading nodes
         if (!tab["type"].empty()) {
             std::string tabId = tab["id"];
             std::string tabType = tab["type"];
@@ -164,13 +166,13 @@ void Engine::LoadProject()
                 }
             }
             else if(tabType == "VisualScriptEditor") {
-                auto script = VisualScriptManager::GetInstance().OpenScript(tabId);
+                auto result = VisualScriptManager::GetInstance().OpenScript(tabId);
                 std::cout << tabId << std::endl;
                 if (!currentTabId.empty()) {
                     if (tabId == currentTabId) {
                         auto iter = InterfaceManager::GetInstance().tabs.find(tabId);
                         if (iter != InterfaceManager::GetInstance().tabs.end()) {
-                            VisualScriptManager::GetInstance().currentScript = script;
+                            VisualScriptManager::GetInstance().currentScript = result.first;
                             InterfaceManager::GetInstance().openedTab = iter->second.get();
                             InterfaceManager::GetInstance().selectedTabId = iter->second->id;
                         }

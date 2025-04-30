@@ -18,32 +18,32 @@ void VisualScriptManager::ReleaseManager()
     Logger::Log("P", "Cleared visual script manager");
 }
 
-std::shared_ptr<VisualScript> VisualScriptManager::OpenScript(std::string scriptId)
+std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Tab>> VisualScriptManager::OpenScript(std::string scriptId)
 {
     auto openedScriptIter = openedScripts.find(scriptId);
     if (openedScriptIter != openedScripts.end()) {
-        return nullptr;
+        return {nullptr, nullptr};
     }
     auto tabIter = InterfaceManager::GetInstance().tabs.find(scriptId);
     if (tabIter != InterfaceManager::GetInstance().tabs.end()) {
-        return nullptr;
+        return { nullptr, nullptr };
     }
 
     auto scriptIter = scripts.find(scriptId);
     if (scriptIter == scripts.end())
-        return nullptr;
+        return { nullptr, nullptr };
 
     std::shared_ptr<VisualScript> script = scriptIter->second;
 
     openedScripts.insert(std::pair<std::string, std::shared_ptr<VisualScript>>(script->scriptId, script));
 
-    Tab* tab = new Tab();
+    std::shared_ptr<Tab> tab = std::make_shared<Tab>();
     tab->id = scriptId;
     tab->tabType = VisualScriptEditor;
 
-    InterfaceManager::GetInstance().tabs.insert(std::pair<std::string, std::unique_ptr<Tab>>(tab->id, std::unique_ptr<Tab>(tab)));
+    InterfaceManager::GetInstance().tabs.insert(std::pair<std::string, std::shared_ptr<Tab>>(tab->id, tab));
 
-    return script;
+    return { script, tab };
 }
 
 bool VisualScriptManager::LoadScript(std::string scriptId)
@@ -189,10 +189,28 @@ bool VisualScriptManager::DeleteScript(std::string scriptId, ScriptBelongsTo sbt
 	return true;
 }
 
-std::string VisualScriptManager::CompileScript()
+bool VisualScriptManager::SaveScript(std::shared_ptr<VisualScript> script)
 {
-    auto& nodes = WindowVisualScript::GetInstance().nodes;
-    auto& links = WindowVisualScript::GetInstance().links;
+    std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
+
+    //to save script folder
+    std::string scriptsDir = projectDir + "scripts/";
+    std::filesystem::create_directory(scriptsDir);
+    std::string scriptDir = scriptsDir + script->scriptId + "/";
+    std::filesystem::create_directory(scriptDir);
+    std::string scriptFile = scriptDir + script->scriptId + ".adrenginescript";
+    AssetSaver::SaveScriptToFile(script.get(), scriptFile);
+
+    std::string projectFile = projectDir + "project.adrengineproject";
+
+    AssetSaver::SaveProjectToFile(projectFile);
+    return true;
+}
+
+std::string VisualScriptManager::CompileScript(VisualScript* script)
+{
+    auto& nodes = script->nodes;
+    auto& links = script->links;
 
     std::unordered_map<int, int> organizedNodes;
 
@@ -226,11 +244,13 @@ std::string VisualScriptManager::CompileScript()
     if (!returnConnected)
         return "Compile: Return wasn't connected to any node";
 
+    script->compiled.clear();
+
     while (true) {
         auto nodeIter = nodes.find(organizedNode->second);
         if (nodeIter->second->GetType() == "Return")
             break;
-        currentScript->compiled.push_back(nodeIter->second->Compile());
+        script->compiled.push_back(nodeIter->second->Compile());
         organizedNode = organizedNodes.find(organizedNode->second);
     }
 

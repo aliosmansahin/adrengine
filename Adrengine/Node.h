@@ -10,6 +10,8 @@
 #include <string>
 #include <memory>
 
+#include "nlohmann_json/json.hpp"
+
 class Input {
 public:
 	virtual ~Input() = default;
@@ -27,4 +29,6 @@ public:
 	virtual std::shared_ptr<Node> clone() = 0;
 	virtual void SetId(int id) = 0;
 	virtual int GetId() = 0;
+	virtual nlohmann::json ToJson() = 0;
+	virtual bool FromJson(nlohmann::json json) = 0;
 };

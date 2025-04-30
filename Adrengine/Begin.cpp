@@ -33,3 +33,25 @@ std::function<void()> Begin::Call(Input* input)
 {
 	return std::function<void()>();
 }
+
+nlohmann::json Begin::ToJson()
+{
+    nlohmann::json j;
+    j["id"] = id;
+    j["x"] = x;
+    j["y"] = y;
+    j["type"] = GetType();
+    return j;
+}
+
+bool Begin::FromJson(nlohmann::json json)
+{
+    int id = json.value("id", -1);
+    if (id == -1)
+        return false;
+
+    this->id = id;
+    x = json.value("x", 0);
+    y = json.value("y", 0);
+    return true;
+}
