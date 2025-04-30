@@ -25,12 +25,12 @@ void Scene::DrawScene()
 			if (WindowGameViewport::GetInstance().isHovered) {
 				isDragging = true;
 				skipThisFrame = true;
-				InputManager::GetInstance().SetMouseVisibility(!isDragging);
+				InputManager::GetInstance().SetMouseVisibility(false);
 			}
 		}
 		if (InputManager::GetInstance().IsMouseButtonJustReleased(GLFW_MOUSE_BUTTON_RIGHT)) {
 			isDragging = false;
-			InputManager::GetInstance().SetMouseVisibility(!isDragging);
+			InputManager::GetInstance().SetMouseVisibility(true);
 		}
 		if (isDragging) {
 			if (skipThisFrame) {

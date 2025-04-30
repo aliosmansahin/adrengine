@@ -57,9 +57,12 @@ bool InputManager::IsMouseButtonPressed(int key)
 void InputManager::SetMouseVisibility(bool visible)
 {
     mouseVisibility = visible;
-    if (visible)
+    if (visible) {
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
     else {
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 }
