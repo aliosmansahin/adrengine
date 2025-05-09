@@ -125,6 +125,9 @@ void InterfaceManager::DrawInterface()
 
 				if (WindowEntityProperties::GetInstance().showWindow)
 					WindowEntityProperties::GetInstance().DrawWindow();
+
+				if (WindowAssetExplorer::GetInstance().showWindow)
+					WindowAssetExplorer::GetInstance().DrawWindow();
 			}
 		}
 		else if (openedTab->tabType == VisualScriptEditor) {
@@ -142,6 +145,12 @@ void InterfaceManager::DrawInterface()
 
 	if (WindowAddEntity::GetInstance().showWindow)
 		WindowAddEntity::GetInstance().DrawWindow();
+
+	if (WindowAddAsset::GetInstance().showWindow)
+		WindowAddAsset::GetInstance().DrawWindow();
+
+	if (WindowAddScene::GetInstance().showWindow)
+		WindowAddScene::GetInstance().DrawWindow();
 
 	if (WindowProjectSettings::GetInstance().showWindow)
 		WindowProjectSettings::GetInstance().DrawWindow();

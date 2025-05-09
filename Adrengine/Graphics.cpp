@@ -76,7 +76,7 @@ void Graphics::RescaleFramebuffer(int width, int height)
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 }
 
-bool Graphics::LoadTexture(const char* id, const char* path)
+unsigned int Graphics::LoadTexture(const char* id, const char* path, int& width, int& height)
 {
     unsigned int texture;
     glGenTextures(1, &texture);                  // Texture ID oluþtur
@@ -89,7 +89,7 @@ bool Graphics::LoadTexture(const char* id, const char* path)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // Büyütme filtresi
 
     // Görseli yükle
-    int width, height, nrChannels;
+    int nrChannels;
     unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
     if (data) {
         // RGBA mý RGB mi kontrol et
@@ -104,11 +104,9 @@ bool Graphics::LoadTexture(const char* id, const char* path)
         str += "\"";
 
         Logger::Log("E", str.c_str());
-        return false;
+        return -1;
     }
     stbi_image_free(data); // Belleði serbest býrak
-
-    textures.insert({ id, texture });
 
     std::string str = "Loaded texture \"";
     str += path;
@@ -116,14 +114,6 @@ bool Graphics::LoadTexture(const char* id, const char* path)
 
     Logger::Log("P", str.c_str());
     return texture;
-}
-
-unsigned int Graphics::GetTexture(std::string id)
-{
-    auto textureIter = textures.find(id);
-    if (textureIter == textures.end())
-        return 0;
-    return textureIter->second;
 }
 
 Graphics& Graphics::GetInstance()

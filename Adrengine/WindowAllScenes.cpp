@@ -11,9 +11,7 @@ void WindowAllScenes::DrawWindow()
 	ImGui::SameLine();
 	ImGui::SetCursorPosX(float(windowWidth - buttonWidth - padding));
 	if (ImGui::Button("Add", ImVec2((float)buttonWidth, 0.0f))) {
-	 	SceneManager::GetInstance().CreateScene();
-		WindowEntityProperties::GetInstance().currentEntity = nullptr;
-		WindowScene::GetInstance().selectedId = "";
+		WindowAddScene::GetInstance().showWindow = true;
 	}
 	ImGui::Separator();
 

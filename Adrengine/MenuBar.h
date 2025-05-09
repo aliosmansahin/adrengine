@@ -12,8 +12,11 @@
 #include "WindowGameViewport.h"
 #include "WindowEntityProperties.h"
 #include "WindowAddEntity.h"
+#include "WindowAddAsset.h"
+#include "WindowAddScene.h"
 #include "WindowAllScenes.h"
 #include "WindowVisualScript.h"
+#include "WindowAssetExplorer.h"
 #include "FileIO.h"
 #include "AssetSaver.h"
 

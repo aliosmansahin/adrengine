@@ -37,12 +37,14 @@ bool Engine::InitEngine(GLFWwindow* window)
     if (!VisualScriptManager::GetInstance().InitManager())
         return false;
 
+    //asset database
+    /*if (!AssetDatabase::GetInstance().CreateTexture())
+        return false;*/
+
     //gets screen size
     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     screenWidth = mode->width;
     screenHeight = mode->height;
-
-    Graphics::GetInstance().LoadTexture("texture", "icon.png");
 
     //loading existing project
     LoadProject();
@@ -141,7 +143,7 @@ void Engine::LoadProject()
     file.close();
 
     //TODO: load texture ids
-
+    AssetDatabase::GetInstance().LoadDatabase(projectDir + "asset_database.adrenginedatabase");
 
     for (auto& scene : projectJson["scenes"]) {
         SceneManager::GetInstance().scenes.insert(std::pair<std::string, std::string>(scene, scene));
@@ -195,6 +197,9 @@ void Engine::SaveProject()
     std::string projectFile = projectDir + projectName + ".adrengineproject";
 
     AssetSaver::SaveProjectToFile(projectFile);
+
+    //save assets
+    AssetDatabase::GetInstance().SaveDatabase(projectDir + "asset_database.adrenginedatabase");
 
     std::string scenesDir = projectDir + "scenes/";
     std::filesystem::create_directory(scenesDir);

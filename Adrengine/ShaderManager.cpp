@@ -51,7 +51,7 @@ void ShaderManager::ApplyTexture()
     glUniform1i(textureLoc, 0);
 }
 
-void ShaderManager::UpdateProjectionMatrix(int windowWidth, int windowHeight, int cameraX, int cameraY)
+void ShaderManager::UpdateProjectionMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY)
 {
     float aspect = (float)windowWidth / (float)windowHeight;
 
@@ -62,8 +62,26 @@ void ShaderManager::UpdateProjectionMatrix(int windowWidth, int windowHeight, in
 
     glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(cameraX, cameraY, 0));
 
-    ApplyTransformMatrix("uProjection", projection * translate);
-    
+    ApplyTransformMatrix("uProjection", projection);
+    ApplyTransformMatrix("uView", glm::mat4(1.0f));
+    ApplyTransformMatrix("uModel", translate);
+}
+
+void ShaderManager::UpdateTransformMatrix3D(int windowWidth, int windowHeight, float cameraX, float cameraY, float cameraZ, float yaw, float pitch)
+{
+    glm::vec3 pos = glm::vec3(cameraX, cameraY, cameraZ);
+    glm::vec3 target = SceneManager::GetInstance().currentScene->eye + pos;
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    glm::mat4 look = glm::lookAt(pos, target, up);
+
+    float aspect = (float)windowWidth / (float)windowHeight;
+    float fov = 70.0f;
+
+    glm::mat4 proj = glm::perspective(glm::radians(fov), aspect, 0.01f, 1000.0f);
+
+    ApplyTransformMatrix("uView", look);
+    ApplyTransformMatrix("uProjection", proj);
 }
 
 void ShaderManager::ReleaseShaderManager()

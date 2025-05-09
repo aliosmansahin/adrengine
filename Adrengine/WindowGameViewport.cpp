@@ -11,6 +11,7 @@ void WindowGameViewport::DrawWindow()
 
     ImGui::Begin("Game Viewport", &showWindow);
 
+    isFocused = ImGui::IsWindowFocused();
 
     int toolbarHeight = 30;
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
@@ -46,7 +47,11 @@ void WindowGameViewport::DrawWindow()
     window_height = ImGui::GetContentRegionAvail().y;
     Graphics::GetInstance().RescaleFramebuffer((int)window_width, (int)window_height);
     glViewport(0, 0, (GLsizei)window_width, (GLsizei)window_height);
-    ShaderManager::GetInstance().UpdateProjectionMatrix((int)window_width, (int)window_height, (int)SceneManager::GetInstance().currentScene->cameraX, (int)SceneManager::GetInstance().currentScene->cameraY);
+    if (SceneManager::GetInstance().currentScene->sceneType == SCENE_2D)
+        ShaderManager::GetInstance().UpdateProjectionMatrix2D((int)window_width, (int)window_height, (int)SceneManager::GetInstance().currentScene->cameraX, (int)SceneManager::GetInstance().currentScene->cameraY);
+    else if (SceneManager::GetInstance().currentScene->sceneType == SCENE_3D)
+        ShaderManager::GetInstance().UpdateTransformMatrix3D((int)window_width, (int)window_height, (int)SceneManager::GetInstance().currentScene->cameraX, (int)SceneManager::GetInstance().currentScene->cameraY, (int)SceneManager::GetInstance().currentScene->cameraZ, (int)SceneManager::GetInstance().currentScene->yaw, (int)SceneManager::GetInstance().currentScene->pitch);
+
 
     ImVec2 pos = ImGui::GetCursorScreenPos();
     ImGui::GetWindowDrawList()->AddImage(

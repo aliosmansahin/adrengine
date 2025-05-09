@@ -13,7 +13,7 @@ void SceneManager::ClearManager()
     Logger::Log("P", "Cleared scene manager");
 }
 
-bool SceneManager::CreateScene()
+bool SceneManager::CreateScene(SceneType sceneType)
 {
     int index = 0;
     std::string sceneId;
@@ -25,7 +25,7 @@ bool SceneManager::CreateScene()
     }
 
     Scene* scene = new Scene();
-    if (!scene->CreateScene(sceneId)) {
+    if (!scene->CreateScene(sceneId, sceneType)) {
         Logger::Log("E", "Scene could not created");
         return false;
     }

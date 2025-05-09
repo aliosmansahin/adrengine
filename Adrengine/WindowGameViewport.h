@@ -22,6 +22,7 @@ private:
 public:
 	bool showWindow = true;
 	bool isPlaying = false;
+	bool isFocused = false;
 	bool isHovered = false;
 	float window_width = 0;
 	float window_height = 0;

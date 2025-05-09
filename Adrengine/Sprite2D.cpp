@@ -11,10 +11,10 @@ bool Sprite2D::CreateEntity(std::shared_ptr<EntityParams> params)
 
 	//some vertices
 	float vertices[] = {
-		 0.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top right
-		 32.0f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom right
-		 32.0f, 32.0f, 0.0f, 0.0f, 0.0f, // bottom left
-		 0.0f,  32.0f, 0.0f, 0.0f, 1.0f, // top left 
+		 0.0f,  0.0f,  0.0f, 0.0f, 1.0f, // top right
+		 32.0f, 0.0f,  0.0f, 0.0f, 0.0f, // bottom right
+		 32.0f, 32.0f, 0.0f, 1.0f, 0.0f, // bottom left
+		 0.0f,  32.0f, 0.0f, 1.0f, 1.0f, // top left 
 	};
 	unsigned int indices[] = {  // note that we start from 0!
 		0, 1, 3,  // first Triangle
@@ -62,13 +62,13 @@ void Sprite2D::Update()
 void Sprite2D::Draw()
 {
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(params->x, params->y, 0.0f));
+	model = glm::translate(model, glm::vec3(params->x, params->y, params->z));
 	model = glm::rotate(model, glm::radians(params->rx), glm::vec3(1.0, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(params->ry), glm::vec3(0.0, 1.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(params->rz), glm::vec3(0.0, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(params->sx, params->sy, 1.0f));
+	model = glm::scale(model, glm::vec3(params->sx, params->sy, params->sz));
 
-	ShaderManager::GetInstance().ApplyTransformMatrix("uTransform", model);
+	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, params->texture);

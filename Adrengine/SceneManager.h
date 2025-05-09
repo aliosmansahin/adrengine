@@ -4,13 +4,14 @@
 #include "InterfaceManager.h"
 
 class Scene;
+enum SceneType;
 
 class SceneManager
 {
 public:
 	bool InitializeManager();
 	void ClearManager();
-	bool CreateScene();
+	bool CreateScene(SceneType sceneType);
 	Scene* LoadScene(std::string sceneId);
 	bool CloseScene(std::string sceneId);
 	bool DeleteScene(std::string sceneId);

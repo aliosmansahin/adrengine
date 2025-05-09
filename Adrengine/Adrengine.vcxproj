@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp" />
+    <ClCompile Include="AssetDatabase.cpp" />
     <ClCompile Include="AssetSaver.cpp" />
     <ClCompile Include="Begin.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -168,10 +169,14 @@
     <ClCompile Include="Return.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Sprite2DParams.cpp" />
     <ClCompile Include="VisualScript.cpp" />
     <ClCompile Include="VisualScriptManager.cpp" />
+    <ClCompile Include="WindowAddAsset.cpp" />
     <ClCompile Include="WindowAddEntity.cpp" />
+    <ClCompile Include="WindowAddScene.cpp" />
     <ClCompile Include="WindowAllScenes.cpp" />
+    <ClCompile Include="WindowAssetExplorer.cpp" />
     <ClCompile Include="WindowEditorSettings.cpp" />
     <ClCompile Include="WindowEntityProperties.cpp" />
     <ClCompile Include="WindowGameViewport.cpp" />
@@ -184,6 +189,7 @@
     <ClCompile Include="WindowVisualScript.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssetDatabase.h" />
     <ClInclude Include="AssetSaver.h" />
     <ClInclude Include="Begin.h" />
     <ClInclude Include="Engine.h" />
@@ -217,11 +223,15 @@
     <ClInclude Include="Return.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="Sprite2DParams.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="VisualScript.h" />
     <ClInclude Include="VisualScriptManager.h" />
+    <ClInclude Include="WindowAddAsset.h" />
     <ClInclude Include="WindowAddEntity.h" />
+    <ClInclude Include="WindowAddScene.h" />
     <ClInclude Include="WindowAllScenes.h" />
+    <ClInclude Include="WindowAssetExplorer.h" />
     <ClInclude Include="WindowEditorSettings.h" />
     <ClInclude Include="WindowEntityProperties.h" />
     <ClInclude Include="WindowGameViewport.h" />

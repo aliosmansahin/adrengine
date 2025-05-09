@@ -105,15 +105,36 @@ void WindowEntityProperties::DrawWindow()
                     textureIdBuf[sizeof(textureIdBuf) - 1] = '\0';
                 }
 
-                if (ImGui::InputText("Texture Id", textureIdBuf, sizeof(textureIdBuf), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                if (ImGui::InputText("Texture Id", textureIdBuf, sizeof(textureIdBuf), ImGuiInputTextFlags_EnterReturnsTrue)) { //CHANGE IT TO OPTION PANEL THAT CONTAINS ALL TEXTURES
                     if (textureIdBuf[0] == '\0') {// if the input is empty
                         strncpy_s(textureIdBuf, currentEntity->GetEntityParams()->name.c_str(), sizeof(textureIdBuf));
                         textureIdBuf[sizeof(textureIdBuf) - 1] = '\0';
                     }
-                    else {//otherwise change the entity id
-                        casted->textureId = std::string(textureIdBuf);
-                        casted->texture = Graphics::GetInstance().GetTexture(std::string(textureIdBuf));
+                    else {
+                        if (AssetDatabase::GetInstance().GetTexture(std::string(textureIdBuf)).get()) {
+                            casted->textureId = std::string(textureIdBuf);
+                            casted->texture = AssetDatabase::GetInstance().GetTexture(std::string(textureIdBuf))->texture;
+                        }
                     }
+                }
+
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_ID")) {
+                        const char* payloadData = static_cast<const char*>(payload->Data);
+                        std::string droppedId(payloadData, payload->DataSize);
+
+                        auto& textures = AssetDatabase::GetInstance().GetTextures();
+                        auto textureIter = textures.find(droppedId);
+                        
+                        if (textureIter != textures.end()) {
+                            auto& texture = textureIter->second;
+                            if (texture.get()) {
+                                casted->textureId = texture->id;
+                                casted->texture = texture->texture;
+                            }
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
                 }
             }
         }

@@ -122,6 +122,18 @@
     <Filter Include="Files\stbi">
       <UniqueIdentifier>{d981e577-7c83-4cef-b13b-7f0553c8ff5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowAssetExplorer">
+      <UniqueIdentifier>{a725228b-88c2-4a47-b3ce-5a2da3d1ac67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Asset\AssetDatabase">
+      <UniqueIdentifier>{ab9f98ee-9b15-42cd-9cd3-450be4e1bb63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowAddAsset">
+      <UniqueIdentifier>{2c223c62-ea75-45b8-bcbe-976de807f7c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\Engine\InterfaceManager\WindowAddScene">
+      <UniqueIdentifier>{2286e7f9-5fb4-4421-9835-a44b76caf876}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp">
@@ -252,6 +264,21 @@
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Files\Engine\InputManager</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowAssetExplorer.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowAssetExplorer</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetDatabase.cpp">
+      <Filter>Files\Asset\AssetDatabase</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowAddAsset.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowAddAsset</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowAddScene.cpp">
+      <Filter>Files\Engine\InterfaceManager\WindowAddScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2DParams.cpp">
+      <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -396,6 +423,21 @@
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Files\stbi</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowAssetExplorer.h">
+      <Filter>Files\Engine\InterfaceManager\WindowAssetExplorer</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetDatabase.h">
+      <Filter>Files\Asset\AssetDatabase</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowAddAsset.h">
+      <Filter>Files\Engine\InterfaceManager\WindowAddAsset</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowAddScene.h">
+      <Filter>Files\Engine\InterfaceManager\WindowAddScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2DParams.h">
+      <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
+#include "SceneManager.h"
 
 enum ShaderType {
 	SHADER_2D,
@@ -18,7 +19,8 @@ public:
 	bool InitShaders(ShaderType shaderType);
 	void ApplyTransformMatrix(const char* uniformName, glm::mat4 mat);
 	void ApplyTexture();
-	void UpdateProjectionMatrix(int windowWidth, int windowHeight, int cameraX, int cameraY);
+	void UpdateProjectionMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY); //CHANGE THE NAME OF FUNCTION FROM PROJECTION TO TRANSFORM
+	void UpdateTransformMatrix3D(int windowWidth, int windowHeight, float cameraX, float cameraY, float cameraZ, float yaw, float pitch);
 	void ReleaseShaderManager();
 	//getter for the instance of class
 	static ShaderManager& GetInstance();
