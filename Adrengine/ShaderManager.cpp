@@ -48,7 +48,7 @@ void ShaderManager::ApplyTransformMatrix(const char* uniformName, glm::mat4 mat)
 void ShaderManager::ApplyTexture()
 {
     unsigned int textureLoc = glGetUniformLocation(program, "texture1");
-    glUniform1i(textureLoc, 0);
+    glUniform1f(textureLoc, 0);
 }
 
 void ShaderManager::UpdateProjectionMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY)
@@ -58,13 +58,12 @@ void ShaderManager::UpdateProjectionMatrix2D(int windowWidth, int windowHeight, 
     float orthoWidth = 800.0f;
     float orthoHeight = orthoWidth / aspect;
 
-    glm::mat4 projection = glm::ortho(0.0f, orthoWidth, orthoHeight, 0.0f);
+    glm::mat4 projection = glm::ortho(0.0f, orthoWidth, 0.0f, orthoHeight);
 
     glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(cameraX, cameraY, 0));
 
     ApplyTransformMatrix("uProjection", projection);
-    ApplyTransformMatrix("uView", glm::mat4(1.0f));
-    ApplyTransformMatrix("uModel", translate);
+    ApplyTransformMatrix("uView", translate);
 }
 
 void ShaderManager::UpdateTransformMatrix3D(int windowWidth, int windowHeight, float cameraX, float cameraY, float cameraZ, float yaw, float pitch)

@@ -64,7 +64,7 @@ void Scene::UpdateScene()
 
 				if (sceneType == SCENE_2D) {
 					cameraX += resX;
-					cameraY += resY;
+					cameraY -= resY;
 				}
 				else if (sceneType == SCENE_3D) {
 					yaw += resX * 0.5f;
@@ -81,7 +81,7 @@ void Scene::UpdateScene()
 					direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 					eye = glm::normalize(direction);
 
-					float speed = 0.5f; //deltaTime
+					float speed = 100.0f * Timer::GetDeltaTime(); //deltaTime
 
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
 						cameraX += eye.x * speed;

@@ -170,6 +170,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sprite2DParams.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VisualScript.cpp" />
     <ClCompile Include="VisualScriptManager.cpp" />
     <ClCompile Include="WindowAddAsset.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Sprite2DParams.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="VisualScript.h" />
     <ClInclude Include="VisualScriptManager.h" />
     <ClInclude Include="WindowAddAsset.h" />

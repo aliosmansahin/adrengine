@@ -44,8 +44,10 @@ std::string EntityManager::CreateEntity(std::string type, Entity* parent, bool n
 	std::string entityId = "";
 	while (true) {
 		entityId = type + std::to_string(index);
-		auto entity = entities.find(entityId);
-		if (entity == entities.end())
+		std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
+		std::string entitiesDir = projectDir + "entities/";
+		std::string entityDir = entitiesDir + entityId;
+		if(!std::filesystem::exists(entityDir))
 			break;
 		++index;
 	}

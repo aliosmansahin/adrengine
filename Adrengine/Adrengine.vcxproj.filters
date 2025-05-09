@@ -134,6 +134,9 @@
     <Filter Include="Files\Engine\InterfaceManager\WindowAddScene">
       <UniqueIdentifier>{2286e7f9-5fb4-4421-9835-a44b76caf876}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Files\Engine\Timer">
+      <UniqueIdentifier>{8bca530b-a80a-4c4a-94e5-45d8a02e58d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp">
@@ -279,6 +282,9 @@
     </ClCompile>
     <ClCompile Include="Sprite2DParams.cpp">
       <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Files\Engine\Timer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -438,6 +444,9 @@
     </ClInclude>
     <ClInclude Include="Sprite2DParams.h">
       <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Files\Engine\Timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

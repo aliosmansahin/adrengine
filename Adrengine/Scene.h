@@ -2,6 +2,7 @@
 
 #include "EntityManager.h"
 #include "InputManager.h"
+#include "Timer.h"
 
 class EntityManager;
 enum SceneType;
