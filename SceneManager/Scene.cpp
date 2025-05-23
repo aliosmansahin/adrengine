@@ -114,7 +114,7 @@ void Scene::UpdateScene(
 				if (sceneType == SCENE_2D) {
 					//Move the camera
 					cameraX += resX;
-					cameraY += resY;
+					cameraY -= resY;
 				}
 				//If the type of the scene is 3d
 				else if (sceneType == SCENE_3D) {
@@ -135,18 +135,10 @@ void Scene::UpdateScene(
 					direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 					eye = glm::normalize(direction);
 
-<<<<<<< HEAD:SceneManager/Scene.cpp
-<<<<<<< HEAD:SceneManager/Scene.cpp
 					//Set the speed of the camera
 					float speed = 20.0f * Timer::GetDeltaTime();
 					
 					//Movement controls
-=======
-=======
->>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,):Adrengine/Scene.cpp
-					float speed = 0.5f; //deltaTime
-
->>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,):Adrengine/Scene.cpp
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
 						cameraX += eye.x * speed;
 						cameraY += eye.y * speed;

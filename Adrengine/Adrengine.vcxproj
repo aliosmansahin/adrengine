@@ -153,86 +153,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp" />
-<<<<<<< HEAD
-=======
-    <ClCompile Include="AssetDatabase.cpp" />
-    <ClCompile Include="AssetSaver.cpp" />
-    <ClCompile Include="Begin.cpp" />
-    <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="EntityManager.cpp" />
-    <ClCompile Include="EntityParams.cpp" />
-    <ClCompile Include="FileIO.cpp" />
-    <ClCompile Include="glad.c" />
-    <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_glfw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="imnodes\imnodes.cpp" />
-    <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="InterfaceManager.cpp" />
-    <ClCompile Include="Localization.cpp" />
-    <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="MenuBar.cpp" />
-    <ClCompile Include="Node.cpp" />
-    <ClCompile Include="Print.cpp" />
-    <ClCompile Include="Return.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="Sprite2DParams.cpp" />
-    <ClCompile Include="VisualScript.cpp" />
-    <ClCompile Include="VisualScriptManager.cpp" />
-    <ClCompile Include="WindowAddAsset.cpp" />
-    <ClCompile Include="WindowAddEntity.cpp" />
-    <ClCompile Include="WindowAddScene.cpp" />
-    <ClCompile Include="WindowAllScenes.cpp" />
-    <ClCompile Include="WindowAssetExplorer.cpp" />
-    <ClCompile Include="WindowEditorSettings.cpp" />
-    <ClCompile Include="WindowEntityProperties.cpp" />
-    <ClCompile Include="WindowGameViewport.cpp" />
-    <ClCompile Include="WindowProjectSettings.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="Sprite2D.cpp" />
->>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-<<<<<<< HEAD
-=======
-    <ClInclude Include="Return.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="Sprite2DParams.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="VisualScript.h" />
-    <ClInclude Include="VisualScriptManager.h" />
-    <ClInclude Include="WindowAddAsset.h" />
-    <ClInclude Include="WindowAddEntity.h" />
-    <ClInclude Include="WindowAddScene.h" />
-    <ClInclude Include="WindowAllScenes.h" />
-    <ClInclude Include="WindowAssetExplorer.h" />
-    <ClInclude Include="WindowEditorSettings.h" />
-    <ClInclude Include="WindowEntityProperties.h" />
-    <ClInclude Include="WindowGameViewport.h" />
-    <ClInclude Include="WindowProjectSettings.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShaderManager.h" />
-    <ClInclude Include="Sprite2D.h" />
->>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Adrengine.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cube.mtl" />
     <None Include="shaders\2DFragmentShader.glsl" />
     <None Include="shaders\2DVertexShader.glsl" />
     <None Include="localization\current" />
@@ -244,9 +174,6 @@
     <None Include="shaders\DepthVertexShader.glsl" />
     <None Include="shaders\FragmentShader.glsl" />
     <None Include="shaders\VertexShader.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="cube.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

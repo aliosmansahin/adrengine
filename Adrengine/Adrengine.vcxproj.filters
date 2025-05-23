@@ -1,390 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Files\Window">
-      <UniqueIdentifier>{99063361-e6f9-4d0e-9ae2-8ad741fbdcf1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="languages">
-      <UniqueIdentifier>{12ee2fb5-8b82-417e-b7ba-0182584b41d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{8a5108e5-6a81-4708-b927-2327adaad2ce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\Scene2D">
-      <UniqueIdentifier>{7601a201-8d85-4f5a-b58a-bf3325fe649d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\DepthCube">
-      <UniqueIdentifier>{cb7669ae-71d3-4d3c-83b3-f2eb3a5fac3c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\Depth">
-      <UniqueIdentifier>{082283ac-33e1-41f2-aa15-b178b5139366}</UniqueIdentifier>
-    </Filter>
-<<<<<<< HEAD
-    <Filter Include="Shaders\Scene3D">
-      <UniqueIdentifier>{63b7c8c1-c436-4b94-83d9-a9ed5a6f6113}</UniqueIdentifier>
-=======
-    <Filter Include="Files\Engine\EntityManager\Entity">
-      <UniqueIdentifier>{c8fe6b1e-0ffd-499f-bb4a-74cc9965381f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\Graphics\ShaderManager">
-      <UniqueIdentifier>{00244607-9ade-44a0-b4a9-0403d4e6643f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\Graphics\ShaderManager\Shader">
-      <UniqueIdentifier>{29706e35-421d-4cca-b69a-65e0442ab20e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\Graphics\ShaderManager\2DShaders">
-      <UniqueIdentifier>{518e59d7-09ca-4d4a-ba15-0f40dd95cbdc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\EntityManager\Entity\Sprite2D">
-      <UniqueIdentifier>{c9bafd1f-c4e4-40e0-ac6a-c97dbf8af861}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager">
-      <UniqueIdentifier>{a0833942-e9d1-4c41-9f03-32c2073f027a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\imgui">
-      <UniqueIdentifier>{05c9699d-5e90-43fa-a0b9-54b710a390c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\MenuBar">
-      <UniqueIdentifier>{7c13811f-09f7-49f3-99e3-64faa9532503}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowProjectSettings">
-      <UniqueIdentifier>{153e2e78-04dc-47a2-8773-8cf2b70c5556}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Localization">
-      <UniqueIdentifier>{8000953f-809c-47ac-a759-1c71c5b85783}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Localization\languages">
-      <UniqueIdentifier>{50fb74df-48dc-4d42-aea6-132588de7c5e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowScene">
-      <UniqueIdentifier>{878beb64-e927-4f1c-bfde-1900f72fb0be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowGameViewport">
-      <UniqueIdentifier>{149c5411-8c6b-4240-869d-d9d84a0f7134}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowEntityProperties">
-      <UniqueIdentifier>{41d009dd-4088-4855-8084-7ead7b836098}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowEditorSettings">
-      <UniqueIdentifier>{4314b0da-5973-42be-9f64-293806e80523}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowAddEntity">
-      <UniqueIdentifier>{f46a713a-f066-49af-a9cf-ea331f336b10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowAllScenes">
-      <UniqueIdentifier>{be1450b5-a724-44b0-9945-df89cc12535b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\SceneManager">
-      <UniqueIdentifier>{b32a8cff-4037-4a22-b248-2b07c3a188f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\SceneManager\Scene">
-      <UniqueIdentifier>{2f9185c7-9ca3-4966-b536-5787b3f20b65}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\FileIO">
-      <UniqueIdentifier>{ab9c2b89-5692-4484-9f9f-81b8ae42d792}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowVisualScript">
-      <UniqueIdentifier>{4ccd2d3d-31b1-48a3-99e5-1b8c93280837}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\imnodes">
-      <UniqueIdentifier>{da2a23a9-643e-4f93-a208-ba32b1444a90}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\VisualScriptManager">
-      <UniqueIdentifier>{b936b90e-dca8-40e2-a9a0-c564983250ed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\VisualScriptManager\VisualScript">
-      <UniqueIdentifier>{7d2111d5-a933-42f4-bc8c-7d7dbdba9819}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\nlohmann_json">
-      <UniqueIdentifier>{762c4a46-8bce-4d82-aac2-fe19a48093ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Asset">
-      <UniqueIdentifier>{41fd0e5c-85d1-4904-ab75-8c34a69d47ed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Asset\AssetSaver">
-      <UniqueIdentifier>{24e3e2b9-5a1e-4410-a242-7f0a35bb8b5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\VisualScriptManager\VisualScript\Node">
-      <UniqueIdentifier>{f5ce2b29-4629-4a4d-8139-a64157ef58f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\VisualScriptManager\VisualScript\Node\Print">
-      <UniqueIdentifier>{26fa8556-36e5-499f-9d71-9367103ff1a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\VisualScriptManager\VisualScript\Node\Begin">
-      <UniqueIdentifier>{2bc4712e-9a33-4e7d-ba44-2da4db3a8478}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\VisualScriptManager\VisualScript\Node\Return">
-      <UniqueIdentifier>{6ec356fd-296d-4f70-a0dd-0c3e8469f4aa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InputManager">
-      <UniqueIdentifier>{94fca1e8-31c0-4a5a-91a9-269fff3fc6e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\stbi">
-      <UniqueIdentifier>{d981e577-7c83-4cef-b13b-7f0553c8ff5e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowAssetExplorer">
-      <UniqueIdentifier>{a725228b-88c2-4a47-b3ce-5a2da3d1ac67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Asset\AssetDatabase">
-      <UniqueIdentifier>{ab9f98ee-9b15-42cd-9cd3-450be4e1bb63}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowAddAsset">
-      <UniqueIdentifier>{2c223c62-ea75-45b8-bcbe-976de807f7c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\InterfaceManager\WindowAddScene">
-      <UniqueIdentifier>{2286e7f9-5fb4-4421-9835-a44b76caf876}</UniqueIdentifier>
-<<<<<<< HEAD
->>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
-=======
->>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Adrengine.cpp">
-      <Filter>Files</Filter>
-    </ClCompile>
+    <ClCompile Include="Adrengine.cpp" />
     <ClCompile Include="Window.cpp">
-      <Filter>Files\Window</Filter>
+      <Filter>Window</Filter>
     </ClCompile>
-<<<<<<< HEAD
-=======
-    <ClCompile Include="Logger.cpp">
-      <Filter>Files\Logger</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics.cpp">
-      <Filter>Files\Engine\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Files\glad</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Files\Engine\EntityManager\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityManager.cpp">
-      <Filter>Files\Engine\EntityManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Files\Engine\Graphics\ShaderManager\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderManager.cpp">
-      <Filter>Files\Engine\Graphics\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite2D.cpp">
-      <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
-    </ClCompile>
-    <ClCompile Include="InterfaceManager.cpp">
-      <Filter>Files\Engine\InterfaceManager</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui.cpp">
-      <Filter>Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_demo.cpp">
-      <Filter>Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_draw.cpp">
-      <Filter>Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_glfw.cpp">
-      <Filter>Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
-      <Filter>Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_win32.cpp">
-      <Filter>Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_tables.cpp">
-      <Filter>Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_widgets.cpp">
-      <Filter>Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="MenuBar.cpp">
-      <Filter>Files\Engine\InterfaceManager\MenuBar</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowProjectSettings.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowProjectSettings</Filter>
-    </ClCompile>
-    <ClCompile Include="Localization.cpp">
-      <Filter>Files\Localization</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowScene.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowScene</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowGameViewport.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowGameViewport</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowEntityProperties.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowEntityProperties</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowEditorSettings.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowEditorSettings</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowAddEntity.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowAddEntity</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowAllScenes.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowAllScenes</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>Files\Engine\SceneManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Files\Engine\SceneManager\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="FileIO.cpp">
-      <Filter>Files\FileIO</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowVisualScript.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowVisualScript</Filter>
-    </ClCompile>
-    <ClCompile Include="imnodes\imnodes.cpp">
-      <Filter>Files\imnodes</Filter>
-    </ClCompile>
-    <ClCompile Include="VisualScriptManager.cpp">
-      <Filter>Files\Engine\VisualScriptManager</Filter>
-    </ClCompile>
-    <ClCompile Include="VisualScript.cpp">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityParams.cpp">
-      <Filter>Files\Engine\EntityManager\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="AssetSaver.cpp">
-      <Filter>Files\Asset\AssetSaver</Filter>
-    </ClCompile>
-    <ClCompile Include="Node.cpp">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="Print.cpp">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Print</Filter>
-    </ClCompile>
-    <ClCompile Include="Begin.cpp">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Begin</Filter>
-    </ClCompile>
-    <ClCompile Include="Return.cpp">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Return</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Files\Engine\InputManager</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowAssetExplorer.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowAssetExplorer</Filter>
-    </ClCompile>
-    <ClCompile Include="AssetDatabase.cpp">
-      <Filter>Files\Asset\AssetDatabase</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowAddAsset.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowAddAsset</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowAddScene.cpp">
-      <Filter>Files\Engine\InterfaceManager\WindowAddScene</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite2DParams.cpp">
-      <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
-    </ClCompile>
-<<<<<<< HEAD
->>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
-=======
->>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Window.h">
-      <Filter>Files\Window</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h" />
-<<<<<<< HEAD
-=======
-    <ClInclude Include="Begin.h">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Begin</Filter>
+    <ClInclude Include="Window.h">
+      <Filter>Window</Filter>
     </ClInclude>
-    <ClInclude Include="Return.h">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Return</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Files\Engine\InputManager</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Files\stbi</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowAssetExplorer.h">
-      <Filter>Files\Engine\InterfaceManager\WindowAssetExplorer</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetDatabase.h">
-      <Filter>Files\Asset\AssetDatabase</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowAddAsset.h">
-      <Filter>Files\Engine\InterfaceManager\WindowAddAsset</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowAddScene.h">
-      <Filter>Files\Engine\InterfaceManager\WindowAddScene</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite2DParams.h">
-      <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\FragmentShader.glsl">
-      <Filter>Files\Engine\Graphics\ShaderManager\2DShaders</Filter>
-    </None>
-    <None Include="shaders\VertexShader.glsl">
-      <Filter>Files\Engine\Graphics\ShaderManager\2DShaders</Filter>
-    </None>
-    <None Include="localization\english">
-      <Filter>Files\Localization\languages</Filter>
-    </None>
-    <None Include="localization\current">
-      <Filter>Files\Localization\languages</Filter>
-    </None>
->>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Adrengine.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="localization\current">
-      <Filter>languages</Filter>
-    </None>
-    <None Include="localization\english">
-      <Filter>languages</Filter>
+    <None Include="shaders\2DFragmentShader.glsl">
+      <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\2DVertexShader.glsl">
-      <Filter>Shaders\Scene2D</Filter>
-    </None>
-    <None Include="shaders\2DFragmentShader.glsl">
-      <Filter>Shaders\Scene2D</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\DepthCubeFragmentShader.glsl">
-      <Filter>Shaders\DepthCube</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\DepthCubeGeometryShader.glsl">
-      <Filter>Shaders\DepthCube</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\DepthCubeVertexShader.glsl">
-      <Filter>Shaders\DepthCube</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\DepthFragmentShader.glsl">
-      <Filter>Shaders\Depth</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\DepthVertexShader.glsl">
-      <Filter>Shaders\Depth</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\FragmentShader.glsl">
-      <Filter>Shaders\Scene3D</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\VertexShader.glsl">
-      <Filter>Shaders\Scene3D</Filter>
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="cube.mtl" />
+    <None Include="localization\current">
+      <Filter>Localization</Filter>
+    </None>
+    <None Include="localization\english">
+      <Filter>Localization</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="cube.obj" />
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{46818ff6-8106-40e4-9483-82fdf51e05f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Localization">
+      <UniqueIdentifier>{00d9d663-6727-4baf-ade4-de853dc2b9e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{52c79d68-d51d-483d-a840-f78266b5b2d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
