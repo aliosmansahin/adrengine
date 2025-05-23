@@ -362,3 +362,10 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Adrengine/imgui.ini
+/Adrengine/mcar.mtl
+/Adrengine/kk.jpg
+/Adrengine/icon.png
+/Adrengine/car.mtl
+/Adrengine/TextureFragmentShader.glsl
+/Adrengine/TextureVertexShader.glsl
+/Adrengine/teamugblend.mtl

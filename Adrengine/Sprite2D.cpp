@@ -11,10 +11,10 @@ bool Sprite2D::CreateEntity(std::shared_ptr<EntityParams> params)
 
 	//some vertices
 	float vertices[] = {
-		 0.0f,  32.0f, 0.0f, 1.0f, 1.0f, // top right
-		 32.0f, 32.0f, 0.0f, 1.0f, 0.0f, // bottom right
-		 32.0f, 0.0f,  0.0f, 0.0f, 0.0f, // bottom left
-		 0.0f,  0.0f,  0.0f, 0.0f, 1.0f, // top left 
+		 0.0f,  0.0f,  0.0f, 0.0f, 1.0f, // top right
+		 32.0f, 0.0f,  0.0f, 0.0f, 0.0f, // bottom right
+		 32.0f, 32.0f, 0.0f, 1.0f, 0.0f, // bottom left
+		 0.0f,  32.0f, 0.0f, 1.0f, 1.0f, // top left 
 	};
 	unsigned int indices[] = {  // note that we start from 0!
 		0, 1, 3,  // first Triangle

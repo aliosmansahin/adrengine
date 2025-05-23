@@ -7,7 +7,6 @@
 #include "InterfaceManager.h"
 #include "VisualScriptManager.h"
 #include "InputManager.h"
-#include "Timer.h"
 
 //TODO: ADD SCRIPT SAVING / LOADING
 

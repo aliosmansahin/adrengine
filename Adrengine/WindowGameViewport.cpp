@@ -50,7 +50,8 @@ void WindowGameViewport::DrawWindow()
     if (SceneManager::GetInstance().currentScene->sceneType == SCENE_2D)
         ShaderManager::GetInstance().UpdateProjectionMatrix2D((int)window_width, (int)window_height, (int)SceneManager::GetInstance().currentScene->cameraX, (int)SceneManager::GetInstance().currentScene->cameraY);
     else if (SceneManager::GetInstance().currentScene->sceneType == SCENE_3D)
-        ShaderManager::GetInstance().UpdateTransformMatrix3D((int)window_width, (int)window_height, SceneManager::GetInstance().currentScene->cameraX, SceneManager::GetInstance().currentScene->cameraY, SceneManager::GetInstance().currentScene->cameraZ, SceneManager::GetInstance().currentScene->yaw, SceneManager::GetInstance().currentScene->pitch);
+        ShaderManager::GetInstance().UpdateTransformMatrix3D((int)window_width, (int)window_height, (int)SceneManager::GetInstance().currentScene->cameraX, (int)SceneManager::GetInstance().currentScene->cameraY, (int)SceneManager::GetInstance().currentScene->cameraZ, (int)SceneManager::GetInstance().currentScene->yaw, (int)SceneManager::GetInstance().currentScene->pitch);
+
 
     ImVec2 pos = ImGui::GetCursorScreenPos();
     ImGui::GetWindowDrawList()->AddImage(

@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{b9bcf119-545a-410c-b5dc-66af88ba27cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\DirectionalLight">
+      <UniqueIdentifier>{abe66e27-b66d-4b26-91d1-006e466399dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\SpotLight">
+      <UniqueIdentifier>{bb87a432-dddc-451b-b70e-e65c104ff720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Object">
+      <UniqueIdentifier>{e1f24013-5bd4-4993-bbff-36a06cf66a08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\PointLight">
+      <UniqueIdentifier>{ed552685-7c82-432e-942d-ee0a1b00333d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Sprite2D">
+      <UniqueIdentifier>{47e87fd2-2325-473c-9105-35f3684cd70f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DllDep">
+      <UniqueIdentifier>{5af8bbb9-a8fd-4080-b47f-00fc44044ce3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Entity.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityParams.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Entity\DirectionalLight</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLightParams.h">
+      <Filter>Entity\DirectionalLight</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Entity\SpotLight</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLightParams.h">
+      <Filter>Entity\SpotLight</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectParams.h">
+      <Filter>Entity\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Entity\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Entity\PointLight</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLightParams.h">
+      <Filter>Entity\PointLight</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2D.h">
+      <Filter>Entity\Sprite2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2DParams.h">
+      <Filter>Entity\Sprite2D</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>DllDep</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>DllDep</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityParams.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Entity\DirectionalLight</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLightParams.cpp">
+      <Filter>Entity\DirectionalLight</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>Entity\SpotLight</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLightParams.cpp">
+      <Filter>Entity\SpotLight</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Entity\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectParams.cpp">
+      <Filter>Entity\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Entity\PointLight</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLightParams.cpp">
+      <Filter>Entity\PointLight</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2D.cpp">
+      <Filter>Entity\Sprite2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2DParams.cpp">
+      <Filter>Entity\Sprite2D</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>DllDep</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>DllDep</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp" />
+  </ItemGroup>
+</Project>

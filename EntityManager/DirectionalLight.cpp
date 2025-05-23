@@ -1,0 +1,80 @@
+#include "pch.h"
+#include "DirectionalLight.h"
+
+/*
+PURPOSE: Initializes the entity
+*/
+bool DirectionalLight::CreateEntity(std::shared_ptr<EntityParams> params)
+{
+	//Cast EntityParams to DirectionalLightParams to use its properties
+	auto casted = std::dynamic_pointer_cast<DirectionalLightParams>(params);
+	if (!casted) {
+		Logger::Log("E", "Casting failed at dynamic_cast<DirectionalLightParams*>(params)");
+		return false;
+	}
+	this->params = casted;
+
+    return true;
+}
+
+/*
+PURPOSE: Unitializes the entity
+*/
+void DirectionalLight::DeleteEntity()
+{
+}
+
+/*
+PURPOSE: Updates the entity
+*/
+void DirectionalLight::Update()
+{
+	/*
+		Here we are calculating the real position, rotation and scale from properties.
+		We will use these vectors to draw it in the space.
+		If the entity has a parent, add the paramters to real* which is currently from parent's real*.
+		Otherwise real* will be properties directly
+	*/
+	if (params.get()) {
+		if (params->parent.get()) {
+			realPos += glm::vec3(params->x, params->y, params->z);
+			realRot += glm::vec3(params->rx, params->ry, params->rz);
+			realSca *= glm::vec3(params->sx, params->sy, params->sz);
+		}
+		else {
+			realPos = glm::vec3(params->x, params->y, params->z);
+			realRot = glm::vec3(params->rx, params->ry, params->rz);
+			realSca = glm::vec3(params->sx, params->sy, params->sz);
+		}
+	}
+}
+
+/*
+PURPOSE: Draws the entity from the position of the camera.
+	This entity draws nothing
+*/
+void DirectionalLight::Draw(glm::vec3 currentSceneCameraPos)
+{
+}
+
+/*
+PURPOSE: Returns properties of the entity as a pure pointer
+*/
+EntityParams* DirectionalLight::GetEntityParams()
+{
+    return params.get();
+}
+
+/*
+PURPOSE: Allows us to create json content of properties which belongs to type of the entity and return it.
+	"Entity" creates entity json, "Object" creates object json.
+*/
+nlohmann::json DirectionalLight::ToJson()
+{
+	nlohmann::json j;
+
+	if (params) {
+		j = params->ToJson();
+	}
+	return j;
+}

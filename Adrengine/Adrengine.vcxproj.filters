@@ -8,21 +8,25 @@
     <Filter Include="Files\Window">
       <UniqueIdentifier>{99063361-e6f9-4d0e-9ae2-8ad741fbdcf1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Files\Logger">
-      <UniqueIdentifier>{8dd5f199-d50d-4a43-94d9-aec2e6d85d91}</UniqueIdentifier>
+    <Filter Include="languages">
+      <UniqueIdentifier>{12ee2fb5-8b82-417e-b7ba-0182584b41d4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Files\Engine">
-      <UniqueIdentifier>{e30f237b-bcb2-4b81-82ce-1389ace6be95}</UniqueIdentifier>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{8a5108e5-6a81-4708-b927-2327adaad2ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Files\glad">
-      <UniqueIdentifier>{c4da0bb9-93c2-4f7a-8e68-92e339f8a0cb}</UniqueIdentifier>
+    <Filter Include="Shaders\Scene2D">
+      <UniqueIdentifier>{7601a201-8d85-4f5a-b58a-bf3325fe649d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Files\Engine\Graphics">
-      <UniqueIdentifier>{97d1e815-0817-44f4-8091-642c8a3c34f6}</UniqueIdentifier>
+    <Filter Include="Shaders\DepthCube">
+      <UniqueIdentifier>{cb7669ae-71d3-4d3c-83b3-f2eb3a5fac3c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Files\Engine\EntityManager">
-      <UniqueIdentifier>{c1b84825-9dca-428b-b411-f8196fc06692}</UniqueIdentifier>
+    <Filter Include="Shaders\Depth">
+      <UniqueIdentifier>{082283ac-33e1-41f2-aa15-b178b5139366}</UniqueIdentifier>
     </Filter>
+<<<<<<< HEAD
+    <Filter Include="Shaders\Scene3D">
+      <UniqueIdentifier>{63b7c8c1-c436-4b94-83d9-a9ed5a6f6113}</UniqueIdentifier>
+=======
     <Filter Include="Files\Engine\EntityManager\Entity">
       <UniqueIdentifier>{c8fe6b1e-0ffd-499f-bb4a-74cc9965381f}</UniqueIdentifier>
     </Filter>
@@ -133,9 +137,10 @@
     </Filter>
     <Filter Include="Files\Engine\InterfaceManager\WindowAddScene">
       <UniqueIdentifier>{2286e7f9-5fb4-4421-9835-a44b76caf876}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Files\Engine\Timer">
-      <UniqueIdentifier>{8bca530b-a80a-4c4a-94e5-45d8a02e58d5}</UniqueIdentifier>
+<<<<<<< HEAD
+>>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
+=======
+>>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +150,8 @@
     <ClCompile Include="Window.cpp">
       <Filter>Files\Window</Filter>
     </ClCompile>
+<<<<<<< HEAD
+=======
     <ClCompile Include="Logger.cpp">
       <Filter>Files\Logger</Filter>
     </ClCompile>
@@ -283,141 +290,18 @@
     <ClCompile Include="Sprite2DParams.cpp">
       <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>Files\Engine\Timer</Filter>
-    </ClCompile>
+<<<<<<< HEAD
+>>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
+=======
+>>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
       <Filter>Files\Window</Filter>
     </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Files\Logger</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics.h">
-      <Filter>Files\Engine\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Files\Engine\EntityManager\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityManager.h">
-      <Filter>Files\Engine\EntityManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Files\Engine\Graphics\ShaderManager\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>Files\Engine\Graphics\ShaderManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite2D.h">
-      <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
-    </ClInclude>
-    <ClInclude Include="InterfaceManager.h">
-      <Filter>Files\Engine\InterfaceManager</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_truetype.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imconfig.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_glfw.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_opengl3.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_opengl3_loader.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_win32.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_internal.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_rectpack.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_textedit.h">
-      <Filter>Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuBar.h">
-      <Filter>Files\Engine\InterfaceManager\MenuBar</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowProjectSettings.h">
-      <Filter>Files\Engine\InterfaceManager\WindowProjectSettings</Filter>
-    </ClInclude>
-    <ClInclude Include="Localization.h">
-      <Filter>Files\Localization</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowScene.h">
-      <Filter>Files\Engine\InterfaceManager\WindowScene</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowGameViewport.h">
-      <Filter>Files\Engine\InterfaceManager\WindowGameViewport</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowEntityProperties.h">
-      <Filter>Files\Engine\InterfaceManager\WindowEntityProperties</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowEditorSettings.h">
-      <Filter>Files\Engine\InterfaceManager\WindowEditorSettings</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowAddEntity.h">
-      <Filter>Files\Engine\InterfaceManager\WindowAddEntity</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowAllScenes.h">
-      <Filter>Files\Engine\InterfaceManager\WindowAllScenes</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Files\Engine\SceneManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Files\Engine\SceneManager\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="FileIO.h">
-      <Filter>Files\FileIO</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowVisualScript.h">
-      <Filter>Files\Engine\InterfaceManager\WindowVisualScript</Filter>
-    </ClInclude>
-    <ClInclude Include="imnodes\imnodes.h">
-      <Filter>Files\imnodes</Filter>
-    </ClInclude>
-    <ClInclude Include="imnodes\imnodes_internal.h">
-      <Filter>Files\imnodes</Filter>
-    </ClInclude>
-    <ClInclude Include="VisualScriptManager.h">
-      <Filter>Files\Engine\VisualScriptManager</Filter>
-    </ClInclude>
-    <ClInclude Include="VisualScript.h">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript</Filter>
-    </ClInclude>
-    <ClInclude Include="nlohmann_json\json.hpp">
-      <Filter>Files\nlohmann_json</Filter>
-    </ClInclude>
-    <ClInclude Include="nlohmann_json\json_fwd.hpp">
-      <Filter>Files\nlohmann_json</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityParams.h">
-      <Filter>Files\Engine\EntityManager\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetSaver.h">
-      <Filter>Files\Asset\AssetSaver</Filter>
-    </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node</Filter>
-    </ClInclude>
-    <ClInclude Include="Print.h">
-      <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Print</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h" />
+<<<<<<< HEAD
+=======
     <ClInclude Include="Begin.h">
       <Filter>Files\Engine\VisualScriptManager\VisualScript\Node\Begin</Filter>
     </ClInclude>
@@ -445,9 +329,6 @@
     <ClInclude Include="Sprite2DParams.h">
       <Filter>Files\Engine\EntityManager\Entity\Sprite2D</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>Files\Engine\Timer</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\FragmentShader.glsl">
@@ -462,8 +343,48 @@
     <None Include="localization\current">
       <Filter>Files\Localization\languages</Filter>
     </None>
+>>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Adrengine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="localization\current">
+      <Filter>languages</Filter>
+    </None>
+    <None Include="localization\english">
+      <Filter>languages</Filter>
+    </None>
+    <None Include="shaders\2DVertexShader.glsl">
+      <Filter>Shaders\Scene2D</Filter>
+    </None>
+    <None Include="shaders\2DFragmentShader.glsl">
+      <Filter>Shaders\Scene2D</Filter>
+    </None>
+    <None Include="shaders\DepthCubeFragmentShader.glsl">
+      <Filter>Shaders\DepthCube</Filter>
+    </None>
+    <None Include="shaders\DepthCubeGeometryShader.glsl">
+      <Filter>Shaders\DepthCube</Filter>
+    </None>
+    <None Include="shaders\DepthCubeVertexShader.glsl">
+      <Filter>Shaders\DepthCube</Filter>
+    </None>
+    <None Include="shaders\DepthFragmentShader.glsl">
+      <Filter>Shaders\Depth</Filter>
+    </None>
+    <None Include="shaders\DepthVertexShader.glsl">
+      <Filter>Shaders\Depth</Filter>
+    </None>
+    <None Include="shaders\FragmentShader.glsl">
+      <Filter>Shaders\Scene3D</Filter>
+    </None>
+    <None Include="shaders\VertexShader.glsl">
+      <Filter>Shaders\Scene3D</Filter>
+    </None>
+    <None Include="cube.mtl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="cube.obj" />
   </ItemGroup>
 </Project>

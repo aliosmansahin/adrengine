@@ -54,8 +54,6 @@ bool Engine::InitEngine(GLFWwindow* window)
 
 void Engine::Update()
 {
-    Timer::Update();
-
     InputManager::GetInstance().Update();
 
     if(SceneManager::GetInstance().currentScene)

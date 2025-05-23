@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glad\include;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -112,14 +112,21 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Graphics.lib;InputManager.lib;Common.lib;glfw3.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT
  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir)</AdditionalLibraryDirectories>
+      <ImportLibrary>
+      </ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "..\..\Adrengine\$(IntDir)Logger.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -130,16 +137,24 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\EntityManager;..\Logger;..\Localization;..\Common;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;Logger.lib;Localization.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "..\..\Adrengine\$(IntDir)Logger.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp" />
+<<<<<<< HEAD
+=======
     <ClCompile Include="AssetDatabase.cpp" />
     <ClCompile Include="AssetSaver.cpp" />
     <ClCompile Include="Begin.cpp" />
@@ -170,7 +185,6 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sprite2DParams.cpp" />
-    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VisualScript.cpp" />
     <ClCompile Include="VisualScriptManager.cpp" />
     <ClCompile Include="WindowAddAsset.cpp" />
@@ -185,48 +199,18 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
+>>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
     <ClCompile Include="Window.cpp" />
-    <ClCompile Include="WindowScene.cpp" />
-    <ClCompile Include="WindowVisualScript.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AssetDatabase.h" />
-    <ClInclude Include="AssetSaver.h" />
-    <ClInclude Include="Begin.h" />
-    <ClInclude Include="Engine.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="EntityManager.h" />
-    <ClInclude Include="EntityParams.h" />
-    <ClInclude Include="FileIO.h" />
-    <ClInclude Include="Graphics.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_impl_glfw.h" />
-    <ClInclude Include="imgui\imgui_impl_opengl3.h" />
-    <ClInclude Include="imgui\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="imgui\imgui_impl_win32.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="imnodes\imnodes.h" />
-    <ClInclude Include="imnodes\imnodes_internal.h" />
-    <ClInclude Include="InputManager.h" />
-    <ClInclude Include="InterfaceManager.h" />
-    <ClInclude Include="Localization.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="MenuBar.h" />
-    <ClInclude Include="nlohmann_json\json.hpp" />
-    <ClInclude Include="nlohmann_json\json_fwd.hpp" />
-    <ClInclude Include="Node.h" />
-    <ClInclude Include="Print.h" />
     <ClInclude Include="resource.h" />
+<<<<<<< HEAD
+=======
     <ClInclude Include="Return.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Sprite2DParams.h" />
     <ClInclude Include="stb_image.h" />
-    <ClInclude Include="Timer.h" />
     <ClInclude Include="VisualScript.h" />
     <ClInclude Include="VisualScriptManager.h" />
     <ClInclude Include="WindowAddAsset.h" />
@@ -241,18 +225,28 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Sprite2D.h" />
+>>>>>>> parent of db445c5 (added timer to calculate deltatime end use it,)
     <ClInclude Include="Window.h" />
-    <ClInclude Include="WindowScene.h" />
-    <ClInclude Include="WindowVisualScript.h" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="Adrengine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.mtl" />
+    <None Include="shaders\2DFragmentShader.glsl" />
+    <None Include="shaders\2DVertexShader.glsl" />
     <None Include="localization\current" />
     <None Include="localization\english" />
+    <None Include="shaders\DepthCubeFragmentShader.glsl" />
+    <None Include="shaders\DepthCubeGeometryShader.glsl" />
+    <None Include="shaders\DepthCubeVertexShader.glsl" />
+    <None Include="shaders\DepthFragmentShader.glsl" />
+    <None Include="shaders\DepthVertexShader.glsl" />
     <None Include="shaders\FragmentShader.glsl" />
     <None Include="shaders\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Adrengine.rc" />
+    <Object Include="cube.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
