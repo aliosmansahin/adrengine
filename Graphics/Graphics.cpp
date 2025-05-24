@@ -324,19 +324,30 @@ GRAPHICS_API std::vector<std::shared_ptr<ObjectMtl>> Graphics::LoadMesh(const ch
 			std::string vertex[3];
 			objFile >> vertex[0] >> vertex[1] >> vertex[2];
 			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+			bool hasVT = true;
 
 			for (int i = 0; i < 3; ++i) {
-				int result = sscanf_s(vertex[i].c_str(), "%d/%d/%d", &vertexIndex[i], &uvIndex[i], &normalIndex[i]);
-				if (result != 3)
-					continue;
+				if (vertex[i].find("//") != std::string::npos) {
+					// v//vn
+					sscanf_s(vertex[i].c_str(), "%d//%d", &vertexIndex[i], &normalIndex[i]);
+					uvIndex[i] = 0; // no vt
+					hasVT = false;
+				}
+				else {
+					// v/vt/vn
+					sscanf_s(vertex[i].c_str(), "%d/%d/%d", &vertexIndex[i], &uvIndex[i], &normalIndex[i]);
+				}
+
 			}
 			
 			objectMtl.vertexIndices.push_back(vertexIndex[0]);
 			objectMtl.vertexIndices.push_back(vertexIndex[1]);
 			objectMtl.vertexIndices.push_back(vertexIndex[2]);
-			objectMtl.uvIndices.push_back(uvIndex[0]);
-			objectMtl.uvIndices.push_back(uvIndex[1]);
-			objectMtl.uvIndices.push_back(uvIndex[2]);
+			if (hasVT) {
+				objectMtl.uvIndices.push_back(uvIndex[0]);
+				objectMtl.uvIndices.push_back(uvIndex[1]);
+				objectMtl.uvIndices.push_back(uvIndex[2]);
+			}
 			objectMtl.normalIndices.push_back(normalIndex[0]);
 			objectMtl.normalIndices.push_back(normalIndex[1]);
 			objectMtl.normalIndices.push_back(normalIndex[2]);
@@ -400,10 +411,12 @@ GRAPHICS_API std::vector<std::shared_ptr<ObjectMtl>> Graphics::LoadMesh(const ch
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
 		glEnableVertexAttribArray(0);
 
-		glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_uvs);
-		glBufferData(GL_ARRAY_BUFFER, out_objectMtl->uvIndices.size() * sizeof(glm::vec2), &out_objectMtl->uvIndices[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
-		glEnableVertexAttribArray(1);
+		if (!out_objectMtl->uvIndices.empty()) {
+			glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_uvs);
+			glBufferData(GL_ARRAY_BUFFER, out_objectMtl->uvIndices.size() * sizeof(glm::vec2), &out_objectMtl->uvIndices[0], GL_STATIC_DRAW);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
+			glEnableVertexAttribArray(1);
+		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_normals);
 		glBufferData(GL_ARRAY_BUFFER, out_objectMtl->normalIndices.size() * sizeof(glm::vec3), &out_objectMtl->normalIndices[0], GL_STATIC_DRAW);
