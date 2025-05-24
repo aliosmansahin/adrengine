@@ -93,6 +93,7 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 			ShaderManager::GetInstance().ApplyUniformBool("hasTexture", hasTexture);
 
 			if (hasTexture) {
+				//Activate diffuse texture
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, material.diffuseTexture);
 				ShaderManager::GetInstance().ApplyTexture("objTexture");
