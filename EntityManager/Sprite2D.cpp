@@ -103,7 +103,11 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	model = glm::rotate(model, glm::radians(realRot.x), glm::vec3(1.0, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(realRot.y), glm::vec3(0.0, 1.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(realRot.z), glm::vec3(0.0, 0.0f, 1.0f));
-	model = glm::scale(model, realSca / 32.0f);
+
+	if (ShaderManager::GetInstance().GetCurrentType() == SHADER_3D)
+		realSca /= 32.0f;
+
+	model = glm::scale(model, realSca);
 
 	//Send the transformation matrix to the shader
 	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
