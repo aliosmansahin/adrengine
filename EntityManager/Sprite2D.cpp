@@ -103,7 +103,7 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	model = glm::rotate(model, glm::radians(realRot.x), glm::vec3(1.0, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(realRot.y), glm::vec3(0.0, 1.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(realRot.z), glm::vec3(0.0, 0.0f, 1.0f));
-	model = glm::scale(model, realSca);
+	model = glm::scale(model, realSca / 32.0f);
 
 	//Send the transformation matrix to the shader
 	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
@@ -111,7 +111,22 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	//Set the texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, params->texture);
-	ShaderManager::GetInstance().ApplyTexture("texture1");
+	if(ShaderManager::GetInstance().GetCurrentType() == SHADER_2D)
+		ShaderManager::GetInstance().ApplyTexture("texture1");
+	else if (ShaderManager::GetInstance().GetCurrentType() == SHADER_3D) {
+
+		//DISABLE GAMMA CORRECTION (This is a better view for Sprite2Ds)
+		ShaderManager::GetInstance().ApplyUniformBool("useGammaCorrection", false);
+
+		//TEXTURE
+		ShaderManager::GetInstance().ApplyUniformBool("hasTexture", true);
+		ShaderManager::GetInstance().ApplyTexture("objTexture");
+
+		//AMBIENT(This makes the texture not effected by lights)
+		ShaderManager::GetInstance().ApplyUniformVec3("materialAmbient", glm::vec3(1.0f));
+
+		glEnable(GL_DEPTH_TEST);
+	}
 
 	//Draw the texture
 	glBindVertexArray(VAO);
@@ -121,6 +136,7 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	glActiveTexture(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
+	glDisable(GL_DEPTH_TEST);
 }
 
 /*

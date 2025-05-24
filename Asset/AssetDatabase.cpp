@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "AssetDatabase.h"
-#include "Graphics.h"
 
 /*
 PURPOSE: Creates a texture asset from a path and insert it to the textures map
@@ -206,10 +205,9 @@ ASSET_API bool AssetDatabase::CreateMesh(std::string path, std::string name)
 		++index;
 	}
 
-	//Load the mesh
-	int verticeCount;
-	unsigned int mesh = Graphics::GetInstance().LoadMesh(meshId.c_str(), path.c_str(), verticeCount);
-	if (mesh == -1)
+	//Load objectMtls
+	std::vector<std::shared_ptr<ObjectMtl>> objects = Graphics::GetInstance().LoadMesh(meshId.c_str(), path.c_str());
+	if (objects.empty())
 		return false;
 
 	//Create a mesh asset and insert it to the map
@@ -220,8 +218,7 @@ ASSET_API bool AssetDatabase::CreateMesh(std::string path, std::string name)
 	else
 		meshPtr->name = name;
 	meshPtr->path = path;
-	meshPtr->meshVAO = mesh;
-	meshPtr->verticeCount = verticeCount;
+	meshPtr->objects = objects;
 
 	meshes.insert({ meshId, meshPtr });
 	return true;
@@ -233,9 +230,8 @@ PURPOSE: Loads a mesh asset from a path, and insert it to the map
 ASSET_API bool AssetDatabase::LoadMesh(std::string id, std::string path, std::string name)
 {
 	//Load the mesh
-	int verticeCount;
-	unsigned int mesh = Graphics::GetInstance().LoadMesh(id.c_str(), path.c_str(), verticeCount);
-	if (mesh == -1)
+	std::vector<std::shared_ptr<ObjectMtl>> objects = Graphics::GetInstance().LoadMesh(id.c_str(), path.c_str());
+	if (objects.empty())
 		return false;
 
 	//Create a mesh asset and insert it to the map
@@ -243,8 +239,7 @@ ASSET_API bool AssetDatabase::LoadMesh(std::string id, std::string path, std::st
 	meshPtr->id = id;
 	meshPtr->name = name;
 	meshPtr->path = path;
-	meshPtr->meshVAO = mesh;
-	meshPtr->verticeCount = verticeCount;
+	meshPtr->objects = objects;
 
 	meshes.insert({ id, meshPtr });
 	return true;
@@ -271,7 +266,7 @@ ASSET_API bool AssetDatabase::DeleteMesh(std::string id)
 		return false;
 
 	//Delete mesh from the database
-	Graphics::GetInstance().UnloadMesh(mesh->meshVAO, mesh->meshVBOpositions, mesh->meshVBOnormals, mesh->meshVBOuvs);
+	Graphics::GetInstance().UnloadMesh(mesh->objects);
 	meshes.erase(iter);
 
 	return true;

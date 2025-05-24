@@ -70,34 +70,73 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 	else if (ShaderManager::GetInstance().GetCurrentType() == SHADER_3D) {
 		ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
 
-		glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
-		/*glm::vec3 lightPos(100.0f, 100.0f, 100.0f);
-		glm::vec3 lightColor = glm::uvec3(1.0f, 1.0f, 1.0f);*/
-		//glm::vec3 cameraPos = glm::vec3(SceneManager::GetInstance().currentScene->cameraX, SceneManager::GetInstance().currentScene->cameraY, SceneManager::GetInstance().currentScene->cameraZ);
 		glm::vec3 cameraPos = glm::vec3(currentSceneCameraPos);
-
-		ShaderManager::GetInstance().ApplyUniformVec3("objectColor", objectColor);
-		/*ShaderManager::GetInstance().ApplyUniformVec3("lightColor", lightColor);
-		ShaderManager::GetInstance().ApplyUniformVec3("lightPos", lightPos);*/
 		ShaderManager::GetInstance().ApplyUniformVec3("viewPos", cameraPos);
 	}
 
-	/*
-		TODO: Add drawing materials and textures
-	*/
-	/*glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, params->texture);
-	ShaderManager::GetInstance().ApplyTexture();*/
-
 	//Draw the mesh
 	glEnable(GL_DEPTH_TEST);
-	glBindVertexArray(params->objVAO);
-	glDrawArrays(GL_TRIANGLES, 0, params->objVerticeCount);
+	
+	if (params->mesh) {
+		auto& objects = params->mesh->objects;
 
-	//Disable after drawing
-	//glActiveTexture(0);
-	/*glBindTexture(GL_TEXTURE_2D, 0);*/
-	glBindVertexArray(0);
+		//Each ObjectMtl
+		for (auto& object : objects) {
+			//Send material to the shader
+			auto& material = object->material;
+
+			//ENABLE GAMMA CORRECTION
+			ShaderManager::GetInstance().ApplyUniformBool("useGammaCorrection", true);
+			
+			//TEXTURE
+			bool hasTexture = !material.map_Kd.empty() && (material.diffuseTexture != 1);
+			ShaderManager::GetInstance().ApplyUniformBool("hasTexture", hasTexture);
+
+			if (hasTexture) {
+				//Activate diffuse texture
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, material.diffuseTexture);
+				ShaderManager::GetInstance().ApplyTexture("objTexture");
+			}
+			else {
+				//DIFFUSE
+				ShaderManager::GetInstance().ApplyUniformVec3("materialDiffuse", material.Kd);
+			}
+
+			//AMBIENT
+			ShaderManager::GetInstance().ApplyUniformVec3("materialAmbient", material.Ka * 0.2f);
+
+			//SPECULAR
+			ShaderManager::GetInstance().ApplyUniformVec3("materialSpecular", material.Ks);
+			
+			//SHININESS
+			ShaderManager::GetInstance().ApplyUniformFloat("materialShininess", material.Ns);
+
+			//SHININESS
+			ShaderManager::GetInstance().ApplyUniformFloat("materialShininess", material.Ns);
+
+			//OPACITY
+			ShaderManager::GetInstance().ApplyUniformFloat("materialOpacity", material.d);
+
+			//EMISSION
+			ShaderManager::GetInstance().ApplyUniformVec3("materialEmission", material.Ke);
+
+			//REFRACTIVE INDEX
+			ShaderManager::GetInstance().ApplyUniformFloat("materialRefractiveIndex", material.Ni);
+
+			//ILLUMINATION
+			ShaderManager::GetInstance().ApplyUniformInt("materialIllum", material.illum);
+
+			//Draw the object
+			glBindVertexArray(object->VAO);
+			glDrawArrays(GL_TRIANGLES, 0, object->verticeCount);
+
+			//Disable after drawing
+			glActiveTexture(0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindVertexArray(0);
+		}
+	}
 	glDisable(GL_DEPTH_TEST);
 }
 

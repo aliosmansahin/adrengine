@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EntityParams.h"
+#include "AssetDatabase.h"
 
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
@@ -48,6 +49,5 @@ public:
 
 	//Variables for the Object
 	std::string objId = "";
-	unsigned int objVAO;
-	int objVerticeCount;
+	Mesh* mesh = nullptr;
 };
