@@ -411,6 +411,7 @@ GRAPHICS_API std::vector<std::shared_ptr<ObjectMtl>> Graphics::LoadMesh(const ch
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
 		glEnableVertexAttribArray(0);
 
+		//If there is a texture in the material, create uv buffer
 		if (!out_objectMtl->uvIndices.empty()) {
 			glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_uvs);
 			glBufferData(GL_ARRAY_BUFFER, out_objectMtl->uvIndices.size() * sizeof(glm::vec2), &out_objectMtl->uvIndices[0], GL_STATIC_DRAW);
