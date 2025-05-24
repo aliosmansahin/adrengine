@@ -11,6 +11,8 @@
 #include <memory>
 #include <fstream>
 
+#include "Graphics.h"
+
 #include "nlohmann_json/json.hpp"
 
 //Texture asset
@@ -27,11 +29,7 @@ struct Mesh {
 	std::string id;
 	std::string name;
 	std::string path;
-	unsigned int meshVAO;
-	unsigned int meshVBOpositions;
-	unsigned int meshVBOnormals;
-	unsigned int meshVBOuvs;
-	int verticeCount;
+	std::vector<std::shared_ptr<ObjectMtl>> objects;
 };
 
 class AssetDatabase

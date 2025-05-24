@@ -34,6 +34,7 @@ public:
 	GRAPHICS_API void		ApplyUniformInt(const char* uniformName, int value);
 	GRAPHICS_API void		ApplyUniformFloat(const char* uniformName, float value);
 	GRAPHICS_API void		ApplyUniformMatrix(const char* uniformName, glm::mat4 mat);
+	GRAPHICS_API void		ApplyUniformBool(const char* uniformName, bool value);
 	GRAPHICS_API void		ApplyTexture(const char* uniformName);
 	GRAPHICS_API void		UpdateTransformMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY); //CHANGE THE NAME OF FUNCTION FROM PROJECTION TO TRANSFORM
 	GRAPHICS_API void		UpdateTransformMatrix3D(glm::vec3 eye, int windowWidth, int windowHeight, float cameraX, float cameraY, float cameraZ, float yaw, float pitch);

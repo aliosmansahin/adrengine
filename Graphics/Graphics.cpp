@@ -174,24 +174,95 @@ GRAPHICS_API void Graphics::UnloadTexture(unsigned int texture)
 /*
 PURPOSE: Release mesh
 */
-GRAPHICS_API void Graphics::UnloadMesh(unsigned int vao, unsigned int vboPos, unsigned int vboNormal, unsigned int vboUv)
+GRAPHICS_API void Graphics::UnloadMesh(std::vector<std::shared_ptr<ObjectMtl>>& objects)
 {
-	glDeleteBuffers(1, &vboPos);
-	glDeleteBuffers(1, &vboNormal);
-	glDeleteBuffers(1, &vboUv);
-	glDeleteVertexArrays(1, &vao);
+	for (auto& object : objects) {
+		glDeleteBuffers(1, &object->VBO_positions);
+		glDeleteBuffers(1, &object->VBO_normals);
+		glDeleteBuffers(1, &object->VBO_uvs);
+		glDeleteVertexArrays(1, &object->VAO);
+	}
+}
+
+/*
+PURPOSE: Loads materials from file and pass it into the materials map
+*/
+GRAPHICS_API std::unordered_map<std::string, Material> Graphics::LoadMaterial(const char* path)
+{
+	std::unordered_map<std::string, Material> materials;
+	std::ifstream file(path);
+
+	if (!file.is_open()) {
+		std::string str = "MTL file \"";
+		str += path;
+		str += "\" was not found";
+		Logger::Log("E", str.c_str());
+		return materials; // boþ dönebiliriz
+	}
+
+	std::string line;
+	Material current;
+
+	while (std::getline(file, line)) {
+		std::istringstream iss(line);
+		std::string keyword;
+		iss >> keyword;
+
+		if (keyword == "newmtl") {
+			if (!current.name.empty()) {
+				materials[current.name] = current;
+				current = Material();
+			}
+			iss >> current.name;
+		}
+		else if (keyword == "Ka") { // Ambient
+			iss >> current.Ka.r >> current.Ka.g >> current.Ka.b;
+		}
+		else if (keyword == "Kd") { // Diffuse
+			iss >> current.Kd.r >> current.Kd.g >> current.Kd.b;
+		}
+		else if (keyword == "Ks") { // Specular
+			iss >> current.Ks.r >> current.Ks.g >> current.Ks.b;
+		}
+		else if (keyword == "Ns") { // Shininess
+			iss >> current.Ns;
+		}
+		else if (keyword == "map_Kd") { // Diffuse Texture
+			iss >> current.map_Kd;
+			int texW, texH;
+			current.diffuseTexture = LoadTexture(current.map_Kd.c_str(), current.map_Kd.c_str(), texW, texH);
+		}
+		else if (keyword == "Ke") {  // Emissive color
+			iss >> current.Ke.r >> current.Ke.g >> current.Ke.b;
+		}
+		else if (keyword == "Ni") {  // Optical density (refractive index)
+			iss >> current.Ni;
+		}
+		else if (keyword == "d") {   // Opacity
+			iss >> current.d;
+		}
+		else if (keyword == "Tr") {  // Alternative opacity (transparent)
+			iss >> current.d;
+			current.d = 1.0f - current.d; // Tr is inverse of d
+		}
+		else if (keyword == "illum") { // Illumination model
+			iss >> current.illum;
+		}
+	}
+
+	if (!current.name.empty()) {
+		materials[current.name] = current;
+	}
+
+	return materials;
 }
 
 /*
 PURPOSE: Loads texture from path and returns VAO, vertice count will be passed as a reference of parameter
 */
-GRAPHICS_API unsigned int Graphics::LoadMesh(const char* id, const char* path, int& verticeCount)
+GRAPHICS_API std::vector<std::shared_ptr<ObjectMtl>> Graphics::LoadMesh(const char* id, const char* path)
 {
 	//some vectors
-	std::vector<unsigned int> vertexIndices;
-	std::vector<unsigned int> uvIndices;
-	std::vector<unsigned int> normalIndices;
-
 	std::vector<glm::vec3> tmp_vertices;
 	std::vector<glm::vec2> tmp_uvs;
 	std::vector<glm::vec3> tmp_normals;
@@ -204,13 +275,25 @@ GRAPHICS_API unsigned int Graphics::LoadMesh(const char* id, const char* path, i
 		str += "\" was not found";
 
 		Logger::Log("E", str.c_str());
-		return false;
+		return std::vector<std::shared_ptr<ObjectMtl>>();
 	}
 
-	//read data and pass them to the vectors as the headers
+	//Store materials
+	std::unordered_map<std::string, Material> materials;
+	std::vector<ObjectMtlNotIndexed> objectMtls;
+
+	//Read data and pass them to the vectors as headers
 	std::string header;
+	ObjectMtlNotIndexed objectMtl;
 	while (objFile >> header) {
-		if (header == "v") {
+		if (header == "mtllib") {//This is the material file of object
+			objFile >> header; //Read the file path
+			materials = LoadMaterial(header.c_str());
+
+			if (materials.empty())
+				Logger::Log("I", "No material found");
+		}
+		else if (header == "v") {
 			glm::vec3 vertex;
 			objFile >> vertex.x >> vertex.y >> vertex.z;
 			tmp_vertices.push_back(vertex);
@@ -225,7 +308,18 @@ GRAPHICS_API unsigned int Graphics::LoadMesh(const char* id, const char* path, i
 			objFile >> normal.x >> normal.y >> normal.z;
 			tmp_normals.push_back(normal);
 		}
+		else if (header == "usemtl") {
+			//This is to know which material will be used
+			if (!objectMtl.name.empty()) {
+				objectMtls.push_back(objectMtl);
+				objectMtl = ObjectMtlNotIndexed();
+			}
+			objFile >> header;
+			objectMtl.name = header;
+			objectMtl.material = materials[header];
+		}
 		else if (header == "f") {
+			//Organize vertices
 			std::string vertex[3];
 			objFile >> vertex[0] >> vertex[1] >> vertex[2];
 			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
@@ -235,96 +329,109 @@ GRAPHICS_API unsigned int Graphics::LoadMesh(const char* id, const char* path, i
 				if (result != 3)
 					continue;
 			}
-
-			vertexIndices.push_back(vertexIndex[0]);
-			vertexIndices.push_back(vertexIndex[1]);
-			vertexIndices.push_back(vertexIndex[2]);
-			uvIndices.push_back(uvIndex[0]);
-			uvIndices.push_back(uvIndex[1]);
-			uvIndices.push_back(uvIndex[2]);
-			normalIndices.push_back(normalIndex[0]);
-			normalIndices.push_back(normalIndex[1]);
-			normalIndices.push_back(normalIndex[2]);
+			
+			objectMtl.vertexIndices.push_back(vertexIndex[0]);
+			objectMtl.vertexIndices.push_back(vertexIndex[1]);
+			objectMtl.vertexIndices.push_back(vertexIndex[2]);
+			objectMtl.uvIndices.push_back(uvIndex[0]);
+			objectMtl.uvIndices.push_back(uvIndex[1]);
+			objectMtl.uvIndices.push_back(uvIndex[2]);
+			objectMtl.normalIndices.push_back(normalIndex[0]);
+			objectMtl.normalIndices.push_back(normalIndex[1]);
+			objectMtl.normalIndices.push_back(normalIndex[2]);
 		}
 	}
 	objFile.close();
 
-	//out vectors
-	std::vector < glm::vec3 > out_vertices;
-	std::vector < glm::vec2 > out_uvs;
-	std::vector < glm::vec3 > out_normals;
-
-	//process all vectors
-	for (unsigned int i = 0; i < vertexIndices.size(); i++) {
-		unsigned int vertexIndex = vertexIndices[i];
-
-		glm::vec3 vertex = tmp_vertices[vertexIndex - 1];
-
-		out_vertices.push_back(vertex);
-	}
-	for (unsigned int i = 0; i < uvIndices.size(); i++) {
-		unsigned int uvIndex = uvIndices[i];
-
-		glm::vec2 uv = tmp_uvs[uvIndex - 1];
-
-		out_uvs.push_back(uv);
-	}
-	for (unsigned int i = 0; i < normalIndices.size(); i++) {
-		unsigned int normalIndex = normalIndices[i];
-
-		glm::vec3 normal = tmp_normals[normalIndex - 1];
-
-		out_normals.push_back(normal);
+	//Add last objectMtl into the vector
+	if (!objectMtl.name.empty()) {
+		objectMtls.push_back(objectMtl);
 	}
 
-	//set the vertices count
-	verticeCount = (int)out_vertices.size();
+	//out objectMtls
+	std::vector<std::shared_ptr<ObjectMtl>> out_objectMtls;
+	
+	//Index each objectMtl
+	for (int i = 0; i < objectMtls.size(); ++i) {
+		auto& oldObjectMtl = objectMtls[i];
+		std::shared_ptr<ObjectMtl> out_objectMtl = std::make_shared<ObjectMtl>();
 
-	//VBOs and VAO
-	unsigned int VBO_positions;
-	unsigned int VBO_normals;
-	unsigned int VBO_uvs;
+		//process all vectors
+		for (unsigned int i = 0; i < oldObjectMtl.vertexIndices.size(); i++) {
+			unsigned int vertexIndex = oldObjectMtl.vertexIndices[i];
 
-	unsigned int VAO;
+			glm::vec3 vertex = tmp_vertices[vertexIndex - 1];
 
-	//create buffers, bind them and load arrays into buffers
-	glGenBuffers(1, &VBO_positions);
-	glGenBuffers(1, &VBO_normals);
-	glGenBuffers(1, &VBO_uvs);
-	//glGenBuffers(1, &EBO);
+			out_objectMtl->vertexIndices.push_back(vertex);
+		}
+		for (unsigned int i = 0; i < oldObjectMtl.uvIndices.size(); i++) {
+			unsigned int uvIndex = oldObjectMtl.uvIndices[i];
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+			glm::vec2 uv = tmp_uvs[uvIndex - 1];
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_positions);
-	glBufferData(GL_ARRAY_BUFFER, out_vertices.size() * sizeof(glm::vec3), &out_vertices[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_normals);
-	glBufferData(GL_ARRAY_BUFFER, out_normals.size() * sizeof(glm::vec3), &out_normals[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-	glEnableVertexAttribArray(1);
-	/*glBindBuffer(GL_ARRAY_BUFFER, VBO_uv);
+			out_objectMtl->uvIndices.push_back(uv);
+		}
+		for (unsigned int i = 0; i < oldObjectMtl.normalIndices.size(); i++) {
+			unsigned int normalIndex = oldObjectMtl.normalIndices[i];
 
-	/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
+			glm::vec3 normal = tmp_normals[normalIndex - 1];
 
-	//set the vertex attrib pointers
+			out_objectMtl->normalIndices.push_back(normal);
+		}
 
-	//set the vertex attrib pointers
-	/*glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);*/
+		//set the vertices count
+		out_objectMtl->verticeCount = (int)out_objectMtl->vertexIndices.size();
+		out_objectMtl->material = oldObjectMtl.material;
 
-	//release buffers
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+		//------- CREATE ALL BUFFERS OF EACH OBJECTMTL -------
+
+		//create buffers, bind them and load arrays into buffers
+		glGenBuffers(1, &out_objectMtl->VBO_positions);
+		glGenBuffers(1, &out_objectMtl->VBO_normals);
+		glGenBuffers(1, &out_objectMtl->VBO_uvs);
+		//glGenBuffers(1, &EBO);
+
+		glGenVertexArrays(1, &out_objectMtl->VAO);
+		glBindVertexArray(out_objectMtl->VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_positions);
+		glBufferData(GL_ARRAY_BUFFER, out_objectMtl->vertexIndices.size() * sizeof(glm::vec3), &out_objectMtl->vertexIndices[0], GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_uvs);
+		glBufferData(GL_ARRAY_BUFFER, out_objectMtl->uvIndices.size() * sizeof(glm::vec2), &out_objectMtl->uvIndices[0], GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
+		glEnableVertexAttribArray(1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_normals);
+		glBufferData(GL_ARRAY_BUFFER, out_objectMtl->normalIndices.size() * sizeof(glm::vec3), &out_objectMtl->normalIndices[0], GL_STATIC_DRAW);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+		glEnableVertexAttribArray(2);
+		/*glBindBuffer(GL_ARRAY_BUFFER, VBO_uv);
+
+		/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
+
+		//set the vertex attrib pointers
+
+		//set the vertex attrib pointers
+		/*glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);*/
+
+		//release buffers
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		out_objectMtls.push_back(out_objectMtl);
+	}
 
 	std::string str = "Loaded mesh \"";
 	str += path;
 	str += "\"";
 
 	Logger::Log("P", str.c_str());
-	return VAO;
+	return out_objectMtls;
 }
 
 /*

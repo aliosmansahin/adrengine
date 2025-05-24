@@ -20,7 +20,6 @@ void ObjectParams::FromJson(const nlohmann::json& j)
 	//Set the mesh of the entity from its id
 	auto mesh = AssetDatabase::GetInstance().GetMesh(objId).get();
 	if (mesh) {
-		objVAO = mesh->meshVAO;
-		objVerticeCount = mesh->verticeCount;
+		this->mesh = mesh;
 	}
 }

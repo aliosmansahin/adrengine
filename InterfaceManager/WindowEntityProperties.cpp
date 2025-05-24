@@ -192,8 +192,7 @@ void WindowEntityProperties::DrawWindow(
                         auto mesh = AssetDatabase::GetInstance().GetMesh(std::string(objIdBuf)).get();
                         if (mesh) {
                             casted->objId = mesh->id;
-                            casted->objVAO = mesh->meshVAO;
-                            casted->objVerticeCount = mesh->verticeCount;
+                            casted->mesh = mesh;
                         }
                     }
                 }
@@ -210,8 +209,7 @@ void WindowEntityProperties::DrawWindow(
                             auto& mesh = meshIter->second;
                             if (mesh.get()) {
                                 casted->objId = mesh->id;
-                                casted->objVAO = mesh->meshVAO;
-                                casted->objVerticeCount = mesh->verticeCount;
+                                casted->mesh = mesh.get();
                             }
                         }
                     }

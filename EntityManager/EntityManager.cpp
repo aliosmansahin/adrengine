@@ -26,7 +26,7 @@ PURPOSE: Calculates all transforms of each lights,
 void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 currentSceneCameraPos, bool is3D)
 {
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE); //TODO: Will have changed to each object type
+	//glEnable(GL_CULL_FACE); //TODO: Will have changed to each object type
 	if (is3D) {
 		//Calculate all light tranforms
 		for (int i = 0; i < lights.size(); ++i) {
@@ -229,7 +229,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
 }
 
