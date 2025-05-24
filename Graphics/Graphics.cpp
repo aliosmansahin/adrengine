@@ -177,6 +177,7 @@ PURPOSE: Release mesh
 GRAPHICS_API void Graphics::UnloadMesh(std::vector<std::shared_ptr<ObjectMtl>>& objects)
 {
 	for (auto& object : objects) {
+		glDeleteTextures(1, &object->material.diffuseTexture);
 		glDeleteBuffers(1, &object->VBO_positions);
 		glDeleteBuffers(1, &object->VBO_normals);
 		glDeleteBuffers(1, &object->VBO_uvs);
