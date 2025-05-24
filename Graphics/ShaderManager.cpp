@@ -136,6 +136,9 @@ void ShaderManager::ApplyUniformMatrix(const char* uniformName, glm::mat4 mat)
     glUniformMatrix4fv(textureLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
+/*
+PURPOSE: Sends bool to uniform
+*/
 GRAPHICS_API void ShaderManager::ApplyUniformBool(const char* uniformName, bool value)
 {
     unsigned int transformLoc = glGetUniformLocation(currentProgram, uniformName);
