@@ -11,9 +11,13 @@
 #include <vector>
 #include <unordered_map>
 #include <glm/glm.hpp>
+#include <mutex>
+#include <thread>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Logger.h"
+
+#include <chrono> // TODO: REMOVE IT AFTER OPTIMIZATION
 
 //Store each material
 struct Material {
@@ -60,15 +64,16 @@ class Graphics
 {
 public:
 	//main funcs
-	GRAPHICS_API bool									   InitGraphics(GLFWwindow* window);
-	GRAPHICS_API void									   ReleaseGraphics();
-	GRAPHICS_API void									   CreateFramebuffer(int width, int height);
-	GRAPHICS_API void									   RescaleFramebuffer(int width, int height);
-	GRAPHICS_API unsigned int							   LoadTexture(const char* id, const char* path, int& width, int& height);
-	GRAPHICS_API void									   UnloadTexture(unsigned int texture);
-	GRAPHICS_API void									   UnloadMesh(std::vector<std::shared_ptr<ObjectMtl>>& objects);
-	GRAPHICS_API std::unordered_map<std::string, Material> LoadMaterial(const char* path);
-	GRAPHICS_API std::vector<std::shared_ptr<ObjectMtl>>   LoadMesh(const char* id, const char* path);
+	GRAPHICS_API bool			InitGraphics(GLFWwindow* window);
+	GRAPHICS_API void			ReleaseGraphics();
+	GRAPHICS_API void			CreateFramebuffer(int width, int height);
+	GRAPHICS_API void			RescaleFramebuffer(int width, int height);
+	GRAPHICS_API unsigned int	LoadTexture(const char* id, const char* path, int& width, int& height);
+	GRAPHICS_API void			UnloadTexture(unsigned int texture);
+	GRAPHICS_API void			UnloadMesh(std::vector<std::shared_ptr<ObjectMtl>>& objects);
+	GRAPHICS_API bool			LoadMesh(const char* id, const char* path, std::vector<std::shared_ptr<ObjectMtl>>& out_objectMtls);
+private:
+	GRAPHICS_API bool			LoadMaterial(const char* path, std::unordered_map<std::string, Material>& materials);
 public:
 	//getter for the instance
 	GRAPHICS_API static Graphics& GetInstance();

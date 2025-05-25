@@ -205,11 +205,6 @@ ASSET_API bool AssetDatabase::CreateMesh(std::string path, std::string name)
 		++index;
 	}
 
-	//Load objectMtls
-	std::vector<std::shared_ptr<ObjectMtl>> objects = Graphics::GetInstance().LoadMesh(meshId.c_str(), path.c_str());
-	if (objects.empty())
-		return false;
-
 	//Create a mesh asset and insert it to the map
 	std::shared_ptr<Mesh> meshPtr = std::make_shared<Mesh>();
 	meshPtr->id = meshId;
@@ -218,7 +213,11 @@ ASSET_API bool AssetDatabase::CreateMesh(std::string path, std::string name)
 	else
 		meshPtr->name = name;
 	meshPtr->path = path;
-	meshPtr->objects = objects;
+
+	//Load objectMtls
+	bool result = Graphics::GetInstance().LoadMesh(meshId.c_str(), path.c_str(), meshPtr->objects);
+	if (!result || meshPtr->objects.empty())
+		return false;
 
 	meshes.insert({ meshId, meshPtr });
 	return true;
@@ -229,17 +228,17 @@ PURPOSE: Loads a mesh asset from a path, and insert it to the map
 */
 ASSET_API bool AssetDatabase::LoadMesh(std::string id, std::string path, std::string name)
 {
-	//Load the mesh
-	std::vector<std::shared_ptr<ObjectMtl>> objects = Graphics::GetInstance().LoadMesh(id.c_str(), path.c_str());
-	if (objects.empty())
-		return false;
 
 	//Create a mesh asset and insert it to the map
 	std::shared_ptr<Mesh> meshPtr = std::make_shared<Mesh>();
 	meshPtr->id = id;
 	meshPtr->name = name;
 	meshPtr->path = path;
-	meshPtr->objects = objects;
+
+	//Load the mesh
+	bool result = Graphics::GetInstance().LoadMesh(id.c_str(), path.c_str(), meshPtr->objects);
+	if (!result || meshPtr->objects.empty())
+		return false;
 
 	meshes.insert({ id, meshPtr });
 	return true;

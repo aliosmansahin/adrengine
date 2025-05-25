@@ -1,10 +1,16 @@
 #include "pch.h"
 #include "Graphics.h"
+#include "Timer.h"
 
 #include "ShaderManager.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stbi/stb_image.h"
+
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
+
 
 /*
 PURPOSE: Initialize graphics engine
@@ -188,9 +194,8 @@ GRAPHICS_API void Graphics::UnloadMesh(std::vector<std::shared_ptr<ObjectMtl>>& 
 /*
 PURPOSE: Loads materials from file and pass it into the materials map
 */
-GRAPHICS_API std::unordered_map<std::string, Material> Graphics::LoadMaterial(const char* path)
+GRAPHICS_API bool Graphics::LoadMaterial(const char* path, std::unordered_map<std::string, Material>& materials)
 {
-	std::unordered_map<std::string, Material> materials;
 	std::ifstream file(path);
 
 	if (!file.is_open()) {
@@ -198,7 +203,7 @@ GRAPHICS_API std::unordered_map<std::string, Material> Graphics::LoadMaterial(co
 		str += path;
 		str += "\" was not found";
 		Logger::Log("E", str.c_str());
-		return materials; // boþ dönebiliriz
+		return false;
 	}
 
 	std::string line;
@@ -255,198 +260,175 @@ GRAPHICS_API std::unordered_map<std::string, Material> Graphics::LoadMaterial(co
 		materials[current.name] = current;
 	}
 
-	return materials;
+	return true;
+}
+
+/*
+PURPOSE: Returns the directorty of the file path
+*/
+std::string ExtractDirectoryFromPath(const std::string& path) {
+	size_t found = path.find_last_of("/\\");
+	if (found != std::string::npos)
+		return path.substr(0, found + 1);
+	return "";
+}
+
+/*
+PURPOSE: Creates a Material struct from TinyObj material_t object and returns it
+*/
+Material LoadMaterialFromTinyObj(int mat_id, const std::vector<tinyobj::material_t>& materials) {
+	Material m;
+	if (mat_id >= 0 && mat_id < materials.size()) {
+		const auto& mat = materials[mat_id];
+		m.name = mat.name;
+		m.Ka = glm::vec3(mat.ambient[0], mat.ambient[1], mat.ambient[2]);
+		m.Kd = glm::vec3(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2]);
+		m.Ks = glm::vec3(mat.specular[0], mat.specular[1], mat.specular[2]);
+		m.Ke = glm::vec3(mat.emission[0], mat.emission[1], mat.emission[2]);
+		m.Ns = mat.shininess;
+		m.Ni = mat.ior;
+		m.d = mat.dissolve;
+		m.illum = mat.illum;
+		m.map_Kd = mat.diffuse_texname;
+		if (!m.map_Kd.empty()) {
+			int w, h;
+			m.diffuseTexture = Graphics::GetInstance().LoadTexture(m.map_Kd.c_str(), m.map_Kd.c_str(), w, h);
+		}
+	}
+	else {
+		m.name = "default";
+	}
+	return m;
 }
 
 /*
 PURPOSE: Loads texture from path and returns VAO, vertice count will be passed as a reference of parameter
 */
-GRAPHICS_API std::vector<std::shared_ptr<ObjectMtl>> Graphics::LoadMesh(const char* id, const char* path)
+GRAPHICS_API bool Graphics::LoadMesh(const char* id, const char* path, std::vector<std::shared_ptr<ObjectMtl>>& out_objectMtls)
 {
-	//some vectors
-	std::vector<glm::vec3> tmp_vertices;
-	std::vector<glm::vec2> tmp_uvs;
-	std::vector<glm::vec3> tmp_normals;
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn, err;
 
-	//open the obj file
-	std::ifstream objFile(path);
-	if (!objFile.is_open()) {
-		std::string str = "OBJ file \"";
-		str += path;
-		str += "\" was not found";
+	Timer::StartChrono("meshLoad"); //START TIME //TODO:
 
-		Logger::Log("E", str.c_str());
-		return std::vector<std::shared_ptr<ObjectMtl>>();
+	//Load obj file
+	std::string base_dir = ExtractDirectoryFromPath(path); // helper: Get directiory from path
+	bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path, base_dir.c_str());
+
+	if (!warn.empty()) {
+		Logger::Log("W", warn.c_str());
+	}
+	if (!err.empty()) {
+		Logger::Log("E", err.c_str());
+	}
+	if (!ret) {
+		return false;
 	}
 
-	//Store materials
-	std::unordered_map<std::string, Material> materials;
-	std::vector<ObjectMtlNotIndexed> objectMtls;
+	// Parse each shape
+	for (const auto& shape : shapes) {
+		// Create ObjectMtl s for each material
+		std::unordered_map<int, std::shared_ptr<ObjectMtl>> materialObjects;
 
-	//Read data and pass them to the vectors as headers
-	std::string header;
-	ObjectMtlNotIndexed objectMtl;
-	while (objFile >> header) {
-		if (header == "mtllib") {//This is the material file of object
-			objFile >> header; //Read the file path
-			materials = LoadMaterial(header.c_str());
+		size_t index_offset = 0;
+		for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
+			int fv = shape.mesh.num_face_vertices[f]; // Usually 3
 
-			if (materials.empty())
-				Logger::Log("I", "No material found");
-		}
-		else if (header == "v") {
-			glm::vec3 vertex;
-			objFile >> vertex.x >> vertex.y >> vertex.z;
-			tmp_vertices.push_back(vertex);
-		}
-		else if (header == "vt") {
-			glm::vec2 uv;
-			objFile >> uv.x >> uv.y;
-			tmp_uvs.push_back(uv);
-		}
-		else if (header == "vn") {
-			glm::vec3 normal;
-			objFile >> normal.x >> normal.y >> normal.z;
-			tmp_normals.push_back(normal);
-		}
-		else if (header == "usemtl") {
-			//This is to know which material will be used
-			if (!objectMtl.name.empty()) {
-				objectMtls.push_back(objectMtl);
-				objectMtl = ObjectMtlNotIndexed();
+			//Get the material id
+			int mat_id = -1;
+			if (f < shape.mesh.material_ids.size()) {
+				mat_id = shape.mesh.material_ids[f];
 			}
-			objFile >> header;
-			objectMtl.name = header;
-			objectMtl.material = materials[header];
-		}
-		else if (header == "f") {
-			//Organize vertices
-			std::string vertex[3];
-			objFile >> vertex[0] >> vertex[1] >> vertex[2];
-			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
-			bool hasVT = true;
 
-			for (int i = 0; i < 3; ++i) {
-				if (vertex[i].find("//") != std::string::npos) {
-					// v//vn
-					sscanf_s(vertex[i].c_str(), "%d//%d", &vertexIndex[i], &normalIndex[i]);
-					uvIndex[i] = 0; // no vt
-					hasVT = false;
-				}
-				else {
-					// v/vt/vn
-					sscanf_s(vertex[i].c_str(), "%d/%d/%d", &vertexIndex[i], &uvIndex[i], &normalIndex[i]);
+			//Check if the material exists
+			if (materialObjects.find(mat_id) == materialObjects.end()) {
+				auto object = std::make_shared<ObjectMtl>();
+				object->material = LoadMaterialFromTinyObj(mat_id, materials);
+				materialObjects[mat_id] = object;
+			}
+
+			auto& object = materialObjects[mat_id];
+
+			//Pass vertex, normal, uv
+			for (size_t v = 0; v < fv; v++) {
+				tinyobj::index_t idx = shape.mesh.indices[index_offset + v];
+
+				glm::vec3 vertex = {
+					attrib.vertices[3 * idx.vertex_index + 0],
+					attrib.vertices[3 * idx.vertex_index + 1],
+					attrib.vertices[3 * idx.vertex_index + 2]
+				};
+				object->vertexIndices.push_back(vertex);
+
+				if (idx.normal_index >= 0) {
+					glm::vec3 normal = {
+						attrib.normals[3 * idx.normal_index + 0],
+						attrib.normals[3 * idx.normal_index + 1],
+						attrib.normals[3 * idx.normal_index + 2]
+					};
+					object->normalIndices.push_back(normal);
 				}
 
+				if (idx.texcoord_index >= 0) {
+					glm::vec2 uv = {
+						attrib.texcoords[2 * idx.texcoord_index + 0],
+						attrib.texcoords[2 * idx.texcoord_index + 1]
+					};
+					object->uvIndices.push_back(uv);
+				}
 			}
-			
-			objectMtl.vertexIndices.push_back(vertexIndex[0]);
-			objectMtl.vertexIndices.push_back(vertexIndex[1]);
-			objectMtl.vertexIndices.push_back(vertexIndex[2]);
-			if (hasVT) {
-				objectMtl.uvIndices.push_back(uvIndex[0]);
-				objectMtl.uvIndices.push_back(uvIndex[1]);
-				objectMtl.uvIndices.push_back(uvIndex[2]);
+
+			index_offset += fv;
+		}
+
+		//Create buffers for each materialObject
+		for (const auto& pair : materialObjects) {
+			auto& object = pair.second;
+			object->verticeCount = static_cast<int>(object->vertexIndices.size());
+
+			// VAO / VBO setup
+			glGenBuffers(1, &object->VBO_positions);
+			glGenBuffers(1, &object->VBO_normals);
+			glGenBuffers(1, &object->VBO_uvs);
+			glGenVertexArrays(1, &object->VAO);
+			glBindVertexArray(object->VAO);
+
+			if (!object->vertexIndices.empty()) {
+				glBindBuffer(GL_ARRAY_BUFFER, object->VBO_positions);
+				glBufferData(GL_ARRAY_BUFFER, object->vertexIndices.size() * sizeof(glm::vec3), &object->vertexIndices[0], GL_STATIC_DRAW);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+				glEnableVertexAttribArray(0);
 			}
-			objectMtl.normalIndices.push_back(normalIndex[0]);
-			objectMtl.normalIndices.push_back(normalIndex[1]);
-			objectMtl.normalIndices.push_back(normalIndex[2]);
+
+			if (!object->uvIndices.empty()) {
+				glBindBuffer(GL_ARRAY_BUFFER, object->VBO_uvs);
+				glBufferData(GL_ARRAY_BUFFER, object->uvIndices.size() * sizeof(glm::vec2), &object->uvIndices[0], GL_STATIC_DRAW);
+				glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
+				glEnableVertexAttribArray(1);
+			}
+
+			if (!object->normalIndices.empty()) {
+				glBindBuffer(GL_ARRAY_BUFFER, object->VBO_normals);
+				glBufferData(GL_ARRAY_BUFFER, object->normalIndices.size() * sizeof(glm::vec3), &object->normalIndices[0], GL_STATIC_DRAW);
+				glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+				glEnableVertexAttribArray(2);
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
+
+			out_objectMtls.push_back(object);
 		}
 	}
-	objFile.close();
 
-	//Add last objectMtl into the vector
-	if (!objectMtl.name.empty()) {
-		objectMtls.push_back(objectMtl);
-	}
+	//Calculation for loading time
+	float loadDuration = Timer::EndChrono("meshLoad");
 
-	//out objectMtls
-	std::vector<std::shared_ptr<ObjectMtl>> out_objectMtls;
-	
-	//Index each objectMtl
-	for (int i = 0; i < objectMtls.size(); ++i) {
-		auto& oldObjectMtl = objectMtls[i];
-		std::shared_ptr<ObjectMtl> out_objectMtl = std::make_shared<ObjectMtl>();
-
-		//process all vectors
-		for (unsigned int i = 0; i < oldObjectMtl.vertexIndices.size(); i++) {
-			unsigned int vertexIndex = oldObjectMtl.vertexIndices[i];
-
-			glm::vec3 vertex = tmp_vertices[vertexIndex - 1];
-
-			out_objectMtl->vertexIndices.push_back(vertex);
-		}
-		for (unsigned int i = 0; i < oldObjectMtl.uvIndices.size(); i++) {
-			unsigned int uvIndex = oldObjectMtl.uvIndices[i];
-
-			glm::vec2 uv = tmp_uvs[uvIndex - 1];
-
-			out_objectMtl->uvIndices.push_back(uv);
-		}
-		for (unsigned int i = 0; i < oldObjectMtl.normalIndices.size(); i++) {
-			unsigned int normalIndex = oldObjectMtl.normalIndices[i];
-
-			glm::vec3 normal = tmp_normals[normalIndex - 1];
-
-			out_objectMtl->normalIndices.push_back(normal);
-		}
-
-		//set the vertices count
-		out_objectMtl->verticeCount = (int)out_objectMtl->vertexIndices.size();
-		out_objectMtl->material = oldObjectMtl.material;
-
-		//------- CREATE ALL BUFFERS OF EACH OBJECTMTL -------
-
-		//create buffers, bind them and load arrays into buffers
-		glGenBuffers(1, &out_objectMtl->VBO_positions);
-		glGenBuffers(1, &out_objectMtl->VBO_normals);
-		glGenBuffers(1, &out_objectMtl->VBO_uvs);
-		//glGenBuffers(1, &EBO);
-
-		glGenVertexArrays(1, &out_objectMtl->VAO);
-		glBindVertexArray(out_objectMtl->VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_positions);
-		glBufferData(GL_ARRAY_BUFFER, out_objectMtl->vertexIndices.size() * sizeof(glm::vec3), &out_objectMtl->vertexIndices[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		//If there is a texture in the material, create uv buffer
-		if (!out_objectMtl->uvIndices.empty()) {
-			glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_uvs);
-			glBufferData(GL_ARRAY_BUFFER, out_objectMtl->uvIndices.size() * sizeof(glm::vec2), &out_objectMtl->uvIndices[0], GL_STATIC_DRAW);
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
-			glEnableVertexAttribArray(1);
-		}
-
-		glBindBuffer(GL_ARRAY_BUFFER, out_objectMtl->VBO_normals);
-		glBufferData(GL_ARRAY_BUFFER, out_objectMtl->normalIndices.size() * sizeof(glm::vec3), &out_objectMtl->normalIndices[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-		glEnableVertexAttribArray(2);
-		/*glBindBuffer(GL_ARRAY_BUFFER, VBO_uv);
-
-		/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
-
-		//set the vertex attrib pointers
-
-		//set the vertex attrib pointers
-		/*glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);*/
-
-		//release buffers
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-
-		out_objectMtls.push_back(out_objectMtl);
-	}
-
-	std::string str = "Loaded mesh \"";
-	str += path;
-	str += "\"";
-
-	Logger::Log("P", str.c_str());
-	return out_objectMtls;
+	std::string log = std::string("Loaded mesh using TinyObjLoader: ") + path + " in " + std::to_string(loadDuration) + " seconds";
+	Logger::Log("P", log.c_str());
+	return true;
 }
 
 /*

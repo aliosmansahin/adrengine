@@ -1,6 +1,8 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <unordered_map>
+#include <chrono>
 
 #include "Logger.h"
 
@@ -19,6 +21,8 @@ public:
 	//getters
 	TIMER_API static float GetDeltaTime();
 	TIMER_API static float GetCurTime();
+	TIMER_API static void  StartChrono(std::string id);
+	TIMER_API static float EndChrono(std::string id);
 private:
 	//singleton
 	Timer() = default;
@@ -28,4 +32,5 @@ private:
 private:
 	//variables
 	static float deltaTime;
+	static std::unordered_map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock>> chronos;
 };
