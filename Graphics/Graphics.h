@@ -11,13 +11,9 @@
 #include <vector>
 #include <unordered_map>
 #include <glm/glm.hpp>
-#include <mutex>
-#include <thread>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Logger.h"
-
-#include <chrono> // TODO: REMOVE IT AFTER OPTIMIZATION
 
 //Store each material
 struct Material {
