@@ -26,7 +26,7 @@ PURPOSE: Calculates all transforms of each lights,
 void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 currentSceneCameraPos, bool is3D)
 {
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE); //TODO: Will have changed to each object type
+	glEnable(GL_CULL_FACE); //TODO: Will have changed to each object type
 	if (is3D) {
 		//Calculate all light tranforms
 		for (int i = 0; i < lights.size(); ++i) {
@@ -39,37 +39,38 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 				ShaderManager::GetInstance().UseShaders(DEPTH);
 
 				//Calculate light martix
-				glm::vec3 lightDir = glm::normalize(lights[0].direction);
+				glm::vec3 lightDir = glm::normalize(lights[i].direction);
+				float width = 100.0f;
 				float near_plane = 1.0f, far_plane = 1000.0f;
-				lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
+				lightProjection = glm::ortho(-width, width, -width, width, near_plane, far_plane);
 				//lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
 				lightView = glm::lookAt(-lightDir * 100.0f, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 				lightSpaceMatrix = lightProjection * lightView;
 				lights[i].lightSpaceMatrix = lightSpaceMatrix;
+				std::cout << i << std::endl;
 			}
 			else if (lights[i].type == LIGHT_POINT) {
 				//Calculate light parameters and matrices
 				float aspect = 1.0f;
 				float near_plane = 0.1f;
 				float far_plane = 1000.0f;
-				float fov = glm::radians(90.0f);// 90 degrees for each direction
 
-				glm::mat4 shadowProj = glm::perspective(fov, aspect, near_plane, far_plane);
+				glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near_plane, far_plane);
 				glm::vec3 pos = lights[i].position;
 
-				std::vector<glm::mat4> shadowTransforms;
-				shadowTransforms.push_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(1, 0, 0), glm::vec3(0, -1, 0)));
-				shadowTransforms.push_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(-1, 0, 0), glm::vec3(0, -1, 0)));
-				shadowTransforms.push_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 1, 0), glm::vec3(0, 0, 1)));
-				shadowTransforms.push_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, -1, 0), glm::vec3(0, 0, -1)));
-				shadowTransforms.push_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, 1), glm::vec3(0, -1, 0)));
-				shadowTransforms.push_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, -1), glm::vec3(0, -1, 0)));
+				lights[i].shadowTransforms.clear();
+				lights[i].shadowTransforms.reserve(6);
+				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(1, 0, 0), glm::vec3(0, -1, 0)));
+				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(-1, 0, 0), glm::vec3(0, -1, 0)));
+				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 1, 0), glm::vec3(0, 0, 1)));
+				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, -1, 0), glm::vec3(0, 0, -1)));
+				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, 1), glm::vec3(0, -1, 0)));
+				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, -1), glm::vec3(0, -1, 0)));
 
-				lights[i].shadowTransforms = shadowTransforms;
 				lights[i].far_plane = far_plane;
 
 				//Use DEPTH_CUBE shader which is for point lights and send the parameters and matrices to it
-				ShaderManager::GetInstance().UseShaders(DEPTH_CUBE); // point light için olan
+				ShaderManager::GetInstance().UseShaders(DEPTH_CUBE); //For point lights
 
 				for (unsigned int face = 0; face < 6; ++face) {
 					//Each face matrices
@@ -82,14 +83,18 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 				ShaderManager::GetInstance().ApplyUniformFloat("far_plane", far_plane);
 			}
 			else if (lights[i].type == LIGHT_SPOT) {
+				float aspect = 1.0f;
+				float near_plane = 0.1f;
+				float far_plane = 1000.0f;
 				//Use DEPTH shader which is for directional and spot lights
 				ShaderManager::GetInstance().UseShaders(DEPTH);
 
 				//Calculate light martix
-				glm::vec3 spotPos = lights[0].position;
-				glm::vec3 spotDir = glm::normalize(lights[0].direction);
-				float fov = glm::degrees(2 * acos(lights[0].outerCutOff));
-				lightProjection = glm::perspective(glm::radians(fov), 1.0f, 1.0f, 1000.0f);
+				glm::vec3 spotPos = lights[i].position;
+				glm::vec3 spotDir = lights[0].direction; //FIXME: This works properly when it is lights[0].direction, lights[i].direction is needed
+
+				float fov = glm::degrees(2 * acos(lights[i].outerCutOff));
+				lightProjection = glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
 				lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(0.0f, 1.0f, 0.0f));
 				lightSpaceMatrix = lightProjection * lightView;
 				lights[i].lightSpaceMatrix = lightSpaceMatrix;
@@ -101,17 +106,17 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 				The frame buffer will create a texture of depth buffer.
 				The texture will be used in 3d shaders.
 			*/
-			const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
+			const unsigned int SHADOW_WIDTH = 8196, SHADOW_HEIGHT = 8196;
 			if (lights[i].type == LIGHT_POINT) {
 				//Use right shaders
 				ShaderManager::GetInstance().UseShaders(DEPTH_CUBE);
-				glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 				glBindFramebuffer(GL_FRAMEBUFFER, lights[i].depthMapFBO);
+				glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 				glClear(GL_DEPTH_BUFFER_BIT);
 				glCullFace(GL_FRONT);
 
 				for (auto& entity : entities) {
-					entity.second->Draw(currentSceneCameraPos);  // model matris gönderdiðinden emin ol
+					entity.second->Draw(currentSceneCameraPos);
 				}
 				glCullFace(GL_BACK);
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -124,21 +129,19 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 				glClear(GL_DEPTH_BUFFER_BIT);
 				glCullFace(GL_FRONT);
 				//Send the light matrix to the shader
-				ShaderManager::GetInstance().ApplyUniformMatrix("lightSpaceMatrix", lightSpaceMatrix);
+				ShaderManager::GetInstance().ApplyUniformMatrix("lightSpaceMatrix", lights[i].lightSpaceMatrix);
 				for (auto& entity : entities) {
 					entity.second->Draw(currentSceneCameraPos);
 				}
 				glCullFace(GL_BACK);
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			}
-		}
 
-		//Use SHADER_3D shaders which is for 3d drawing
-		ShaderManager::GetInstance().UseShaders(SHADER_3D);
+			//Use SHADER_3D shaders which is for 3d drawing
+			ShaderManager::GetInstance().UseShaders(SHADER_3D);
 
-		//Send each light parameters to drawing shader, some lights don't have some parameters
-		ShaderManager::GetInstance().ApplyUniformInt("numLights", (int)lights.size());
-		for (int i = 0; i < lights.size(); ++i) {
+			//Send light parameters to drawing shader, some lights don't have some parameters
+			ShaderManager::GetInstance().ApplyUniformInt("numLights", (int)lights.size());
 			std::string idx = "lights[" + std::to_string(i) + "]";
 			std::string idxType = idx + ".type";
 			ShaderManager::GetInstance().ApplyUniformInt(idxType.c_str(), (int)lights[i].type);
@@ -146,7 +149,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 			std::string idxPos = idx + ".position";
 			ShaderManager::GetInstance().ApplyUniformVec3(idxPos.c_str(), lights[i].position);
 			std::string idxDirection = idx + ".direction";
-			ShaderManager::GetInstance().ApplyUniformVec3(idxDirection.c_str(), glm::normalize(lights[i].direction));
+			ShaderManager::GetInstance().ApplyUniformVec3(idxDirection.c_str(), lights[i].direction);
 			std::string idxColor = idx + ".color";
 			ShaderManager::GetInstance().ApplyUniformVec3(idxColor.c_str(), lights[i].color);
 
@@ -163,20 +166,6 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 			ShaderManager::GetInstance().ApplyUniformFloat(idxQuadratic.c_str(), lights[i].quadratic);
 		}
 	}
-	else {
-		//Use SHADER_2D shaders which is for 2d drawing
-		ShaderManager::GetInstance().UseShaders(SHADER_2D);
-	}
-
-	/*
-		Start to draw.
-		Draw to a frame buffer.
-		This frame buffer will create a texture.
-		This texture will be used by ImGui as a image to draw the scene
-	*/
-	Graphics::GetInstance().BindFramebuffer();
-	Graphics::GetInstance().Clear();
-	glViewport(0, 0, window_width, window_height);
 
 	if (is3D) {
 		for (int i = 0; i < lights.size(); ++i) {
@@ -213,6 +202,20 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 			}
 		}
 	}
+	else {
+		//Use SHADER_2D shaders which is for 2d drawing
+		ShaderManager::GetInstance().UseShaders(SHADER_2D);
+	}
+
+	/*
+		Start to draw.
+		Draw to a frame buffer.
+		This frame buffer will create a texture.
+		This texture will be used by ImGui as a image to draw the scene
+	*/
+	Graphics::GetInstance().BindFramebuffer();
+	Graphics::GetInstance().Clear();
+	glViewport(0, 0, window_width, window_height);
 
 	//Main drawing
 	for (auto& entity : entities) {
@@ -229,7 +232,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
-	//glDisable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
 }
 
@@ -274,19 +277,8 @@ void EntityManager::UpdateEntities(
 	//Update all entities
 	for (auto& entity : entities) {
 		entity.second->Update();
-	}
 
-	//Setup lights for the first frame and any differences in entities
-	size_t currentEntitySize = entities.size();
-
-	if (currentEntitySize != lastEntitySize) {
-		lastEntitySize = currentEntitySize;
-
-		SetLights();
-	}
-
-	//Update all lights
-	for (auto& entity : entities) {
+		//Update all lights
 		if (entity.second->GetEntityParams()->GetType() == "DirectionalLight") {
 			auto casted = dynamic_cast<DirectionalLightParams*>(entity.second->GetEntityParams());
 			if (casted) {
@@ -298,7 +290,7 @@ void EntityManager::UpdateEntities(
 				}
 			}
 		}
-		else if(entity.second->GetEntityParams()->GetType() == "SpotLight") {
+		else if (entity.second->GetEntityParams()->GetType() == "SpotLight") {
 			auto casted = dynamic_cast<SpotLightParams*>(entity.second->GetEntityParams());
 			if (casted) {
 				for (auto& light : lights) {
@@ -329,6 +321,15 @@ void EntityManager::UpdateEntities(
 				}
 			}
 		}
+	}
+
+	//Setup lights for the first frame and any differences in entities
+	size_t currentEntitySize = entities.size();
+
+	if (currentEntitySize != lastEntitySize) {
+		lastEntitySize = currentEntitySize;
+
+		SetLights();
 	}
 }
 
