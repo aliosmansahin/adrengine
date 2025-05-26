@@ -78,9 +78,11 @@ PURPOSE: Set the program as current
 */
 void ShaderManager::UseShaders(ShaderType shaderType)
 {
-    currentProgram = programs[shaderType];
-    currentType = shaderType;
-    glUseProgram(currentProgram);
+    if (currentType != shaderType) {
+        currentProgram = programs[shaderType];
+        currentType = shaderType;
+        glUseProgram(currentProgram);
+    }
 }
 
 /*
