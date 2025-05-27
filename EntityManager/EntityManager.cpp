@@ -109,7 +109,6 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					glm::vec3 spotDir = glm::normalize(castedParams->direction);
 
 					// spotDir ve up vektörünü uygun seç
-
 					float fov = glm::degrees(2 * acos(castedParams->outerCutOff)); // outerCutOff cos deðeri olmalý
 					lightProjection = glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
 
