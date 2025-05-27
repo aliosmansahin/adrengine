@@ -27,178 +27,321 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE); //TODO: Will have changed to each object type
+	int numLights = 0;
 	if (is3D) {
 		//Calculate all light tranforms
-		for (int i = 0; i < lights.size(); ++i) {
+		for (auto& entityIter : entities) {
+			auto entity = entityIter.second.get();
+			auto params = entity->GetEntityParams();
+
 			glm::mat4 lightProjection;
 			glm::mat4 lightView;
-			glm::mat4 lightSpaceMatrix = glm::mat4(1.0f);
 
-			if (lights[i].type == LIGHT_DIRECTIONAL) {
-				//Use DEPTH shader which is for directional and spot lights
-				ShaderManager::GetInstance().UseShaders(DEPTH);
+			if (params->GetType() == "DirectionalLight") {
+				auto casted = dynamic_cast<DirectionalLight*>(entity);
+				if (casted) {
+					//Use DEPTH shader which is for directional and spot lights
+					ShaderManager::GetInstance().UseShaders(DEPTH);
 
-				//Calculate light martix
-				glm::vec3 lightDir = glm::normalize(lights[i].direction);
-				float width = 100.0f;
-				float near_plane = 1.0f, far_plane = 1000.0f;
-				lightProjection = glm::ortho(-width, width, -width, width, near_plane, far_plane);
-				//lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
-				lightView = glm::lookAt(-lightDir * 100.0f, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-				lightSpaceMatrix = lightProjection * lightView;
-				lights[i].lightSpaceMatrix = lightSpaceMatrix;
-				std::cout << i << std::endl;
-			}
-			else if (lights[i].type == LIGHT_POINT) {
-				//Calculate light parameters and matrices
-				float aspect = 1.0f;
-				float near_plane = 0.1f;
-				float far_plane = 1000.0f;
+					//Calculate light martix
+					glm::vec3 lightDir = glm::normalize(casted->realRot);
+					float width = 100.0f;
+					float near_plane = 1.0f, far_plane = 1000.0f;
+					lightProjection = glm::ortho(-width, width, -width, width, near_plane, far_plane);
+					//lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
+					lightView = glm::lookAt(-lightDir * 100.0f, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-				glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near_plane, far_plane);
-				glm::vec3 pos = lights[i].position;
+					casted->lightSpaceMatrix = lightProjection * lightView;
 
-				lights[i].shadowTransforms.clear();
-				lights[i].shadowTransforms.reserve(6);
-				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(1, 0, 0), glm::vec3(0, -1, 0)));
-				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(-1, 0, 0), glm::vec3(0, -1, 0)));
-				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 1, 0), glm::vec3(0, 0, 1)));
-				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, -1, 0), glm::vec3(0, 0, -1)));
-				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, 1), glm::vec3(0, -1, 0)));
-				lights[i].shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, -1), glm::vec3(0, -1, 0)));
-
-				lights[i].far_plane = far_plane;
-
-				//Use DEPTH_CUBE shader which is for point lights and send the parameters and matrices to it
-				ShaderManager::GetInstance().UseShaders(DEPTH_CUBE); //For point lights
-
-				for (unsigned int face = 0; face < 6; ++face) {
-					//Each face matrices
-					std::string uniformName = "shadowMatrices[" + std::to_string(face) + "]";
-					ShaderManager::GetInstance().ApplyUniformMatrix(uniformName.c_str(), lights[i].shadowTransforms[face]);
+					numLights++;
 				}
-
-				//Parameters
-				ShaderManager::GetInstance().ApplyUniformVec3("lightPos", lights[i].position);
-				ShaderManager::GetInstance().ApplyUniformFloat("far_plane", far_plane);
 			}
-			else if (lights[i].type == LIGHT_SPOT) {
-				float aspect = 1.0f;
-				float near_plane = 0.1f;
-				float far_plane = 1000.0f;
-				//Use DEPTH shader which is for directional and spot lights
-				ShaderManager::GetInstance().UseShaders(DEPTH);
+			else if (params->GetType() == "PointLight") {
+				auto casted = dynamic_cast<PointLight*>(entity);
+				if (casted) {
+					//Calculate light parameters and matrices
+					float aspect = 1.0f;
+					float near_plane = 0.1f;
+					float far_plane = 1000.0f;
 
-				//Calculate light martix
-				glm::vec3 spotPos = lights[i].position;
-				glm::vec3 spotDir = lights[0].direction; //FIXME: This works properly when it is lights[0].direction, lights[i].direction is needed
+					glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near_plane, far_plane);
+					glm::vec3 pos = casted->realPos;
 
-				float fov = glm::degrees(2 * acos(lights[i].outerCutOff));
-				lightProjection = glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
-				lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(0.0f, 1.0f, 0.0f));
-				lightSpaceMatrix = lightProjection * lightView;
-				lights[i].lightSpaceMatrix = lightSpaceMatrix;
-			}
+					std::vector<glm::mat4> shadowTransforms;
+					shadowTransforms.reserve(6);
+					shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(1, 0, 0), glm::vec3(0, -1, 0)));
+					shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(-1, 0, 0), glm::vec3(0, -1, 0)));
+					shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 1, 0), glm::vec3(0, 0, 1)));
+					shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, -1, 0), glm::vec3(0, 0, -1)));
+					shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, 1), glm::vec3(0, -1, 0)));
+					shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, -1), glm::vec3(0, -1, 0)));
 
-			/*
-				Create a depth buffer for each light.
-				Point light has a different calculation.
-				The frame buffer will create a texture of depth buffer.
-				The texture will be used in 3d shaders.
-			*/
-			const unsigned int SHADOW_WIDTH = 8196, SHADOW_HEIGHT = 8196;
-			if (lights[i].type == LIGHT_POINT) {
-				//Use right shaders
-				ShaderManager::GetInstance().UseShaders(DEPTH_CUBE);
-				glBindFramebuffer(GL_FRAMEBUFFER, lights[i].depthMapFBO);
-				glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-				glClear(GL_DEPTH_BUFFER_BIT);
-				glCullFace(GL_FRONT);
+					//Use DEPTH_CUBE shader which is for point lights and send the parameters and matrices to it
+					ShaderManager::GetInstance().UseShaders(DEPTH_CUBE); //For point lights
 
-				for (auto& entity : entities) {
-					entity.second->Draw(currentSceneCameraPos);
+					for (unsigned int face = 0; face < 6; ++face) {
+						//Each face matrices
+						std::string uniformName = "shadowMatrices[" + std::to_string(face) + "]";
+						ShaderManager::GetInstance().ApplyUniformMatrix(uniformName.c_str(), shadowTransforms[face]);
+					}
+
+					//Parameters
+					ShaderManager::GetInstance().ApplyUniformVec3("lightPos", pos);
+					ShaderManager::GetInstance().ApplyUniformFloat("far_plane", far_plane);
+
+					numLights++;
+
+					casted->far_plane = far_plane;
 				}
-				glCullFace(GL_BACK);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			}
-			else {
-				//Use right shaders
-				ShaderManager::GetInstance().UseShaders(DEPTH);
-				glBindFramebuffer(GL_FRAMEBUFFER, lights[i].depthMapFBO);
-				glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-				glClear(GL_DEPTH_BUFFER_BIT);
-				glCullFace(GL_FRONT);
-				//Send the light matrix to the shader
-				ShaderManager::GetInstance().ApplyUniformMatrix("lightSpaceMatrix", lights[i].lightSpaceMatrix);
-				for (auto& entity : entities) {
-					entity.second->Draw(currentSceneCameraPos);
+			else if (params->GetType() == "SpotLight") {
+				auto casted = dynamic_cast<SpotLight*>(entity);
+				auto castedParams = dynamic_cast<SpotLightParams*>(params);
+				if (casted && castedParams) {
+					float aspect = 1.0f;
+					float near_plane = 0.1f;
+					float far_plane = 1000.0f;
+					//Use DEPTH shader which is for directional and spot lights
+					ShaderManager::GetInstance().UseShaders(DEPTH);
+
+					//Calculate light martix
+					glm::vec3 spotPos = casted->realPos;
+					glm::vec3 spotDir = glm::normalize(casted->realRot);
+
+					std::cout << spotDir.x << std::endl;
+
+					float fov = glm::degrees(2 * acos(castedParams->outerCutOff));
+					lightProjection = glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
+
+					lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(0.0f, 1.0f, 0.0f));
+
+					casted->lightSpaceMatrix = lightProjection * lightView;
+
+					numLights++;
 				}
-				glCullFace(GL_BACK);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			}
-
-			//Use SHADER_3D shaders which is for 3d drawing
-			ShaderManager::GetInstance().UseShaders(SHADER_3D);
-
-			//Send light parameters to drawing shader, some lights don't have some parameters
-			ShaderManager::GetInstance().ApplyUniformInt("numLights", (int)lights.size());
-			std::string idx = "lights[" + std::to_string(i) + "]";
-			std::string idxType = idx + ".type";
-			ShaderManager::GetInstance().ApplyUniformInt(idxType.c_str(), (int)lights[i].type);
-
-			std::string idxPos = idx + ".position";
-			ShaderManager::GetInstance().ApplyUniformVec3(idxPos.c_str(), lights[i].position);
-			std::string idxDirection = idx + ".direction";
-			ShaderManager::GetInstance().ApplyUniformVec3(idxDirection.c_str(), lights[i].direction);
-			std::string idxColor = idx + ".color";
-			ShaderManager::GetInstance().ApplyUniformVec3(idxColor.c_str(), lights[i].color);
-
-			std::string idxCutOff = idx + ".cutOff";
-			ShaderManager::GetInstance().ApplyUniformFloat(idxCutOff.c_str(), lights[i].cutOff);
-			std::string idxOuterCutOff = idx + ".outerCutOff";
-			ShaderManager::GetInstance().ApplyUniformFloat(idxOuterCutOff.c_str(), lights[i].outerCutOff);
-
-			std::string idxConstant = idx + ".constant";
-			ShaderManager::GetInstance().ApplyUniformFloat(idxConstant.c_str(), lights[i].constant);
-			std::string idxLinear = idx + ".linear";
-			ShaderManager::GetInstance().ApplyUniformFloat(idxLinear.c_str(), lights[i].linear);
-			std::string idxQuadratic = idx + ".quadratic";
-			ShaderManager::GetInstance().ApplyUniformFloat(idxQuadratic.c_str(), lights[i].quadratic);
 		}
+		/*
+			Create a depth buffer for each light.
+			Point light has a different calculation.
+			The frame buffer will create a texture of depth buffer.
+			The texture will be used in 3d shaders.
+		*/
+
+
+		int index = 0;
+		for (auto& entityIter : entities) {
+			auto entity = entityIter.second.get();
+			auto params = entity->GetEntityParams();
+
+
+
+			std::string idx = "lights[" + std::to_string(index) + "]";
+
+			const unsigned int SHADOW_WIDTH = 8196, SHADOW_HEIGHT = 8196;
+			if (params->GetType() == "PointLight") {
+				auto casted = dynamic_cast<PointLight*>(entity);
+				auto castedParams = dynamic_cast<PointLightParams*>(params);
+				if (casted && castedParams) {
+					//Use right shaders
+					ShaderManager::GetInstance().UseShaders(DEPTH_CUBE);
+					glBindFramebuffer(GL_FRAMEBUFFER, casted->depthMapFBO);
+					glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+					glClear(GL_DEPTH_BUFFER_BIT);
+					glCullFace(GL_FRONT);
+
+					for (auto& entity : entities) {
+						entity.second->Draw(currentSceneCameraPos);
+					}
+					glCullFace(GL_BACK);
+					glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+					//Use SHADER_3D shaders which is for 3d drawing
+					ShaderManager::GetInstance().UseShaders(SHADER_3D);
+
+					//Send light parameters to drawing shader, some lights don't have some parameters
+					ShaderManager::GetInstance().ApplyUniformInt("numLights", numLights);
+
+
+					std::string idxType = idx + ".type";
+					ShaderManager::GetInstance().ApplyUniformInt(idxType.c_str(), (int)1);
+
+
+					std::string idxPos = idx + ".position";
+					ShaderManager::GetInstance().ApplyUniformVec3(idxPos.c_str(), casted->realPos);
+					std::string idxColor = idx + ".color";
+					ShaderManager::GetInstance().ApplyUniformVec3(idxColor.c_str(), castedParams->color);
+
+					std::string idxConstant = idx + ".constant";
+					ShaderManager::GetInstance().ApplyUniformFloat(idxConstant.c_str(), castedParams->constant);
+					std::string idxLinear = idx + ".linear";
+					ShaderManager::GetInstance().ApplyUniformFloat(idxLinear.c_str(), castedParams->linear);
+					std::string idxQuadratic = idx + ".quadratic";
+					ShaderManager::GetInstance().ApplyUniformFloat(idxQuadratic.c_str(), castedParams->quadratic);
+
+					index++;
+				}
+			}
+			else if (params->GetType() == "SpotLight") {
+				auto casted = dynamic_cast<SpotLight*>(entity);
+				auto castedParams = dynamic_cast<SpotLightParams*>(params);
+				if (casted && castedParams) {
+					//Use right shaders
+					ShaderManager::GetInstance().UseShaders(DEPTH);
+					glBindFramebuffer(GL_FRAMEBUFFER, casted->depthMapFBO);
+					glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+					glClear(GL_DEPTH_BUFFER_BIT);
+					glCullFace(GL_FRONT);
+					//Send the light matrix to the shader
+					ShaderManager::GetInstance().ApplyUniformMatrix("lightSpaceMatrix", casted->lightSpaceMatrix);
+					for (auto& entity : entities) {
+						entity.second->Draw(currentSceneCameraPos);
+					}
+					glCullFace(GL_BACK);
+					glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+					//Use SHADER_3D shaders which is for 3d drawing
+					ShaderManager::GetInstance().UseShaders(SHADER_3D);
+
+					//Send light parameters to drawing shader, some lights don't have some parameters
+					ShaderManager::GetInstance().ApplyUniformInt("numLights", numLights);
+
+
+					std::string idxType = idx + ".type";
+					ShaderManager::GetInstance().ApplyUniformInt(idxType.c_str(), (int)2);
+
+
+					std::string idxPos = idx + ".position";
+					ShaderManager::GetInstance().ApplyUniformVec3(idxPos.c_str(), casted->realPos);
+					std::string idxDirection = idx + ".direction";
+					ShaderManager::GetInstance().ApplyUniformVec3(idxDirection.c_str(), casted->realRot);
+					std::string idxColor = idx + ".color";
+					ShaderManager::GetInstance().ApplyUniformVec3(idxColor.c_str(), castedParams->color);
+
+					std::string idxCutOff = idx + ".cutOff";
+					ShaderManager::GetInstance().ApplyUniformFloat(idxCutOff.c_str(), castedParams->cutOff);
+					std::string idxOuterCutOff = idx + ".outerCutOff";
+					ShaderManager::GetInstance().ApplyUniformFloat(idxOuterCutOff.c_str(), castedParams->outerCutOff);
+
+					std::string idxConstant = idx + ".constant";
+					ShaderManager::GetInstance().ApplyUniformFloat(idxConstant.c_str(), castedParams->constant);
+					std::string idxLinear = idx + ".linear";
+					ShaderManager::GetInstance().ApplyUniformFloat(idxLinear.c_str(), castedParams->linear);
+					std::string idxQuadratic = idx + ".quadratic";
+					ShaderManager::GetInstance().ApplyUniformFloat(idxQuadratic.c_str(), castedParams->quadratic);
+
+					index++;
+
+				}
+			}
+			else if (params->GetType() == "DirectionalLight") {
+				auto casted = dynamic_cast<DirectionalLight*>(entity);
+				auto castedParams = dynamic_cast<DirectionalLightParams*>(params);
+				if (casted && castedParams) {
+					//Use right shaders
+					ShaderManager::GetInstance().UseShaders(DEPTH);
+					glBindFramebuffer(GL_FRAMEBUFFER, casted->depthMapFBO);
+					glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+					glClear(GL_DEPTH_BUFFER_BIT);
+					glCullFace(GL_FRONT);
+					//Send the light matrix to the shader
+					ShaderManager::GetInstance().ApplyUniformMatrix("lightSpaceMatrix", casted->lightSpaceMatrix);
+					for (auto& entity : entities) {
+						entity.second->Draw(currentSceneCameraPos);
+					}
+					glCullFace(GL_BACK);
+					glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+					//Use SHADER_3D shaders which is for 3d drawing
+					ShaderManager::GetInstance().UseShaders(SHADER_3D);
+
+					//Send light parameters to drawing shader, some lights don't have some parameters
+					ShaderManager::GetInstance().ApplyUniformInt("numLights", numLights);
+
+
+					std::string idxType = idx + ".type";
+					ShaderManager::GetInstance().ApplyUniformInt(idxType.c_str(), (int)0);
+
+					std::string idxDirection = idx + ".direction";
+					ShaderManager::GetInstance().ApplyUniformVec3(idxDirection.c_str(), casted->realRot);
+					std::string idxColor = idx + ".color";
+					ShaderManager::GetInstance().ApplyUniformVec3(idxColor.c_str(), castedParams->color);
+
+					index++;
+
+				}
+			}
+			
+		}
+
 	}
 
 	if (is3D) {
-		for (int i = 0; i < lights.size(); ++i) {
+		//Use SHADER_3D shaders which is for 3d drawing
+		ShaderManager::GetInstance().UseShaders(SHADER_3D);
+
+
+		int index = 0;
+		for (auto& entityIter : entities) {
+			auto entity = entityIter.second.get();
+			auto params = entity->GetEntityParams();
 			/*
 				Send each light parameters, matrices and shadow maps to the shader,
 				This shader will use them.
 				This sending is for showing lights.
 				The sending above is for creating depth buffer
 			*/
-			if (lights[i].type == LIGHT_POINT) {
-				//Bind depthMap as a texture
-				GLuint texUnit = 10 + i; //Add an offset to prevent any conflict
+			if (params->GetType() == "PointLight") {
+				auto casted = dynamic_cast<PointLight*>(entity);
+				if (casted) {
+					//Bind depthMap as a texture
+					GLuint texUnit = 10 + index; //Add an offset to prevent any conflict
 
-				glActiveTexture(GL_TEXTURE0 + texUnit);
-				glBindTexture(GL_TEXTURE_CUBE_MAP, lights[i].depthMap);
+					glActiveTexture(GL_TEXTURE0 + texUnit);
+					glBindTexture(GL_TEXTURE_CUBE_MAP, casted->depthMap);
 
-				//Send some stuff to the shader
-				std::string samplerName = "shadowCubeMaps[" + std::to_string(i) + "]";
-				ShaderManager::GetInstance().ApplyUniformInt(samplerName.c_str(), texUnit);
+					//Send some stuff to the shader
+					std::string samplerName = "shadowCubeMaps[" + std::to_string(index) + "]";
+					ShaderManager::GetInstance().ApplyUniformInt(samplerName.c_str(), texUnit);
 
-				std::string farPlaneName = "far_planes[" + std::to_string(i) + "]";
-				ShaderManager::GetInstance().ApplyUniformFloat(farPlaneName.c_str(), lights[i].far_plane);
+					std::string farPlaneName = "far_planes[" + std::to_string(index) + "]";
+					ShaderManager::GetInstance().ApplyUniformFloat(farPlaneName.c_str(), casted->far_plane);
+
+					index++;
+				}
 			}
-			else {
-				//Bind depthMaps as a texture
-				glActiveTexture(GL_TEXTURE0 + i);//Each light has unique texture unit
-				glBindTexture(GL_TEXTURE_2D, lights[i].depthMap);
+			else if (params->GetType() == "DirectionalLight") {
+				auto casted = dynamic_cast<DirectionalLight*>(entity);
+				if (casted) {
+					//Bind depthMaps as a texture
+					glActiveTexture(GL_TEXTURE0 + index);//Each light has unique texture unit
+					glBindTexture(GL_TEXTURE_2D, casted->depthMap);
 
-				//Send some stuff to the shader
-				std::string idxLightSpaceMatrices = "lightSpaceMatrices[" + std::to_string(i) + "]";
-				ShaderManager::GetInstance().ApplyUniformMatrix(idxLightSpaceMatrices.c_str(), lights[i].lightSpaceMatrix);
-				std::string idxShadowMaps = "shadowMaps[" + std::to_string(i) + "]";
-				ShaderManager::GetInstance().ApplyUniformInt(idxShadowMaps.c_str(), i);
+					//Send some stuff to the shader
+					std::string idxLightSpaceMatrices = "lightSpaceMatrices[" + std::to_string(index) + "]";
+					ShaderManager::GetInstance().ApplyUniformMatrix(idxLightSpaceMatrices.c_str(), casted->lightSpaceMatrix);
+					std::string idxShadowMaps = "shadowMaps[" + std::to_string(index) + "]";
+					ShaderManager::GetInstance().ApplyUniformInt(idxShadowMaps.c_str(), index);
+
+					index++;
+				}
+			}
+			else if (params->GetType() == "SpotLight") {
+				auto casted = dynamic_cast<SpotLight*>(entity);
+				if (casted) {
+					//Bind depthMaps as a texture
+					glActiveTexture(GL_TEXTURE0 + index);//Each light has unique texture unit
+					glBindTexture(GL_TEXTURE_2D, casted->depthMap);
+
+					//Send some stuff to the shader
+					std::string idxLightSpaceMatrices = "lightSpaceMatrices[" + std::to_string(index) + "]";
+					ShaderManager::GetInstance().ApplyUniformMatrix(idxLightSpaceMatrices.c_str(), casted->lightSpaceMatrix);
+					std::string idxShadowMaps = "shadowMaps[" + std::to_string(index) + "]";
+					ShaderManager::GetInstance().ApplyUniformInt(idxShadowMaps.c_str(), index);
+
+					index++;
+				}
 			}
 		}
 	}
@@ -226,7 +369,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 	Graphics::GetInstance().UnbindFramebuffer();
 
 	//Clear all sets
-	for (int i = 0; i < lights.size(); ++i) {
+	for (int i = 0; i < numLights; ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -265,203 +408,35 @@ void EntityManager::UpdateEntities(
 		Here we are setting the origin of the entity to parent's location in the space if the entity has a parent
 	*/
 	for (auto& entity : entities) {
-		auto params = entity.second->GetEntityParams();
-		auto parent = params->parent.get();
-		if (parent) {
-			entity.second->realPos = parent->realPos;
-			entity.second->realRot = parent->realRot;
-			entity.second->realSca = parent->realSca;
-		}
+		SetEntityRealStats(entity.second.get());
 	}
 
 	//Update all entities
 	for (auto& entity : entities) {
 		entity.second->Update();
-
-		//Update all lights
-		if (entity.second->GetEntityParams()->GetType() == "DirectionalLight") {
-			auto casted = dynamic_cast<DirectionalLightParams*>(entity.second->GetEntityParams());
-			if (casted) {
-				for (auto& light : lights) {
-					if (light.type == LIGHT_DIRECTIONAL && light.id == casted->id) {
-						light.direction = glm::normalize(casted->direction);
-						light.color = glm::normalize(casted->color);
-					}
-				}
-			}
-		}
-		else if (entity.second->GetEntityParams()->GetType() == "SpotLight") {
-			auto casted = dynamic_cast<SpotLightParams*>(entity.second->GetEntityParams());
-			if (casted) {
-				for (auto& light : lights) {
-					if (light.type == LIGHT_SPOT && light.id == casted->id) {
-						light.direction = glm::normalize(casted->direction);
-						light.color = glm::normalize(casted->color);
-						light.position = entity.second->realPos;
-						light.cutOff = casted->cutOff;
-						light.outerCutOff = casted->outerCutOff;
-						light.constant = casted->constant;
-						light.linear = casted->linear;
-						light.quadratic = casted->quadratic;
-					}
-				}
-			}
-		}
-		else if (entity.second->GetEntityParams()->GetType() == "PointLight") {
-			auto casted = dynamic_cast<PointLightParams*>(entity.second->GetEntityParams());
-			if (casted) {
-				for (auto& light : lights) {
-					if (light.type == LIGHT_POINT && light.id == casted->id) {
-						light.position = entity.second->realPos;
-						light.color = casted->color;
-						light.constant = casted->constant;
-						light.linear = casted->linear;
-						light.quadratic = casted->quadratic;
-					}
-				}
-			}
-		}
-	}
-
-	//Setup lights for the first frame and any differences in entities
-	size_t currentEntitySize = entities.size();
-
-	if (currentEntitySize != lastEntitySize) {
-		lastEntitySize = currentEntitySize;
-
-		SetLights();
 	}
 }
 
 /*
-PURPOSE: Releases previous lights and creates new ones for any changings on entities
-	If user creates a new directional light, set the lights
+PURPOSE: Sets the real pos, rot, sca of the entity depends on its parent,
+	for example, if the parent x=10, the child x=5, the entity will be shown at x=15 in the space
 */
-ENTITYMANAGER_API void EntityManager::SetLights()
+ENTITYMANAGER_API void EntityManager::SetEntityRealStats(Entity* entity)
 {
-	//Clear previous data
-	for (int i = 0; i < lights.size(); ++i) {
-		glDeleteFramebuffers(1, &lights[i].depthMapFBO);
-		glDeleteTextures(1, &lights[i].depthMap);
+	auto params = entity->GetEntityParams();
+	auto parent = params->parent.get();
+	if (parent) {
+		entity->realPos = parent->realPos + glm::vec3(params->x, params->y, params->z);
+		entity->realRot = parent->realRot + glm::vec3(params->rx, params->ry, params->rz);
+		entity->realSca = parent->realSca * glm::vec3(params->sx, params->sy, params->sz);
 	}
-	lights.clear();
-
-	//Create new lights and push it to all lights
-	for (auto& entity : entities) {
-		if (entity.second->GetEntityParams()->GetType() == "DirectionalLight") {
-			auto casted = dynamic_cast<DirectionalLightParams*>(entity.second->GetEntityParams());
-			if (casted) {
-				Light light;
-				light.id = entity.second->GetEntityParams()->id;
-				light.type = LIGHT_DIRECTIONAL;
-				light.direction = glm::normalize(casted->direction);
-				light.color = glm::normalize(casted->color);
-
-				glGenFramebuffers(1, &light.depthMapFBO);
-				const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
-
-				glGenTextures(1, &light.depthMap);
-				glBindTexture(GL_TEXTURE_2D, light.depthMap);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-					SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-				float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-				glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-				glBindFramebuffer(GL_FRAMEBUFFER, light.depthMapFBO);
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, light.depthMap, 0);
-				glDrawBuffer(GL_NONE);
-				glReadBuffer(GL_NONE);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-				lights.push_back(light);
-			}
-		}
-		else if (entity.second->GetEntityParams()->GetType() == "SpotLight") {
-			auto casted = dynamic_cast<SpotLightParams*>(entity.second->GetEntityParams());
-			if (casted) {
-				auto castedEntity = std::dynamic_pointer_cast<SpotLight>(entity.second);
-				Light light;
-				light.type = LIGHT_SPOT;
-				light.id = entity.second->GetEntityParams()->id;
-				light.direction = glm::normalize(casted->direction);
-				light.color = glm::normalize(casted->color);
-				if (castedEntity.get())
-					light.position = castedEntity->realPos;
-				light.cutOff = casted->cutOff;
-				light.outerCutOff = casted->outerCutOff;
-				light.constant = casted->constant;
-				light.linear = casted->linear;
-				light.quadratic = casted->quadratic;
-
-				const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
-
-				glGenTextures(1, &light.depthMap);
-				glBindTexture(GL_TEXTURE_2D, light.depthMap);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-					SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-				float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-				glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-				glGenFramebuffers(1, &light.depthMapFBO);
-				glBindFramebuffer(GL_FRAMEBUFFER, light.depthMapFBO);
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, light.depthMap, 0);
-				glDrawBuffer(GL_NONE);
-				glReadBuffer(GL_NONE);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-				lights.push_back(light);
-			}
-		}
-		else if (entity.second->GetEntityParams()->GetType() == "PointLight") {
-			auto casted = dynamic_cast<PointLightParams*>(entity.second->GetEntityParams());
-			if (casted) {
-				Light light;
-				light.type = LIGHT_POINT;
-				light.id = entity.second->GetEntityParams()->id;
-				light.position = entity.second->realPos;
-				light.color = casted->color;
-				light.constant = casted->constant;
-				light.linear = casted->linear;
-				light.quadratic = casted->quadratic;
-
-				glGenFramebuffers(1, &light.depthMapFBO);
-				const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
-
-				glGenTextures(1, &light.depthMap);
-				glBindTexture(GL_TEXTURE_CUBE_MAP, light.depthMap);
-				for (GLuint i = 0; i < 6; ++i) {
-					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
-						SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-				}
-
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-				/*GLenum err;
-				while ((err = glGetError()) != GL_NO_ERROR) {
-					std::cout << "OpenGL error: " << err << std::endl;
-				}*/
-
-				glBindFramebuffer(GL_FRAMEBUFFER, light.depthMapFBO);
-				glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, light.depthMap, 0); // <- Tüm yüzler için
-				glDrawBuffer(GL_NONE);
-				glReadBuffer(GL_NONE);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-				lights.push_back(light);
-			}
-		}
+	else {
+		entity->realPos = glm::vec3(params->x, params->y, params->z);
+		entity->realRot = glm::vec3(params->rx, params->ry, params->rz);
+		entity->realSca = glm::vec3(params->sx, params->sy, params->sz);
+	}
+	for (auto& child : params->children) {
+		SetEntityRealStats(child.get());
 	}
 }
 
@@ -470,10 +445,6 @@ PURPOSE: Releases all manager stuff
 */
 void EntityManager::ReleaseEntityManager()
 {
-	//Release lights
-	lastEntitySize = (size_t)0;
-	lights.clear();
-
 	//Release entities
 	for (auto& entity : entities)
 		entity.second->DeleteEntity();

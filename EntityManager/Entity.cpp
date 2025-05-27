@@ -22,24 +22,6 @@ PURPOSE: Updates the entity
 */
 void Entity::Update()
 {
-	/*
-		Here we are calculating the real position, rotation and scale from properties.
-		We will use these vectors to draw it in the space.
-		If the entity has a parent, add the paramters to real* which is currently from parent's real*.
-		Otherwise real* will be properties directly
-	*/
-	if (params.get()) {
-		if (params->parent.get()) {
-			realPos += glm::vec3(params->x, params->y, params->z);
-			realRot += glm::vec3(params->rx, params->ry, params->rz);
-			realSca *= glm::vec3(params->sx, params->sy, params->sz);
-		}
-		else {
-			realPos = glm::vec3(params->x, params->y, params->z);
-			realRot = glm::vec3(params->rx, params->ry, params->rz);
-			realSca = glm::vec3(params->sx, params->sy, params->sz);
-		}
-	}
 }
 
 /*

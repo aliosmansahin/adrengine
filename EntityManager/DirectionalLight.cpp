@@ -14,6 +14,25 @@ bool DirectionalLight::CreateEntity(std::shared_ptr<EntityParams> params)
 	}
 	this->params = casted;
 
+	glGenFramebuffers(1, &depthMapFBO);
+	const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
+
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
     return true;
 }
 
@@ -29,24 +48,6 @@ PURPOSE: Updates the entity
 */
 void DirectionalLight::Update()
 {
-	/*
-		Here we are calculating the real position, rotation and scale from properties.
-		We will use these vectors to draw it in the space.
-		If the entity has a parent, add the paramters to real* which is currently from parent's real*.
-		Otherwise real* will be properties directly
-	*/
-	if (params.get()) {
-		if (params->parent.get()) {
-			realPos += glm::vec3(params->x, params->y, params->z);
-			realRot += glm::vec3(params->rx, params->ry, params->rz);
-			realSca *= glm::vec3(params->sx, params->sy, params->sz);
-		}
-		else {
-			realPos = glm::vec3(params->x, params->y, params->z);
-			realRot = glm::vec3(params->rx, params->ry, params->rz);
-			realSca = glm::vec3(params->sx, params->sy, params->sz);
-		}
-	}
 }
 
 /*

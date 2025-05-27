@@ -71,7 +71,6 @@ public:
 		std::string& sceneId,
 		nlohmann::json& currentSceneJson
 		);
-	ENTITYMANAGER_API void SetLights();
 	ENTITYMANAGER_API void ReleaseEntityManager();
 
 	//management for entities
@@ -91,13 +90,13 @@ public:
 		nlohmann::json& currentSceneJson,
 		bool saveScene = true);
 
+	ENTITYMANAGER_API void		  SetEntityRealStats(Entity* entity);
+
 	//status
 	ENTITYMANAGER_API size_t										  GetEntityCount() { return entities.size(); }
 	ENTITYMANAGER_API std::map<std::string, std::shared_ptr<Entity>>& GetEntities() { return entities; }
-	ENTITYMANAGER_API std::vector<Light>&							  GetLights() { return lights; }
 private:
 	//stores lights
-	std::vector<Light> lights;
 
 	//stores entities
 	std::map<std::string, std::shared_ptr<Entity>> entities;

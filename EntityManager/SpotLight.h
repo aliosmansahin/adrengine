@@ -31,6 +31,10 @@ public:
 
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
+public:
+	unsigned int depthMapFBO;
+	unsigned int depthMap;
+	glm::mat4 lightSpaceMatrix = glm::mat4(1.0f);
 private:
 	//properties
 	std::shared_ptr<SpotLightParams> params;

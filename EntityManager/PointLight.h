@@ -31,6 +31,11 @@ public:
 
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
+public:
+	unsigned int depthMapFBO;
+	unsigned int depthMap;
+
+	float far_plane;
 private:
 	//properties
 	std::shared_ptr<PointLightParams> params;
