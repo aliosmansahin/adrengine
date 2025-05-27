@@ -34,6 +34,7 @@ public:
 public:
 	unsigned int depthMapFBO;
 	unsigned int depthMap;
+	glm::mat4 lightSpaceMatrix;
 private:
 	//properties
 	std::shared_ptr<SpotLightParams> params;

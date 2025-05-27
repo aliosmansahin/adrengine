@@ -53,6 +53,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					glm::mat4 lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(0.0f, 1.0f, 0.0f));
 					glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
+					casted->lightSpaceMatrix = lightSpaceMatrix;
 
 					const unsigned int SHADOW_WIDTH = 8196, SHADOW_HEIGHT = 8196;
 					//Use right shaders
@@ -98,7 +99,18 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					std::string idxQuadratic = idx + ".quadratic";
 					ShaderManager::GetInstance().ApplyUniformFloat(idxQuadratic.c_str(), castedParams->quadratic);
 
+				}
+			}
+		}
 
+		for (auto& entityIter : entities) {
+			auto entity = entityIter.second.get();
+			auto params = entity->GetEntityParams();
+
+			if (params->GetType() == "SpotLight") {
+				auto casted = dynamic_cast<SpotLight*>(entity);
+				auto castedParams = dynamic_cast<SpotLightParams*>(params);
+				if (casted && castedParams) {
 					int index = 0;
 					//Bind depthMaps as a texture
 					glActiveTexture(GL_TEXTURE0 + index);//Each light has unique texture unit
@@ -106,7 +118,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 
 					//Send some stuff to the shader
 					std::string idxLightSpaceMatrices = "lightSpaceMatrices[" + std::to_string(index) + "]";
-					ShaderManager::GetInstance().ApplyUniformMatrix(idxLightSpaceMatrices.c_str(), lightSpaceMatrix);
+					ShaderManager::GetInstance().ApplyUniformMatrix(idxLightSpaceMatrices.c_str(), casted->lightSpaceMatrix);
 					std::string idxShadowMaps = "shadowMaps[" + std::to_string(index) + "]";
 					ShaderManager::GetInstance().ApplyUniformInt(idxShadowMaps.c_str(), index);
 
