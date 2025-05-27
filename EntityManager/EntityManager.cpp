@@ -106,12 +106,14 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 
 					//Calculate light martix
 					glm::vec3 spotPos = casted->realPos;
-					glm::vec3 spotDir = castedParams->direction;
+					glm::vec3 spotDir = glm::normalize(castedParams->direction);
 
-					float fov = glm::degrees(2 * acos(castedParams->outerCutOff));
+					// spotDir ve up vektörünü uygun seç
+
+					float fov = glm::degrees(2 * acos(castedParams->outerCutOff)); // outerCutOff cos deðeri olmalý
 					lightProjection = glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
 
-					lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(1.0f, 0.0f, 0.0f));
+					lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(0, 1, 0));
 
 					casted->lightSpaceMatrix = lightProjection * lightView;
 
@@ -209,11 +211,10 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					std::string idxType = idx + ".type";
 					ShaderManager::GetInstance().ApplyUniformInt(idxType.c_str(), (int)2);
 
-
 					std::string idxPos = idx + ".position";
 					ShaderManager::GetInstance().ApplyUniformVec3(idxPos.c_str(), casted->realPos);
 					std::string idxDirection = idx + ".direction";
-					ShaderManager::GetInstance().ApplyUniformVec3(idxDirection.c_str(), castedParams->direction);
+					ShaderManager::GetInstance().ApplyUniformVec3(idxDirection.c_str(), glm::normalize(castedParams->direction));
 					std::string idxColor = idx + ".color";
 					ShaderManager::GetInstance().ApplyUniformVec3(idxColor.c_str(), castedParams->color);
 
