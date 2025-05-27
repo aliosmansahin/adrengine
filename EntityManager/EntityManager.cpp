@@ -46,23 +46,18 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 
 					//Calculate light martix
 					glm::vec3 spotPos = casted->realPos;
-					glm::vec3 spotDir = castedParams->direction;
+					glm::vec3 spotDir = glm::normalize(castedParams->direction); //FIXME: This works properly when it is lights[0].direction, lights[i].direction is needed
 
-					std::cout << spotDir.x << " " << spotDir.y << " " << spotDir.z << std::endl;
-
-					// spotDir ve up vektörünü uygun seç
-					float fov = glm::degrees(2 * acos(castedParams->outerCutOff)); // outerCutOff cos deðeri olmalý
+					float fov = glm::degrees(2 * acos(castedParams->outerCutOff));
 					glm::mat4 lightProjection = glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
-
-					glm::mat4 lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(0, 1, 0));
-
+					glm::mat4 lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(0.0f, 1.0f, 0.0f));
 					glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
 
+					const unsigned int SHADOW_WIDTH = 8196, SHADOW_HEIGHT = 8196;
 					//Use right shaders
 					ShaderManager::GetInstance().UseShaders(DEPTH);
 					glBindFramebuffer(GL_FRAMEBUFFER, casted->depthMapFBO);
-					const unsigned int SHADOW_WIDTH = 8196, SHADOW_HEIGHT = 8196;
 					glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 					glClear(GL_DEPTH_BUFFER_BIT);
 					glCullFace(GL_FRONT);
@@ -74,14 +69,13 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					glCullFace(GL_BACK);
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
 					//Use SHADER_3D shaders which is for 3d drawing
 					ShaderManager::GetInstance().UseShaders(SHADER_3D);
 
 					//Send light parameters to drawing shader, some lights don't have some parameters
-					ShaderManager::GetInstance().ApplyUniformInt("numLights", 1);
-
-
-					std::string idx = "lights[" + std::to_string(numLights) + "]";
+					ShaderManager::GetInstance().ApplyUniformInt("numLights", (int)1);
+					std::string idx = "lights[" + std::to_string(0) + "]";
 					std::string idxType = idx + ".type";
 					ShaderManager::GetInstance().ApplyUniformInt(idxType.c_str(), (int)2);
 
@@ -104,6 +98,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					std::string idxQuadratic = idx + ".quadratic";
 					ShaderManager::GetInstance().ApplyUniformFloat(idxQuadratic.c_str(), castedParams->quadratic);
 
+
 					int index = 0;
 					//Bind depthMaps as a texture
 					glActiveTexture(GL_TEXTURE0 + index);//Each light has unique texture unit
@@ -114,6 +109,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					ShaderManager::GetInstance().ApplyUniformMatrix(idxLightSpaceMatrices.c_str(), lightSpaceMatrix);
 					std::string idxShadowMaps = "shadowMaps[" + std::to_string(index) + "]";
 					ShaderManager::GetInstance().ApplyUniformInt(idxShadowMaps.c_str(), index);
+
 				}
 			}
 		}
