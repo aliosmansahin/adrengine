@@ -110,6 +110,8 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					std::string idxShadowMaps = "shadowMaps[" + std::to_string(index) + "]";
 					ShaderManager::GetInstance().ApplyUniformInt(idxShadowMaps.c_str(), index);
 
+					numLights++;
+
 				}
 			}
 		}
@@ -393,7 +395,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 
 	if (is3D) {
 		//Use SHADER_3D shaders which is for 3d drawing
-		ShaderManager::GetInstance().UseShaders(SHADER_3D);
+		//ShaderManager::GetInstance().UseShaders(SHADER_3D);
 
 
 		//int index = 0;
@@ -484,11 +486,11 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 	Graphics::GetInstance().UnbindFramebuffer();
 
 	//Clear all sets
-	/*for (int i = 0; i < numLights; ++i) {
+	for (int i = 0; i < numLights; ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	}*/
+	}
 
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
