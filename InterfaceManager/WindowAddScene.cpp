@@ -7,8 +7,8 @@ PURPOSE: Draws the window
 */
 void WindowAddScene::DrawWindow(
     std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
-    Tab*& openedTab,
+    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
+    Utils::Tab*& openedTab,
     std::string& selectedTabId)
 {
     //Begin the window
@@ -18,10 +18,10 @@ void WindowAddScene::DrawWindow(
     ImGui::Text("Scene Type"); ImGui::SameLine();
 
     //Selection for the type of the scene
-    static SceneType activeSceneType = SCENE_2D; //2D
+    static Utils::SceneType activeSceneType = Utils::SCENE_2D; //2D
 
-    ImGui::RadioButton("2D", &(int&)activeSceneType, (int)SCENE_2D); ImGui::SameLine();
-    ImGui::RadioButton("3D", &(int&)activeSceneType, (int)SCENE_3D);
+    ImGui::RadioButton("2D", &(int&)activeSceneType, (int)Utils::SCENE_2D); ImGui::SameLine();
+    ImGui::RadioButton("3D", &(int&)activeSceneType, (int)Utils::SCENE_3D);
 
     //TODO: Add Change Scene Name Here
 

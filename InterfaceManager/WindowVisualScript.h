@@ -16,6 +16,8 @@
 #include "Return.h"
 #include "VisualScriptManager.h"
 
+#include "utils/Utils.h"
+
 class WindowVisualScript
 {
 public:
@@ -23,8 +25,8 @@ public:
 	INTERFACEMANAGER_API void DrawWindow(
 		int tabHeight,
 		std::string& projectDir,
-		Tab*& openedTab,
-		std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs
+		Utils::Tab*& openedTab,
+		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs
 		);
 	INTERFACEMANAGER_API static WindowVisualScript& GetInstance();
 private:

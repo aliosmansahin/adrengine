@@ -334,7 +334,7 @@ ENGINE_API void Engine::PerformDeleteActions()
         if (tabIter != InterfaceManager::GetInstance().tabs.end()) {
             auto tab = tabIter->second.get();
             //if tabType is scene
-            if (tab->tabType == SceneEditor) {
+            if (tab->tabType == Utils::SceneEditor) {
                 std::string openedSceneId = tab->id;
                 std::string oldSceneId = "";
                 if (SceneManager::GetInstance().currentScene)
@@ -346,7 +346,7 @@ ENGINE_API void Engine::PerformDeleteActions()
                 SceneManager::GetInstance().CloseScene(openedSceneId, projectDir, InterfaceManager::GetInstance().tabs, InterfaceManager::GetInstance().openedTab, VisualScriptManager::GetInstance().scripts);
             }
             //if tabType is visualscript
-            else if (tab->tabType == VisualScriptEditor) {
+            else if (tab->tabType == Utils::VisualScriptEditor) {
                 std::string openedScriptId = tab->id;
                 std::string oldScriptId = "";
                 if (VisualScriptManager::GetInstance().currentScript)

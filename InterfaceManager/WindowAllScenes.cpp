@@ -10,9 +10,9 @@ void WindowAllScenes::DrawWindow(
 	bool& windowAddSceneShowWindow,
 	Entity* windowEntityPropertiesCurrentEntity,
 	std::string& windowSceneSelectedId,
-	std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
+	std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
 	std::string& selectedTabId,
-	Tab*& openedTab)
+	Utils::Tab*& openedTab)
 {
 	//Begin the window
 	ImGui::Begin("All Scenes", &showWindow);

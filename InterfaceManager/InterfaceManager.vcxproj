@@ -120,14 +120,14 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\InputManager;..\Timer;..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Common.lib;Graphics.lib;Asset.lib;Localization.lib;Logger.lib;glfw3.lib;EntityManager.lib;SceneManager.lib;VisualScriptManager.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>InputManager.lib;Timer.lib;Common.lib;Graphics.lib;Asset.lib;Localization.lib;Logger.lib;glfw3.lib;EntityManager.lib;SceneManager.lib;VisualScriptManager.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT
  %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -142,7 +142,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\InputManager;..\Timer;..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +151,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Common.lib;Graphics.lib;Asset.lib;Localization.lib;Logger.lib;glfw3.lib;EntityManager.lib;SceneManager.lib;VisualScriptManager.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>InputManager.lib;Timer.lib;Common.lib;Graphics.lib;Asset.lib;Localization.lib;Logger.lib;glfw3.lib;EntityManager.lib;SceneManager.lib;VisualScriptManager.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

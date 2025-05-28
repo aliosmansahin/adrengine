@@ -1,51 +1,6 @@
 #include "pch.h"
 #include "VisualScriptManager.h"
 
-//Tab type
-enum TabType {
-    SceneEditor,
-    VisualScriptEditor
-};
-struct Tab {
-    std::string id;
-    TabType tabType;
-};
-
-/*
-TODO: This will be moved to another place
-*/
-nlohmann::json CreateProjectJson(
-    std::string openedTabId,
-    std::map<std::string, std::string>& scenes,
-    std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts,
-    std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs) {
-
-    nlohmann::json projectJson;
-
-    projectJson["current-tab"] = openedTabId;
-
-    for (auto& sceneIter : scenes) {
-        auto& scene = sceneIter.first;
-        projectJson["scenes"].push_back(scene);
-    }
-    for (auto& scriptIter : scripts) {
-        auto& script = scriptIter.first;
-        projectJson["scripts"].push_back(script);
-    }
-    for (auto& tabIter : tabs) {
-        auto& tabId = tabIter.first;
-        auto& tab = tabIter.second;
-        nlohmann::json a;
-        a["id"] = tabId;
-        if (tab->tabType == SceneEditor)
-            a["type"] = "SceneEditor";
-        if (tab->tabType == VisualScriptEditor)
-            a["type"] = "VisualScriptEditor";
-        projectJson["opened-tabs"].push_back(a);
-    }
-    return projectJson;
-}
-
 /*
 PURPOSE: Initializes the manager
 */
@@ -80,7 +35,7 @@ void VisualScriptManager::ReleaseManager()
 /*
 PURPOSE: Opens the script to edit
 */
-std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Tab>> VisualScriptManager::OpenScript(std::string scriptId, std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs)
+std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Utils::Tab>> VisualScriptManager::OpenScript(std::string scriptId, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs)
 {
     //If the script or tab is opened, interrupt the function
     auto openedScriptIter = openedScripts.find(scriptId);
@@ -102,10 +57,10 @@ std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Tab>> VisualScriptManag
     openedScripts.insert(std::pair<std::string, std::shared_ptr<VisualScript>>(script->scriptId, script));
 
     //Create a tab and insert it to tabs
-    std::shared_ptr<Tab> tab = std::make_shared<Tab>();
+    std::shared_ptr<Utils::Tab> tab = std::make_shared<Utils::Tab>();
     tab->id = scriptId;
-    tab->tabType = VisualScriptEditor;
-    tabs.insert(std::pair<std::string, std::shared_ptr<Tab>>(tab->id, tab));
+    tab->tabType = Utils::VisualScriptEditor;
+    tabs.insert(std::pair<std::string, std::shared_ptr<Utils::Tab>>(tab->id, tab));
 
     //return the script and tab as a pair
     return { script, tab };
@@ -114,7 +69,7 @@ std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Tab>> VisualScriptManag
 /*
 PURPOSE: Loads the script to run
 */
-bool VisualScriptManager::LoadScript(std::string scriptId, std::string& projectDir, std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs)
+bool VisualScriptManager::LoadScript(std::string scriptId, std::string& projectDir, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs)
 {
     //If the script or tab is opened, interrupt the function
     auto openedScriptIter = scripts.find(scriptId);
@@ -154,8 +109,8 @@ bool VisualScriptManager::CloseScript(
     std::string scriptId,
     std::string& projectDir,
     std::unordered_map<std::string,
-    std::shared_ptr<Tab>>& tabs,
-    Tab*& openedTab,
+    std::shared_ptr<Utils::Tab>>& tabs,
+    Utils::Tab*& openedTab,
     std::map<std::string, std::string>& scenes)
 {
     //If the tab doesn't exist, interrupt the function
@@ -202,7 +157,7 @@ bool VisualScriptManager::CloseScript(
             openedTabId = openedTab->id;
         }
 
-        nlohmann::json projectJson = CreateProjectJson(openedTabId, scenes, scripts, tabs);
+        nlohmann::json projectJson = Utils::CreateProjectJson(openedTabId, scenes, scripts, tabs);
         AssetSaver::SaveProjectToFile(projectFile, projectJson);
     }
 	return true;
@@ -211,8 +166,8 @@ bool VisualScriptManager::CloseScript(
 /*
 PURPOSE: Creates a new script
 */
-bool VisualScriptManager::CreateScript(ScriptBelongsTo sbt, std::string& projectDir, std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
-    Tab*& openedTab, std::string& selectedTabId, std::map<std::string, std::string>& scenes)
+bool VisualScriptManager::CreateScript(Utils::ScriptBelongsTo sbt, std::string& projectDir, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
+    Utils::Tab*& openedTab, std::string& selectedTabId, std::map<std::string, std::string>& scenes)
 {
     //Set the id
     int index = 0;
@@ -269,11 +224,11 @@ bool VisualScriptManager::CreateScript(ScriptBelongsTo sbt, std::string& project
     AssetSaver::SaveSceneToFile(sbt.sceneJson, sceneFile, projectDir);
 
     //Open a new tab and insert it to tabs
-    Tab* tab = new Tab();
+    Utils::Tab* tab = new Utils::Tab();
     tab->id = scriptId;
-    tab->tabType = VisualScriptEditor;
+    tab->tabType = Utils::VisualScriptEditor;
 
-    tabs.insert(std::pair<std::string, std::unique_ptr<Tab>>(tab->id, std::unique_ptr<Tab>(tab)));
+    tabs.insert(std::pair<std::string, std::unique_ptr<Utils::Tab>>(tab->id, std::unique_ptr<Utils::Tab>(tab)));
 
     //Set the currents
     currentScript = script;
@@ -292,7 +247,7 @@ bool VisualScriptManager::CreateScript(ScriptBelongsTo sbt, std::string& project
 /*
 PURPOSE: Deletes the script
 */
-bool VisualScriptManager::DeleteScript(std::string scriptId, ScriptBelongsTo sbt)
+bool VisualScriptManager::DeleteScript(std::string scriptId, Utils::ScriptBelongsTo sbt)
 {
     std::string sbtStr = "";
     if (sbt.entity) {
@@ -313,9 +268,9 @@ bool VisualScriptManager::DeleteScript(std::string scriptId, ScriptBelongsTo sbt
 PURPOSE: Saves the script
 */
 bool VisualScriptManager::SaveScript(std::shared_ptr<VisualScript> script, std::string& projectDir,
-    Tab*& openedTab,
+    Utils::Tab*& openedTab,
     std::map<std::string, std::string>& scenes,
-    std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs)
+    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs)
 {
     //std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
 
@@ -336,7 +291,7 @@ bool VisualScriptManager::SaveScript(std::shared_ptr<VisualScript> script, std::
         openedTabId = openedTab->id;
     }
 
-    nlohmann::json projectJson = CreateProjectJson(openedTabId, scenes, scripts, tabs);
+    nlohmann::json projectJson = Utils::CreateProjectJson(openedTabId, scenes, scripts, tabs);
     AssetSaver::SaveProjectToFile(projectFile, projectJson);
 
     return true;

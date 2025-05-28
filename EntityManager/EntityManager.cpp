@@ -100,7 +100,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					casted->index = numLights;//Set the index of the light. For example, 0. index of all lights
 
 					//Use right shaders
-					ShaderManager::GetInstance().UseShaders(DEPTH);
+					ShaderManager::GetInstance().UseShaders(Utils::DEPTH);
 					glBindFramebuffer(GL_FRAMEBUFFER, casted->depthMapFBO);
 
 					glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
@@ -153,7 +153,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 		}
 
 		//Use SHADER_3D shaders which is for 3d drawing
-		ShaderManager::GetInstance().UseShaders(SHADER_3D);
+		ShaderManager::GetInstance().UseShaders(Utils::SHADER_3D);
 		ShaderManager::GetInstance().ApplyUniformInt("numLights", numLights);
 
 		for (auto& entityIter : entities) {
@@ -241,7 +241,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 	}
 	else {
 		//Use SHADER_2D shaders which is for 2d drawing
-		ShaderManager::GetInstance().UseShaders(SHADER_2D);
+		ShaderManager::GetInstance().UseShaders(Utils::SHADER_2D);
 	}
 
 	/*

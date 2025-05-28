@@ -2,19 +2,6 @@
 #include "VisualScript.h"
 
 /*
-TODO: Move them to somewhere else like "common"
-*/
-enum TabType {
-	SceneEditor,
-	VisualScriptEditor
-};
-
-struct Tab {
-	std::string id;
-	TabType tabType;
-};
-
-/*
 PURPOSE: Creates a new script and set some variables
 */
 bool VisualScript::CreateScript(std::string scriptId, std::string belongsTo, std::string belongsScene)

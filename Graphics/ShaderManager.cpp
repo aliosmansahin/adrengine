@@ -4,7 +4,7 @@
 /*
 PURPOSE: Initializes vertex, fragment and (if it's exists) geomerty shaders
 */
-bool ShaderManager::InitShaders(ShaderType shaderType)
+bool ShaderManager::InitShaders(Utils::ShaderType shaderType)
 {
     //create a shader program
     unsigned int program = glCreateProgram();
@@ -13,25 +13,25 @@ bool ShaderManager::InitShaders(ShaderType shaderType)
     Shader* shader = nullptr;
 
     //initialize shaders as the type
-    if (shaderType == SHADER_2D) {
+    if (shaderType == Utils::SHADER_2D) {
         Logger::Log("P", "Initializing SHADER_2D");
         shader = new Shader();
         if (!shader->CreateShader("shaders/2DVertexShader.glsl", "shaders/2DFragmentShader.glsl"))
             return false;
     }
-    else if (shaderType == SHADER_3D) {
+    else if (shaderType == Utils::SHADER_3D) {
         Logger::Log("P", "Initializing SHADER_3D");
         shader = new Shader();
         if (!shader->CreateShader("shaders/VertexShader.glsl", "shaders/FragmentShader.glsl"))
             return false;
     }
-    else if (shaderType == DEPTH) {
+    else if (shaderType == Utils::DEPTH) {
         Logger::Log("P", "Initializing DEPTH");
         shader = new Shader();
         if (!shader->CreateShader("shaders/DepthVertexShader.glsl", "shaders/DepthFragmentShader.glsl"))
             return false;
     }
-    else if (shaderType == DEPTH_CUBE) {
+    else if (shaderType == Utils::DEPTH_CUBE) {
         Logger::Log("P", "Initializing DEPTH_CUBE");
         shader = new Shader();
         if (!shader->CreateShader("shaders/DepthCubeVertexShader.glsl", "shaders/DepthCubeFragmentShader.glsl", "shaders/DepthCubeGeometryShader.glsl"))
@@ -76,7 +76,7 @@ bool ShaderManager::InitShaders(ShaderType shaderType)
 /*
 PURPOSE: Set the program as current
 */
-void ShaderManager::UseShaders(ShaderType shaderType)
+void ShaderManager::UseShaders(Utils::ShaderType shaderType)
 {
     if (currentType != shaderType) {
         currentProgram = programs[shaderType];
@@ -88,7 +88,7 @@ void ShaderManager::UseShaders(ShaderType shaderType)
 /*
 PURPOSE: Gets type of current shader
 */
-ShaderType ShaderManager::GetCurrentType()
+Utils::ShaderType ShaderManager::GetCurrentType()
 {
     return currentType;
 }

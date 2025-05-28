@@ -155,6 +155,7 @@
     <ClInclude Include="nlohmann_json\json.hpp" />
     <ClInclude Include="nlohmann_json\json_fwd.hpp" />
     <ClInclude Include="stbi\stb_image.h" />
+    <ClInclude Include="utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad.cpp" />

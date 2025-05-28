@@ -8,8 +8,8 @@ PURPOSE: Draws the window
 void WindowVisualScript::DrawWindow(
     int tabHeight,
     std::string& projectDir,
-    Tab*& openedTab,
-    std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs)
+    Utils::Tab*& openedTab,
+    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs)
 {
     //Some variables
     int windowHeight = (int)ImGui::GetWindowHeight();

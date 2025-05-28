@@ -137,7 +137,7 @@ void InterfaceManager::DrawInterface(
 				SceneManager::GetInstance().currentScene = nullptr;
 				VisualScriptManager::GetInstance().currentScript = nullptr;
 				//If the tabType is scene, set the currentScene
-				if (tab->tabType == SceneEditor) {
+				if (tab->tabType == Utils::SceneEditor) {
 					auto openedScene = SceneManager::GetInstance().openedScenes.find(tab->id);
 					if (openedScene != SceneManager::GetInstance().openedScenes.end()) {
 						SceneManager::GetInstance().currentScene = openedScene->second.get();
@@ -145,7 +145,7 @@ void InterfaceManager::DrawInterface(
 					}
 				}
 				//If the tabType is script, set the currentScript
-				else if (tab->tabType == VisualScriptEditor) {
+				else if (tab->tabType == Utils::VisualScriptEditor) {
 					auto openedScript = VisualScriptManager::GetInstance().openedScripts.find(tab->id);
 					if (openedScript != VisualScriptManager::GetInstance().openedScripts.end()) {
 						VisualScriptManager::GetInstance().currentScript = openedScript->second;
@@ -170,7 +170,7 @@ void InterfaceManager::DrawInterface(
 
 	//Draws windows
 	if (openedTab) {
-		if (openedTab->tabType == SceneEditor) {
+		if (openedTab->tabType == Utils::SceneEditor) {
 			//If openedTabType is scene, draw scene windows
 			if (SceneManager::GetInstance().currentScene && SceneManager::GetInstance().currentScene->GetEntityManager()) {
 				if (WindowScene::GetInstance().showWindow)
@@ -186,7 +186,7 @@ void InterfaceManager::DrawInterface(
 					WindowAssetExplorer::GetInstance().DrawWindow();
 			}
 		}
-		else if (openedTab->tabType == VisualScriptEditor) {
+		else if (openedTab->tabType == Utils::VisualScriptEditor) {
 			//If openedTabType is script, draw script windows
 			if (VisualScriptManager::GetInstance().currentScript) {
 				if (WindowVisualScript::GetInstance().showWindow) {

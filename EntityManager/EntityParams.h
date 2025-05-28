@@ -11,6 +11,10 @@
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
+/*
+	We don't have to have implementation of the Entity and VisualScript class
+	Because we will use them as a pointer, also we won't use functions of them
+*/
 class Entity;
 class VisualScript;
 

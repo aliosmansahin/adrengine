@@ -5,49 +5,6 @@
 #include <GLFW/glfw3.h>
 
 /*
-PURPOSE: Creates a project json content
-TODO: This function will be moved to another place like "common" project (I haven't decided it yet)
-*/
-SCENEMANAGER_API nlohmann::json CreateProjectJson(
-    std::string openedTabId,
-	std::map<std::string, std::string>& scenes,
-	std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts,
-	std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs) {
-
-    nlohmann::json projectJson;
-
-    //Current tab
-    projectJson["current-tab"] = openedTabId;
-
-    //All scenes
-    for (auto& sceneIter : scenes) {
-        auto& scene = sceneIter.first;
-        projectJson["scenes"].push_back(scene);
-    }
-
-    //All scripts
-    for (auto& scriptIter : scripts) {
-        auto& script = scriptIter.first;
-        projectJson["scripts"].push_back(script);
-    }
-
-    //Opened tabs
-    for (auto& tabIter : tabs) {
-        auto& tabId = tabIter.first;
-        auto& tab = tabIter.second;
-        nlohmann::json a;
-        a["id"] = tabId;
-        if (tab->tabType == SceneEditor)
-            a["type"] = "SceneEditor";
-        if (tab->tabType == VisualScriptEditor)
-            a["type"] = "VisualScriptEditor";
-        projectJson["opened-tabs"].push_back(a);
-    }
-
-    return projectJson;
-}
-
-/*
 PURPOSE: Initializes the scene manager
 */
 bool SceneManager::InitializeManager()
@@ -80,10 +37,10 @@ void SceneManager::ClearManager()
 PURPOSE: Creates a scene and opens it
 */
 bool SceneManager::CreateScene(
-    SceneType sceneType,
+    Utils::SceneType sceneType,
     std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
-    Tab*& openedTab,
+    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
+    Utils::Tab*& openedTab,
     std::string& selectedTabId,
     std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts)
 {
@@ -121,11 +78,11 @@ bool SceneManager::CreateScene(
     openedScenes.insert(std::pair<std::string, std::unique_ptr<Scene>>(scene->sceneId, std::unique_ptr<Scene>(scene)));
 
     //Create a new tab and insert it to all tabs
-    Tab* tab = new Tab();
+    Utils::Tab* tab = new Utils::Tab();
     tab->id = sceneId;
-    tab->tabType = SceneEditor;
+    tab->tabType = Utils::SceneEditor;
 
-    tabs.insert(std::pair<std::string, std::unique_ptr<Tab>>(tab->id, std::unique_ptr<Tab>(tab)));
+    tabs.insert(std::pair<std::string, std::unique_ptr<Utils::Tab>>(tab->id, std::unique_ptr<Utils::Tab>(tab)));
 
     //Set the current scene and tab to the new scene and tab
     currentScene = scene;
@@ -135,7 +92,7 @@ bool SceneManager::CreateScene(
     //Save the project
     std::string projectFile = projectDir + "project.adrengineproject";
 
-    nlohmann::json projectJson = CreateProjectJson(openedTab->id, scenes, scripts, tabs);
+    nlohmann::json projectJson = Utils::CreateProjectJson(openedTab->id, scenes, scripts, tabs);
 
     AssetSaver::SaveProjectToFile(projectFile, projectJson);
 
@@ -146,7 +103,7 @@ bool SceneManager::CreateScene(
 PURPOSE: Loads the scene and opens it
 */
 Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
+    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
     std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
 {
     //If the scene or tab exists, don't create a new one
@@ -180,12 +137,12 @@ Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
     openedScenes.insert(std::pair<std::string, std::unique_ptr<Scene>>(scene->sceneId, std::unique_ptr<Scene>(scene)));
 
     //Create a new tab
-    Tab* tab = new Tab();
+    Utils::Tab* tab = new Utils::Tab();
     tab->id = sceneId;
-    tab->tabType = SceneEditor;
+    tab->tabType = Utils::SceneEditor;
 
     //Insert the tab to tabs map
-    tabs.insert(std::pair<std::string, std::unique_ptr<Tab>>(tab->id, std::unique_ptr<Tab>(tab)));
+    tabs.insert(std::pair<std::string, std::unique_ptr<Utils::Tab>>(tab->id, std::unique_ptr<Utils::Tab>(tab)));
 
     return scene;
 }
@@ -194,8 +151,8 @@ Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
 PURPOSE: Saves and closes the scene
 */
 bool SceneManager::CloseScene(std::string sceneId, std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
-    Tab*& openedTab,
+    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
+    Utils::Tab*& openedTab,
     std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts)
 {
     //If the scene or tab doesn't exists, interrupt the function
@@ -237,7 +194,7 @@ bool SceneManager::CloseScene(std::string sceneId, std::string& projectDir,
         openedTabId = openedTab->id;
     }
 
-    nlohmann::json projectJson = CreateProjectJson(openedTabId, scenes, scripts, tabs);
+    nlohmann::json projectJson = Utils::CreateProjectJson(openedTabId, scenes, scripts, tabs);
     AssetSaver::SaveProjectToFile(projectFile, projectJson);
     return true;
 }
@@ -246,8 +203,8 @@ bool SceneManager::CloseScene(std::string sceneId, std::string& projectDir,
 PURPOSE: Deletes scene object and its folder
 */
 bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
-    Tab*& openedTab,
+    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
+    Utils::Tab*& openedTab,
     std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts)
 {
     //If the scene doesn't exist, interrupt the function
@@ -300,7 +257,7 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir,
         openedTabId = openedTab->id;
     }
 
-    nlohmann::json projectJson = CreateProjectJson(openedTabId, scenes, scripts, tabs);
+    nlohmann::json projectJson = Utils::CreateProjectJson(openedTabId, scenes, scripts, tabs);
     AssetSaver::SaveProjectToFile(projectFile, projectJson);
 
     return true;
