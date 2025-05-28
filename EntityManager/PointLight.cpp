@@ -14,6 +14,34 @@ bool PointLight::CreateEntity(std::shared_ptr<EntityParams> params)
 	}
 	this->params = casted;
 
+	//Create buffers for shadow
+	glGenFramebuffers(1, &depthMapFBO);
+	const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
+
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, depthMap);
+	for (GLuint i = 0; i < 6; ++i) {
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+			SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	/*GLenum err;
+	while ((err = glGetError()) != GL_NO_ERROR) {
+		std::cout << "OpenGL error: " << err << std::endl;
+	}*/
+
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMap, 0); // <- Tüm yüzler için
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	return true;
 }
 
@@ -22,6 +50,9 @@ PURPOSE: Unitializes the entity
 */
 void PointLight::DeleteEntity()
 {
+	//Delete buffers
+	glDeleteFramebuffers(1, &depthMapFBO);
+	glDeleteTextures(1, &depthMap);
 }
 
 /*
@@ -29,24 +60,22 @@ PURPOSE: Updates the entity
 */
 void PointLight::Update()
 {
-	/*
-		Here we are calculating the real position, rotation and scale from properties.
-		We will use these vectors to draw it in the space.
-		If the entity has a parent, add the paramters to real* which is currently from parent's real*.
-		Otherwise real* will be properties directly
-	*/
-	if (params.get()) {
-		if (params->parent.get()) {
-			realPos += glm::vec3(params->x, params->y, params->z);
-			realRot += glm::vec3(params->rx, params->ry, params->rz);
-			realSca *= glm::vec3(params->sx, params->sy, params->sz);
-		}
-		else {
-			realPos = glm::vec3(params->x, params->y, params->z);
-			realRot = glm::vec3(params->rx, params->ry, params->rz);
-			realSca = glm::vec3(params->sx, params->sy, params->sz);
-		}
-	}
+	//some variables
+	float aspect = 1.0f;
+	float near_plane = 0.1f;
+	far_plane = 1000.0f;
+
+	//Calculate shadow matrices
+	glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near_plane, far_plane);
+	glm::vec3 pos = realPos;
+
+	shadowTransforms.reserve(6);
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(1, 0, 0), glm::vec3(0, -1, 0)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(-1, 0, 0), glm::vec3(0, -1, 0)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 1, 0), glm::vec3(0, 0, 1)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, -1, 0), glm::vec3(0, 0, -1)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, 1), glm::vec3(0, -1, 0)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, -1), glm::vec3(0, -1, 0)));
 }
 
 /*

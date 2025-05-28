@@ -70,11 +70,6 @@ void Scene::UpdateScene(
 					these controls come build-in
 			*/
 
-			//Reloads all lights
-			if (InputManager::GetInstance().IsKeyJustPressed(GLFW_KEY_R)) {
-				entityManager->SetLights();
-			}
-
 			//If user right-clicks the scene, enable dragging the scene
 			if (InputManager::GetInstance().IsMouseButtonJustPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
 				if (windowGameViewportIsHovered) {
