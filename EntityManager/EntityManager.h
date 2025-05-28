@@ -24,37 +24,6 @@
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-//Store type of each light
-enum LightType {
-	LIGHT_DIRECTIONAL,
-	LIGHT_POINT,
-	LIGHT_SPOT
-};
-
-//The light object
-struct Light {
-	LightType type;
-	glm::vec3 position = glm::vec3(0.0f);
-	glm::vec3 direction = glm::vec3(0.0f);
-	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-
-	float cutOff = 0.0f;
-	float outerCutOff = 0.0f;
-
-	float constant = 0.0f;
-	float linear = 0.0f;
-	float quadratic = 0.0f;
-
-	glm::mat4 lightSpaceMatrix;
-	unsigned int depthMapFBO;
-	unsigned int depthMap;
-
-	std::vector<glm::mat4> shadowTransforms;
-	float far_plane = 0.0f;
-
-	std::string id = "";
-};
-
 class EntityManager
 {
 public:

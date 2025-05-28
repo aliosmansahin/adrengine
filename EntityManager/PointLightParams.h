@@ -1,11 +1,6 @@
 #pragma once
 
-#include "EntityParams.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
+#include "LightParams.h"
 
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
@@ -13,7 +8,7 @@
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class PointLightParams : public EntityParams
+class PointLightParams : public LightParams
 {
 public:
 	/*
@@ -39,7 +34,7 @@ public:
 			Which calls the function of the base class.
 			In this function, we are overriding the function, so we need it
 		*/
-		auto j = EntityParams::ToJson();
+		auto j = LightParams::ToJson();
 
 		//Save some properties
 		j["type"] = GetType();
@@ -54,8 +49,6 @@ public:
 	ENTITYMANAGER_API void FromJson(const nlohmann::json& j) override;
 
 	//Variables for the DirectionalLight
-	glm::vec3 color = glm::vec3(0.2f, 0.2f, 0.2f);
-
 	float constant = 1.0f;
 	float linear = 0.7f;
 	float quadratic = 1.8f;

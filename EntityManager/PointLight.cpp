@@ -63,7 +63,6 @@ void PointLight::Update()
 	//some variables
 	float aspect = 1.0f;
 	float near_plane = 0.1f;
-	far_plane = 1000.0f;
 
 	//Calculate shadow matrices
 	glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near_plane, far_plane);

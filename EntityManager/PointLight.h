@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "Light.h"
 #include "PointLightParams.h"
 #include "ShaderManager.h"
 
@@ -10,7 +10,7 @@
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class PointLight : public Entity
+class PointLight : public Light
 {
 public:
 	//main functions
@@ -32,12 +32,8 @@ public:
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
 public:
-	//light and shadow
-	unsigned int depthMapFBO;
-	unsigned int depthMap;
-
-	float far_plane;
-	int index = 0;
+	//point light parameters and matrices
+	float far_plane = 1000.0f;
 	std::vector<glm::mat4> shadowTransforms;
 private:
 	//properties

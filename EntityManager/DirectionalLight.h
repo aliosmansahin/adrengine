@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "Light.h"
 #include "DirectionalLightParams.h"
 
 #ifdef ENTITYMANAGER_EXPORTS
@@ -9,7 +9,7 @@
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class DirectionalLight : public Entity
+class DirectionalLight : public Light
 {
 public:
 	//main functions
@@ -31,12 +31,8 @@ public:
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
 public:
-	//light and shadow
-	unsigned int depthMapFBO;
-	unsigned int depthMap;
-	glm::mat4 lightSpaceMatrix = glm::mat4(1.0f);
-
-	int index;
+	//light matrix
+	glm::mat4 lightSpaceMatrix;
 private:
 	//properties
 	std::shared_ptr<DirectionalLightParams> params;

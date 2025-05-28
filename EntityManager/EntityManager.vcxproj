@@ -159,6 +159,8 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="EntityParams.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightParams.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectParams.h" />
     <ClInclude Include="pch.h" />
@@ -176,6 +178,8 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="EntityParams.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightParams.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectParams.cpp" />
     <ClCompile Include="pch.cpp">
