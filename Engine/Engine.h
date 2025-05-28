@@ -55,7 +55,7 @@ private:
 public:
 	//project specifications
 	std::string projectName = "project";
-	std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\"; This is for mine
+	std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\"; //This is for mine
 	//std::string projectPath = "";//TODO: Change it to yours
 
 	//store screen width and height
