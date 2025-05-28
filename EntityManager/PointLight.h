@@ -32,6 +32,7 @@ public:
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
 public:
+	//light and shadow
 	unsigned int depthMapFBO;
 	unsigned int depthMap;
 

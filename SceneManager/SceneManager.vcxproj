@@ -76,6 +76,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\include;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glad\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -140,7 +141,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\EntityManager;..\Common;..\Logger;..\Asset;..\Graphics</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\EntityManager;..\Timer;..\InputManager;..\Common;..\Logger;..\Asset;..\Graphics</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,6 +150,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;EntityManager.lib;Asset.lib;Logger.lib;Timer.lib;InputManager.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

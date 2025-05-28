@@ -56,6 +56,7 @@ uniform mat4 lightSpaceMatrices[MAX_LIGHTS];
 uniform samplerCube shadowCubeMaps[MAX_LIGHTS];
 uniform float far_planes[MAX_LIGHTS];
 
+//For point lights
 const vec2 gridSamplingDisk[20] = vec2[20](
     vec2(1.0, 0.0), vec2(-1.0, 0.0), vec2(0.0, 1.0), vec2(0.0, -1.0),
     vec2(0.707, 0.707), vec2(0.707, -0.707), vec2(-0.707, 0.707), vec2(-0.707, -0.707),
@@ -83,7 +84,7 @@ float PointLightShadow(vec3 fragPos, int lightIndex, vec3 lightPos) {
     return shadow;
 }
 
-//Function to calculate shadow of directional and spot lights
+//Function to calculate shadow of directional lights
 float DirectionalLightShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir, sampler2D shadowMap) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
@@ -110,6 +111,7 @@ float DirectionalLightShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir,
     return shadow;
 }
 
+//Function to calculate shadow of spot lights
 float SpotLightShadow(vec4 fragPosLight, vec3 lightDirection, vec3 normal, sampler2D shadowMap) {
     float shadow = 0.0f;
 	// Sets lightCoords to cull space
@@ -149,6 +151,7 @@ void main() {
     // Emissive component (Lights itself)
     vec3 emissive = materialEmission;
 
+    // If the material has a texture
     vec3 diffuseColor = hasTexture ? texture(objTexture, TexCoord).rgb : materialDiffuse;
     vec3 ambient = materialAmbient * diffuseColor;
 
@@ -163,7 +166,8 @@ void main() {
         float intensity = 1.0;
         float shadow = 0.0;
 
-        // Calculate direction of light and shadow
+        // SHADOWS ARE DISABLED EXCEPT FOR DIRECTIONAL
+        // Calculate direction of the light and shadow
         if (lights[i].type == LIGHT_TYPE_DIRECTIONAL) {
             lightDir = normalize(-lights[i].direction);
             shadow = DirectionalLightShadow(lightSpaceMatrices[i] * WorldPosition, norm, lightDir, shadowMaps[i]);
@@ -172,18 +176,17 @@ void main() {
             float dist = length(lights[i].position - FragPos);
             attenuation = 1.0 / (lights[i].constant + lights[i].linear * dist + lights[i].quadratic * dist * dist);
             if (lights[i].type == LIGHT_TYPE_POINT) {
-                shadow = PointLightShadow(FragPos, i, lights[i].position);
+                //shadow = PointLightShadow(FragPos, i, lights[i].position);
+                shadow = 0;
             }
         }
 
         if (lights[i].type == LIGHT_TYPE_SPOT) {
             float theta = dot(lightDir, normalize(-lights[i].direction));
-            float epsilon = max(lights[i].cutOff - lights[i].outerCutOff, 0.001); // epsilon = 0 önlenir
+            float epsilon = max(lights[i].cutOff - lights[i].outerCutOff, 0.001); // prevent epsilon = 0
             intensity = clamp((theta - lights[i].outerCutOff) / epsilon, 0.0, 1.0);
-            //shadow = ShadowCalculation(lightSpaceMatrices[i] * WorldPosition, norm, lightDir, shadowMaps[i]);
-            shadow = SpotLightShadow(lightSpaceMatrices[i] * WorldPosition, lightDir, norm, shadowMaps[i]);
-            //shadow = 0;
-            //if(shadow == 1) // 0 GÖLGE YOK 1 GÖLGE VAR
+            //shadow = SpotLightShadow(lightSpaceMatrices[i] * WorldPosition, lightDir, norm, shadowMaps[i]);
+            shadow = 0; // 0 NO SHADOW 1 SHADOW
         }
 
         // Calculate diffuse and specular (Phong)
@@ -205,6 +208,7 @@ void main() {
 
     // Opacity
     float alpha = materialOpacity;
+
     // Gamma correction
     if(useGammaCorrection) {
         vec3 gammaCorrected = pow(result, vec3(1.0/2.2));

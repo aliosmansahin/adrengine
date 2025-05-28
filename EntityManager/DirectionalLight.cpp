@@ -14,6 +14,7 @@ bool DirectionalLight::CreateEntity(std::shared_ptr<EntityParams> params)
 	}
 	this->params = casted;
 
+	//Create buffers for shadow
 	glGenFramebuffers(1, &depthMapFBO);
 	const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
 
@@ -41,6 +42,9 @@ PURPOSE: Unitializes the entity
 */
 void DirectionalLight::DeleteEntity()
 {
+	//Delete buffers
+	glDeleteFramebuffers(1, &depthMapFBO);
+	glDeleteTextures(1, &depthMap);
 }
 
 /*
@@ -48,15 +52,16 @@ PURPOSE: Updates the entity
 */
 void DirectionalLight::Update()
 {
-	//Calculate light martix
-	glm::vec3 lightDir = glm::normalize(params->direction);
+	//Some variables
 	float width = 100.0f;
 	float near_plane = 1.0f, far_plane = 1000.0f;
+
+	//Calculate light martix
+	glm::vec3 lightDir = glm::normalize(params->direction);
 	glm::mat4 lightProjection = glm::ortho(-width, width, -width, width, near_plane, far_plane);
 	//lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
 	glm::mat4 lightView = glm::lookAt(-lightDir * 100.0f, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	lightSpaceMatrix = lightProjection * lightView;
-
 }
 
 /*

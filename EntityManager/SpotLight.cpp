@@ -14,6 +14,7 @@ bool SpotLight::CreateEntity(std::shared_ptr<EntityParams> params)
 	}
 	this->params = casted;
 
+	//Create buffers for shadow
 	const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
 
 	glGenTextures(1, &depthMap);
@@ -41,6 +42,9 @@ PURPOSE: Unitializes the entity
 */
 void SpotLight::DeleteEntity()
 {
+	//Delete buffers
+	glDeleteFramebuffers(1, &depthMapFBO);
+	glDeleteTextures(1, &depthMap);
 }
 
 /*
@@ -48,11 +52,10 @@ PURPOSE: Updates the entity
 */
 void SpotLight::Update()
 {
+	//Some variables
 	float aspect = 1.0f;
 	float near_plane = 0.1f;
 	float far_plane = 1000.0f;
-	//Use DEPTH shader which is for directional and spot lights
-	/*ShaderManager::GetInstance().UseShaders(DEPTH);*/
 
 	//Calculate light martix
 	glm::vec3 spotPos = realPos;
@@ -60,15 +63,8 @@ void SpotLight::Update()
 
 	float fov = glm::degrees(2 * acos(glm::clamp(params->outerCutOff, -1.0f, 1.0f)));
 	glm::mat4 lightProjection = glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
-	//glm::vec3 up = glm::abs(glm::dot(spotDir, glm::vec3(0.0f, 1.0f, 0.0f))) > 0.99f
-	//	? glm::vec3(0.0f, 0.0f, 1.0f)  // spot ýþýk yukarý/aþaðý bakýyorsa z ekseni up olsun
-	//	: glm::vec3(0.0f, 1.0f, 0.0f);
-
 	glm::mat4 lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(0.0f, 1.0f, 0.0f));
 	lightSpaceMatrix = lightProjection * lightView;
-
-	//std::cout << glm::to_string(lightSpaceMatrix) << std::endl;
-
 }
 
 /*
@@ -77,19 +73,6 @@ PURPOSE: Draws the entity from the position of the camera.
 */
 void SpotLight::Draw(glm::vec3 currentSceneCameraPos)
 {
-
-	// lights[i] bilgileri
-	std::string base = "lights[" + std::to_string(index) + "]";
-	ShaderManager::GetInstance().ApplyUniformInt((base + ".type").c_str(), 2);
-	ShaderManager::GetInstance().ApplyUniformVec3((base + ".position").c_str(), realPos);
-	ShaderManager::GetInstance().ApplyUniformVec3((base + ".direction").c_str(), glm::normalize(params->direction));
-	ShaderManager::GetInstance().ApplyUniformVec3((base + ".color").c_str(), params->color);
-	ShaderManager::GetInstance().ApplyUniformFloat((base + ".cutOff").c_str(), params->cutOff);
-	ShaderManager::GetInstance().ApplyUniformFloat((base + ".outerCutOff").c_str(), params->outerCutOff);
-	ShaderManager::GetInstance().ApplyUniformFloat((base + ".constant").c_str(), params->constant);
-	ShaderManager::GetInstance().ApplyUniformFloat((base + ".linear").c_str(), params->linear);
-	ShaderManager::GetInstance().ApplyUniformFloat((base + ".quadratic").c_str(), params->quadratic);
-
 }
 
 /*
