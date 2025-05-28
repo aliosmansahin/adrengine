@@ -58,6 +58,22 @@ PURPOSE: Updates the entity
 */
 void PointLight::Update()
 {
+	float aspect = 1.0f;
+	float near_plane = 0.1f;
+	far_plane = 1000.0f;
+
+	glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near_plane, far_plane);
+	glm::vec3 pos = realPos;
+
+	shadowTransforms.reserve(6);
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(1, 0, 0), glm::vec3(0, -1, 0)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(-1, 0, 0), glm::vec3(0, -1, 0)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 1, 0), glm::vec3(0, 0, 1)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, -1, 0), glm::vec3(0, 0, -1)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, 1), glm::vec3(0, -1, 0)));
+	shadowTransforms.emplace_back(shadowProj * glm::lookAt(pos, pos + glm::vec3(0, 0, -1), glm::vec3(0, -1, 0)));
+
+	
 }
 
 /*

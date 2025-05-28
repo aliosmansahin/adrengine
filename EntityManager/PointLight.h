@@ -36,6 +36,8 @@ public:
 	unsigned int depthMap;
 
 	float far_plane;
+	int index = 0;
+	std::vector<glm::mat4> shadowTransforms;
 private:
 	//properties
 	std::shared_ptr<PointLightParams> params;

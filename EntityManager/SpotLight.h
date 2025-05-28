@@ -1,5 +1,8 @@
 #pragma once
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
 #include "Entity.h"
 #include "SpotLightParams.h"
 #include "ShaderManager.h"
@@ -35,6 +38,7 @@ public:
 	unsigned int depthMapFBO;
 	unsigned int depthMap;
 	glm::mat4 lightSpaceMatrix;
+	int index = 0;
 private:
 	//properties
 	std::shared_ptr<SpotLightParams> params;
