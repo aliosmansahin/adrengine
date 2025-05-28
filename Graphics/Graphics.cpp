@@ -11,7 +11,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
-
 /*
 PURPOSE: Initialize graphics engine
 */
@@ -41,13 +40,13 @@ bool Graphics::InitGraphics(GLFWwindow* window)
         return false;
 
 	//initialize each shader
-    if (!ShaderManager::GetInstance().InitShaders(SHADER_2D))
+    if (!ShaderManager::GetInstance().InitShaders(Utils::SHADER_2D))
         return false;
-    if (!ShaderManager::GetInstance().InitShaders(SHADER_3D))
+    if (!ShaderManager::GetInstance().InitShaders(Utils::SHADER_3D))
         return false;
-    if (!ShaderManager::GetInstance().InitShaders(DEPTH))
+    if (!ShaderManager::GetInstance().InitShaders(Utils::DEPTH))
         return false;
-    if (!ShaderManager::GetInstance().InitShaders(DEPTH_CUBE))
+    if (!ShaderManager::GetInstance().InitShaders(Utils::DEPTH_CUBE))
         return false;
 
     return true;

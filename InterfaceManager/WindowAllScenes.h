@@ -23,9 +23,9 @@ public:
 		bool& windowAddSceneShowWindow,
 		Entity* windowEntityPropertiesCurrentEntity,
 		std::string& windowSceneSelectedId,
-		std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
+		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
 		std::string& selectedTabId,
-		Tab*& openedTab
+		Utils::Tab*& openedTab
 	);
 	INTERFACEMANAGER_API static WindowAllScenes& GetInstance();
 private:

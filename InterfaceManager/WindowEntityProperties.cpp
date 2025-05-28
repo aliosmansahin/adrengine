@@ -9,8 +9,8 @@ PURPOSE: Draws the window
 */
 void WindowEntityProperties::DrawWindow(
     std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
-    Tab*& openedTab,
+    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
+    Utils::Tab*& openedTab,
     std::string& selectedTabId)
 {
     //Begins the window
@@ -94,7 +94,7 @@ void WindowEntityProperties::DrawWindow(
             ImGui::Text("No Script");
             ImGui::SameLine();
             if (ImGui::Button("Add Script")) {
-                ScriptBelongsTo sbt;
+                Utils::ScriptBelongsTo sbt;
                 sbt.entity = currentEntity;
                 sbt.sceneJson = SceneManager::GetInstance().currentScene->ToJson();
                 VisualScriptManager::GetInstance().CreateScript(sbt, projectDir, tabs, openedTab, selectedTabId, SceneManager::GetInstance().scenes);

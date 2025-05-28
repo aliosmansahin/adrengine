@@ -47,7 +47,7 @@ public:
 	bool pendingTabDelete = false;
 	std::string deleteTabId = "";
 	std::string selectedTabId = "";
-	Tab* openedTab = nullptr;
-	std::unordered_map<std::string, std::shared_ptr<Tab>> tabs;
+	Utils::Tab* openedTab = nullptr;
+	std::unordered_map<std::string, std::shared_ptr<Utils::Tab>> tabs;
 	int tabHeight = 40;
 };

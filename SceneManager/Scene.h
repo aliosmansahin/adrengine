@@ -11,21 +11,17 @@
 #include <map>
 #include <memory>
 
-#include "Entity.h"
+#include "utils/Utils.h"
 
-class EntityManager;
-
-//enum for scene types
-enum SceneType {
-	SCENE_2D,
-	SCENE_3D
-};
+#include "EntityManager.h"
+#include "Timer.h"
+#include "InputManager.h"
 
 class Scene
 {
 public:
 	//main functions
-	SCENEMANAGER_API bool			CreateScene(std::string sceneId, SceneType sceneType);
+	SCENEMANAGER_API bool			CreateScene(std::string sceneId, Utils::SceneType sceneType);
 	SCENEMANAGER_API void			DrawScene(int window_width, int window_height, glm::vec3 currentSceneCameraPos);
 	SCENEMANAGER_API void			UpdateScene(
 		bool isPlaying,
@@ -51,7 +47,7 @@ public:
 	//scene variables
 	std::string sceneId;
 	std::string sceneName;
-	SceneType sceneType;
+	Utils::SceneType sceneType;
 
 	//camera
 	float cameraX = 0;

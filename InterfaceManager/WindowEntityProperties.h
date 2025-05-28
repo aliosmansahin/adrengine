@@ -15,14 +15,16 @@
 #include "Logger.h"
 #include "EntityManager.h"
 
+#include "utils/Utils.h"
+
 class WindowEntityProperties
 {
 public:
 	//main functions
 	INTERFACEMANAGER_API void DrawWindow(
 		std::string& projectDir,
-		std::unordered_map<std::string, std::shared_ptr<Tab>>& tabs,
-		Tab*& openedTab,
+		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
+		Utils::Tab*& openedTab,
 		std::string& selectedTabId
 	);
 	INTERFACEMANAGER_API void SelectEntity(Entity* entity);

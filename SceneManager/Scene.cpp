@@ -1,14 +1,10 @@
 #include "pch.h"
 #include "Scene.h"
 
-#include "EntityManager.h"
-#include "Timer.h"
-#include "InputManager.h"
-
 /*
 PURPOSE: Sets a scene parameters and creates an entity manager
 */
-bool Scene::CreateScene(std::string sceneId, SceneType sceneType)
+bool Scene::CreateScene(std::string sceneId, Utils::SceneType sceneType)
 {
 	//Set the scene parameters
 	this->sceneId = sceneId;
@@ -33,7 +29,7 @@ void Scene::DrawScene(int window_width, int window_height, glm::vec3 currentScen
 {
 	//If there is an entity manager, draw each entity via entity manager
 	if(entityManager)
-		entityManager->DrawEntities(window_width, window_height, currentSceneCameraPos, (sceneType == SCENE_3D));
+		entityManager->DrawEntities(window_width, window_height, currentSceneCameraPos, (sceneType == Utils::SCENE_3D));
 }
 
 /*
@@ -106,13 +102,13 @@ void Scene::UpdateScene(
 				float resY = (float)deltaMouseY * (float)windowHeight / (float)screenHeight;
 
 				//If the type of the scene is 2d
-				if (sceneType == SCENE_2D) {
+				if (sceneType == Utils::SCENE_2D) {
 					//Move the camera
 					cameraX += resX;
 					cameraY -= resY;
 				}
 				//If the type of the scene is 3d
-				else if (sceneType == SCENE_3D) {
+				else if (sceneType == Utils::SCENE_3D) {
 					//Change the camera position
 					yaw += resX * 0.5f;
 					pitch += -resY * 0.5f;
@@ -233,7 +229,7 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 	//Some loads
 	sceneId = json.value("id", "");
 	sceneName = json.value("name", "");
-	sceneType = (SceneType)json.value("type", SCENE_2D);
+	sceneType = (Utils::SceneType)json.value("type", Utils::SCENE_2D);
 	cameraX = json.value("cameraX", 0.0f);
 	cameraY = json.value("cameraY", 0.0f);
 	cameraZ = json.value("cameraZ", 0.0f);

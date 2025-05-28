@@ -86,7 +86,7 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	model = glm::rotate(model, glm::radians(realRot.y), glm::vec3(0.0, 1.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(realRot.z), glm::vec3(0.0, 0.0f, 1.0f));
 
-	if (ShaderManager::GetInstance().GetCurrentType() == SHADER_3D)
+	if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D)
 		realSca /= 32.0f;
 
 	model = glm::scale(model, realSca);
@@ -97,9 +97,9 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	//Set the texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, params->texture);
-	if(ShaderManager::GetInstance().GetCurrentType() == SHADER_2D)
+	if(ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
 		ShaderManager::GetInstance().ApplyTexture("texture1");
-	else if (ShaderManager::GetInstance().GetCurrentType() == SHADER_3D) {
+	else if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
 
 		//DISABLE GAMMA CORRECTION (This is a better view for Sprite2Ds)
 		ShaderManager::GetInstance().ApplyUniformBool("useGammaCorrection", false);

@@ -9,8 +9,6 @@
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class Sprite2DParams;
-
 class Sprite2D : public Entity
 {
 public:
