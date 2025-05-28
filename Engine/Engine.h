@@ -19,8 +19,6 @@
 
 //TODO: ADD SCRIPT SAVING / LOADING
 
-class Scene;
-
 class Engine
 {
 public:
@@ -57,7 +55,8 @@ private:
 public:
 	//project specifications
 	std::string projectName = "project";
-	std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\";
+	//std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\"; This is for mine
+	std::string projectPath = "";
 	
 	//store screen width and height
 	int screenWidth = 0;
