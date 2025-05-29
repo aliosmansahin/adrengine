@@ -58,10 +58,16 @@ void Tile::Create(int x, int y, int width, int height, float u, float v, float t
 	glBindVertexArray(0);
 }
 
+/*
+PURPOSE: Updates the tile
+*/
 void Tile::Update()
 {
 }
 
+/*
+PURPOSE: Draws the tile
+*/
 void Tile::Draw(int tileW, int tileH, unsigned int tileMap)
 {
 	//Set some transform
@@ -84,6 +90,9 @@ void Tile::Draw(int tileW, int tileH, unsigned int tileMap)
 	glBindVertexArray(0);
 }
 
+/*
+PURPOSE: Releases the tile (buffers and other stuff)
+*/
 void Tile::Release()
 {
 	if (tileVAO != -1) {
