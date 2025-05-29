@@ -170,6 +170,7 @@
     <ClInclude Include="SpotLightParams.h" />
     <ClInclude Include="Sprite2D.h" />
     <ClInclude Include="Sprite2DParams.h" />
+    <ClInclude Include="Tile.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="TileMapParams.h" />
   </ItemGroup>
@@ -196,6 +197,7 @@
     <ClCompile Include="SpotLightParams.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
     <ClCompile Include="Sprite2DParams.cpp" />
+    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="TileMapParams.cpp" />
   </ItemGroup>

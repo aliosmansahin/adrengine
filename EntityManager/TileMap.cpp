@@ -40,6 +40,268 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 }
 
 /*
+PURPOSE: Creates each tile from the inspector
+*/
+ENTITYMANAGER_API void TileMap::CreateTiles(float textureWidth, float textureHeight, float tileWidth, float tileHeight)
+{
+	for (auto& tile : createdTiles)
+		tile.second->Release();
+	createdTiles.clear();
+
+	int tileCountX = (int)std::ceil(textureWidth / tileWidth);
+	int tileCountY = (int)std::ceil(textureHeight / tileHeight);
+	
+	for (int y = 0; y < tileCountY; ++y) {
+
+		/*
+			These calculations are for checking if some of tiles don't have decided size.
+			It they don't we will give them as most size as possible,
+			In this scenario, we will give them the last texture size.
+		*/
+		//pass tile height into a new variable
+		int realTileHeight = tileHeight;
+
+		//if heights of the tiles aren't equal to each other
+		if ((int)textureHeight % (int)tileHeight != 0) {
+			//if this tile is the last in y coord in the tilemap
+			if (y == tileCountY - 1) {
+				//calculate y position of the tile in the tilemap and sub it from tilemap width
+				int currentPosYInTileMap = y * tileHeight;
+				int lastTextureSizeY = textureHeight - currentPosYInTileMap;
+
+				//pass the new width
+				realTileHeight = lastTextureSizeY;
+			}
+		}
+
+		for (int x = 0; x < tileCountX; ++x) {
+			//pass tile width into a new variable
+			int realTileWidth = tileWidth;
+
+			//if widths of the tiles aren't equal to each other
+			if ((int)textureWidth % (int)tileWidth != 0) {
+
+				//if this tile is the last in x coord in the tilemap
+				if (x == tileCountX - 1) {
+					//calculate x position of the tile in the tilemap and sub it from tilemap width
+					int currentPosXInTileMap = x * tileWidth;
+					int lastTextureSizeX = textureWidth - currentPosXInTileMap;
+
+					//pass the new width
+					realTileWidth = lastTextureSizeX;
+				}
+			}
+			
+			//Create tile and insert it into createdTiles
+			Tile* tile = new Tile();
+			float texturePosX = x * tileWidth;
+			float texturePosY = y * tileHeight;
+			
+			/*
+				Here we are translating pixel coordinates to[0.0, 1.0].
+				For example, the texture width is 512 pixels, and the current tile pos is 256,
+				After translation, the new x value will be 0.5
+			*/
+			float u = texturePosX * 1.0f / textureWidth;
+			float v = texturePosY * 1.0f / textureHeight;
+
+			//TT* stands for "translated tile width/height" btw
+			float TTX = realTileWidth * 1.0f / textureWidth;
+			float TTY = realTileHeight * 1.0f / textureHeight;
+
+			tile->Create(x, y, realTileWidth, realTileHeight, u, v, TTX, TTY);
+
+			createdTiles.insert({ { x, y }, std::shared_ptr<Tile>(tile) });
+
+			//std::cout << "x: " << x << " " << " y: " << y << std::endl;
+			//std::cout << "u " << u << " " << u + TTX << " v " << v << " " << v + TTY << std::endl;
+			//std::cout << "x: " << realTileWidth << " y: " << realTileHeight << std::endl;
+		}
+	}
+
+}
+
+/*
+PURPOSE: Creates a framebuffer and other buffer objects for the inspector
+*/
+ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float height, int tileW, int tileH, float scale)
+{
+	width *= scale;
+	height *= scale;
+
+	//------ RELEASING ------
+	
+	//Delete old Buffers
+	if (inspectFrameBuffer != -1)
+		glDeleteFramebuffers(1, &inspectFrameBuffer);
+	if (inspectRenderBuffer != -1)
+		glDeleteRenderbuffers(1, &inspectRenderBuffer);
+	if (inspectTexture != -1)
+		glDeleteTextures(1, &inspectTexture);
+	if (VAO != -1)
+		glDeleteBuffers(1, &VAO);
+	if (VBO != -1)
+		glDeleteBuffers(1, &VBO);
+	if (EBO != -1)
+		glDeleteBuffers(1, &EBO);
+
+	//------ TEXTURE TILEMAP ------
+
+	//Vertices for the texture
+	float vertices[] = {
+		//X		Y		Z	 U     V
+		 width, height, 0.0f, 1.0f, 0.0f, // top right
+		 0.0f,	height, 0.0f, 0.0f, 0.0f, // bottom right
+		 0.0f,  0.0f,	0.0f,  0.0f, 1.0f, // bottom left
+		 width, 0.0f,   0.0f,  1.0f, 1.0f, // top left 
+	};
+	//Indices for the texture
+	unsigned int indices[] = {
+		0, 1, 3,  // first Triangle
+		1, 2, 3   // second Triangle
+	};
+
+	//Create buffers and bind them with vertices and indices
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	//Set the vertex attrib pointers (position = 0)
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	//Set the vertex attrib pointers (position = 1)
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	//Release buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	//------ FRAME BUFFER ------
+
+	//frame buffer
+	glGenFramebuffers(1, &inspectFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
+
+	//generate a texture and bind it to frame buffer
+	glGenTextures(1, &inspectTexture);
+	glBindTexture(GL_TEXTURE_2D, inspectTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, inspectTexture, 0);
+
+	//check the status of frame buffer
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		Logger::Log("E", "Framebuffer is not complete");
+
+	//generate render buffer and bind it to the frame buffer
+	glGenRenderbuffers(1, &inspectRenderBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, inspectRenderBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, inspectRenderBuffer);
+
+	//release all buffers
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+}
+
+/*
+PURPOSE: Updates the inspector, its empty for now
+*/
+ENTITYMANAGER_API void TileMap::UpdateInspect()
+{
+}
+
+/*
+PURPOSE: Renders the inspector to the framebuffer
+*/
+ENTITYMANAGER_API void TileMap::DrawInspect(int width, int height, int tileW, int tileH, float scale)
+{
+	Utils::ShaderType prevShaderType = ShaderManager::GetInstance().GetCurrentType();
+	ShaderManager::GetInstance().UseShaders(Utils::SHADER_INSPECT_TILE);
+	glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
+	Graphics::GetInstance().Clear();
+	glViewport(0, 0, width * scale, height * scale);
+
+	//Some calculations for transformation
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::scale(model, glm::vec3(scale, scale, 1.0f));
+	glm::mat4 proj = glm::ortho(0.0f, (float)width * scale, (float)height * scale, 0.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+
+	//Send the transformation matrix to the shader
+	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
+	ShaderManager::GetInstance().ApplyTransformMatrix("uProjection", proj);
+	ShaderManager::GetInstance().ApplyTransformMatrix("uView", view);
+	ShaderManager::GetInstance().ApplyUniformInt("tileW", tileW);
+	ShaderManager::GetInstance().ApplyUniformInt("tileH", tileH);
+	ShaderManager::GetInstance().ApplyUniformInt("textureWidth", width);
+	ShaderManager::GetInstance().ApplyUniformInt("textureHeight", height);
+
+	//Set the texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, params->texture);
+	ShaderManager::GetInstance().ApplyTexture("texture1");
+
+	//Draw the texture
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//Disable after drawing
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
+
+	ShaderManager::GetInstance().UseShaders(prevShaderType);
+}
+
+/*
+PURPOSE: Check if buffers for inspector are created
+*/
+ENTITYMANAGER_API bool TileMap::IsInspectCreated()
+{
+	if (inspectFrameBuffer == -1)
+		return false;
+	if (inspectRenderBuffer == -1)
+		return false;
+	if (inspectTexture == -1)
+		return false;
+	if (VAO == -1)
+		return false;
+	if (VBO == -1)
+		return false;
+	if (EBO == -1)
+		return false;
+	return true;
+}
+
+/*
+PURPOSE: Gets the texture of the inspector
+*/
+ENTITYMANAGER_API unsigned int TileMap::GetInspectTexture()
+{
+	return inspectTexture;
+}
+
+ENTITYMANAGER_API std::map<std::pair<int, int>, std::shared_ptr<Tile>>& TileMap::GetCreatedTiles()
+{
+	return createdTiles;
+}
+
+/*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
 EntityParams* TileMap::GetEntityParams()

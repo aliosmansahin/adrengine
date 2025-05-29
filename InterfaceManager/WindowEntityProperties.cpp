@@ -277,7 +277,18 @@ void WindowEntityProperties::DrawWindow(
                 ImGui::SetNextItemWidth(itemWidth - padding);
                 ImGui::DragFloat("quadratic", &casted->quadratic, 0.01f);
             }
+        }
+        else if (currentEntity->GetEntityParams()->GetType() == "TileMap") {
+            auto casted = dynamic_cast<TileMapParams*>(currentEntity->GetEntityParams());
+            if (casted) {
+                ImGui::Separator();
+                ImGui::SeparatorText("TileMap");
+                if (ImGui::Button("Edit this TileMap")) {
+                    WindowTileMapEdit::GetInstance().showWindow = true;
+                    WindowTileMapEdit::GetInstance().editingTileMap = dynamic_cast<TileMap*>(currentEntity);
+                }
             }
+        }
     }
     else {
         ImGui::TextColored(ImVec4(0, 255, 0, 255), "Select an entity to modify");

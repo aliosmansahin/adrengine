@@ -2,6 +2,12 @@
 
 #include "Sprite2DParams.h"
 
+#ifdef ENTITYMANAGER_EXPORTS
+#define ENTITYMANAGER_API __declspec(dllexport)
+#else
+#define ENTITYMANAGER_API __declspec(dllimport)
+#endif
+
 class TileMapParams : public Sprite2DParams
 {
 public:
@@ -30,6 +36,10 @@ public:
 		*/
 		auto j = EntityParams::ToJson();
 
+		//Save the id of the texture
+		if (!textureId.empty())
+			j["texture-id"] = textureId;
+
 		//Save the type
 		j["type"] = GetType();
 
@@ -38,5 +48,9 @@ public:
 
 	//json
 	ENTITYMANAGER_API void FromJson(const nlohmann::json& j) override;
+
+	//tilemap texture
+	std::string textureId = "";
+	unsigned int texture = 0;
 };
 

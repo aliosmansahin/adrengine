@@ -37,6 +37,12 @@ bool ShaderManager::InitShaders(Utils::ShaderType shaderType)
         if (!shader->CreateShader("shaders/DepthCubeVertexShader.glsl", "shaders/DepthCubeFragmentShader.glsl", "shaders/DepthCubeGeometryShader.glsl"))
             return false;
     }
+    else if (shaderType == Utils::SHADER_INSPECT_TILE) {
+        Logger::Log("P", "Initializing SHADER_INSPECT_TILE");
+        shader = new Shader();
+        if (!shader->CreateShader("shaders/TileMapInspectVertexShader.glsl", "shaders/TileMapInspectFragmentShader.glsl"))
+            return false;
+    }
     else {
         Logger::Log("E", "Invalid shader type");
         return false;

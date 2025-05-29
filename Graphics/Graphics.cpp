@@ -48,6 +48,8 @@ bool Graphics::InitGraphics(GLFWwindow* window)
         return false;
     if (!ShaderManager::GetInstance().InitShaders(Utils::DEPTH_CUBE))
         return false;
+	if (!ShaderManager::GetInstance().InitShaders(Utils::SHADER_INSPECT_TILE))
+		return false;
 
     return true;
 }

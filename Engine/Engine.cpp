@@ -82,6 +82,10 @@ ENGINE_API void Engine::InitEntityTypes()
         std::make_shared<PointLight>(),
         std::make_shared<PointLightParams>()
     };
+    entityTypes["TileMap"] = {
+        std::make_shared<TileMap>(),
+        std::make_shared<TileMapParams>()
+    };
 }
 
 /*

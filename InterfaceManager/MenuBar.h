@@ -23,6 +23,7 @@
 #include "WindowAllScenes.h"
 #include "WindowVisualScript.h"
 #include "WindowAssetExplorer.h"
+#include "WindowTileMapViewer.h"
 #include "AssetSaver.h"
 
 class INTERFACEMANAGER_API MenuBar

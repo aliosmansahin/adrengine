@@ -60,6 +60,9 @@
     <ClInclude Include="MenuBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WindowTileMapViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -105,6 +108,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MenuBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTileMapViewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

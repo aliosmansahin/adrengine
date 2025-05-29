@@ -16,6 +16,7 @@
 #include "DirectionalLight.h"
 #include "SpotLight.h"
 #include "PointLight.h"
+#include "TileMap.h"
 #include "AssetSaver.h"
 
 #ifdef ENTITYMANAGER_EXPORTS
