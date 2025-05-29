@@ -117,9 +117,12 @@ void WindowTileMapEdit::DrawWindow()
             auto& tiles = editingTileMap->GetCreatedTiles();
             if (!tiles.empty()) {
                 ImGui::SeparatorText("Created Tiles");
+                ImVec2 windowPos = ImGui::GetCursorPos();
+                ImVec2 pos = ImGui::GetCursorScreenPos();
+                ImVec2 startPos = ImGui::GetCursorScreenPos();
 
                 for (auto& tile : tiles) {
-                    ImVec2 pos = ImGui::GetCursorScreenPos();
+                    pos = ImGui::GetCursorScreenPos();
                     
                     //Pass the coordinates
                     int tileX             = tile.second->x;
@@ -143,6 +146,20 @@ void WindowTileMapEdit::DrawWindow()
                         ImVec2(u,      v),
                         ImVec2(u + tw, v + th)
                     );
+
+                    pos.x += currentTileWidth;
+                    pos.y += currentTileHeight;
+                }
+
+                ImVec2 deltaPos;
+                deltaPos.x = pos.x - startPos.x;
+                deltaPos.y = pos.y - startPos.y;
+
+                ImGui::SetCursorPos(ImVec2(windowPos.x, windowPos.y + deltaPos.y + padding));
+
+                if (ImGui::Button("Done")) {
+                    showWindow = false;
+                    editingTileMap = nullptr;
                 }
             }
         }
