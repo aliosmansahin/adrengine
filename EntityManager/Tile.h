@@ -15,7 +15,7 @@ public:
 	//main funcs
 	void Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH);
 	void Update();
-	void Draw(int tileW, int tileH, unsigned int tileMap, unsigned int tileVAO);
+	void Draw(int tileW, int tileH, unsigned int tileMap);
 	void Release();
 public:
 	int x, y;
