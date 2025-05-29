@@ -20,11 +20,11 @@ void Tile::Create(int x, int y, int width, int height, float u, float v, float t
 	//------ TEXTURE TILE ------
 	//Vertices for the texture
 	float tileVertices[] = {
-		//X		Y		Z	 U     V
-		 width, height, 0.0f, u + textureW, v,			  // top right
-		 0.0f,	height, 0.0f, u,            v,			  // bottom right
-		 0.0f,  0.0f,   0.0f, u,            v + textureH, // bottom left
-		 width, 0.0f,   0.0f, u + textureW, v + textureH, // top left 
+		//      X		      Y			Z		 U	    		V
+		 (float)width, (float)height, 0.0f, u + textureW, v,			  // top right
+		 0.0f,		   (float)height, 0.0f, u,            v,			  // bottom right
+		 0.0f,         0.0f,		  0.0f, u,            v + textureH, // bottom left
+		 (float)width, 0.0f,		  0.0f, u + textureW, v + textureH, // top left 
 	};
 	//Indices for the texture
 	unsigned int tileIndices[] = {

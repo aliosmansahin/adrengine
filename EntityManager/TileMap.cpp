@@ -59,15 +59,15 @@ ENTITYMANAGER_API void TileMap::CreateTiles(float textureWidth, float textureHei
 			In this scenario, we will give them the last texture size.
 		*/
 		//pass tile height into a new variable
-		int realTileHeight = tileHeight;
+		int realTileHeight = (int)tileHeight;
 
 		//if heights of the tiles aren't equal to each other
 		if ((int)textureHeight % (int)tileHeight != 0) {
 			//if this tile is the last in y coord in the tilemap
 			if (y == tileCountY - 1) {
 				//calculate y position of the tile in the tilemap and sub it from tilemap width
-				int currentPosYInTileMap = y * tileHeight;
-				int lastTextureSizeY = textureHeight - currentPosYInTileMap;
+				int currentPosYInTileMap = y * (int)tileHeight;
+				int lastTextureSizeY = (int)textureHeight - currentPosYInTileMap;
 
 				//pass the new width
 				realTileHeight = lastTextureSizeY;
@@ -76,7 +76,7 @@ ENTITYMANAGER_API void TileMap::CreateTiles(float textureWidth, float textureHei
 
 		for (int x = 0; x < tileCountX; ++x) {
 			//pass tile width into a new variable
-			int realTileWidth = tileWidth;
+			int realTileWidth = (int)tileWidth;
 
 			//if widths of the tiles aren't equal to each other
 			if ((int)textureWidth % (int)tileWidth != 0) {
@@ -84,8 +84,8 @@ ENTITYMANAGER_API void TileMap::CreateTiles(float textureWidth, float textureHei
 				//if this tile is the last in x coord in the tilemap
 				if (x == tileCountX - 1) {
 					//calculate x position of the tile in the tilemap and sub it from tilemap width
-					int currentPosXInTileMap = x * tileWidth;
-					int lastTextureSizeX = textureWidth - currentPosXInTileMap;
+					int currentPosXInTileMap = x * (int)tileWidth;
+					int lastTextureSizeX = (int)textureWidth - currentPosXInTileMap;
 
 					//pass the new width
 					realTileWidth = lastTextureSizeX;
@@ -207,7 +207,7 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 	//generate a texture and bind it to frame buffer
 	glGenTextures(1, &inspectTexture);
 	glBindTexture(GL_TEXTURE_2D, inspectTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, inspectTexture, 0);
@@ -219,7 +219,7 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 	//generate render buffer and bind it to the frame buffer
 	glGenRenderbuffers(1, &inspectRenderBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, inspectRenderBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (GLsizei)width, (GLsizei)height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, inspectRenderBuffer);
 
 	//release all buffers
@@ -244,7 +244,7 @@ ENTITYMANAGER_API void TileMap::DrawInspect(int width, int height, int tileW, in
 	ShaderManager::GetInstance().UseShaders(Utils::SHADER_INSPECT_TILE);
 	glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
 	Graphics::GetInstance().Clear();
-	glViewport(0, 0, width * scale, height * scale);
+	glViewport(0, 0, (GLsizei)(width * scale), (GLsizei)(height * scale));
 
 	//Some calculations for transformation
 	glm::mat4 model = glm::mat4(1.0f);

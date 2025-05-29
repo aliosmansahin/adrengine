@@ -76,7 +76,7 @@ void WindowTileMapEdit::DrawWindow()
 
         //Create framebuffer for inspector
         if (ImGui::Button("Create Inspector")) {
-            editingTileMap->CreateInspectFrameBuffer(textureWidth, textureHeight, tileWidth, tileHeight, inspectScale);
+            editingTileMap->CreateInspectFrameBuffer((float)textureWidth, (float)textureHeight, tileWidth, tileHeight, inspectScale);
         }
 
         if (textureIter != textures.end() && editingTileMap->IsInspectCreated()) {
@@ -110,7 +110,7 @@ void WindowTileMapEdit::DrawWindow()
 
             if (ImGui::Button("Create Tiles")) {
                 //Create each tile
-                editingTileMap->CreateTiles(textureWidth, textureHeight, tileWidth, tileHeight);
+                editingTileMap->CreateTiles((float)textureWidth, (float)textureHeight, (float)tileWidth, (float)tileHeight);
             }
 
             //Draw preview of tiles
