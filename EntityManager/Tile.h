@@ -18,8 +18,11 @@ public:
 	void Draw(int tileW, int tileH, unsigned int tileMap);
 	void Release();
 public:
+	//position of the tile on the preview or on the scene
 	int x, y;
 	int width, height;
+
+	//coordinates to store which part of texture will be shown
 	float u, v;
 	float textureWidth, textureHeight;
 
