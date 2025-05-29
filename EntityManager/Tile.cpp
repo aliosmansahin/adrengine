@@ -86,10 +86,16 @@ void Tile::Draw(int tileW, int tileH, unsigned int tileMap)
 
 void Tile::Release()
 {
-	if (tileVAO != -1)
-		glDeleteBuffers(1, &tileVAO);
-	if (tileVBO != -1)
+	if (tileVAO != -1) {
+		glDeleteVertexArrays(1, &tileVAO);
+		tileVAO = -1;
+	}
+	if (tileVBO != -1) {
 		glDeleteBuffers(1, &tileVBO);
-	if (tileEBO != -1)
+		tileVBO = -1;
+	}
+	if (tileEBO != -1) {
 		glDeleteBuffers(1, &tileEBO);
+		tileEBO = -1;
+	}
 }

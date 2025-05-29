@@ -132,18 +132,30 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 	//------ RELEASING ------
 	
 	//Delete old Buffers
-	if (inspectFrameBuffer != -1)
+	if (inspectFrameBuffer != -1) {
 		glDeleteFramebuffers(1, &inspectFrameBuffer);
-	if (inspectRenderBuffer != -1)
+		inspectFrameBuffer = -1;
+	}
+	if (inspectRenderBuffer != -1) {
 		glDeleteRenderbuffers(1, &inspectRenderBuffer);
-	if (inspectTexture != -1)
+		inspectRenderBuffer = -1;
+	}
+	if (inspectTexture != -1) {
 		glDeleteTextures(1, &inspectTexture);
-	if (VAO != -1)
-		glDeleteBuffers(1, &VAO);
-	if (VBO != -1)
+		inspectTexture = -1;
+	}
+	if (VAO != -1) {
+		glDeleteVertexArrays(1, &VAO);
+		VAO = -1;
+	}
+	if (VBO != -1) {
 		glDeleteBuffers(1, &VBO);
-	if (EBO != -1)
+		VBO = -1;
+	}
+	if (EBO != -1) {
 		glDeleteBuffers(1, &EBO);
+		EBO = -1;
+	}
 
 	//------ TEXTURE TILEMAP ------
 
