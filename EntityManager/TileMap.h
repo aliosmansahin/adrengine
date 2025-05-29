@@ -46,6 +46,10 @@ public:
 
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
+public:
+	//tile size
+	int tileWidth = 0;
+	int tileHeight = 0;
 private:
 	//properties
 	std::shared_ptr<TileMapParams> params;

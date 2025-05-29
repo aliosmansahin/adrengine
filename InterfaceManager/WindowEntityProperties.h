@@ -15,7 +15,8 @@
 #include "Logger.h"
 #include "EntityManager.h"
 
-#include "WindowTileMapViewer.h"
+#include "WindowTileMapEdit.h"
+#include "WindowTileMapBrush.h"
 
 #include "utils/Utils.h"
 

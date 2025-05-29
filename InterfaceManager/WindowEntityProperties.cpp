@@ -281,11 +281,24 @@ void WindowEntityProperties::DrawWindow(
         else if (currentEntity->GetEntityParams()->GetType() == "TileMap") {
             auto casted = dynamic_cast<TileMapParams*>(currentEntity->GetEntityParams());
             if (casted) {
+                TileMap* tileMap = dynamic_cast<TileMap*>(currentEntity);
+                
                 ImGui::Separator();
                 ImGui::SeparatorText("TileMap");
                 if (ImGui::Button("Edit this TileMap")) {
                     WindowTileMapEdit::GetInstance().showWindow = true;
-                    WindowTileMapEdit::GetInstance().editingTileMap = dynamic_cast<TileMap*>(currentEntity);
+                    WindowTileMapEdit::GetInstance().editingTileMap = tileMap;
+                }
+                
+                ImGui::Separator();
+                if (tileMap->GetCreatedTiles().empty()) {
+                    ImGui::Text("No tiles found,\n\tto use brush tool,\n\tcreate tiles with\n\t\"Edit Tilemap\" tool");
+                }
+                else {
+                    if (ImGui::Button("Tile map brush")) {
+                        WindowTileMapBrush::GetInstance().showWindow = true;
+                        WindowTileMapBrush::GetInstance().editingTileMap = tileMap;
+                    }
                 }
             }
         }

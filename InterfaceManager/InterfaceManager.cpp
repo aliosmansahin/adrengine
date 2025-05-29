@@ -217,6 +217,9 @@ void InterfaceManager::DrawInterface(
 
 	if (WindowTileMapEdit::GetInstance().showWindow)
 		WindowTileMapEdit::GetInstance().DrawWindow();
+
+	if (WindowTileMapBrush::GetInstance().showWindow)
+		WindowTileMapBrush::GetInstance().DrawWindow();
 }
 
 /*

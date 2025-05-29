@@ -49,6 +49,9 @@ ENTITYMANAGER_API void TileMap::CreateTiles(float textureWidth, float textureHei
 		tile.second->Release();
 	createdTiles.clear();
 
+	this->tileWidth = tileWidth;
+	this->tileHeight = tileHeight;
+
 	int tileCountX = (int)std::ceil(textureWidth / tileWidth);
 	int tileCountY = (int)std::ceil(textureHeight / tileHeight);
 	

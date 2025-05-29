@@ -60,7 +60,10 @@
     <ClInclude Include="MenuBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WindowTileMapViewer.h">
+    <ClInclude Include="WindowTileMapEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowTileMapBrush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -110,7 +113,10 @@
     <ClCompile Include="MenuBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WindowTileMapViewer.cpp">
+    <ClCompile Include="WindowTileMapEdit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTileMapBrush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

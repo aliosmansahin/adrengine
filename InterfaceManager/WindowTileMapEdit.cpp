@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "WindowTileMapViewer.h"
+#include "WindowTileMapEdit.h"
 
 /*
 PURPOSE: Draws the window
