@@ -27,5 +27,6 @@ public:
 	bool showWindow = false;
 	TileMap* editingTileMap = nullptr;
 	bool editing = false;
+	std::pair<int, int> selectedTile = { -1, -1 };
 };
 
