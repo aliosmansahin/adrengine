@@ -26,7 +26,7 @@ void main() {
     // How much is this close to border
     //if (fx < lineWidth || fy < lineWidth || fx > tileW - lineWidth || fy > tileH - lineWidth) { //Draws lines on the all of borders of the tile
     if ((fx > tileW - lineWidth || fy > tileH - lineWidth)) { //Draws lines on the end of the borders of the tile
-        FragColor = vec4(1.0, 1.0, 1.0, 1.0); // siyah çizgi
+        FragColor = vec4(1.0, 1.0, 1.0, 1.0); // white line
     } else {
         FragColor = texColor; // normal texture
     }
