@@ -308,6 +308,9 @@ ENTITYMANAGER_API unsigned int TileMap::GetInspectTexture()
 	return inspectTexture;
 }
 
+/*
+PURPOSE: Returns createdTiles
+*/
 ENTITYMANAGER_API std::map<std::pair<int, int>, std::shared_ptr<Tile>>& TileMap::GetCreatedTiles()
 {
 	return createdTiles;
