@@ -44,6 +44,7 @@ PURPOSE: Creates each tile from the inspector
 */
 ENTITYMANAGER_API void TileMap::CreateTiles(float textureWidth, float textureHeight, float tileWidth, float tileHeight)
 {
+	//Delete old tiles
 	for (auto& tile : createdTiles)
 		tile.second->Release();
 	createdTiles.clear();
@@ -126,6 +127,11 @@ PURPOSE: Creates a framebuffer and other buffer objects for the inspector
 */
 ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float height, int tileW, int tileH, float scale)
 {
+	//Delete old tiles
+	for (auto& tile : createdTiles)
+		tile.second->Release();
+	createdTiles.clear();
+
 	width *= scale;
 	height *= scale;
 
