@@ -36,19 +36,19 @@ void TileMap::Update()
 {
 	//Tiles
 	for (auto& tile : tiles) {
-		tile.second->SetPos((int)(params->x + (float)tile.first.first), (int)(params->x + (float)tile.first.second));
+		tile.second->SetPos(tile.first.first, tile.first.second);
 	}
 }
 
 /*
 PURPOSE: Draws the entity.
-	This entity draws a texture
+	This entity draws tiles and an indicator to know which tile will be filled
 */
 void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 {
 	//Tiles
 	for (auto& tile : tiles) {
-		tile.second->Draw(tileWidth, tileHeight, params->texture, (int)params->x, (int)params->y);
+		tile.second->Draw(tileWidth, tileHeight, params->texture, (int)realPos.x, (int)realPos.y);
 	}
 
 	//Tile indicator
@@ -165,9 +165,11 @@ ENTITYMANAGER_API void TileMap::CreateTiles(float textureWidth, float textureHei
 		tile.second->Release();
 	createdTiles.clear();
 
+	//Save tile size
 	this->tileWidth = (int)tileWidth;
 	this->tileHeight = (int)tileHeight;
 
+	//Calculate tile count
 	int tileCountX = (int)std::ceil(textureWidth / tileWidth);
 	int tileCountY = (int)std::ceil(textureHeight / tileHeight);
 	
