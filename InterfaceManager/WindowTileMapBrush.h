@@ -16,13 +16,13 @@
 class WindowTileMapBrush
 {
 public:
-	void DrawWindow();
-	static WindowTileMapBrush& GetInstance();
+	INTERFACEMANAGER_API void DrawWindow();
+	INTERFACEMANAGER_API static WindowTileMapBrush& GetInstance();
 private:
-	WindowTileMapBrush() = default;
-	~WindowTileMapBrush() = default;
-	WindowTileMapBrush(const WindowTileMapBrush&) = delete;
-	WindowTileMapBrush& operator=(const WindowTileMapBrush&) = delete;
+	INTERFACEMANAGER_API WindowTileMapBrush() = default;
+	INTERFACEMANAGER_API ~WindowTileMapBrush() = default;
+	INTERFACEMANAGER_API WindowTileMapBrush(const WindowTileMapBrush&) = delete;
+	INTERFACEMANAGER_API WindowTileMapBrush& operator=(const WindowTileMapBrush&) = delete;
 public:
 	bool showWindow = false;
 	TileMap* editingTileMap = nullptr;

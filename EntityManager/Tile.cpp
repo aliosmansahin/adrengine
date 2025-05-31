@@ -21,10 +21,10 @@ void Tile::Create(int x, int y, int width, int height, float u, float v, float t
 	//Vertices for the texture
 	float tileVertices[] = {
 		//      X		      Y			Z		 U	    		V
-		 (float)width, (float)height, 0.0f, u + textureW, v,			  // top right
-		 0.0f,		   (float)height, 0.0f, u,            v,			  // bottom right
-		 0.0f,         0.0f,		  0.0f, u,            v + textureH, // bottom left
-		 (float)width, 0.0f,		  0.0f, u + textureW, v + textureH, // top left 
+		 0.0f,		   0.0f,		  0.0f, u,            v,			// top right
+		 0.0f,		   (float)height, 0.0f, u,            v + textureH,	// bottom right
+		 (float)width, (float)height, 0.0f, u + textureW, v + textureH, // bottom left
+		 (float)width, 0.0f,          0.0f, u + textureW, v,			// top left 
 	};
 	//Indices for the texture
 	unsigned int tileIndices[] = {
@@ -107,4 +107,13 @@ void Tile::Release()
 		glDeleteBuffers(1, &tileEBO);
 		tileEBO = -1;
 	}
+}
+
+/*
+PURPOSE: Sets the position of the tile
+*/
+void Tile::SetPos(int x, int y)
+{
+	this->x = x;
+	this->y = y;
 }

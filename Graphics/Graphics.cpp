@@ -50,7 +50,7 @@ bool Graphics::InitGraphics(GLFWwindow* window)
         return false;
 	if (!ShaderManager::GetInstance().InitShaders(Utils::SHADER_INSPECT_TILE))
 		return false;
-
+	
     return true;
 }
 
@@ -129,10 +129,10 @@ unsigned int Graphics::LoadTexture(const char* id, const char* path, int& width,
     glBindTexture(GL_TEXTURE_2D, texture);
 
     //texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     //load the image
     int nrChannels;

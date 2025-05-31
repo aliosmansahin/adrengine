@@ -17,14 +17,14 @@ class WindowTileMapEdit
 {
 public:
 	//main functions
-	void						DrawWindow();
-	static WindowTileMapEdit& GetInstance();
+	INTERFACEMANAGER_API void						DrawWindow();
+	INTERFACEMANAGER_API static WindowTileMapEdit& GetInstance();
 private:
 	//singleton
-	WindowTileMapEdit() = default;
-	~WindowTileMapEdit() = default;
-	WindowTileMapEdit(const WindowTileMapEdit&) = delete;
-	WindowTileMapEdit& operator=(const WindowTileMapEdit&) = delete;
+	INTERFACEMANAGER_API WindowTileMapEdit() = default;
+	INTERFACEMANAGER_API ~WindowTileMapEdit() = default;
+	INTERFACEMANAGER_API WindowTileMapEdit(const WindowTileMapEdit&) = delete;
+	INTERFACEMANAGER_API WindowTileMapEdit& operator=(const WindowTileMapEdit&) = delete;
 public:
 	bool showWindow = true;
 	TileMap* editingTileMap = nullptr;

@@ -17,8 +17,15 @@ public:
 	void Update();
 	void Draw(int tileW, int tileH, unsigned int tileMap);
 	void Release();
+
+	//Getters and setters
+	void SetPos(int x, int y);
 public:
 	//position of the tile on the preview or on the scene
+	/*
+		x=1 means 1 * tileWidth value of the map
+		width and height is for storing the texture size
+	*/
 	int x, y;
 	int width, height;
 

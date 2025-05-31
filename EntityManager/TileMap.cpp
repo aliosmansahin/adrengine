@@ -22,6 +22,11 @@ PURPOSE: Unitializes the entity
 */
 void TileMap::DeleteEntity()
 {
+	for (auto& tile : createdTiles)
+		tile.second->Release();
+	createdTiles.clear();
+
+	tiles.clear();
 }
 
 /*
@@ -29,6 +34,10 @@ PURPOSE: Updates the entity
 */
 void TileMap::Update()
 {
+	//Tiles
+	for (auto& tile : tiles) {
+		tile.second->SetPos((int)(params->x + (float)tile.first.first), (int)(params->x + (float)tile.first.second));
+	}
 }
 
 /*
@@ -37,6 +46,95 @@ PURPOSE: Draws the entity.
 */
 void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 {
+	//Tiles
+	for (auto& tile : tiles) {
+		tile.second->Draw(tileWidth, tileHeight, params->texture);
+	}
+
+	//Tile indicator
+	if (tileIndicator.get() && drawTileIndicator) {
+		//Set some stuff
+		ShaderManager::GetInstance().ApplyUniformBool("drawTileIndicator", true);
+		ShaderManager::GetInstance().ApplyUniformInt("tileWidth", tileWidth);
+		ShaderManager::GetInstance().ApplyUniformInt("tileHeight", tileHeight);
+
+		//Drawing
+		tileIndicator->Draw(tileWidth, tileHeight, 0);
+
+		//Disabling
+		ShaderManager::GetInstance().ApplyUniformBool("drawTileIndicator", false);
+		drawTileIndicator = false;
+	}
+}
+
+/*
+PURPOSE: Add a tile which is selected from createdTiles to the map
+*/
+ENTITYMANAGER_API void TileMap::AddTileToMap(TileMap* tileMap, int mouseX, int mouseY, float cameraX, float cameraY, std::pair<int, int> selectedTile)
+{
+	//Get the tile pos on the scene
+	float tileXAtScene = (float)mouseX + cameraX;
+	float tileYAtScene = (float)mouseY + cameraY;
+
+	//Calculate the tile pos on the tileMap
+	int tileX = (int)tileXAtScene / tileMap->tileWidth;
+	int tileY = (int)tileYAtScene / tileMap->tileHeight;
+
+	//Get the selected tile and insert it to tiles to draw
+	auto createdTileIter = tileMap->createdTiles.find(selectedTile);
+	if (createdTileIter == tileMap->createdTiles.end())
+		return;
+
+	//Check if there is a tile on this coordinates
+	auto tileIter = tileMap->tiles.find({ tileX, tileY });
+
+	//Add a tile if there is not
+	if (tileIter == tileMap->tiles.end()) {
+		std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTileIter->second.get());
+		tileMap->tiles.insert({ { tileX, tileY }, tile });
+	}
+}
+
+/*
+PURPOSE: Removes the tile which is located by mouse from the map
+*/
+ENTITYMANAGER_API void TileMap::RemoveTileFromMap(TileMap* tileMap, int mouseX, int mouseY, float cameraX, float cameraY)
+{
+	//Get the tile pos on the scene
+	float tileXAtScene = (float)mouseX + cameraX;
+	float tileYAtScene = (float)mouseY + cameraY;
+
+	//Calculate the tile pos on the tileMap
+	int tileX = (int)tileXAtScene / tileMap->tileWidth;
+	int tileY = (int)tileYAtScene / tileMap->tileHeight;
+
+	//Check if there is a tile on this coordinates
+	auto tileIter = tileMap->tiles.find({ tileX, tileY });
+
+	//Remove the tile if there is
+	if (tileIter != tileMap->tiles.end()) {
+		tileMap->tiles.erase(tileIter);
+	}
+}
+
+/*
+PURPOSE: Draws a rectange to indicate which tile coordinates will be filled
+*/
+void TileMap::UpdateMouseTileIndicator(TileMap* tileMap, int mouseX, int mouseY, float cameraX, float cameraY)
+{
+	//Get the tile pos on the scene
+	float tileXAtScene = (float)mouseX + cameraX;
+	float tileYAtScene = (float)mouseY + cameraY;
+
+	//Calculate the tile pos on the tileMap
+	int tileX = (int)tileXAtScene / tileMap->tileWidth;
+	int tileY = (int)tileYAtScene / tileMap->tileHeight;
+
+	//Set position of the tile indicator and activate to show
+	if (tileMap->tileIndicator.get()) {
+		tileMap->tileIndicator->SetPos(tileX, tileY);
+		tileMap->drawTileIndicator = true;
+	}
 }
 
 /*
@@ -165,6 +263,13 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 		glDeleteBuffers(1, &EBO);
 		EBO = -1;
 	}
+	if (tileIndicator.get())
+		tileIndicator->Release();
+
+	//------ TILE POS INDICATOR ------
+
+	tileIndicator = std::make_shared<Tile>();
+	tileIndicator->Create(0, 0, tileW, tileH, 0.0f, 0.0f, 1.0f, 1.0f);
 
 	//------ TEXTURE TILEMAP ------
 
@@ -173,8 +278,8 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 		//X		Y		Z	 U     V
 		 width, height, 0.0f, 1.0f, 0.0f, // top right
 		 0.0f,	height, 0.0f, 0.0f, 0.0f, // bottom right
-		 0.0f,  0.0f,	0.0f,  0.0f, 1.0f, // bottom left
-		 width, 0.0f,   0.0f,  1.0f, 1.0f, // top left 
+		 0.0f,  0.0f,	0.0f, 0.0f, 1.0f, // bottom left
+		 width, 0.0f,   0.0f, 1.0f, 1.0f, // top left 
 	};
 	//Indices for the texture
 	unsigned int indices[] = {
@@ -249,8 +354,13 @@ PURPOSE: Renders the inspector to the framebuffer
 */
 ENTITYMANAGER_API void TileMap::DrawInspect(int width, int height, int tileW, int tileH, float scale)
 {
+	//Save the previous type of shader
 	Utils::ShaderType prevShaderType = ShaderManager::GetInstance().GetCurrentType();
+
+	//Change the shader to draw inspector
 	ShaderManager::GetInstance().UseShaders(Utils::SHADER_INSPECT_TILE);
+
+	//Set the framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
 	Graphics::GetInstance().Clear();
 	glViewport(0, 0, (GLsizei)(width * scale), (GLsizei)(height * scale));
@@ -305,6 +415,8 @@ ENTITYMANAGER_API bool TileMap::IsInspectCreated()
 	if (VBO == -1)
 		return false;
 	if (EBO == -1)
+		return false;
+	if (!tileIndicator.get())
 		return false;
 	return true;
 }

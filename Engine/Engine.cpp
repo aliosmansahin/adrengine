@@ -292,9 +292,15 @@ ENGINE_API void Engine::UpdateCurrentScene()
 {
     if (SceneManager::GetInstance().currentScene) {
         std::string projectDir = projectPath + projectName + "/"; //TODO: control from one point
+
+        //We will use tileMapBrush when "start drawing" button clicked
+        TileMap* edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
+
         SceneManager::GetInstance().currentScene->UpdateScene(
             WindowGameViewport::GetInstance().isPlaying,
             WindowGameViewport::GetInstance().isHovered,
+            WindowGameViewport::GetInstance().mouseX,
+            WindowGameViewport::GetInstance().mouseY,
             screenWidth,
             screenHeight,
             (int)WindowGameViewport::GetInstance().window_width,
@@ -306,7 +312,11 @@ ENGINE_API void Engine::UpdateCurrentScene()
             []() {
                 WindowEntityProperties::GetInstance().SelectEntity(nullptr);
             },
-            projectDir);
+            projectDir,
+            edittingTileMap,
+            WindowTileMapBrush::GetInstance().selectedTile,
+            TileMap::AddTileToMap,
+            TileMap::RemoveTileFromMap);
     }
 }
 
