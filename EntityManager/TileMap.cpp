@@ -46,10 +46,21 @@ PURPOSE: Draws the entity.
 */
 void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 {
-	//Tiles
+
+	//Set the texture for tiles
+	adr_glActiveTexture(GL_TEXTURE0);
+	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
+	ShaderManager::GetInstance().ApplyTexture("texture1");
+
+	//Draw tiles
 	for (auto& tile : tiles) {
-		tile.second->Draw(tileWidth, tileHeight, params->texture, (int)realPos.x, (int)realPos.y);
+		tile.second->Draw(tileWidth, tileHeight, (int)realPos.x, (int)realPos.y);
 	}
+
+	//Disable the texture for tiles
+	adr_glActiveTexture(GL_TEXTURE0);
+	adr_glBindTexture(GL_TEXTURE_2D, 0);
+
 
 	//Tile indicator
 	if (tileIndicator.get() && drawTileIndicator) {
@@ -59,7 +70,7 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 		ShaderManager::GetInstance().ApplyUniformInt("tileHeight", tileHeight);
 
 		//Drawing
-		tileIndicator->Draw(tileWidth, tileHeight, 0, 0, 0);
+		tileIndicator->Draw(tileWidth, tileHeight, 0, 0);
 
 		//Disabling
 		ShaderManager::GetInstance().ApplyUniformBool("drawTileIndicator", false);
@@ -99,6 +110,9 @@ ENTITYMANAGER_API void TileMap::AddTileToMap(TileMap* tileMap, int mouseX, int m
 		std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTileIter->second.get());
 		tileMap->tiles.insert({ { tileX, tileY }, tile });
 	}
+
+	//DEBUG
+	std::cout << "tile count " << tileMap->tiles.size() << std::endl;
 }
 
 /*
@@ -127,6 +141,8 @@ ENTITYMANAGER_API void TileMap::RemoveTileFromMap(TileMap* tileMap, int mouseX, 
 	if (tileIter != tileMap->tiles.end()) {
 		tileMap->tiles.erase(tileIter);
 	}
+
+	std::cout << "tile count " << tileMap->tiles.size() << std::endl;
 }
 
 /*

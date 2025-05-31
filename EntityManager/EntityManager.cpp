@@ -22,7 +22,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 	adr_glEnable(GL_DEPTH_TEST);
 	adr_glEnable(GL_BLEND);
 	adr_glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_CULL_FACE); //TODO: Will be changed to each object type
+	adr_glEnable(GL_CULL_FACE); //TODO: Will be changed to each object type
 	int numLights = 0;
 	if (is3D) {
 		/*
