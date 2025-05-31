@@ -43,7 +43,7 @@ void WindowTileMapBrush::DrawWindow()
             float th = tile.second->textureHeight;
 
             //Image Button spec
-            ImVec2 imageSize = ImVec2(editingTileMap->tileWidth, editingTileMap->tileHeight);
+            ImVec2 imageSize = ImVec2((float)editingTileMap->tileWidth, (float)editingTileMap->tileHeight);
             std::string imageButtonId = "##image_button" + std::to_string(index);
 
             if (!editing) {

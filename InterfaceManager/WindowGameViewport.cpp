@@ -153,8 +153,8 @@ void WindowGameViewport::DrawWindow(
         glm::vec4 worldMouse = invOrtho * mouseClip;
 
         //Set the mouse coordinates
-        mouseX = worldMouse.x;
-        mouseY = worldMouse.y;
+        mouseX = (int)worldMouse.x;
+        mouseY = (int)worldMouse.y;
     }
 
     //End the window
