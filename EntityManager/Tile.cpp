@@ -117,3 +117,20 @@ void Tile::SetPos(int x, int y)
 	this->x = x;
 	this->y = y;
 }
+
+nlohmann::json Tile::ToJson()
+{
+	nlohmann::json j;
+	//position and size of the tile
+	j["x"] = x;
+	j["y"] = y;
+	j["width"] = width;
+	j["height"] = height;
+
+	//position and size of the texture
+	j["u"] = u;
+	j["v"] = v;
+	j["tex-w"] = textureWidth;
+	j["tex-h"] = textureHeight;
+	return j;
+}

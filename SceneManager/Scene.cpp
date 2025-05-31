@@ -308,6 +308,14 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 				std::shared_ptr<EntityParams> params = typeIter->second.second->clone();
 				params->FromJson(entityJson);
 				entity->CreateEntity(params);
+				
+				//TileMap has own fromjson function except other entities
+				if (type == "TileMap") {
+					auto tileMap = std::dynamic_pointer_cast<TileMap>(entity);
+					if (tileMap.get()) {
+						tileMap->FromJson(entityJson);
+					}
+				}
 			}
 			//Add the entity to entity manager
 			if(entity.get())

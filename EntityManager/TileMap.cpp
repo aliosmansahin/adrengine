@@ -451,11 +451,82 @@ PURPOSE: Allows us to create json content of properties which belongs to type of
 */
 nlohmann::json TileMap::ToJson()
 {
-	nlohmann::json j;
+	nlohmann::json j; //For the entity
 
 	if (params) {
 		j = params->ToJson();
 	}
+
+	nlohmann::json c; //For created tiles
+	for (auto& tile : createdTiles) {
+		c.push_back(tile.second->ToJson());
+	}
+	j["created-tiles"] = c;
+
+	nlohmann::json t; //For drawing tiles
+	for (auto& tile : tiles) {
+		t.push_back(tile.second->ToJson());
+	}
+	j["tiles"] = t;
+
+	//Tile size
+	j["tile-width"] = tileWidth;
+	j["tile-height"] = tileHeight;
+
 	return j;
 
+}
+
+/*
+PURPOSE: TileMap has a fromjson function to load existing brush tiles and drawing tiles from json, it also creates tileIndicator object
+*/
+ENTITYMANAGER_API void TileMap::FromJson(nlohmann::json json)
+{
+	//Tiles to brush
+	if (json.contains("created-tiles")) {
+		nlohmann::json c = json["created-tiles"];
+		for(auto& t : c) {
+			Tile* tile = new Tile();
+			tile->Create(
+				t.value("x", 0),
+				t.value("y", 0),
+				t.value("width", 0),
+				t.value("height", 0),
+				t.value("u", 0.0f),
+				t.value("v", 0.0f),
+				t.value("tex-w", 0.0f),
+				t.value("tex-h", 0.0f)
+			); // We don't have to have a "fromjson" function, "create" handles it
+
+			createdTiles.insert({ { tile->x, tile->y }, std::shared_ptr<Tile>(tile) });
+		}
+	}
+
+	//Tiles to draw
+	if (json.contains("tiles")) {
+		nlohmann::json tileJson = json["tiles"];
+		for (auto& t : tileJson) {
+			Tile* tile = new Tile();
+			tile->Create(
+				t.value("x", 0),
+				t.value("y", 0),
+				t.value("width", 0),
+				t.value("height", 0),
+				t.value("u", 0.0f),
+				t.value("v", 0.0f),
+				t.value("tex-w", 0.0f),
+				t.value("tex-h", 0.0f)
+			); // We don't have to have a "fromjson" function, "create" handles it
+
+			tiles.insert({ { tile->x, tile->y }, std::shared_ptr<Tile>(tile) });
+		}
+	}
+
+	// Tile size
+	tileWidth = json.value("tile-width", 0);
+	tileHeight = json.value("tile-height", 0);
+
+	//Tile indicator
+	tileIndicator = std::make_shared<Tile>();
+	tileIndicator->Create(0, 0, tileWidth, tileHeight, 0.0f, 0.0f, 1.0f, 1.0f);
 }

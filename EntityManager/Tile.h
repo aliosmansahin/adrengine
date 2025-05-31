@@ -20,6 +20,9 @@ public:
 
 	//Getters and setters
 	void SetPos(int x, int y);
+
+	//json
+	nlohmann::json ToJson();
 public:
 	//position of the tile on the preview or on the scene
 	/*

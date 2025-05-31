@@ -49,6 +49,7 @@ public:
 
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
+	ENTITYMANAGER_API void FromJson(nlohmann::json json);
 public:
 	//tile size
 	int tileWidth = 0;
