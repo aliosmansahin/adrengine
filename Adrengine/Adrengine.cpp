@@ -22,22 +22,6 @@ int main(void)
         //disable vsync
         glfwSwapInterval(0);
 
-        /*
-            FIXME:
-            Update keys and mouse,
-            this is supposed to be in the update function of engine
-            but glfw is not working there
-            when i fix this problem, i will move it there
-        */
-        InputManager::GetInstance().Update();
-
-        /*
-            FIXME:
-            handles glfw request from other engines,
-            as i mention above, when i fix the issue, i will remove it
-        */
-        Window::GetInstance().HandleGLFWRequests();
-
         //calling engine funcs
         Engine::GetInstance().Update();
         Engine::GetInstance().Draw();

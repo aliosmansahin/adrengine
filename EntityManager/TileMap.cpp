@@ -48,7 +48,7 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 {
 	//Tiles
 	for (auto& tile : tiles) {
-		tile.second->Draw(tileWidth, tileHeight, params->texture);
+		tile.second->Draw(tileWidth, tileHeight, params->texture, (int)params->x, (int)params->y);
 	}
 
 	//Tile indicator
@@ -59,7 +59,7 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 		ShaderManager::GetInstance().ApplyUniformInt("tileHeight", tileHeight);
 
 		//Drawing
-		tileIndicator->Draw(tileWidth, tileHeight, 0);
+		tileIndicator->Draw(tileWidth, tileHeight, 0, 0, 0);
 
 		//Disabling
 		ShaderManager::GetInstance().ApplyUniformBool("drawTileIndicator", false);
@@ -246,27 +246,27 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 	
 	//Delete old Buffers
 	if (inspectFrameBuffer != -1) {
-		glDeleteFramebuffers(1, &inspectFrameBuffer);
+		adr_glDeleteFramebuffers(1, &inspectFrameBuffer);
 		inspectFrameBuffer = -1;
 	}
 	if (inspectRenderBuffer != -1) {
-		glDeleteRenderbuffers(1, &inspectRenderBuffer);
+		adr_glDeleteRenderbuffers(1, &inspectRenderBuffer);
 		inspectRenderBuffer = -1;
 	}
 	if (inspectTexture != -1) {
-		glDeleteTextures(1, &inspectTexture);
+		adr_glDeleteTextures(1, &inspectTexture);
 		inspectTexture = -1;
 	}
 	if (VAO != -1) {
-		glDeleteVertexArrays(1, &VAO);
+		adr_glDeleteVertexArrays(1, &VAO);
 		VAO = -1;
 	}
 	if (VBO != -1) {
-		glDeleteBuffers(1, &VBO);
+		adr_glDeleteBuffers(1, &VBO);
 		VBO = -1;
 	}
 	if (EBO != -1) {
-		glDeleteBuffers(1, &EBO);
+		adr_glDeleteBuffers(1, &EBO);
 		EBO = -1;
 	}
 	if (tileIndicator.get())
@@ -294,58 +294,58 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 	};
 
 	//Create buffers and bind them with vertices and indices
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	adr_glGenBuffers(1, &VBO);
+	adr_glGenBuffers(1, &EBO);
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	adr_glGenVertexArrays(1, &VAO);
+	adr_glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	adr_glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	adr_glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	adr_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	adr_glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	//Set the vertex attrib pointers (position = 0)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	adr_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	adr_glEnableVertexAttribArray(0);
 
 	//Set the vertex attrib pointers (position = 1)
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	adr_glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	adr_glEnableVertexAttribArray(1);
 
 	//Release buffers
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	adr_glBindBuffer(GL_ARRAY_BUFFER, 0);
+	adr_glBindVertexArray(0);
 
 	//------ FRAME BUFFER ------
 
 	//frame buffer
-	glGenFramebuffers(1, &inspectFrameBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
+	adr_glGenFramebuffers(1, &inspectFrameBuffer);
+	adr_glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
 
 	//generate a texture and bind it to frame buffer
-	glGenTextures(1, &inspectTexture);
-	glBindTexture(GL_TEXTURE_2D, inspectTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, inspectTexture, 0);
+	adr_glGenTextures(1, &inspectTexture);
+	adr_glBindTexture(GL_TEXTURE_2D, inspectTexture);
+	adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	adr_glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, inspectTexture, 0);
 
 	//check the status of frame buffer
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	if (adr_glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		Logger::Log("E", "Framebuffer is not complete");
 
 	//generate render buffer and bind it to the frame buffer
-	glGenRenderbuffers(1, &inspectRenderBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, inspectRenderBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (GLsizei)width, (GLsizei)height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, inspectRenderBuffer);
+	adr_glGenRenderbuffers(1, &inspectRenderBuffer);
+	adr_glBindRenderbuffer(GL_RENDERBUFFER, inspectRenderBuffer);
+	adr_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (GLsizei)width, (GLsizei)height);
+	adr_glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, inspectRenderBuffer);
 
 	//release all buffers
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	adr_glBindTexture(GL_TEXTURE_2D, 0);
+	adr_glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 /*
@@ -367,9 +367,9 @@ ENTITYMANAGER_API void TileMap::DrawInspect(int width, int height, int tileW, in
 	ShaderManager::GetInstance().UseShaders(Utils::SHADER_INSPECT_TILE);
 
 	//Set the framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
+	adr_glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
 	Graphics::GetInstance().Clear();
-	glViewport(0, 0, (GLsizei)(width * scale), (GLsizei)(height * scale));
+	adr_glViewport(0, 0, (GLsizei)(width * scale), (GLsizei)(height * scale));
 
 	//Some calculations for transformation
 	glm::mat4 model = glm::mat4(1.0f);
@@ -387,20 +387,20 @@ ENTITYMANAGER_API void TileMap::DrawInspect(int width, int height, int tileW, in
 	ShaderManager::GetInstance().ApplyUniformInt("textureHeight", height);
 
 	//Set the texture
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, params->texture);
+	adr_glActiveTexture(GL_TEXTURE0);
+	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
 	ShaderManager::GetInstance().ApplyTexture("texture1");
 
 	//Draw the texture
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	adr_glBindVertexArray(VAO);
+	adr_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//Disable after drawing
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindVertexArray(0);
+	adr_glActiveTexture(GL_TEXTURE0);
+	adr_glBindTexture(GL_TEXTURE_2D, 0);
+	adr_glBindVertexArray(0);
 
 	ShaderManager::GetInstance().UseShaders(prevShaderType);
 }

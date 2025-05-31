@@ -6,6 +6,8 @@
 #define INTERFACEMANAGER_API __declspec(dllimport)
 #endif
 
+#include "glad_wrapper.h"
+#include "glfw/glfw3.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
@@ -15,11 +17,13 @@
 #include "Logger.h"
 #include "MenuBar.h"
 
+#include <thread>
+
 class InterfaceManager
 {
 public:
 	//main funcs
-	INTERFACEMANAGER_API bool InitInterface(GLFWwindow* window);
+	INTERFACEMANAGER_API bool InitInterface(GLFWwindow* window, ImGuiContext*& context);
 	INTERFACEMANAGER_API void CloseInterface();
 	//drawing
 	INTERFACEMANAGER_API void StartFrame();
@@ -43,6 +47,7 @@ private:
 	InterfaceManager(const InterfaceManager&) = delete;
 	InterfaceManager& operator=(const InterfaceManager&) = delete;
 public:
+	GLFWwindow* window = nullptr;
 	bool darkTheme = true;
 	bool pendingTabDelete = false;
 	std::string deleteTabId = "";

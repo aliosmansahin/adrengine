@@ -9,12 +9,6 @@ bool EntityManager::InitEntityManager()
 {
 	Logger::Log("P", "Initalizing entity manager");
 
-	//Load glad
-	int version = gladLoadGL();
-	if (version == 0) {
-		Logger::Log("E", "Starting engine failed in gladLoadGLLoader");
-		return false;
-	}
 	return true;
 }
 
@@ -25,9 +19,9 @@ PURPOSE: Calculates all transforms of each lights,
 */
 void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 currentSceneCameraPos, bool is3D)
 {
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	adr_glEnable(GL_DEPTH_TEST);
+	adr_glEnable(GL_BLEND);
+	adr_glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_CULL_FACE); //TODO: Will be changed to each object type
 	int numLights = 0;
 	if (is3D) {
@@ -103,18 +97,18 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 
 					//Use right shaders
 					ShaderManager::GetInstance().UseShaders(Utils::DEPTH);
-					glBindFramebuffer(GL_FRAMEBUFFER, casted->depthMapFBO);
+					adr_glBindFramebuffer(GL_FRAMEBUFFER, casted->depthMapFBO);
 
-					glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-					glClear(GL_DEPTH_BUFFER_BIT);
-					glCullFace(GL_FRONT);
+					adr_glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+					adr_glClear(GL_DEPTH_BUFFER_BIT);
+					adr_glCullFace(GL_FRONT);
 					//Send the light matrix to the shader
 					ShaderManager::GetInstance().ApplyUniformMatrix("lightSpaceMatrix", casted->lightSpaceMatrix);
 					for (auto& entity : entities) {
 						entity.second->Draw(currentSceneCameraPos);
 					}
-					glCullFace(GL_BACK);
-					glBindFramebuffer(GL_FRAMEBUFFER, 0);
+					adr_glCullFace(GL_BACK);
+					adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 					numLights++;
 				}
@@ -182,8 +176,8 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 
 					//Bind depthMap as a texture
 					GLuint textureUnit = i + (unsigned int)entities.size(); // 10'dan baþlat: çatýþmayý önler
-					glActiveTexture(GL_TEXTURE0 + textureUnit);
-					glBindTexture(GL_TEXTURE_2D, casted->depthMap);
+					adr_glActiveTexture(GL_TEXTURE0 + textureUnit);
+					adr_glBindTexture(GL_TEXTURE_2D, casted->depthMap);
 
 					//ShaderManager::GetInstance().ApplyUniformInt(("shadowMaps[" + std::to_string(i) + "]").c_str(), textureUnit);
 					ShaderManager::GetInstance().ApplyUniformMatrix(("lightSpaceMatrices[" + std::to_string(i) + "]").c_str(), casted->lightSpaceMatrix);
@@ -204,8 +198,8 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 
 					//Bind depthMap as a texture
 					GLuint textureUnit = i + (unsigned int)entities.size();
-					glActiveTexture(GL_TEXTURE0 + textureUnit);//Each light has unique texture unit
-					glBindTexture(GL_TEXTURE_2D, casted->depthMap);
+					adr_glActiveTexture(GL_TEXTURE0 + textureUnit);//Each light has unique texture unit
+					adr_glBindTexture(GL_TEXTURE_2D, casted->depthMap);
 
 					//Send some stuff to the shader
 					ShaderManager::GetInstance().ApplyUniformMatrix(("lightSpaceMatrices[" + std::to_string(i) + "]").c_str(), casted->lightSpaceMatrix);
@@ -231,8 +225,8 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					//Bind depthMap as a texture
 					GLuint textureUnit =  i + (unsigned int)entities.size(); //Add an offset to prevent any conflict
 
-					glActiveTexture(GL_TEXTURE0 + textureUnit);
-					glBindTexture(GL_TEXTURE_CUBE_MAP, casted->depthMap);
+					adr_glActiveTexture(GL_TEXTURE0 + textureUnit);
+					adr_glBindTexture(GL_TEXTURE_CUBE_MAP, casted->depthMap);
 
 					//Send some stuff to the shader
 					//ShaderManager::GetInstance().ApplyUniformInt(("shadowCubeMaps[" + std::to_string(i) + "]").c_str(), texUnit);
@@ -254,7 +248,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 	*/
 	Graphics::GetInstance().BindFramebuffer();
 	Graphics::GetInstance().Clear();
-	glViewport(0, 0, window_width, window_height);
+	adr_glViewport(0, 0, window_width, window_height);
 
 	//Main drawing
 	for (auto& entity : entities) {
@@ -266,13 +260,13 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 
 	//Clear all sets
 	for (int i = 0; i < numLights; ++i) {
-		glActiveTexture(GL_TEXTURE0 + i + 10);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		adr_glActiveTexture(GL_TEXTURE0 + i + 10);
+		adr_glBindTexture(GL_TEXTURE_2D, 0);
+		adr_glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
+	adr_glDisable(GL_CULL_FACE);
+	adr_glDisable(GL_DEPTH_TEST);
 }
 
 /*

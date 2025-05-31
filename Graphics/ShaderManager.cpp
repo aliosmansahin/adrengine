@@ -7,7 +7,7 @@ PURPOSE: Initializes vertex, fragment and (if it's exists) geomerty shaders
 bool ShaderManager::InitShaders(Utils::ShaderType shaderType)
 {
     //create a shader program
-    unsigned int program = glCreateProgram();
+    unsigned int program = adr_glCreateProgram();
 
     //create a shader instance
     Shader* shader = nullptr;
@@ -49,20 +49,20 @@ bool ShaderManager::InitShaders(Utils::ShaderType shaderType)
     }
 
     //attach and link
-    glAttachShader(program, shader->GetVertexShader());
-    glAttachShader(program, shader->GetFragmentShader());
+    adr_glAttachShader(program, shader->GetVertexShader());
+    adr_glAttachShader(program, shader->GetFragmentShader());
     if(shader->GetGeometryShader() != -1)
-        glAttachShader(program, shader->GetGeometryShader());
+        adr_glAttachShader(program, shader->GetGeometryShader());
 
-    glLinkProgram(program);
+    adr_glLinkProgram(program);
 
     //check linking status
     int success;
     char infoLog[512];
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    adr_glGetProgramiv(program, GL_LINK_STATUS, &success);
 
     if (!success) {
-        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        adr_glGetProgramInfoLog(program, 512, NULL, infoLog);
         Logger::Log("E", infoLog);
         return false;
     }
@@ -87,7 +87,7 @@ void ShaderManager::UseShaders(Utils::ShaderType shaderType)
     if (currentType != shaderType) {
         currentProgram = programs[shaderType];
         currentType = shaderType;
-        glUseProgram(currentProgram);
+        adr_glUseProgram(currentProgram);
     }
 }
 
@@ -104,8 +104,8 @@ PURPOSE: Sends transform matrix to uniform
 */
 void ShaderManager::ApplyTransformMatrix(const char* uniformName, glm::mat4 mat)
 {
-    unsigned int transformLoc = glGetUniformLocation(currentProgram, uniformName);
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
+    unsigned int transformLoc = adr_glGetUniformLocation(currentProgram, uniformName);
+    adr_glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 /*
@@ -113,8 +113,8 @@ PURPOSE: Sends vector to uniform
 */
 void ShaderManager::ApplyUniformVec3(const char* uniformName, glm::vec3 vec)
 {
-    unsigned int transformLoc = glGetUniformLocation(currentProgram, uniformName);
-    glUniform3f(transformLoc, vec.x, vec.y, vec.z);
+    unsigned int transformLoc = adr_glGetUniformLocation(currentProgram, uniformName);
+    adr_glUniform3f(transformLoc, vec.x, vec.y, vec.z);
 }
 
 /*
@@ -122,8 +122,8 @@ PURPOSE: Sends int to uniform
 */
 void ShaderManager::ApplyUniformInt(const char* uniformName, int value)
 {
-    unsigned int transformLoc = glGetUniformLocation(currentProgram, uniformName);
-    glUniform1i(transformLoc, value);
+    unsigned int transformLoc = adr_glGetUniformLocation(currentProgram, uniformName);
+    adr_glUniform1i(transformLoc, value);
 }
 
 /*
@@ -131,8 +131,8 @@ PURPOSE: Sends float to uniform
 */
 void ShaderManager::ApplyUniformFloat(const char* uniformName, float value)
 {
-    unsigned int transformLoc = glGetUniformLocation(currentProgram, uniformName);
-    glUniform1f(transformLoc, value);
+    unsigned int transformLoc = adr_glGetUniformLocation(currentProgram, uniformName);
+    adr_glUniform1f(transformLoc, value);
 }
 
 /*
@@ -140,8 +140,8 @@ PURPOSE: Sends matrix to uniform
 */
 void ShaderManager::ApplyUniformMatrix(const char* uniformName, glm::mat4 mat)
 {
-    unsigned int textureLoc = glGetUniformLocation(currentProgram, uniformName);
-    glUniformMatrix4fv(textureLoc, 1, GL_FALSE, glm::value_ptr(mat));
+    unsigned int textureLoc = adr_glGetUniformLocation(currentProgram, uniformName);
+    adr_glUniformMatrix4fv(textureLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 /*
@@ -149,8 +149,8 @@ PURPOSE: Sends bool to uniform
 */
 GRAPHICS_API void ShaderManager::ApplyUniformBool(const char* uniformName, bool value)
 {
-    unsigned int transformLoc = glGetUniformLocation(currentProgram, uniformName);
-    glUniform1i(transformLoc, value);
+    unsigned int transformLoc = adr_glGetUniformLocation(currentProgram, uniformName);
+    adr_glUniform1i(transformLoc, value);
 }
 
 /*
@@ -158,8 +158,8 @@ PURPOSE: Sends texture to uniform
 */
 void ShaderManager::ApplyTexture(const char* uniformName)
 {
-    unsigned int textureLoc = glGetUniformLocation(currentProgram, uniformName);
-    glUniform1i(textureLoc, 0);
+    unsigned int textureLoc = adr_glGetUniformLocation(currentProgram, uniformName);
+    adr_glUniform1i(textureLoc, 0);
 }
 
 /*
@@ -221,7 +221,7 @@ void ShaderManager::ReleaseShaderManager()
 {
     //Delete each program
     for(auto& iter : programs)
-        glDeleteProgram(iter.second);
+        adr_glDeleteProgram(iter.second);
     //set the current program to nothing
     currentProgram = -1;
 

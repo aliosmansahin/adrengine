@@ -6,11 +6,13 @@
 #define GRAPHICS_API __declspec(dllimport)
 #endif
 
-#include "glad/glad.h"
+#include "glad_wrapper.h"
 #include <fstream>
 #include <sstream>
 
 #include "Logger.h"
+
+using namespace adr;
 
 class Shader
 {

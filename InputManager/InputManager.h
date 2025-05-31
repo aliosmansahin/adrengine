@@ -6,7 +6,7 @@
 #define INPUTMANAGER_API __declspec(dllimport)
 #endif
 
-#include <GLFW/glfw3.h>
+#include "glfw/glfw3.h"
 #include <unordered_map>
 #include <iostream>
 
@@ -20,7 +20,7 @@ class InputManager
 {
 public:
 	//main functions
-	INPUTMANAGER_API bool				  InitEngine();
+	INPUTMANAGER_API bool				  InitEngine(GLFWwindow* window, ImGuiContext* context);
 	INPUTMANAGER_API void				  ReleaseEngine();
 	INPUTMANAGER_API void				  Update();
 
@@ -36,25 +36,7 @@ public:
 
 	//mouse visibility
 	INPUTMANAGER_API bool				  GetMouseVisibility();
-
-	//request to set mouse visibility
-	INPUTMANAGER_API void				  RequestSetMouseVisibility(bool visible);
-	INPUTMANAGER_API bool				  GetRequestSetMouseVisibility();
-
-	//request to get mouse buttons
-	INPUTMANAGER_API void				  RequestGetMouseButtons();
-	INPUTMANAGER_API void				  AnswerGetMouseButtons(std::unordered_map<int, bool>& currentMouseButtons);
-	INPUTMANAGER_API bool				  GetRequestGetMouseButtons();
-
-	//request to get mouse positions
-	INPUTMANAGER_API void				  RequestGetMousePos();
-	INPUTMANAGER_API void				  AnswerGetMousePos(int mx, int my);
-	INPUTMANAGER_API bool				  GetRequestGetMousePos();
-
-	//request to get keys
-	INPUTMANAGER_API void				  RequestGetKeys();
-	INPUTMANAGER_API void				  AnswerGetKeys(std::unordered_map<int, bool>& currentKeys);
-	INPUTMANAGER_API bool				  GetRequestGetKeys();
+	INPUTMANAGER_API void				  SetMouseVisibility(bool visibility);
 
 	//getter for mouse positions
 	INPUTMANAGER_API int				  GetMouseX();
@@ -62,6 +44,9 @@ public:
 
 	//setter for mouse positions
 	INPUTMANAGER_API void				  SetMousePos(int x, int y);
+
+	//Callbacks
+	INPUTMANAGER_API static void          CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
 	//getter for the instance
 	INPUTMANAGER_API static InputManager& GetInstance();
@@ -72,6 +57,9 @@ private:
 	InputManager(const InputManager&) = delete;
 	InputManager& operator=(const InputManager&) = delete;
 private:
+	//GLFW
+	GLFWwindow* window = nullptr;
+
 	//maps for keys and mouse buttons
 	INPUTMANAGER_API static std::unordered_map<int, bool> currentKeys;
 	INPUTMANAGER_API static std::unordered_map<int, bool> previousKeys;
@@ -82,10 +70,4 @@ private:
 	INPUTMANAGER_API static int mouseX;
 	INPUTMANAGER_API static int mouseY;
 	INPUTMANAGER_API static bool mouseVisibility;
-
-	//requests
-	bool requestSetMouseVisibility = false;
-	bool requestGetMouseButtons = false;
-	bool requestGetMousePos = false;
-	bool requestGetKeys = false;
 };

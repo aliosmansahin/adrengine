@@ -13,10 +13,17 @@ int InputManager::mouseY = 0;
 /*
 PURPOSE: Initialize input engine
 */
-bool InputManager::InitEngine()
+bool InputManager::InitEngine(GLFWwindow* window, ImGuiContext* context)
 {
+    //Set glfw window pointer
+    this->window = window;
 
-    //glfwSetMouseButtonCallback(window, MouseButtonCallback);
+    //Set imgui context
+    ImGui::SetCurrentContext(context);
+
+    //Set glfw callbacks
+    glfwSetCursorPosCallback(window, InputManager::CursorPosCallback);
+    
     return true;
 }
 
@@ -90,116 +97,19 @@ INPUTMANAGER_API bool InputManager::GetMouseVisibility()
 }
 
 /*
-PURPOSE: Requests to window class to set mouse visibility
+PURPOSE: Sets the visibility of the mouse
 */
-void InputManager::RequestSetMouseVisibility(bool visible)
+INPUTMANAGER_API void InputManager::SetMouseVisibility(bool visibility)
 {
-    /*
-        Send to the window class to execute and handle answer,
-        change request variable to true
-    */
-
-    mouseVisibility = visible;
-    requestSetMouseVisibility = true;
-    /* if (visible) {
+    mouseVisibility = visibility;
+    if (visibility) {
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
     else {
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }*/
-}
-
-/*
-PURPOSE: Returns true if there is a request to set mouse visibility,
-    after that, disable the request
-*/
-INPUTMANAGER_API bool InputManager::GetRequestSetMouseVisibility()
-{
-    bool tmp = requestSetMouseVisibility;
-    requestSetMouseVisibility = false;
-    return tmp;
-}
-
-/*
-PURPOSE: Requests to window class to get status of mouse buttons
-*/
-INPUTMANAGER_API void InputManager::RequestGetMouseButtons()
-{
-    requestGetMouseButtons = true;
-}
-
-/*
-PURPOSE: This function will be called in window class to apply mouse buttons in input manager
-*/
-INPUTMANAGER_API void InputManager::AnswerGetMouseButtons(std::unordered_map<int, bool>& currentMouseButtons)
-{
-    this->currentMouseButtons = currentMouseButtons;
-}
-
-/*
-PURPOSE: Returns true if there is a request to get status of mouse buttons,
-    after that, disable the request
-*/
-INPUTMANAGER_API bool InputManager::GetRequestGetMouseButtons()
-{
-    bool tmp = requestGetMouseButtons;
-    requestGetMouseButtons = false;
-    return tmp;
-}
-
-/*
-PURPOSE: Requests to window class to get mouse position
-*/
-INPUTMANAGER_API void InputManager::RequestGetMousePos()
-{
-    requestGetMousePos = true;
-}
-
-/*
-PURPOSE: This function will be called in window class to apply mouse position in input manager
-*/
-INPUTMANAGER_API void InputManager::AnswerGetMousePos(int mx, int my)
-{
-    mouseX = mx;
-    mouseY = my;
-}
-
-/*
-PURPOSE: Returns true if there is a request to get mouse positions,
-    after that, disable the request
-*/
-INPUTMANAGER_API bool InputManager::GetRequestGetMousePos()
-{
-    bool tmp = requestGetMousePos;
-    requestGetMousePos = false;
-    return tmp;
-}
-
-/*
-PURPOSE: Requests to window class to get status of keys
-*/
-INPUTMANAGER_API void InputManager::RequestGetKeys()
-{
-    requestGetKeys = true;
-}
-
-/*
-PURPOSE: This function will be called in window class to apply keys in input manager
-*/
-INPUTMANAGER_API void InputManager::AnswerGetKeys(std::unordered_map<int, bool>& currentKeys)
-{
-    this->currentKeys = currentKeys;
-}
-
-/*
-PURPOSE: Returns true if there is a request to get status of keys,
-    after that, disable the request
-*/
-INPUTMANAGER_API bool InputManager::GetRequestGetKeys()
-{
-    return requestGetKeys;
+    }
 }
 
 /*
@@ -223,7 +133,21 @@ PURPOSE: Sets mouse position to given parameters
 */
 void InputManager::SetMousePos(int x, int y)
 {
-    //glfwSetCursorPos(window, x, y);
+    glfwSetCursorPos(window, x, y);
+}
+
+/*
+PURPOSE: Callback for updating mouse position
+*/
+INPUTMANAGER_API void InputManager::CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    //To prevent imgui hover effects when mouse is disabled
+    if(mouseVisibility)
+        ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+
+    //Update mouse position
+    mouseX = (int)xpos;
+    mouseY = (int)ypos;
 }
 
 /*
@@ -235,12 +159,16 @@ void InputManager::Update()
     previousKeys = currentKeys;
     previousMouseButtons = currentMouseButtons;
 
-    //Request all buttons, keys...
-    RequestGetMouseButtons();
+    //Update keys
+    for (int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; ++key) {
+        int state = glfwGetKey(window, key);
+        currentKeys[key] = (state == GLFW_PRESS || state == GLFW_REPEAT);
+    }
 
-    RequestGetMousePos();
-
-    RequestGetKeys();
+    //Update mouse buttons
+    for (int i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
+        currentMouseButtons[i] = glfwGetMouseButton(window, i);
+    }
 }
 
 /*

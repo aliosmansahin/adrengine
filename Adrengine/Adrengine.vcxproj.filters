@@ -5,6 +5,7 @@
     <ClCompile Include="Window.cpp">
       <Filter>Window</Filter>
     </ClCompile>
+    <ClCompile Include="glad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />

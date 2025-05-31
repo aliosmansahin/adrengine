@@ -33,29 +33,29 @@ void Tile::Create(int x, int y, int width, int height, float u, float v, float t
 	};
 
 	//Create buffers and bind them with vertices and indices
-	glGenBuffers(1, &tileVBO);
-	glGenBuffers(1, &tileEBO);
+	adr_glGenBuffers(1, &tileVBO);
+	adr_glGenBuffers(1, &tileEBO);
 
-	glGenVertexArrays(1, &tileVAO);
-	glBindVertexArray(tileVAO);
+	adr_glGenVertexArrays(1, &tileVAO);
+	adr_glBindVertexArray(tileVAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, tileVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tileVertices), tileVertices, GL_STATIC_DRAW);
+	adr_glBindBuffer(GL_ARRAY_BUFFER, tileVBO);
+	adr_glBufferData(GL_ARRAY_BUFFER, sizeof(tileVertices), tileVertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tileEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tileIndices), tileIndices, GL_STATIC_DRAW);
+	adr_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tileEBO);
+	adr_glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tileIndices), tileIndices, GL_STATIC_DRAW);
 
 	//Set the vertex attrib pointers (position = 0)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	adr_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	adr_glEnableVertexAttribArray(0);
 
 	//Set the vertex attrib pointers (position = 1)
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	adr_glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	adr_glEnableVertexAttribArray(1);
 
 	//Release buffers
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	adr_glBindBuffer(GL_ARRAY_BUFFER, 0);
+	adr_glBindVertexArray(0);
 }
 
 /*
@@ -68,26 +68,26 @@ void Tile::Update()
 /*
 PURPOSE: Draws the tile
 */
-void Tile::Draw(int tileW, int tileH, unsigned int tileMap)
+void Tile::Draw(int tileW, int tileH, unsigned int tileMap, int translateX, int translateY)
 {
 	//Set some transform
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(x * tileW, y * tileH, 0.0f));
+	model = glm::translate(model, glm::vec3(x * tileW + translateX, y * tileH + translateY, 0.0f));
 	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
 
 	//Set the texture
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tileMap);
+	adr_glActiveTexture(GL_TEXTURE0);
+	adr_glBindTexture(GL_TEXTURE_2D, tileMap);
 	ShaderManager::GetInstance().ApplyTexture("texture1");
 
 	//Draw the texture
-	glBindVertexArray(tileVAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	adr_glBindVertexArray(tileVAO);
+	adr_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	//Disable after drawing
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindVertexArray(0);
+	adr_glActiveTexture(GL_TEXTURE0);
+	adr_glBindTexture(GL_TEXTURE_2D, 0);
+	adr_glBindVertexArray(0);
 }
 
 /*
@@ -96,15 +96,15 @@ PURPOSE: Releases the tile (buffers and other stuff)
 void Tile::Release()
 {
 	if (tileVAO != -1) {
-		glDeleteVertexArrays(1, &tileVAO);
+		adr_glDeleteVertexArrays(1, &tileVAO);
 		tileVAO = -1;
 	}
 	if (tileVBO != -1) {
-		glDeleteBuffers(1, &tileVBO);
+		adr_glDeleteBuffers(1, &tileVBO);
 		tileVBO = -1;
 	}
 	if (tileEBO != -1) {
-		glDeleteBuffers(1, &tileEBO);
+		adr_glDeleteBuffers(1, &tileEBO);
 		tileEBO = -1;
 	}
 }

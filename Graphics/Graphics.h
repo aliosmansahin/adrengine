@@ -6,8 +6,8 @@
 #define GRAPHICS_API __declspec(dllimport)
 #endif
 
-#include "glad/glad.h"
-#include <GLFW/glfw3.h>
+#include "glad_wrapper.h"
+#include "glfw/glfw3.h"
 #include <vector>
 #include <unordered_map>
 #include <glm/glm.hpp>
@@ -91,8 +91,8 @@ public:
 public:
 	//context
 	GRAPHICS_API void Clear();
-	GRAPHICS_API void BindFramebuffer()   { glBindFramebuffer(GL_FRAMEBUFFER, FBO); }
-	GRAPHICS_API void UnbindFramebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+	GRAPHICS_API void BindFramebuffer()   { adr::adr_glBindFramebuffer(GL_FRAMEBUFFER, FBO); }
+	GRAPHICS_API void UnbindFramebuffer() { adr::adr_glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 public:
 	//getters
 	GRAPHICS_API GLFWwindow*  GetWindow()         { return window; }
