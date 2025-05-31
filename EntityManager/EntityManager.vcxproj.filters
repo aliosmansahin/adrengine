@@ -25,6 +25,12 @@
     <Filter Include="Entity\Light\SpotLight">
       <UniqueIdentifier>{bb87a432-dddc-451b-b70e-e65c104ff720}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity\Sprite2D\TileMap">
+      <UniqueIdentifier>{4fb03ea7-ad36-40bd-ab22-7eb9343dc7a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Sprite2D\TileMap\Tile">
+      <UniqueIdentifier>{8415d77f-325c-4378-9d63-d32c68704450}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -76,6 +82,15 @@
     <ClInclude Include="LightParams.h">
       <Filter>Entity\Light</Filter>
     </ClInclude>
+    <ClInclude Include="TileMap.h">
+      <Filter>Entity\Sprite2D\TileMap</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMapParams.h">
+      <Filter>Entity\Sprite2D\TileMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>Entity\Sprite2D\TileMap\Tile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -126,6 +141,15 @@
     </ClCompile>
     <ClCompile Include="LightParams.cpp">
       <Filter>Entity\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMap.cpp">
+      <Filter>Entity\Sprite2D\TileMap</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMapParams.cpp">
+      <Filter>Entity\Sprite2D\TileMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Entity\Sprite2D\TileMap\Tile</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

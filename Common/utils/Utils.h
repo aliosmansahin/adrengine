@@ -11,7 +11,8 @@ namespace Utils {
         SHADER_2D,
         SHADER_3D,
         DEPTH,
-        DEPTH_CUBE
+        DEPTH_CUBE,
+        SHADER_INSPECT_TILE
     };
 
     //This struct is for storing if the script belongs to an entity or a scene
@@ -75,6 +76,7 @@ namespace Utils {
                 a["type"] = "SceneEditor";
             if (tab->tabType == Utils::VisualScriptEditor)
                 a["type"] = "VisualScriptEditor";
+
             projectJson["opened-tabs"].push_back(a);
         }
 

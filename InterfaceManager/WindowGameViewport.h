@@ -38,5 +38,7 @@ public:
 	bool isHovered = false;
 	float window_width = 0;
 	float window_height = 0;
+	int mouseX;
+	int mouseY;
 };
 

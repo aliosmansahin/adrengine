@@ -214,6 +214,12 @@ void InterfaceManager::DrawInterface(
 
 	if (WindowProjectSettings::GetInstance().showWindow)
 		WindowProjectSettings::GetInstance().DrawWindow();
+
+	if (WindowTileMapEdit::GetInstance().showWindow)
+		WindowTileMapEdit::GetInstance().DrawWindow();
+
+	if (WindowTileMapBrush::GetInstance().showWindow)
+		WindowTileMapBrush::GetInstance().DrawWindow();
 }
 
 /*
@@ -248,8 +254,8 @@ void InterfaceManager::UpdateViewportContext()
 	{
 		GLFWwindow* backup_current_context = glfwGetCurrentContext();
 		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup_current_context);
+		//ImGui::RenderPlatformWindowsDefault();
+		//glfwMakeContextCurrent(backup_current_context);
 	}
 }
 

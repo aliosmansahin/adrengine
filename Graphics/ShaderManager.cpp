@@ -37,6 +37,12 @@ bool ShaderManager::InitShaders(Utils::ShaderType shaderType)
         if (!shader->CreateShader("shaders/DepthCubeVertexShader.glsl", "shaders/DepthCubeFragmentShader.glsl", "shaders/DepthCubeGeometryShader.glsl"))
             return false;
     }
+    else if (shaderType == Utils::SHADER_INSPECT_TILE) {
+        Logger::Log("P", "Initializing SHADER_INSPECT_TILE");
+        shader = new Shader();
+        if (!shader->CreateShader("shaders/TileMapInspectVertexShader.glsl", "shaders/TileMapInspectFragmentShader.glsl"))
+            return false;
+    }
     else {
         Logger::Log("E", "Invalid shader type");
         return false;
@@ -167,9 +173,9 @@ void ShaderManager::UpdateTransformMatrix2D(int windowWidth, int windowHeight, i
     float orthoWidth = 800.0f;
     float orthoHeight = orthoWidth / aspect;
 
-    glm::mat4 projection = glm::ortho(0.0f, orthoWidth, 0.0f, orthoHeight,-100.0f, 100.0f);
+    glm::mat4 projection = glm::ortho(0.0f, orthoWidth, orthoHeight, 0.0f, -100.0f, 100.0f);
 
-    glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(cameraX, cameraY, 0));
+    glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, 0));
 
     ApplyTransformMatrix("uProjection", projection);
     ApplyTransformMatrix("uView", translate);
@@ -194,6 +200,18 @@ void ShaderManager::UpdateTransformMatrix3D(glm::vec3 eye, int windowWidth, int 
 
     ApplyTransformMatrix("uView", look);
     ApplyTransformMatrix("uProjection", proj);
+}
+
+GRAPHICS_API glm::mat4 ShaderManager::GetProjectionMatrix2D(int windowWidth, int windowHeight)
+{
+    float aspect = (float)windowWidth / (float)windowHeight;
+
+    float orthoWidth = 800.0f;
+    float orthoHeight = orthoWidth / aspect;
+
+    glm::mat4 projection = glm::ortho(0.0f, orthoWidth, orthoHeight, 0.0f, -100.0f, 100.0f);
+
+    return projection;
 }
 
 /*

@@ -32,6 +32,7 @@ public:
 	GRAPHICS_API void			   ApplyTexture(const char* uniformName);
 	GRAPHICS_API void			   UpdateTransformMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY); //CHANGE THE NAME OF FUNCTION FROM PROJECTION TO TRANSFORM
 	GRAPHICS_API void			   UpdateTransformMatrix3D(glm::vec3 eye, int windowWidth, int windowHeight, float cameraX, float cameraY, float cameraZ, float yaw, float pitch);
+	GRAPHICS_API glm::mat4		   GetProjectionMatrix2D(int windowWidth, int windowHeight);
 	GRAPHICS_API void			   ReleaseShaderManager();
 	//getter for the instance of class
 	GRAPHICS_API static ShaderManager& GetInstance();

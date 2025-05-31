@@ -169,6 +169,8 @@
     <ClInclude Include="WindowGameViewport.h" />
     <ClInclude Include="WindowProjectSettings.h" />
     <ClInclude Include="WindowScene.h" />
+    <ClInclude Include="WindowTileMapBrush.h" />
+    <ClInclude Include="WindowTileMapEdit.h" />
     <ClInclude Include="WindowVisualScript.h" />
   </ItemGroup>
   <ItemGroup>
@@ -191,6 +193,8 @@
     <ClCompile Include="WindowGameViewport.cpp" />
     <ClCompile Include="WindowProjectSettings.cpp" />
     <ClCompile Include="WindowScene.cpp" />
+    <ClCompile Include="WindowTileMapBrush.cpp" />
+    <ClCompile Include="WindowTileMapEdit.cpp" />
     <ClCompile Include="WindowVisualScript.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

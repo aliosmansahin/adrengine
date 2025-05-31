@@ -15,6 +15,9 @@
 #include "Logger.h"
 #include "EntityManager.h"
 
+#include "WindowTileMapEdit.h"
+#include "WindowTileMapBrush.h"
+
 #include "utils/Utils.h"
 
 class WindowEntityProperties

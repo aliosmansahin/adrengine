@@ -25,11 +25,21 @@ bool Scene::CreateScene(std::string sceneId, Utils::SceneType sceneType)
 /*
 PURPOSE: Draws the scene
 */
-void Scene::DrawScene(int window_width, int window_height, glm::vec3 currentSceneCameraPos)
+void Scene::DrawScene(int window_width, int window_height, glm::vec3 currentSceneCameraPos,
+	bool windowGameViewportIsHovered,
+	int windowGameViewportMouseX,
+	int windowGameViewportMouseY,
+	TileMap* edittingTileMap,
+	std::function<void(TileMap*, int, int, float, float)> updateMouseTileIndicator)
 {
 	//If there is an entity manager, draw each entity via entity manager
 	if(entityManager)
 		entityManager->DrawEntities(window_width, window_height, currentSceneCameraPos, (sceneType == Utils::SCENE_3D));
+
+
+	if (windowGameViewportIsHovered && edittingTileMap) {
+		updateMouseTileIndicator(edittingTileMap, windowGameViewportMouseX, windowGameViewportMouseY, currentSceneCameraPos.x, currentSceneCameraPos.y);
+	}
 }
 
 /*
@@ -38,6 +48,8 @@ PURPOSE: Update scene objects and handles camera updates
 void Scene::UpdateScene(
 	bool isPlaying,
 	bool windowGameViewportIsHovered,
+	int windowGameViewportMouseX,
+	int windowGameViewportMouseY,
 	int screenWidth,
 	int screenHeight,
 	int window_width,
@@ -47,11 +59,16 @@ void Scene::UpdateScene(
 	bool& pendingDelete,
 	std::string selectedId,
 	std::function<void()> selectFunction,
-	std::string& projectDir)
+	std::string& projectDir,
+	TileMap* edittingTileMap,
+	std::pair<int, int> selectedTile,
+	std::function<void(TileMap*, int, int, float, float, std::pair<int, int>)> addTileToMap,
+	std::function<void(TileMap*, int, int, float, float)> removeTileFromMap)
 {
 	//Setups for mouse positions
 	int currentMouseX = InputManager::GetInstance().GetMouseX();
 	int currentMouseY = InputManager::GetInstance().GetMouseY();
+
 	//if (WindowGameViewport::GetInstance().isFocused) {
 		if (isPlaying) {
 			/*
@@ -80,6 +97,10 @@ void Scene::UpdateScene(
 				isDragging = false;
 				InputManager::GetInstance().RequestSetMouseVisibility(true);
 			}
+			
+			//Get if mouse left is clicked
+			bool leftPressed = InputManager::GetInstance().IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
+			bool deletePressed = InputManager::GetInstance().IsKeyPressed(GLFW_KEY_DELETE);
 
 			if (isDragging) {
 				if (skipThisFrame) {
@@ -104,7 +125,7 @@ void Scene::UpdateScene(
 				//If the type of the scene is 2d
 				if (sceneType == Utils::SCENE_2D) {
 					//Move the camera
-					cameraX += resX;
+					cameraX -= resX;
 					cameraY -= resY;
 				}
 				//If the type of the scene is 3d
@@ -174,6 +195,20 @@ void Scene::UpdateScene(
 				//Set last mouse to current mouse
 				firstMouseX = currentMouseX;
 				firstMouseY = currentMouseY;
+			}
+			else {
+				if (windowGameViewportIsHovered) {
+					if (edittingTileMap) {
+						if (leftPressed) {
+							//TileMap will add a tile to its own tiles
+							addTileToMap(edittingTileMap, windowGameViewportMouseX, windowGameViewportMouseY, cameraX, cameraY, selectedTile);
+						}
+						if (deletePressed) {
+							//TileMap will remove the tile from its own tiles
+							removeTileFromMap(edittingTileMap, windowGameViewportMouseX, windowGameViewportMouseY, cameraX, cameraY);
+						}
+					}
+				}
 			}
 		}
 	//}
@@ -273,6 +308,14 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 				std::shared_ptr<EntityParams> params = typeIter->second.second->clone();
 				params->FromJson(entityJson);
 				entity->CreateEntity(params);
+				
+				//TileMap has own fromjson function except other entities
+				if (type == "TileMap") {
+					auto tileMap = std::dynamic_pointer_cast<TileMap>(entity);
+					if (tileMap.get()) {
+						tileMap->FromJson(entityJson);
+					}
+				}
 			}
 			//Add the entity to entity manager
 			if(entity.get())

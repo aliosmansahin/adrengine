@@ -49,6 +49,12 @@
     <None Include="localization\english">
       <Filter>Localization</Filter>
     </None>
+    <None Include="shaders\TileMapInspectVertexShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\TileMapInspectFragmentShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
