@@ -127,8 +127,14 @@ void TileMap::UpdateMouseTileIndicator(TileMap* tileMap, int mouseX, int mouseY,
 	float tileYAtScene = (float)mouseY + cameraY;
 
 	//Calculate the tile pos on the tileMap
-	int tileX = (int)tileXAtScene / tileMap->tileWidth;
-	int tileY = (int)tileYAtScene / tileMap->tileHeight;
+	int tileX = (int)(tileXAtScene / (float)tileMap->tileWidth);
+	int tileY = (int)(tileYAtScene / (float)tileMap->tileHeight);
+
+	//We will add 1 when tile pos is sub-zero
+	if (tileXAtScene < 0.0f)
+		tileX--;
+	if (tileYAtScene < 0.0f)
+		tileY--;
 
 	//Set position of the tile indicator and activate to show
 	if (tileMap->tileIndicator.get()) {
