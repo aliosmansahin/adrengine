@@ -13,7 +13,7 @@ class Tile
 {
 public:
 	//main funcs
-	void Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH);
+	void Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH, std::pair<int, int> tileType);
 	void Update();
 	void Draw(int tileW, int tileH, unsigned int tileMap, int translateX, int translateY);
 	void Release();
@@ -40,4 +40,6 @@ public:
 	unsigned int tileVAO = -1;
 	unsigned int tileVBO = -1;
 	unsigned int tileEBO = -1;
+
+	std::pair<int, int> tileType = { -1, -1 };
 };

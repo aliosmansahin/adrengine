@@ -5,7 +5,7 @@
 PURPOSE: Creates the tile buffers.
 	Parameters: x coordinate, y coordinate, width in pixels, height in pixels, x coord in texture, y coord of texture, texture width, texture height
 */
-void Tile::Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH)
+void Tile::Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH, std::pair<int, int> tileType)
 {
 	//Setup parameters
 	this->x = x;
@@ -16,6 +16,7 @@ void Tile::Create(int x, int y, int width, int height, float u, float v, float t
 	this->v = v;
 	this->textureWidth = textureW;
 	this->textureHeight = textureH;
+	this->tileType = tileType;
 
 	//------ TEXTURE TILE ------
 	//Vertices for the texture
@@ -121,6 +122,9 @@ void Tile::SetPos(int x, int y)
 nlohmann::json Tile::ToJson()
 {
 	nlohmann::json j;
+	j["type-x"] = tileType.first;
+	j["type-y"] = tileType.second;
+
 	//position and size of the tile
 	j["x"] = x;
 	j["y"] = y;

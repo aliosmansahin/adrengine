@@ -80,6 +80,12 @@ ENTITYMANAGER_API void TileMap::AddTileToMap(TileMap* tileMap, int mouseX, int m
 	int tileX = (int)tileXAtScene / tileMap->tileWidth;
 	int tileY = (int)tileYAtScene / tileMap->tileHeight;
 
+	//We will add 1 when tile pos is sub-zero
+	if (tileXAtScene < 0.0f)
+		tileX--;
+	if (tileYAtScene < 0.0f)
+		tileY--;
+
 	//Get the selected tile and insert it to tiles to draw
 	auto createdTileIter = tileMap->createdTiles.find(selectedTile);
 	if (createdTileIter == tileMap->createdTiles.end())
@@ -107,6 +113,12 @@ ENTITYMANAGER_API void TileMap::RemoveTileFromMap(TileMap* tileMap, int mouseX, 
 	//Calculate the tile pos on the tileMap
 	int tileX = (int)tileXAtScene / tileMap->tileWidth;
 	int tileY = (int)tileYAtScene / tileMap->tileHeight;
+
+	//We will add 1 when tile pos is sub-zero
+	if (tileXAtScene < 0.0f)
+		tileX--;
+	if (tileYAtScene < 0.0f)
+		tileY--;
 
 	//Check if there is a tile on this coordinates
 	auto tileIter = tileMap->tiles.find({ tileX, tileY });
@@ -217,7 +229,7 @@ ENTITYMANAGER_API void TileMap::CreateTiles(float textureWidth, float textureHei
 			float TTX = realTileWidth * 1.0f / textureWidth;
 			float TTY = realTileHeight * 1.0f / textureHeight;
 
-			tile->Create(x, y, realTileWidth, realTileHeight, u, v, TTX, TTY);
+			tile->Create(x, y, realTileWidth, realTileHeight, u, v, TTX, TTY, { x, y });
 
 			createdTiles.insert({ { x, y }, std::shared_ptr<Tile>(tile) });
 
@@ -275,7 +287,7 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 	//------ TILE POS INDICATOR ------
 
 	tileIndicator = std::make_shared<Tile>();
-	tileIndicator->Create(0, 0, tileW, tileH, 0.0f, 0.0f, 1.0f, 1.0f);
+	tileIndicator->Create(0, 0, tileW, tileH, 0.0f, 0.0f, 1.0f, 1.0f, { -1, -1 });
 
 	//------ TEXTURE TILEMAP ------
 
@@ -492,6 +504,11 @@ ENTITYMANAGER_API void TileMap::FromJson(nlohmann::json json)
 	if (json.contains("created-tiles")) {
 		nlohmann::json c = json["created-tiles"];
 		for(auto& t : c) {
+			//Get type
+			int typeX = t.value("type-x", -1);
+			int typeY = t.value("type-y", -1);
+
+			//Create a new type of tile
 			Tile* tile = new Tile();
 			tile->Create(
 				t.value("x", 0),
@@ -501,10 +518,12 @@ ENTITYMANAGER_API void TileMap::FromJson(nlohmann::json json)
 				t.value("u", 0.0f),
 				t.value("v", 0.0f),
 				t.value("tex-w", 0.0f),
-				t.value("tex-h", 0.0f)
+				t.value("tex-h", 0.0f),
+				{ typeX, typeY }
 			); // We don't have to have a "fromjson" function, "create" handles it
 
-			createdTiles.insert({ { tile->x, tile->y }, std::shared_ptr<Tile>(tile) });
+			//Add a new type
+			createdTiles.insert({ { typeX, typeY }, std::shared_ptr<Tile>(tile) });
 		}
 	}
 
@@ -512,19 +531,27 @@ ENTITYMANAGER_API void TileMap::FromJson(nlohmann::json json)
 	if (json.contains("tiles")) {
 		nlohmann::json tileJson = json["tiles"];
 		for (auto& t : tileJson) {
-			Tile* tile = new Tile();
-			tile->Create(
-				t.value("x", 0),
-				t.value("y", 0),
-				t.value("width", 0),
-				t.value("height", 0),
-				t.value("u", 0.0f),
-				t.value("v", 0.0f),
-				t.value("tex-w", 0.0f),
-				t.value("tex-h", 0.0f)
-			); // We don't have to have a "fromjson" function, "create" handles it
+			//Get position
+			int x = t.value("x", 0);
+			int y = t.value("y", 0);
 
-			tiles.insert({ { tile->x, tile->y }, std::shared_ptr<Tile>(tile) });
+			//Get the type of the tile
+			int typeX = t.value("type-x", -1);
+			int typeY = t.value("type-y", -1);
+
+			//Check if this type of tile exists
+			auto createdTileIter = createdTiles.find({ typeX, typeY });
+			if (createdTileIter == createdTiles.end())
+				return;
+
+			//Check if there is a tile on this coordinates
+			auto tileIter = tiles.find({ x, y });
+
+			//Add a tile if there is not
+			if (tileIter == tiles.end()) {
+				std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTileIter->second.get());
+				tiles.insert({ { x, y }, tile });
+			}
 		}
 	}
 
@@ -534,5 +561,5 @@ ENTITYMANAGER_API void TileMap::FromJson(nlohmann::json json)
 
 	//Tile indicator
 	tileIndicator = std::make_shared<Tile>();
-	tileIndicator->Create(0, 0, tileWidth, tileHeight, 0.0f, 0.0f, 1.0f, 1.0f);
+	tileIndicator->Create(0, 0, tileWidth, tileHeight, 0.0f, 0.0f, 1.0f, 1.0f, { -1, -1 });
 }
