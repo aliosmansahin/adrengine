@@ -19,6 +19,8 @@
     <ClInclude Include="glad\glad.h" />
     <ClInclude Include="glad\khrplatform.h" />
     <ClInclude Include="utils\Utils.h" />
+    <ClInclude Include="glfw\glfw3.h" />
+    <ClInclude Include="glfw\glfw3native.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp" />
@@ -30,6 +32,5 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imnodes\imnodes.cpp" />
-    <ClCompile Include="glad\glad.cpp" />
   </ItemGroup>
 </Project>

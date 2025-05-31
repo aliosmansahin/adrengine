@@ -33,9 +33,6 @@ public:
 	ENGINE_API void CalcFPSandMS();
 	ENGINE_API void UpdateCurrentScene();
 	ENGINE_API void PerformDeleteActions();
-	ENGINE_API void RequestGetVideoMode();
-	ENGINE_API void AnswerGetVideoMode(int width, int height);
-	ENGINE_API bool GetRequestGetVideoMode();
 public:
 	//getters
 	ENGINE_API GLFWwindow* GetWindow() { return window; }
@@ -51,7 +48,6 @@ private:
 private:
 	//glfw
 	GLFWwindow* window = nullptr;
-	bool requestGetVideoMode = false;
 public:
 	//project specifications
 	std::string projectName = "project";

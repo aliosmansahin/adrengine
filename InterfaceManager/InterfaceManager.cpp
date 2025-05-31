@@ -6,30 +6,12 @@
 /*
 PURPOSE: Initialize interface manager
 */
-bool InterfaceManager::InitInterface(GLFWwindow* window)
+INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, ImGuiContext*& context)
 {
-	/*
-	Initialize glfw
-	FIXME: in every dll, i don't want to initialize this
-		so this initialization will be removed.
-	*/
-	if (!glfwInit()) {
-		std::cerr << "GLFW initialization failed in DLL!" << std::endl;
-		return false;
-	}
-
-	/*
-	Loads glad functions
-	FIXME: and this one
-	*/
-	int version = gladLoadGL();
-	if (version == 0) {
-		Logger::Log("E", "Starting engine failed in gladLoadGLLoader");
-		return false;
-	}
-
 	//initialize interface
 	Logger::Log("P", "Initializing interface");
+
+	this->window = window;
 
 	//Initialize imgui
 	IMGUI_CHECKVERSION();
@@ -49,8 +31,12 @@ bool InterfaceManager::InitInterface(GLFWwindow* window)
 
 	ImGui::StyleColorsDark();
 
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 330 core");
+	if (!ImGui_ImplGlfw_InitForOpenGL(window, true))
+		return false;
+	if (!ImGui_ImplOpenGL3_Init("#version 330 core"))
+		return false;
+
+	context = ImGui::GetCurrentContext();
 
 	return true;
 }

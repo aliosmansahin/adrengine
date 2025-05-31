@@ -10,9 +10,6 @@ PURPOSE: Updates timer stuff (currently updates only deltaTime)
 */
 void Timer::Update()
 {
-    if (!glfwInit()) {
-        Logger::Log("E", "GLFW initialization failed in DLL!");
-    }
     float currentTime = (float)glfwGetTime();
     static float lastTime = currentTime; // for the first frame, set the last time to current time
 

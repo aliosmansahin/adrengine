@@ -25,11 +25,12 @@ bool Engine::InitEngine(GLFWwindow* window)
     //------ INITIALIZE OTHER ENGINES ------
     
     //interface manager
-    if (!InterfaceManager::GetInstance().InitInterface(window))
+    ImGuiContext* context = nullptr;
+    if (!InterfaceManager::GetInstance().InitInterface(window, context))
         return false;
 
     //input manager
-    if (!InputManager::GetInstance().InitEngine())
+    if (!InputManager::GetInstance().InitEngine(window, context))
         return false;
 
     //scene manager
@@ -39,13 +40,6 @@ bool Engine::InitEngine(GLFWwindow* window)
     //visual script manager
     if (!VisualScriptManager::GetInstance().InitManager())
         return false;
-
-    /*
-    * Request to get video mode to get width and height
-    * 
-    * --glfw functions are failing so i am using a request to window to get it from there
-    */
-    RequestGetVideoMode();
 
     //load existing project
     LoadProject();
@@ -93,16 +87,28 @@ PURPOSE: Update engines and other stuff
 */
 void Engine::Update()
 {
-    //update timer to calc delta time
+    //Update timer to calc delta time
     Timer::Update();
 
-    //calculate ms and fps
+    /*
+        Update inputs,
+        Mouse position is updating via callback function with glfw,
+        Key and mouse buttons are updating via Update function
+    */
+    InputManager::GetInstance().Update();
+
+    //Calculate ms and fps
     CalcFPSandMS();
 
-    //update scenes
+    //Get screen width
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    screenWidth = mode->width;
+    screenHeight = mode->height;
+
+    //Update scenes
     UpdateCurrentScene();
 
-    //perform tab and scene delete actions
+    //Perform tab and scene delete actions
     PerformDeleteActions();
 }
 
@@ -374,34 +380,6 @@ ENGINE_API void Engine::PerformDeleteActions()
         }
         InterfaceManager::GetInstance().pendingTabDelete = false;
     }
-}
-
-/*
-PURPOSE: To request to get screen resolution
-*/
-ENGINE_API void Engine::RequestGetVideoMode()
-{
-    requestGetVideoMode = true;
-}
-
-/*
-PURPOSE: To get answer the window class and set screen resolution
-*/
-ENGINE_API void Engine::AnswerGetVideoMode(int width, int height)
-{
-    screenWidth = width;
-    screenHeight = height;
-}
-
-/*
-PURPOSE: To get if the request of getting resolution is requested
-*/
-ENGINE_API bool Engine::GetRequestGetVideoMode()
-{
-    //once this was requested even request is true, change it to false but return old value
-    bool tmp = requestGetVideoMode;
-    requestGetVideoMode = false;
-    return tmp;
 }
 
 /*

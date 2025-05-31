@@ -30,29 +30,29 @@ bool Sprite2D::CreateEntity(std::shared_ptr<EntityParams> params)
 	};
 
 	//Create buffers and bind them with vertices and indices
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	adr_glGenBuffers(1, &VBO);
+	adr_glGenBuffers(1, &EBO);
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	adr_glGenVertexArrays(1, &VAO);
+	adr_glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	adr_glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	adr_glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	adr_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	adr_glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	//Set the vertex attrib pointers (position = 0)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	adr_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	adr_glEnableVertexAttribArray(0);
 
 	//Set the vertex attrib pointers (position = 1)
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	adr_glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	adr_glEnableVertexAttribArray(1);
 
 	//Release buffers
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	adr_glBindBuffer(GL_ARRAY_BUFFER, 0);
+	adr_glBindVertexArray(0);
 	return true;
 }
 
@@ -61,9 +61,9 @@ PURPOSE: Unitializes the entity
 */
 void Sprite2D::DeleteEntity()
 {
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-	glDeleteVertexArrays(1, &VAO);
+	adr_glDeleteBuffers(1, &VBO);
+	adr_glDeleteBuffers(1, &EBO);
+	adr_glDeleteVertexArrays(1, &VAO);
 }
 
 /*
@@ -95,8 +95,8 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
 
 	//Set the texture
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, params->texture);
+	adr_glActiveTexture(GL_TEXTURE0);
+	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
 	if(ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
 		ShaderManager::GetInstance().ApplyTexture("texture1");
 	else if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
@@ -111,18 +111,18 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 		//AMBIENT(This makes the texture not effected by lights)
 		ShaderManager::GetInstance().ApplyUniformVec3("materialAmbient", glm::vec3(1.0f));
 
-		glEnable(GL_DEPTH_TEST);
+		adr_glEnable(GL_DEPTH_TEST);
 	}
 
 	//Draw the texture
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	adr_glBindVertexArray(VAO);
+	adr_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	//Disable after drawing
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindVertexArray(0);
-	glDisable(GL_DEPTH_TEST);
+	adr_glActiveTexture(GL_TEXTURE0);
+	adr_glBindTexture(GL_TEXTURE_2D, 0);
+	adr_glBindVertexArray(0);
+	adr_glDisable(GL_DEPTH_TEST);
 }
 
 /*

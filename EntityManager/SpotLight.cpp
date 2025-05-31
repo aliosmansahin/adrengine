@@ -17,23 +17,23 @@ bool SpotLight::CreateEntity(std::shared_ptr<EntityParams> params)
 	//Create buffers for shadow
 	const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
 
-	glGenTextures(1, &depthMap);
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+	adr_glGenTextures(1, &depthMap);
+	adr_glBindTexture(GL_TEXTURE_2D, depthMap);
+	adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-	glGenFramebuffers(1, &depthMapFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	adr_glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	
+	adr_glGenFramebuffers(1, &depthMapFBO);
+	adr_glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	adr_glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	adr_glDrawBuffer(GL_NONE);
+	adr_glReadBuffer(GL_NONE);
+	adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	return true;
 }
 
@@ -43,8 +43,8 @@ PURPOSE: Unitializes the entity
 void SpotLight::DeleteEntity()
 {
 	//Delete buffers
-	glDeleteFramebuffers(1, &depthMapFBO);
-	glDeleteTextures(1, &depthMap);
+	adr_glDeleteFramebuffers(1, &depthMapFBO);
+	adr_glDeleteTextures(1, &depthMap);
 }
 
 /*

@@ -88,14 +88,14 @@ void Scene::UpdateScene(
 				if (windowGameViewportIsHovered) {
 					isDragging = true;
 					skipThisFrame = true;
-					InputManager::GetInstance().RequestSetMouseVisibility(false);
+					InputManager::GetInstance().SetMouseVisibility(false);
 				}
 			}
 
 			//If user releases right-click, disable dragging the scene
 			if (InputManager::GetInstance().IsMouseButtonJustReleased(GLFW_MOUSE_BUTTON_RIGHT)) {
 				isDragging = false;
-				InputManager::GetInstance().RequestSetMouseVisibility(true);
+				InputManager::GetInstance().SetMouseVisibility(true);
 			}
 			
 			//Get if mouse left is clicked

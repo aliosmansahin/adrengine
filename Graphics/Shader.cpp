@@ -25,17 +25,17 @@ bool Shader::CreateShader(const char* vertexShaderPath, const char* fragmentShad
     const char* vertexShaderSource = vertexShaderString.c_str();
 
     //create a vertex shader
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
+    vertexShader = adr_glCreateShader(GL_VERTEX_SHADER);
+    adr_glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    adr_glCompileShader(vertexShader);
 
     //check if the vertex shader compilation succeed
     int success;
     char vertexShaderInfoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    adr_glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 
     if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, vertexShaderInfoLog);
+        adr_glGetShaderInfoLog(vertexShader, 512, NULL, vertexShaderInfoLog);
         Logger::Log("E", vertexShaderInfoLog);
         return false;
     }
@@ -58,16 +58,16 @@ bool Shader::CreateShader(const char* vertexShaderPath, const char* fragmentShad
     const char* fragmentShaderSource = fragmentShaderString.c_str();
 
     //create a fragment shader
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
+    fragmentShader = adr_glCreateShader(GL_FRAGMENT_SHADER);
+    adr_glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    adr_glCompileShader(fragmentShader);
 
     //check if the fragment shader compilation succeed
     char fragmentShaderInfoLog[512];
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
+    adr_glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    
     if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, fragmentShaderInfoLog);
+        adr_glGetShaderInfoLog(fragmentShader, 512, NULL, fragmentShaderInfoLog);
         Logger::Log("E", fragmentShaderInfoLog);
         return false;
     }
@@ -92,16 +92,16 @@ bool Shader::CreateShader(const char* vertexShaderPath, const char* fragmentShad
         const char* geometryShaderSource = geometryShaderString.c_str();
 
         //create a geometry shader
-        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
-        glShaderSource(geometryShader, 1, &geometryShaderSource, NULL);
-        glCompileShader(geometryShader);
+        geometryShader = adr_glCreateShader(GL_GEOMETRY_SHADER);
+        adr_glShaderSource(geometryShader, 1, &geometryShaderSource, NULL);
+        adr_glCompileShader(geometryShader);
 
         //check if the geometry shader compilation succeed
         char geometryShaderInfoLog[512];
-        glGetShaderiv(geometryShader, GL_COMPILE_STATUS, &success);
+        adr_glGetShaderiv(geometryShader, GL_COMPILE_STATUS, &success);
 
         if (!success) {
-            glGetShaderInfoLog(geometryShader, 512, NULL, geometryShaderInfoLog);
+            adr_glGetShaderInfoLog(geometryShader, 512, NULL, geometryShaderInfoLog);
             Logger::Log("E", geometryShaderInfoLog);
             return false;
         }
@@ -117,8 +117,8 @@ PURPOSE: Releases all shader types
 */
 void Shader::ReleaseShader()
 {
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    adr_glDeleteShader(vertexShader);
+    adr_glDeleteShader(fragmentShader);
     if(geometryShader != -1)
-        glDeleteShader(geometryShader);
+        adr_glDeleteShader(geometryShader);
 }

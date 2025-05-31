@@ -101,7 +101,7 @@ void WindowGameViewport::DrawWindow(
 
     //Handle for resizing
     Graphics::GetInstance().RescaleFramebuffer((int)window_width, (int)window_height);
-    glViewport(0, 0, (GLsizei)window_width, (GLsizei)window_height);
+    adr_glViewport(0, 0, (GLsizei)window_width, (GLsizei)window_height);
 
     //Update the transform matrix depends on the scene type
     if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_2D)

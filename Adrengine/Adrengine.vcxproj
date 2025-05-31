@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -116,12 +116,12 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Graphics.lib;InputManager.lib;Common.lib;glfw3.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT
  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir)</AdditionalLibraryDirectories>
@@ -141,7 +141,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,7 +149,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Graphics.lib;InputManager.lib;Common.lib;glfw3.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Adrengine.cpp" />
+    <ClCompile Include="glad.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,10 @@
 #include "Light.h"
 #include "DirectionalLightParams.h"
 
+#include "glad_wrapper.h"
+
+using namespace adr;
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else

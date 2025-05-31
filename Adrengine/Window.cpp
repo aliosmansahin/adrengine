@@ -40,8 +40,8 @@ bool Window::CreateWindow(int width, int height, const char* title)
         glfwImage.height = imageHeight;
         glfwImage.pixels = image;
 
-        glfwSetWindowIcon(window, 1, &glfwImage); // ikonu ayarla
-        stbi_image_free(image); // bellek temizliði
+        glfwSetWindowIcon(window, 1, &glfwImage); // set the icon
+        stbi_image_free(image); // free the memory
     }
     else {
         Logger::Log("E", "Could not load icon of program, using default");
@@ -59,62 +59,83 @@ bool Window::CreateWindow(int width, int height, const char* title)
         return false;
     }
 
+    //load opengl functions
+    int version = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    if (version == 0) {
+        Logger::Log("E", "Starting engine failed in gladLoadGL");
+        return false;
+    }
+    
+    LoadGLFunctions();
+
+    Logger::Log("P", "Loaded OpenGL Version 3.3");
+
     //handle window size callback
     glfwSetWindowSizeCallback(window, Graphics::StaticWindowSizeCallback);
-
-    /*
-        FIXME:
-        They have to be in the inputmanager but due to some errors, i removed them.
-        If i can solve it, i will move them back
-    */
-    //glfwSetKeyCallback(window, InputManager::KeyCallback);
-    //glfwSetCursorPosCallback(window, InputManager::CursorPositionCallback);
 
     return true;
 }
 
-/*
-PURPOSE: To handle glfw using requests
-FIXME:
-This function will be removed once the glfw error was fixed
-*/
-void Window::HandleGLFWRequests()
+void Window::LoadGLFunctions()
 {
-    if (Engine::GetInstance().GetRequestGetVideoMode()) {
-        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        Engine::GetInstance().AnswerGetVideoMode(mode->width, mode->height);
-    }
-    if (InputManager::GetInstance().GetRequestSetMouseVisibility()) {
-        bool visible = InputManager::GetInstance().GetMouseVisibility();
-        if (visible) {
-            glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        }
-        else {
-            glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        }
-    }
-    if (InputManager::GetInstance().GetRequestGetMouseButtons()) {
-        std::unordered_map<int, bool> currentMouseButtons;
-        for (int i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
-            currentMouseButtons[i] = glfwGetMouseButton(window, i);
-        }
-        InputManager::GetInstance().AnswerGetMouseButtons(currentMouseButtons);
-    }
-    if (InputManager::GetInstance().GetRequestGetKeys()) {
-        std::unordered_map<int, bool> currentKeys;
-        for (int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; ++key) {
-            int state = glfwGetKey(window, key);
-            currentKeys[key] = (state == GLFW_PRESS || state == GLFW_REPEAT);
-        }
-        InputManager::GetInstance().AnswerGetKeys(currentKeys);
-    }
-    if (InputManager::GetInstance().GetRequestGetMousePos()) {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        InputManager::GetInstance().AnswerGetMousePos((int)xpos, (int)ypos);
-    }
+    adr::adr_glClear = glad_glClear;
+    adr::adr_glClearColor = glad_glClearColor;
+    adr::adr_glGenFramebuffers = glad_glGenFramebuffers;
+    adr::adr_glBindFramebuffer = glad_glBindFramebuffer;
+    adr::adr_glGenBuffers = glad_glGenBuffers;
+    adr::adr_glBindBuffer = glad_glBindBuffer;
+    adr::adr_glBufferData = glad_glBufferData;
+    adr::adr_glEnableVertexAttribArray = glad_glEnableVertexAttribArray;
+    adr::adr_glVertexAttribPointer = glad_glVertexAttribPointer;
+    adr::adr_glGenVertexArrays = glad_glGenVertexArrays;
+    adr::adr_glBindVertexArray = glad_glBindVertexArray;
+    adr::adr_glDeleteFramebuffers = glad_glDeleteFramebuffers;
+    adr::adr_glDeleteRenderbuffers = glad_glDeleteRenderbuffers;
+    adr::adr_glDeleteTextures = glad_glDeleteTextures;
+    adr::adr_glTexImage2D = glad_glTexImage2D;
+    adr::adr_glTexParameteri = glad_glTexParameteri;
+    adr::adr_glGenerateMipmap = glad_glGenerateMipmap;
+    adr::adr_glCheckFramebufferStatus = glad_glCheckFramebufferStatus;
+    adr::adr_glRenderbufferStorage = glad_glRenderbufferStorage;
+    adr::adr_glFramebufferTexture2D = glad_glFramebufferTexture2D;
+    adr::adr_glFramebufferRenderbuffer = glad_glFramebufferRenderbuffer;
+    adr::adr_glGenTextures = glad_glGenTextures;
+    adr::adr_glBindTexture = glad_glBindTexture;
+    adr::adr_glGenRenderbuffers = glad_glGenRenderbuffers;
+    adr::adr_glBindRenderbuffer = glad_glBindRenderbuffer;
+    adr::adr_glDeleteBuffers = glad_glDeleteBuffers;
+    adr::adr_glDeleteVertexArrays = glad_glDeleteVertexArrays;
+    adr::adr_glViewport = glad_glViewport;
+    adr::adr_glCreateShader = glad_glCreateShader;
+    adr::adr_glShaderSource = glad_glShaderSource;
+    adr::adr_glCompileShader = glad_glCompileShader;
+    adr::adr_glGetShaderiv = glad_glGetShaderiv;
+    adr::adr_glGetShaderInfoLog = glad_glGetShaderInfoLog;
+    adr::adr_glDeleteShader = glad_glDeleteShader;
+    adr::adr_glCreateProgram = glad_glCreateProgram;
+    adr::adr_glAttachShader = glad_glAttachShader;
+    adr::adr_glLinkProgram = glad_glLinkProgram;
+    adr::adr_glGetProgramiv = glad_glGetProgramiv;
+    adr::adr_glGetProgramInfoLog = glad_glGetProgramInfoLog;
+    adr::adr_glUseProgram = glad_glUseProgram;
+    adr::adr_glGetUniformLocation = glad_glGetUniformLocation;
+    adr::adr_glUniformMatrix4fv = glad_glUniformMatrix4fv;
+    adr::adr_glUniform3f = glad_glUniform3f;
+    adr::adr_glUniform1i = glad_glUniform1i;
+    adr::adr_glUniform1f = glad_glUniform1f;
+    adr::adr_glDeleteProgram = glad_glDeleteProgram;
+    adr::adr_glEnable = glad_glEnable;
+    adr::adr_glBlendFunc = glad_glBlendFunc;
+    adr::adr_glCullFace = glad_glCullFace;
+    adr::adr_glActiveTexture = glad_glActiveTexture;
+    adr::adr_glDisable = glad_glDisable;
+    adr::adr_glDrawElements = glad_glDrawElements;
+    adr::adr_glDrawArrays = glad_glDrawArrays;
+    adr::adr_glTexParameterfv = glad_glTexParameterfv;
+    adr::adr_glDrawBuffer = glad_glDrawBuffer;
+    adr::adr_glReadBuffer = glad_glReadBuffer;
+    adr::adr_glFramebufferTexture = glad_glFramebufferTexture;
+
 }
 
 //PURPOSE: To get the instance of window singleton class

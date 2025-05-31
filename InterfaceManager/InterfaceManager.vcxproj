@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -120,14 +120,14 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\InputManager;..\Timer;..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\GladWrapper;..\InputManager;..\Timer;..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>InputManager.lib;Timer.lib;Common.lib;Graphics.lib;Asset.lib;Localization.lib;Logger.lib;glfw3.lib;EntityManager.lib;SceneManager.lib;VisualScriptManager.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GladWrapper.lib;InputManager.lib;Timer.lib;Common.lib;Graphics.lib;Asset.lib;Localization.lib;Logger.lib;glfw3dll.lib;EntityManager.lib;SceneManager.lib;VisualScriptManager.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT
  %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -142,7 +142,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\InputManager;..\Timer;..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\GladWrapper;..\InputManager;..\Timer;..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +151,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>InputManager.lib;Timer.lib;Common.lib;Graphics.lib;Asset.lib;Localization.lib;Logger.lib;glfw3.lib;EntityManager.lib;SceneManager.lib;VisualScriptManager.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GladWrapper.lib;InputManager.lib;Timer.lib;Common.lib;Graphics.lib;Asset.lib;Localization.lib;Logger.lib;glfw3dll.lib;EntityManager.lib;SceneManager.lib;VisualScriptManager.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

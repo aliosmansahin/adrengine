@@ -57,7 +57,7 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 	}
 
 	//Draw the mesh
-	glEnable(GL_DEPTH_TEST);
+	adr_glEnable(GL_DEPTH_TEST);
 	
 	if (params->mesh) {
 		auto& objects = params->mesh->objects;
@@ -76,8 +76,8 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 
 			if (hasTexture) {
 				//Activate diffuse texture
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, material.diffuseTexture);
+				adr_glActiveTexture(GL_TEXTURE0);
+				adr_glBindTexture(GL_TEXTURE_2D, material.diffuseTexture);
 				ShaderManager::GetInstance().ApplyTexture("objTexture");
 			}
 			else {
@@ -110,16 +110,16 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 			ShaderManager::GetInstance().ApplyUniformInt("materialIllum", material.illum);
 
 			//Draw the object
-			glBindVertexArray(object->VAO);
-			glDrawArrays(GL_TRIANGLES, 0, object->verticeCount);
+			adr_glBindVertexArray(object->VAO);
+			adr_glDrawArrays(GL_TRIANGLES, 0, object->verticeCount);
 
 			//Disable after drawing
-			glActiveTexture(0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glBindVertexArray(0);
+			adr_glActiveTexture(0);
+			adr_glBindTexture(GL_TEXTURE_2D, 0);
+			adr_glBindVertexArray(0);
 		}
 	}
-	glDisable(GL_DEPTH_TEST);
+	adr_glDisable(GL_DEPTH_TEST);
 }
 
 /*

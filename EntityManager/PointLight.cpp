@@ -15,32 +15,32 @@ bool PointLight::CreateEntity(std::shared_ptr<EntityParams> params)
 	this->params = casted;
 
 	//Create buffers for shadow
-	glGenFramebuffers(1, &depthMapFBO);
+	adr_glGenFramebuffers(1, &depthMapFBO);
 	const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
 
-	glGenTextures(1, &depthMap);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, depthMap);
+	adr_glGenTextures(1, &depthMap);
+	adr_glBindTexture(GL_TEXTURE_CUBE_MAP, depthMap);
 	for (GLuint i = 0; i < 6; ++i) {
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+		adr_glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
 			SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	}
 
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	adr_glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	adr_glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	adr_glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	adr_glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	adr_glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	/*GLenum err;
 	while ((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "OpenGL error: " << err << std::endl;
 	}*/
 
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMap, 0); // <- Tüm yüzler için
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	adr_glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	adr_glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMap, 0); // <- Tüm yüzler için
+	adr_glDrawBuffer(GL_NONE);
+	adr_glReadBuffer(GL_NONE);
+	adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return true;
 }
@@ -51,8 +51,8 @@ PURPOSE: Unitializes the entity
 void PointLight::DeleteEntity()
 {
 	//Delete buffers
-	glDeleteFramebuffers(1, &depthMapFBO);
-	glDeleteTextures(1, &depthMap);
+	adr_glDeleteFramebuffers(1, &depthMapFBO);
+	adr_glDeleteTextures(1, &depthMap);
 }
 
 /*

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "glad/glad.h"
-#include <GLFW/glfw3.h>
+#include "glfw/glfw3.h"
+
+#include "glad_wrapper.h"
 
 #include "Logger.h"
 #include "Localization.h"
@@ -17,7 +19,7 @@ public:
 	bool		   ShouldClose() { return glfwWindowShouldClose(window); }
 	void		   SwapBuffers() { return glfwSwapBuffers(window); }
 	void		   PollEvents() { return glfwPollEvents(); }
-	void		   HandleGLFWRequests();
+	void		   LoadGLFunctions();
 	GLFWwindow*	   GetWindow() { return window; }
 public:
 	//getter for the instance
