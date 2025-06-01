@@ -80,15 +80,19 @@ PURPOSE: Draws the entity.
 void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 {
 	//Some calculations for transformation
+	//3d Y and 2d Y are reversed from each other
+	//In 3d scene we are rotating it 180 degrees
+	float rotate = 0.0f;
+	if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
+		rotate += 180.0f;
+		realSca /= 32.0f;
+	}
+
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, realPos);
-	model = glm::rotate(model, glm::radians(realRot.x), glm::vec3(1.0, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(realRot.x + rotate), glm::vec3(1.0, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(realRot.y), glm::vec3(0.0, 1.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(realRot.z), glm::vec3(0.0, 0.0f, 1.0f));
-
-	if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D)
-		realSca /= 32.0f;
-
 	model = glm::scale(model, realSca);
 
 	//Send the transformation matrix to the shader
