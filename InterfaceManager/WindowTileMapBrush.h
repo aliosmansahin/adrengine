@@ -13,6 +13,8 @@
 #include "Logger.h"
 #include "TileMap.h"
 
+#include "WindowTileMapViewer.h"
+
 class WindowTileMapBrush
 {
 public:

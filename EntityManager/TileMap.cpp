@@ -80,15 +80,15 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 /*
 PURPOSE: Add a tile which is selected from createdTiles to the map
 */
-ENTITYMANAGER_API void TileMap::AddTileToMap(TileMap* tileMap, int mouseX, int mouseY, float cameraX, float cameraY, std::pair<int, int> selectedTile)
+ENTITYMANAGER_API void TileMap::AddTileToMap(int mouseX, int mouseY, float cameraX, float cameraY, std::pair<int, int> selectedTile)
 {
 	//Get the tile pos on the scene
 	float tileXAtScene = (float)mouseX + cameraX;
 	float tileYAtScene = (float)mouseY + cameraY;
 
 	//Calculate the tile pos on the tileMap
-	int tileX = (int)tileXAtScene / tileMap->tileWidth;
-	int tileY = (int)tileYAtScene / tileMap->tileHeight;
+	int tileX = (int)tileXAtScene / tileWidth;
+	int tileY = (int)tileYAtScene / tileHeight;
 
 	//We will add 1 when tile pos is sub-zero
 	if (tileXAtScene < 0.0f)
@@ -97,32 +97,32 @@ ENTITYMANAGER_API void TileMap::AddTileToMap(TileMap* tileMap, int mouseX, int m
 		tileY--;
 
 	//Get the selected tile and insert it to tiles to draw
-	auto createdTileIter = tileMap->createdTiles.find(selectedTile);
-	if (createdTileIter == tileMap->createdTiles.end())
+	auto createdTileIter = createdTiles.find(selectedTile);
+	if (createdTileIter == createdTiles.end())
 		return;
 
 	//Check if there is a tile on this coordinates
-	auto tileIter = tileMap->tiles.find({ tileX, tileY });
+	auto tileIter = tiles.find({ tileX, tileY });
 
 	//Add a tile if there is not
-	if (tileIter == tileMap->tiles.end()) {
+	if (tileIter == tiles.end()) {
 		std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTileIter->second.get());
-		tileMap->tiles.insert({ { tileX, tileY }, tile });
+		tiles.insert({ { tileX, tileY }, tile });
 	}
 }
 
 /*
 PURPOSE: Removes the tile which is located by mouse from the map
 */
-ENTITYMANAGER_API void TileMap::RemoveTileFromMap(TileMap* tileMap, int mouseX, int mouseY, float cameraX, float cameraY)
+ENTITYMANAGER_API void TileMap::RemoveTileFromMap(int mouseX, int mouseY, float cameraX, float cameraY)
 {
 	//Get the tile pos on the scene
 	float tileXAtScene = (float)mouseX + cameraX;
 	float tileYAtScene = (float)mouseY + cameraY;
 
 	//Calculate the tile pos on the tileMap
-	int tileX = (int)tileXAtScene / tileMap->tileWidth;
-	int tileY = (int)tileYAtScene / tileMap->tileHeight;
+	int tileX = (int)tileXAtScene / tileWidth;
+	int tileY = (int)tileYAtScene / tileHeight;
 
 	//We will add 1 when tile pos is sub-zero
 	if (tileXAtScene < 0.0f)
@@ -131,26 +131,26 @@ ENTITYMANAGER_API void TileMap::RemoveTileFromMap(TileMap* tileMap, int mouseX, 
 		tileY--;
 
 	//Check if there is a tile on this coordinates
-	auto tileIter = tileMap->tiles.find({ tileX, tileY });
+	auto tileIter = tiles.find({ tileX, tileY });
 
 	//Remove the tile if there is
-	if (tileIter != tileMap->tiles.end()) {
-		tileMap->tiles.erase(tileIter);
+	if (tileIter != tiles.end()) {
+		tiles.erase(tileIter);
 	}
 }
 
 /*
 PURPOSE: Draws a rectange to indicate which tile coordinates will be filled
 */
-void TileMap::UpdateMouseTileIndicator(TileMap* tileMap, int mouseX, int mouseY, float cameraX, float cameraY)
+void TileMap::UpdateMouseTileIndicator(int mouseX, int mouseY, float cameraX, float cameraY)
 {
 	//Get the tile pos on the scene
 	float tileXAtScene = (float)mouseX + cameraX;
 	float tileYAtScene = (float)mouseY + cameraY;
 
 	//Calculate the tile pos on the tileMap
-	int tileX = (int)(tileXAtScene / (float)tileMap->tileWidth);
-	int tileY = (int)(tileYAtScene / (float)tileMap->tileHeight);
+	int tileX = (int)(tileXAtScene / (float)tileWidth);
+	int tileY = (int)(tileYAtScene / (float)tileHeight);
 
 	//We will add 1 when tile pos is sub-zero
 	if (tileXAtScene < 0.0f)
@@ -159,9 +159,9 @@ void TileMap::UpdateMouseTileIndicator(TileMap* tileMap, int mouseX, int mouseY,
 		tileY--;
 
 	//Set position of the tile indicator and activate to show
-	if (tileMap->tileIndicator.get()) {
-		tileMap->tileIndicator->SetPos(tileX, tileY);
-		tileMap->drawTileIndicator = true;
+	if (tileIndicator.get()) {
+		tileIndicator->SetPos(tileX, tileY);
+		drawTileIndicator = true;
 	}
 }
 

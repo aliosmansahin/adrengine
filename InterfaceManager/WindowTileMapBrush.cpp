@@ -19,6 +19,11 @@ void WindowTileMapBrush::DrawWindow()
         std::string editingButtonText = editing ? "Stop drawing" : "Start drawing";
         if (ImGui::Button(editingButtonText.c_str())) {
             editing = !editing;
+            WindowTileMapViewer::GetInstance().showWindow = editing;
+            if (editing)
+                WindowTileMapViewer::GetInstance().edittingTileMap = editingTileMap;
+            else 
+                WindowTileMapViewer::GetInstance().edittingTileMap = nullptr;
         }
 
         ImGui::SeparatorText("Tiles");

@@ -66,6 +66,9 @@
     <ClInclude Include="WindowTileMapBrush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WindowTileMapViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -117,6 +120,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WindowTileMapBrush.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTileMapViewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -25,12 +25,7 @@ void WindowGameViewport::DrawWindow(
     SceneManager::GetInstance().currentScene->DrawScene(
         (int)window_width,
         (int)window_height,
-        currentSceneCameraPos,
-        isHovered,
-        mouseX,
-        mouseY,
-        edittingTileMap,
-        TileMap::UpdateMouseTileIndicator);
+        currentSceneCameraPos);
 
     //Begin the window
     ImGui::Begin("Game Viewport", &showWindow);
@@ -112,7 +107,6 @@ void WindowGameViewport::DrawWindow(
     //Draw the frameBufferTex texture as an image
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
-
     ImGui::GetWindowDrawList()->AddImage(
         (ImTextureID)(intptr_t)Graphics::GetInstance().GetFrameBufferTex(),
         ImVec2(pos.x, pos.y),
@@ -129,33 +123,6 @@ void WindowGameViewport::DrawWindow(
     }
     else
         isHovered = false;
-
-    //Calculate mouse position related to window
-    ImVec2 localMousePos = ImVec2(
-        mousePos.x - pos.x,
-        mousePos.y - pos.y
-    );
-
-    //Translate mousePos to Normalized Device Coordinates(NDC)
-    float ndcX = (localMousePos.x / window_width) * 2.0f - 1.0f;
-    float ndcY = 1.0f - (localMousePos.y / window_height) * 2.0f;
-
-    //3D Soon
-    if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_2D) {
-        //Clip scene vector from NDC
-        glm::vec4 mouseClip = glm::vec4(ndcX, ndcY, 0.0f, 1.0f);
-
-        //Get projection matrix and invert it in order to get world coordinates
-        glm::mat4 ortho = ShaderManager::GetInstance().GetProjectionMatrix2D((int)window_width, (int)window_height);
-        glm::mat4 invOrtho = glm::inverse(ortho);
-
-        //Calculate world mouse coordinates
-        glm::vec4 worldMouse = invOrtho * mouseClip;
-
-        //Set the mouse coordinates
-        mouseX = (int)worldMouse.x;
-        mouseY = (int)worldMouse.y;
-    }
 
     //End the window
     ImGui::End();

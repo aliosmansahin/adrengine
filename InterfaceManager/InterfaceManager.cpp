@@ -86,7 +86,9 @@ void InterfaceManager::DrawInterface(
 	std::function<void()> saveFunc,
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 	float engineFPS,
-	float engineMS)
+	float engineMS,
+	int screenWidth,
+	int screenHeight)
 {
 	//Draws menu bar
 	MenuBar::GetInstance().DrawMenuBar(saveFunc);
@@ -206,6 +208,9 @@ void InterfaceManager::DrawInterface(
 
 	if (WindowTileMapBrush::GetInstance().showWindow)
 		WindowTileMapBrush::GetInstance().DrawWindow();
+
+	if (WindowTileMapViewer::GetInstance().showWindow)
+		WindowTileMapViewer::GetInstance().DrawWindow(screenWidth, screenHeight);
 }
 
 /*
@@ -240,8 +245,8 @@ void InterfaceManager::UpdateViewportContext()
 	{
 		GLFWwindow* backup_current_context = glfwGetCurrentContext();
 		ImGui::UpdatePlatformWindows();
-		//ImGui::RenderPlatformWindowsDefault();
-		//glfwMakeContextCurrent(backup_current_context);
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backup_current_context);
 	}
 }
 

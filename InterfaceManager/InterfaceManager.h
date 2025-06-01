@@ -33,7 +33,9 @@ public:
 		std::function<void()> saveFunc,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 		float engineFPS,
-		float engineMS);
+		float engineMS,
+		int screenWidth,
+		int screenHeight);
 	INTERFACEMANAGER_API void DrawDockSpace();
 	INTERFACEMANAGER_API void UpdateViewportContext();
 	INTERFACEMANAGER_API void SetDarkTheme();

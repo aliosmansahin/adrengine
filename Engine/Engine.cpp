@@ -123,7 +123,7 @@ void Engine::Draw()
 
     std::string projectDir = projectPath + projectName + "/";
     
-    InterfaceManager::GetInstance().DrawInterface(projectDir, [this]() { SaveProject(); }, entityTypes, FPS, ms);
+    InterfaceManager::GetInstance().DrawInterface(projectDir, [this]() { SaveProject(); }, entityTypes, FPS, ms, screenWidth, screenHeight);
     
     InterfaceManager::GetInstance().EndFrame();
 
@@ -305,8 +305,6 @@ ENGINE_API void Engine::UpdateCurrentScene()
         SceneManager::GetInstance().currentScene->UpdateScene(
             WindowGameViewport::GetInstance().isPlaying,
             WindowGameViewport::GetInstance().isHovered,
-            WindowGameViewport::GetInstance().mouseX,
-            WindowGameViewport::GetInstance().mouseY,
             screenWidth,
             screenHeight,
             (int)WindowGameViewport::GetInstance().window_width,
@@ -318,11 +316,7 @@ ENGINE_API void Engine::UpdateCurrentScene()
             []() {
                 WindowEntityProperties::GetInstance().SelectEntity(nullptr);
             },
-            projectDir,
-            edittingTileMap,
-            WindowTileMapBrush::GetInstance().selectedTile,
-            TileMap::AddTileToMap,
-            TileMap::RemoveTileFromMap);
+            projectDir);
     }
 }
 
