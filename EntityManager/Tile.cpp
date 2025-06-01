@@ -5,7 +5,7 @@
 PURPOSE: Creates the tile buffers.
 	Parameters: x coordinate, y coordinate, width in pixels, height in pixels, x coord in texture, y coord of texture, texture width, texture height
 */
-void Tile::Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH)
+void Tile::Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH, std::pair<int, int> tileType)
 {
 	//Setup parameters
 	this->x = x;
@@ -16,6 +16,7 @@ void Tile::Create(int x, int y, int width, int height, float u, float v, float t
 	this->v = v;
 	this->textureWidth = textureW;
 	this->textureHeight = textureH;
+	this->tileType = tileType;
 
 	//------ TEXTURE TILE ------
 	//Vertices for the texture
@@ -68,25 +69,26 @@ void Tile::Update()
 /*
 PURPOSE: Draws the tile
 */
-void Tile::Draw(int tileW, int tileH, unsigned int tileMap, int translateX, int translateY)
+void Tile::Draw(int tileW, int tileH, int translateX, int translateY)
 {
 	//Set some transform
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(x * tileW + translateX, y * tileH + translateY, 0.0f));
-	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
 
-	//Set the texture
-	adr_glActiveTexture(GL_TEXTURE0);
-	adr_glBindTexture(GL_TEXTURE_2D, tileMap);
-	ShaderManager::GetInstance().ApplyTexture("texture1");
+	glm::vec3 tra = glm::vec3(x * tileW + translateX, y * tileH + translateY, 0.0f);
+	glm::vec3 sca = glm::vec3(1.0f);
+
+	model = glm::translate(model, tra);
+	model = glm::scale(model, sca); //TODO: Change it with mouse scroll
+
+
+	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
+	
 
 	//Draw the texture
 	adr_glBindVertexArray(tileVAO);
 	adr_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	//Disable after drawing
-	adr_glActiveTexture(GL_TEXTURE0);
-	adr_glBindTexture(GL_TEXTURE_2D, 0);
 	adr_glBindVertexArray(0);
 }
 
@@ -121,6 +123,9 @@ void Tile::SetPos(int x, int y)
 nlohmann::json Tile::ToJson()
 {
 	nlohmann::json j;
+	j["type-x"] = tileType.first;
+	j["type-y"] = tileType.second;
+
 	//position and size of the tile
 	j["x"] = x;
 	j["y"] = y;
