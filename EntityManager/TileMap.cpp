@@ -46,7 +46,6 @@ PURPOSE: Draws the entity.
 */
 void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 {
-
 	//Set the texture for tiles
 	adr_glActiveTexture(GL_TEXTURE0);
 	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
@@ -110,9 +109,6 @@ ENTITYMANAGER_API void TileMap::AddTileToMap(TileMap* tileMap, int mouseX, int m
 		std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTileIter->second.get());
 		tileMap->tiles.insert({ { tileX, tileY }, tile });
 	}
-
-	//DEBUG
-	std::cout << "tile count " << tileMap->tiles.size() << std::endl;
 }
 
 /*
@@ -141,8 +137,6 @@ ENTITYMANAGER_API void TileMap::RemoveTileFromMap(TileMap* tileMap, int mouseX, 
 	if (tileIter != tileMap->tiles.end()) {
 		tileMap->tiles.erase(tileIter);
 	}
-
-	std::cout << "tile count " << tileMap->tiles.size() << std::endl;
 }
 
 /*

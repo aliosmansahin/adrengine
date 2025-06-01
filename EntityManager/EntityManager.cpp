@@ -27,10 +27,10 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 	if (is3D) {
 		/*
 			FIXME:
-			
+
 			Point light and spot light are not working properly with shadows,
 			So, all shadows except directional light shadow will be disable until the bug was fixed
-		
+
 		*/
 
 		const unsigned int SHADOW_WIDTH = 8196, SHADOW_HEIGHT = 8196;
@@ -83,7 +83,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 					outFile.close();
 
 					delete[] depthData;
-					
+
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
 
 					numLights++;

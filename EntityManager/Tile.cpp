@@ -73,8 +73,16 @@ void Tile::Draw(int tileW, int tileH, int translateX, int translateY)
 {
 	//Set some transform
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(x * tileW + translateX, y * tileH + translateY, 0.0f));
+
+	glm::vec3 tra = glm::vec3(x * tileW + translateX, y * tileH + translateY, 0.0f);
+	glm::vec3 sca = glm::vec3(1.0f);
+
+	model = glm::translate(model, tra);
+	model = glm::scale(model, sca); //TODO: Change it with mouse scroll
+
+
 	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
+	
 
 	//Draw the texture
 	adr_glBindVertexArray(tileVAO);

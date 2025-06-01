@@ -149,7 +149,7 @@ void Scene::UpdateScene(
 
 					//Set the speed of the camera
 					float speed = 20.0f * Timer::GetDeltaTime();
-					
+
 					//Movement controls
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
 						cameraX += eye.x * speed;
