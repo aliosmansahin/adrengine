@@ -33,9 +33,9 @@ public:
 	ENTITYMANAGER_API unsigned int GetInspectTexture();
 	ENTITYMANAGER_API std::map<std::pair<int, int>, std::shared_ptr<Tile>>& GetCreatedTiles();
 
-	ENTITYMANAGER_API static void AddTileToMap(TileMap* tileMap, int mouseX, int mouseY, float cameraX, float cameraY, std::pair<int, int> selectedTile);
-	ENTITYMANAGER_API static void RemoveTileFromMap(TileMap* tileMap, int mouseX, int mouseY, float cameraX, float cameraY);
-	ENTITYMANAGER_API static void UpdateMouseTileIndicator(TileMap* tileMap, int mouseX, int mouseY, float cameraX, float cameraY);
+	ENTITYMANAGER_API void AddTileToMap(int mouseX, int mouseY, float cameraX, float cameraY, std::pair<int, int> selectedTile);
+	ENTITYMANAGER_API void RemoveTileFromMap(int mouseX, int mouseY, float cameraX, float cameraY);
+	ENTITYMANAGER_API void UpdateMouseTileIndicator(int mouseX, int mouseY, float cameraX, float cameraY);
 
 	/*
 	PURPOSE: Clones the entity and return it
@@ -54,6 +54,9 @@ public:
 	//tile size
 	int tileWidth = 0;
 	int tileHeight = 0;
+
+	//Is this tilemap drawing on tilemapviewer
+	bool drawingViewer = false;
 private:
 	//properties
 	std::shared_ptr<TileMapParams> params;

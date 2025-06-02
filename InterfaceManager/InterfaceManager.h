@@ -11,6 +11,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui_internal.h"
 
 #include "imnodes/imnodes.h"
 
@@ -33,10 +34,13 @@ public:
 		std::function<void()> saveFunc,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 		float engineFPS,
-		float engineMS);
+		float engineMS,
+		int screenWidth,
+		int screenHeight);
 	INTERFACEMANAGER_API void DrawDockSpace();
 	INTERFACEMANAGER_API void UpdateViewportContext();
 	INTERFACEMANAGER_API void SetDarkTheme();
+	INTERFACEMANAGER_API GLFWwindow* GetFocusedViewport();
 public:
 	//getter for the instance
 	INTERFACEMANAGER_API static InterfaceManager& GetInstance();

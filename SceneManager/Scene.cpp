@@ -25,21 +25,11 @@ bool Scene::CreateScene(std::string sceneId, Utils::SceneType sceneType)
 /*
 PURPOSE: Draws the scene
 */
-void Scene::DrawScene(int window_width, int window_height, glm::vec3 currentSceneCameraPos,
-	bool windowGameViewportIsHovered,
-	int windowGameViewportMouseX,
-	int windowGameViewportMouseY,
-	TileMap* edittingTileMap,
-	std::function<void(TileMap*, int, int, float, float)> updateMouseTileIndicator)
+void Scene::DrawScene(int window_width, int window_height, glm::vec3 currentSceneCameraPos)
 {
 	//If there is an entity manager, draw each entity via entity manager
 	if(entityManager)
 		entityManager->DrawEntities(window_width, window_height, currentSceneCameraPos, (sceneType == Utils::SCENE_3D));
-
-
-	if (windowGameViewportIsHovered && edittingTileMap) {
-		updateMouseTileIndicator(edittingTileMap, windowGameViewportMouseX, windowGameViewportMouseY, currentSceneCameraPos.x, currentSceneCameraPos.y);
-	}
 }
 
 /*
@@ -48,8 +38,7 @@ PURPOSE: Update scene objects and handles camera updates
 void Scene::UpdateScene(
 	bool isPlaying,
 	bool windowGameViewportIsHovered,
-	int windowGameViewportMouseX,
-	int windowGameViewportMouseY,
+	bool windowGameViewportIsFocused,
 	int screenWidth,
 	int screenHeight,
 	int window_width,
@@ -59,69 +48,73 @@ void Scene::UpdateScene(
 	bool& pendingDelete,
 	std::string selectedId,
 	std::function<void()> selectFunction,
-	std::string& projectDir,
-	TileMap* edittingTileMap,
-	std::pair<int, int> selectedTile,
-	std::function<void(TileMap*, int, int, float, float, std::pair<int, int>)> addTileToMap,
-	std::function<void(TileMap*, int, int, float, float)> removeTileFromMap)
+	std::string& projectDir)
 {
 	//Setups for mouse positions
 	int currentMouseX = InputManager::GetInstance().GetMouseX();
 	int currentMouseY = InputManager::GetInstance().GetMouseY();
 
-	//if (WindowGameViewport::GetInstance().isFocused) {
-		if (isPlaying) {
-			/*
-				TODO: If user plays the scene,
-					give the controls to the visual scripts or the entities or some kind of stuffs...
-			*/
+	if (isPlaying) {
+		/*
+			TODO: If user plays the scene,
+				give the controls to the visual scripts or the entities or some kind of stuffs...
+		*/
+	}
+	else {
+		/*
+			If user doesn't play the scene,
+				give all controls to the scene,
+				these controls come build-in
+		*/
+
+		//If user right-clicks the scene, enable dragging the scene
+		if (InputManager::GetInstance().IsMouseButtonJustPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+			isDragging = true;
+			skipThisFrame = true;
+			InputManager::GetInstance().SetMouseVisibility(false);
 		}
-		else {
-			/*
-				If user doesn't play the scene,
-					give all controls to the scene,
-					these controls come build-in
-			*/
 
-			//If user right-clicks the scene, enable dragging the scene
-			if (InputManager::GetInstance().IsMouseButtonJustPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-				if (windowGameViewportIsHovered) {
-					isDragging = true;
-					skipThisFrame = true;
-					InputManager::GetInstance().SetMouseVisibility(false);
-				}
+		//If user releases right-click, disable dragging the scene
+		if (InputManager::GetInstance().IsMouseButtonJustReleased(GLFW_MOUSE_BUTTON_RIGHT)) {
+			isDragging = false;
+			InputManager::GetInstance().SetMouseVisibility(true);
+		}
+
+		//Get if mouse left is clicked
+		leftPressed = InputManager::GetInstance().IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
+
+		//Get if delete key is pressed
+		deletePressed = InputManager::GetInstance().IsKeyPressed(GLFW_KEY_DELETE);
+
+		//Reset delta mouse position
+		deltaX = 0.0f;
+		deltaY = 0.0f;
+
+		if (isDragging) {
+			if (skipThisFrame) {
+				//Reset the mouse position for the first frame
+				firstMouseX = currentMouseX;
+				firstMouseY = currentMouseY;
+				skipThisFrame = false;
 			}
 
-			//If user releases right-click, disable dragging the scene
-			if (InputManager::GetInstance().IsMouseButtonJustReleased(GLFW_MOUSE_BUTTON_RIGHT)) {
-				isDragging = false;
-				InputManager::GetInstance().SetMouseVisibility(true);
-			}
-			
-			//Get if mouse left is clicked
-			bool leftPressed = InputManager::GetInstance().IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
-			bool deletePressed = InputManager::GetInstance().IsKeyPressed(GLFW_KEY_DELETE);
+			//Get delta mouse position
+			int deltaMouseX = currentMouseX - firstMouseX;
+			int deltaMouseY = currentMouseY - firstMouseY;
 
-			if (isDragging) {
-				if (skipThisFrame) {
-					//Reset the mouse position for the first frame
-					firstMouseX = currentMouseX;
-					firstMouseY = currentMouseY;
-					skipThisFrame = false;
-				}
+			//Store window size
+			int windowWidth = window_width;
+			int windowHeight = window_height;
 
-				//Get delta mouse position
-				int deltaMouseX = currentMouseX - firstMouseX;
-				int deltaMouseY = currentMouseY - firstMouseY;
+			//Mouse movement effects the scene depends on the window size
+			float resX = (float)deltaMouseX * (float)windowWidth / (float)screenWidth;
+			float resY = (float)deltaMouseY * (float)windowHeight / (float)screenHeight;
 
-				//Store window size
-				int windowWidth = window_width;
-				int windowHeight = window_height;
+			//Save delta mouse position to use it from another window
+			deltaX = resX;
+			deltaY = resY;
 
-				//Mouse movement effects the scene depends on the window size
-				float resX = (float)deltaMouseX * (float)windowWidth / (float)screenWidth;
-				float resY = (float)deltaMouseY * (float)windowHeight / (float)screenHeight;
-
+			if (windowGameViewportIsFocused) {
 				//If the type of the scene is 2d
 				if (sceneType == Utils::SCENE_2D) {
 					//Move the camera
@@ -189,34 +182,19 @@ void Scene::UpdateScene(
 						cameraY -= up.y * speed;
 						cameraZ -= up.z * speed;
 					}
-
-				}
-
-				//Set last mouse to current mouse
-				firstMouseX = currentMouseX;
-				firstMouseY = currentMouseY;
-			}
-			else {
-				if (windowGameViewportIsHovered) {
-					if (edittingTileMap) {
-						if (leftPressed) {
-							//TileMap will add a tile to its own tiles
-							addTileToMap(edittingTileMap, windowGameViewportMouseX, windowGameViewportMouseY, cameraX, cameraY, selectedTile);
-						}
-						if (deletePressed) {
-							//TileMap will remove the tile from its own tiles
-							removeTileFromMap(edittingTileMap, windowGameViewportMouseX, windowGameViewportMouseY, cameraX, cameraY);
-						}
-					}
 				}
 			}
+
+			//Set last mouse to current mouse
+			firstMouseX = currentMouseX;
+			firstMouseY = currentMouseY;
 		}
-	//}
-		//Update each entity via entity manager
-		if (entityManager) {
-			nlohmann::json sceneJson = ToJson();
-			entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, selectedId, selectFunction, projectDir, sceneId, sceneJson);
-		}
+	}
+	//Update each entity via entity manager
+	if (entityManager) {
+		nlohmann::json sceneJson = ToJson();
+		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, selectedId, selectFunction, projectDir, sceneId, sceneJson);
+	}
 }
 
 /*

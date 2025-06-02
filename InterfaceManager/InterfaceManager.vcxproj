@@ -171,6 +171,7 @@
     <ClInclude Include="WindowScene.h" />
     <ClInclude Include="WindowTileMapBrush.h" />
     <ClInclude Include="WindowTileMapEdit.h" />
+    <ClInclude Include="WindowTileMapViewer.h" />
     <ClInclude Include="WindowVisualScript.h" />
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +196,7 @@
     <ClCompile Include="WindowScene.cpp" />
     <ClCompile Include="WindowTileMapBrush.cpp" />
     <ClCompile Include="WindowTileMapEdit.cpp" />
+    <ClCompile Include="WindowTileMapViewer.cpp" />
     <ClCompile Include="WindowVisualScript.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -22,17 +22,11 @@ class Scene
 public:
 	//main functions
 	SCENEMANAGER_API bool			CreateScene(std::string sceneId, Utils::SceneType sceneType);
-	SCENEMANAGER_API void			DrawScene(int window_width, int window_height, glm::vec3 currentSceneCameraPos,
-		bool windowGameViewportIsHovered,
-		int windowGameViewportMouseX,
-		int windowGameViewportMouseY,
-		TileMap* edittingTileMap,
-		std::function<void(TileMap*, int, int, float, float)> updateMouseTileIndicator);
+	SCENEMANAGER_API void			DrawScene(int window_width, int window_height, glm::vec3 currentSceneCameraPos);
 	SCENEMANAGER_API void			UpdateScene(
 		bool isPlaying,
 		bool windowGameViewportIsHovered,
-		int windowGameViewportMouseX,
-		int windowGameViewportMouseY,
+		bool windowGameViewportIsFocused,
 		int screenWidth,
 		int screenHeight,
 		int window_width,
@@ -42,11 +36,7 @@ public:
 		bool& pendingDelete,
 		std::string selectedId,
 		std::function<void()> selectFunction,
-		std::string& projectDir,
-		TileMap* edittingTileMap,
-		std::pair<int, int> selectedTile,
-		std::function<void(TileMap*, int, int, float, float, std::pair<int, int>)> addTileToMap,
-		std::function<void(TileMap*, int, int, float, float)> removeTileFromMap
+		std::string& projectDir
 	);
 	SCENEMANAGER_API void			ReleaseScene();
 	SCENEMANAGER_API EntityManager* GetEntityManager() { return entityManager; }
@@ -67,6 +57,14 @@ public:
 	float yaw = -90.0f;
 	float pitch = 0.0f;
 	glm::vec3 eye = glm::vec3(0.0f, 0.0f, -1.0f);
+
+	//Delta mouse position
+	float deltaX;
+	float deltaY;
+
+	//Buttons and keys
+	bool leftPressed = false;
+	bool deletePressed = false;
 private:
 	//entity manager
 	EntityManager* entityManager = nullptr;

@@ -246,7 +246,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 		This frame buffer will create a texture.
 		This texture will be used by ImGui as a image to draw the scene
 	*/
-	Graphics::GetInstance().BindFramebuffer();
+	Graphics::GetInstance().GetMainFramebuffer()->BindFramebuffer();
 	Graphics::GetInstance().Clear();
 	adr_glViewport(0, 0, window_width, window_height);
 
@@ -256,7 +256,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 	}
 
 	//Disable the frame buffer to draw ImGui image
-	Graphics::GetInstance().UnbindFramebuffer();
+	Graphics::GetInstance().GetMainFramebuffer()->UnbindFramebuffer();
 
 	//Clear all sets
 	for (int i = 0; i < numLights; ++i) {

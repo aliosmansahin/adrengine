@@ -3,11 +3,15 @@
 
 void WindowTileMapBrush::DrawWindow()
 {
-    if (!editingTileMap)
+    if (!editingTileMap) {
+        showWindow = false;
         return;
+    }
     TileMapParams* params = dynamic_cast<TileMapParams*>(editingTileMap->GetEntityParams());
-    if (!params)
+    if (!params) {
+        showWindow = false;
         return;
+    }
 
     ImGui::Begin("Tile Map Brush", &showWindow);
     ImGui::SetWindowFontScale(1.5f);
@@ -19,6 +23,16 @@ void WindowTileMapBrush::DrawWindow()
         std::string editingButtonText = editing ? "Stop drawing" : "Start drawing";
         if (ImGui::Button(editingButtonText.c_str())) {
             editing = !editing;
+            WindowTileMapViewer::GetInstance().showWindow = editing;
+            if (editing)
+                WindowTileMapViewer::GetInstance().edittingTileMap = editingTileMap;
+            else 
+                WindowTileMapViewer::GetInstance().edittingTileMap = nullptr;
+        }
+
+        if (editing && !WindowTileMapViewer::GetInstance().showWindow) {
+            editing = false;
+            WindowTileMapViewer::GetInstance().edittingTileMap = nullptr;
         }
 
         ImGui::SeparatorText("Tiles");

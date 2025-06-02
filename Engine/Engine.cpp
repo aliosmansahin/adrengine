@@ -16,9 +16,6 @@ bool Engine::InitEngine(GLFWwindow* window)
     if (!Graphics::GetInstance().InitGraphics(window))
         return false;
 
-    //create a frame buffer to write it to imgui as a texture
-    Graphics::GetInstance().CreateFramebuffer(800, 600);
-
     //initialize all of entity types into the unordered_map
     InitEntityTypes();
     
@@ -92,10 +89,12 @@ void Engine::Update()
 
     /*
         Update inputs,
-        Mouse position is updating via callback function with glfw,
-        Key and mouse buttons are updating via Update function
+        Keys, mouse buttons and mouse position are updating via Update function
     */
-    InputManager::GetInstance().Update();
+    GLFWwindow* window = InterfaceManager::GetInstance().GetFocusedViewport();
+    if (window) {
+        InputManager::GetInstance().Update(window);
+    }
 
     //Calculate ms and fps
     CalcFPSandMS();
@@ -123,7 +122,7 @@ void Engine::Draw()
 
     std::string projectDir = projectPath + projectName + "/";
     
-    InterfaceManager::GetInstance().DrawInterface(projectDir, [this]() { SaveProject(); }, entityTypes, FPS, ms);
+    InterfaceManager::GetInstance().DrawInterface(projectDir, [this]() { SaveProject(); }, entityTypes, FPS, ms, screenWidth, screenHeight);
     
     InterfaceManager::GetInstance().EndFrame();
 
@@ -305,8 +304,7 @@ ENGINE_API void Engine::UpdateCurrentScene()
         SceneManager::GetInstance().currentScene->UpdateScene(
             WindowGameViewport::GetInstance().isPlaying,
             WindowGameViewport::GetInstance().isHovered,
-            WindowGameViewport::GetInstance().mouseX,
-            WindowGameViewport::GetInstance().mouseY,
+            WindowGameViewport::GetInstance().isFocused,
             screenWidth,
             screenHeight,
             (int)WindowGameViewport::GetInstance().window_width,
@@ -318,11 +316,7 @@ ENGINE_API void Engine::UpdateCurrentScene()
             []() {
                 WindowEntityProperties::GetInstance().SelectEntity(nullptr);
             },
-            projectDir,
-            edittingTileMap,
-            WindowTileMapBrush::GetInstance().selectedTile,
-            TileMap::AddTileToMap,
-            TileMap::RemoveTileFromMap);
+            projectDir);
     }
 }
 

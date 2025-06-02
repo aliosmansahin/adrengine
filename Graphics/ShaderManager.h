@@ -30,7 +30,7 @@ public:
 	GRAPHICS_API void			   ApplyUniformMatrix(const char* uniformName, glm::mat4 mat);
 	GRAPHICS_API void			   ApplyUniformBool(const char* uniformName, bool value);
 	GRAPHICS_API void			   ApplyTexture(const char* uniformName);
-	GRAPHICS_API void			   UpdateTransformMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY); //CHANGE THE NAME OF FUNCTION FROM PROJECTION TO TRANSFORM
+	GRAPHICS_API void			   UpdateTransformMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY, bool invertY = false);
 	GRAPHICS_API void			   UpdateTransformMatrix3D(glm::vec3 eye, int windowWidth, int windowHeight, float cameraX, float cameraY, float cameraZ, float yaw, float pitch);
 	GRAPHICS_API glm::mat4		   GetProjectionMatrix2D(int windowWidth, int windowHeight);
 	GRAPHICS_API void			   ReleaseShaderManager();

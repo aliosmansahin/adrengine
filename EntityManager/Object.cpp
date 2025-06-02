@@ -57,8 +57,6 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 	}
 
 	//Draw the mesh
-	adr_glEnable(GL_DEPTH_TEST);
-	
 	if (params->mesh) {
 		auto& objects = params->mesh->objects;
 
@@ -119,7 +117,6 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 			adr_glBindVertexArray(0);
 		}
 	}
-	adr_glDisable(GL_DEPTH_TEST);
 }
 
 /*

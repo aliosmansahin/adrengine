@@ -6,11 +6,15 @@ PURPOSE: Draws the window
 */
 void WindowTileMapEdit::DrawWindow()
 {
-    if (!editingTileMap)
+    if (!editingTileMap) {
+        showWindow = false;
         return;
+    }
     TileMapParams* params = dynamic_cast<TileMapParams*>(editingTileMap->GetEntityParams());
-    if (!params)
+    if (!params) {
+        showWindow = false;
         return;
+    }
 
 	ImGui::Begin("Edit Tile Map", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
     ImGui::SetWindowFontScale(1.5f);
@@ -73,6 +77,9 @@ void WindowTileMapEdit::DrawWindow()
 
         //Scaling doesn't work correctly
         float inspectScale = 1.0f;
+
+        //Warning text
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Creating inspector will delete old tiles,\ninclude tiles on the scene!");
 
         //Create framebuffer for inspector
         if (ImGui::Button("Create Inspector")) {

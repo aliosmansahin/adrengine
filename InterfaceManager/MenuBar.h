@@ -25,6 +25,7 @@
 #include "WindowAssetExplorer.h"
 #include "WindowTileMapEdit.h"
 #include "WindowTileMapBrush.h"
+#include "WindowTileMapViewer.h"
 #include "AssetSaver.h"
 
 class INTERFACEMANAGER_API MenuBar

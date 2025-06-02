@@ -14,28 +14,17 @@ void WindowGameViewport::DrawWindow(
     //Store current camera position in a vector
     glm::vec3 currentSceneCameraPos = glm::vec3(SceneManager::GetInstance().currentScene->cameraX, SceneManager::GetInstance().currentScene->cameraY, SceneManager::GetInstance().currentScene->cameraZ);
 
-
     //We will use tileMapBrush when "start drawing" button clicked
     TileMap* edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
-
-    /*
-        Draw the scene, this function stores the frame into the frameBufferTex texture,
-        after that, draw the texture as a texture via ImGui
-    */
-    SceneManager::GetInstance().currentScene->DrawScene(
-        (int)window_width,
-        (int)window_height,
-        currentSceneCameraPos,
-        isHovered,
-        mouseX,
-        mouseY,
-        edittingTileMap,
-        TileMap::UpdateMouseTileIndicator);
 
     //Begin the window
     ImGui::Begin("Game Viewport", &showWindow);
 
     //Store if the window is focused
+    if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
+        ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+        ImGui::SetWindowFocus(); // The window will be focused on right click
+    }
     isFocused = ImGui::IsWindowFocused();
 
     //Draw the toolbar to draw some buttons like play/stop and some stats
@@ -99,27 +88,13 @@ void WindowGameViewport::DrawWindow(
     window_width = ImGui::GetContentRegionAvail().x;
     window_height = ImGui::GetContentRegionAvail().y;
 
-    //Handle for resizing
-    Graphics::GetInstance().RescaleFramebuffer((int)window_width, (int)window_height);
-    adr_glViewport(0, 0, (GLsizei)window_width, (GLsizei)window_height);
-
     //Update the transform matrix depends on the scene type
     if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_2D)
         ShaderManager::GetInstance().UpdateTransformMatrix2D((int)window_width, (int)window_height, (int)SceneManager::GetInstance().currentScene->cameraX, (int)SceneManager::GetInstance().currentScene->cameraY);
     else if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_3D)
         ShaderManager::GetInstance().UpdateTransformMatrix3D(SceneManager::GetInstance().currentScene->eye, (int)window_width, (int)window_height, SceneManager::GetInstance().currentScene->cameraX, SceneManager::GetInstance().currentScene->cameraY, SceneManager::GetInstance().currentScene->cameraZ, SceneManager::GetInstance().currentScene->yaw, SceneManager::GetInstance().currentScene->pitch);
 
-    //Draw the frameBufferTex texture as an image
     ImVec2 pos = ImGui::GetCursorScreenPos();
-
-
-    ImGui::GetWindowDrawList()->AddImage(
-        (ImTextureID)(intptr_t)Graphics::GetInstance().GetFrameBufferTex(),
-        ImVec2(pos.x, pos.y),
-        ImVec2(pos.x + window_width, pos.y + window_height),
-        ImVec2(0, 1),
-        ImVec2(1, 0)
-    );
 
     //Check the mouse is in the texture
     ImVec2 mousePos = ImGui::GetMousePos();
@@ -130,32 +105,22 @@ void WindowGameViewport::DrawWindow(
     else
         isHovered = false;
 
-    //Calculate mouse position related to window
-    ImVec2 localMousePos = ImVec2(
-        mousePos.x - pos.x,
-        mousePos.y - pos.y
-    );
+    //Handle for resizing
+    Graphics::GetInstance().GetMainFramebuffer()->RescaleFramebuffer((int)window_width, (int)window_height);
+    adr_glViewport(0, 0, (GLsizei)window_width, (GLsizei)window_height);
 
-    //Translate mousePos to Normalized Device Coordinates(NDC)
-    float ndcX = (localMousePos.x / window_width) * 2.0f - 1.0f;
-    float ndcY = 1.0f - (localMousePos.y / window_height) * 2.0f;
+    /*
+        Draw the scene, this function stores the frame into the frameBufferTex texture,
+        after that, draw the texture as a texture via ImGui
+    */
+    SceneManager::GetInstance().currentScene->DrawScene(
+        (int)window_width,
+        (int)window_height,
+        currentSceneCameraPos);
 
-    //3D Soon
-    if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_2D) {
-        //Clip scene vector from NDC
-        glm::vec4 mouseClip = glm::vec4(ndcX, ndcY, 0.0f, 1.0f);
-
-        //Get projection matrix and invert it in order to get world coordinates
-        glm::mat4 ortho = ShaderManager::GetInstance().GetProjectionMatrix2D((int)window_width, (int)window_height);
-        glm::mat4 invOrtho = glm::inverse(ortho);
-
-        //Calculate world mouse coordinates
-        glm::vec4 worldMouse = invOrtho * mouseClip;
-
-        //Set the mouse coordinates
-        mouseX = (int)worldMouse.x;
-        mouseY = (int)worldMouse.y;
-    }
+    //Draw the main frameBuffer texture as an image
+    ImGui::Image((ImTextureID)(intptr_t)Graphics::GetInstance().GetMainFramebuffer()->GetFrameBufferTex(),
+        ImVec2(window_width, window_height), ImVec2(0, 1), ImVec2(1, 0));
 
     //End the window
     ImGui::End();

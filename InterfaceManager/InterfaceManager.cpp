@@ -22,6 +22,7 @@ INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, Im
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -36,6 +37,7 @@ INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, Im
 	if (!ImGui_ImplOpenGL3_Init("#version 330 core"))
 		return false;
 
+	//Save the current context to set context of other managers
 	context = ImGui::GetCurrentContext();
 
 	return true;
@@ -86,7 +88,9 @@ void InterfaceManager::DrawInterface(
 	std::function<void()> saveFunc,
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 	float engineFPS,
-	float engineMS)
+	float engineMS,
+	int screenWidth,
+	int screenHeight)
 {
 	//Draws menu bar
 	MenuBar::GetInstance().DrawMenuBar(saveFunc);
@@ -170,6 +174,22 @@ void InterfaceManager::DrawInterface(
 
 				if (WindowAssetExplorer::GetInstance().showWindow)
 					WindowAssetExplorer::GetInstance().DrawWindow();
+
+				if (WindowAddEntity::GetInstance().showWindow)
+					WindowAddEntity::GetInstance().DrawWindow(entityTypes, projectDir, WindowScene::GetInstance().addParent);
+
+				if (WindowAddAsset::GetInstance().showWindow)
+					WindowAddAsset::GetInstance().DrawWindow(projectDir, WindowAssetExplorer::GetInstance().currentSelection);
+
+				//TileMap windows
+				if (WindowTileMapEdit::GetInstance().showWindow)
+					WindowTileMapEdit::GetInstance().DrawWindow();
+
+				if (WindowTileMapBrush::GetInstance().showWindow)
+					WindowTileMapBrush::GetInstance().DrawWindow();
+
+				if (WindowTileMapViewer::GetInstance().showWindow)
+					WindowTileMapViewer::GetInstance().DrawWindow(screenWidth, screenHeight);
 			}
 		}
 		else if (openedTab->tabType == Utils::VisualScriptEditor) {
@@ -189,23 +209,11 @@ void InterfaceManager::DrawInterface(
 		WindowEditorSettings::GetInstance().DrawWindow(&darkTheme, [this]() { SetDarkTheme(); });
 		//std::bind(&InterfaceManager::SetDarkTheme, &InterfaceManager::GetInstance()) //TODO: I MIGHT USE THIS
 
-	if (WindowAddEntity::GetInstance().showWindow)
-		WindowAddEntity::GetInstance().DrawWindow(entityTypes, projectDir, WindowScene::GetInstance().addParent);
-
-	if (WindowAddAsset::GetInstance().showWindow)
-		WindowAddAsset::GetInstance().DrawWindow(projectDir, WindowAssetExplorer::GetInstance().currentSelection);
-
 	if (WindowAddScene::GetInstance().showWindow)
 		WindowAddScene::GetInstance().DrawWindow(projectDir, tabs, openedTab, selectedTabId);
 
 	if (WindowProjectSettings::GetInstance().showWindow)
 		WindowProjectSettings::GetInstance().DrawWindow();
-
-	if (WindowTileMapEdit::GetInstance().showWindow)
-		WindowTileMapEdit::GetInstance().DrawWindow();
-
-	if (WindowTileMapBrush::GetInstance().showWindow)
-		WindowTileMapBrush::GetInstance().DrawWindow();
 }
 
 /*
@@ -240,8 +248,8 @@ void InterfaceManager::UpdateViewportContext()
 	{
 		GLFWwindow* backup_current_context = glfwGetCurrentContext();
 		ImGui::UpdatePlatformWindows();
-		//ImGui::RenderPlatformWindowsDefault();
-		//glfwMakeContextCurrent(backup_current_context);
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backup_current_context);
 	}
 }
 
@@ -254,6 +262,35 @@ void InterfaceManager::SetDarkTheme()
 		ImGui::StyleColorsDark();
 	else
 		ImGui::StyleColorsLight();
+}
+
+/*
+PURPOSE: On docking mode, imgui creates a new GLFWwindow object when a window is moved out from the main window
+	So, we can't handle glfw events of the another window from main window's GLFWwindow.
+	We have to get the GLFWwindow object of the focused window for now.
+	This function is for getting the GLFWwindow object of the focused window.
+*/
+INTERFACEMANAGER_API GLFWwindow* InterfaceManager::GetFocusedViewport()
+{
+	//Get the focused viewport(window)
+	ImGuiPlatformIO& io = ImGui::GetPlatformIO();
+	ImGuiViewport* fallback = ImGui::GetMainViewport();
+
+	for (ImGuiViewport* viewport : io.Viewports) {
+		if (viewport->Flags & ImGuiViewportFlags_IsFocused) {
+			if (viewport->PlatformHandleRaw) {
+				//Get the GLFWwindow object 
+				return static_cast<GLFWwindow*>(viewport->PlatformHandle);
+			}
+		}
+	}
+
+	// Fallback: main viewport's GLFWwindow
+	if (fallback && fallback->PlatformHandleRaw) {
+		return static_cast<GLFWwindow*>(fallback->PlatformHandle);
+	}
+
+	return nullptr;
 }
 
 /*

@@ -20,9 +20,6 @@ bool InputManager::InitEngine(GLFWwindow* window, ImGuiContext* context)
 
     //Set imgui context
     ImGui::SetCurrentContext(context);
-
-    //Set glfw callbacks
-    glfwSetCursorPosCallback(window, InputManager::CursorPosCallback);
     
     return true;
 }
@@ -137,27 +134,15 @@ void InputManager::SetMousePos(int x, int y)
 }
 
 /*
-PURPOSE: Callback for updating mouse position
-*/
-INPUTMANAGER_API void InputManager::CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
-{
-    //To prevent imgui hover effects when mouse is disabled
-    if(mouseVisibility)
-        ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
-
-    //Update mouse position
-    mouseX = (int)xpos;
-    mouseY = (int)ypos;
-}
-
-/*
 PURPOSE: Updates the input manager
 */
-void InputManager::Update()
+void InputManager::Update(GLFWwindow* window)
 {
     //Set previous keys to current keys before changing currents
     previousKeys = currentKeys;
     previousMouseButtons = currentMouseButtons;
+
+    this->window = window;
 
     //Update keys
     for (int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; ++key) {
@@ -169,6 +154,12 @@ void InputManager::Update()
     for (int i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
         currentMouseButtons[i] = glfwGetMouseButton(window, i);
     }
+
+    //Update mouse position
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    mouseX = (int)xpos;
+    mouseY = (int)ypos;
 }
 
 /*
