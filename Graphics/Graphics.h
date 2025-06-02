@@ -6,12 +6,13 @@
 #define GRAPHICS_API __declspec(dllimport)
 #endif
 
-#include "glad_wrapper.h"
+#include "FramebufferProvider.h"
 #include "glfw/glfw3.h"
 #include <vector>
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 
 #include "Logger.h"
 
@@ -62,8 +63,6 @@ public:
 	//main funcs
 	GRAPHICS_API bool			InitGraphics(GLFWwindow* window);
 	GRAPHICS_API void			ReleaseGraphics();
-	GRAPHICS_API void			CreateFramebuffer(int width, int height);
-	GRAPHICS_API void			RescaleFramebuffer(int width, int height);
 	GRAPHICS_API unsigned int	LoadTexture(const char* id, const char* path, int& width, int& height);
 	GRAPHICS_API void			UnloadTexture(unsigned int texture);
 	GRAPHICS_API void			UnloadMesh(std::vector<std::shared_ptr<ObjectMtl>>& objects);
@@ -91,18 +90,14 @@ public:
 public:
 	//context
 	GRAPHICS_API void Clear();
-	GRAPHICS_API void BindFramebuffer()   { adr::adr_glBindFramebuffer(GL_FRAMEBUFFER, FBO); }
-	GRAPHICS_API void UnbindFramebuffer() { adr::adr_glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 public:
 	//getters
-	GRAPHICS_API GLFWwindow*  GetWindow()         { return window; }
-	GRAPHICS_API unsigned int GetFrameBufferTex() { return frameBufferTex; }
+	GRAPHICS_API GLFWwindow*  GetWindow() { return window; }
+	GRAPHICS_API FramebufferProvider* GetMainFramebuffer() { return frameBuffer; }
 private:
 	//glfw
 	GLFWwindow* window = nullptr;
 
-	//framebuffer
-	unsigned int FBO;
-	unsigned int RBO;
-	unsigned int frameBufferTex;
+	//Graphics has its own framebuffer to draw gameviewport
+	FramebufferProvider* frameBuffer = nullptr;
 };

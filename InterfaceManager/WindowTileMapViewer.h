@@ -36,6 +36,8 @@ public:
 	int window_width = 0;
 	int window_height = 0;
 
+	//framebuffer
+	std::unique_ptr<FramebufferProvider> framebuffer;
 
 	//camera
 	float cameraX;

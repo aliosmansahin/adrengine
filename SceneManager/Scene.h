@@ -26,6 +26,7 @@ public:
 	SCENEMANAGER_API void			UpdateScene(
 		bool isPlaying,
 		bool windowGameViewportIsHovered,
+		bool windowGameViewportIsFocused,
 		int screenWidth,
 		int screenHeight,
 		int window_width,

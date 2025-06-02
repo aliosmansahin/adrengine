@@ -53,7 +53,10 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 
 	//Draw tiles
 	for (auto& tile : tiles) {
-		tile.second->Draw(tileWidth, tileHeight, (int)realPos.x, (int)realPos.y);
+		if(drawingViewer)
+			tile.second->Draw(tileWidth, tileHeight, 0, 0);
+		else
+			tile.second->Draw(tileWidth, tileHeight, (int)realPos.x, (int)realPos.y, (int)realPos.z);
 	}
 
 	//Disable the texture for tiles
@@ -262,6 +265,10 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 	for (auto& tile : createdTiles)
 		tile.second->Release();
 	createdTiles.clear();
+
+	for (auto& tile : tiles)
+		tile.second->Release();
+	tiles.clear();
 
 	width *= scale;
 	height *= scale;

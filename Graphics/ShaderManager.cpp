@@ -166,14 +166,18 @@ void ShaderManager::ApplyTexture(const char* uniformName)
 PURPOSE: Updates 2d projection and view matrices and send them to uniforms,
     the model matrix will be sent from each entities
 */
-void ShaderManager::UpdateTransformMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY)
+void ShaderManager::UpdateTransformMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY, bool invertY)
 {
     float aspect = (float)windowWidth / (float)windowHeight;
 
     float orthoWidth = 800.0f;
     float orthoHeight = orthoWidth / aspect;
 
-    glm::mat4 projection = glm::ortho(0.0f, orthoWidth, orthoHeight, 0.0f, -100.0f, 100.0f);
+    glm::mat4 projection;
+    if (invertY)
+        projection = glm::ortho(0.0f, orthoWidth, 0.0f, orthoHeight, -100.0f, 100.0f);
+    else
+        projection = glm::ortho(0.0f, orthoWidth, orthoHeight, 0.0f, -100.0f, 100.0f);
 
     glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, 0));
 

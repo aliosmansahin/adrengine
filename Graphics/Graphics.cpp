@@ -40,6 +40,10 @@ bool Graphics::InitGraphics(GLFWwindow* window)
     if (!ShaderManager::GetInstance().InitShaders(Utils::SHADER_INSPECT_TILE))
         return false;
 
+    //create a frame buffer to write it to imgui as a texture
+    frameBuffer = new FramebufferProvider();
+    frameBuffer->CreateFramebuffer(800, 600);
+
     return true;
 }
 
@@ -50,63 +54,15 @@ void Graphics::ReleaseGraphics()
 {
     //Release shader manager
     ShaderManager::GetInstance().ReleaseShaderManager();
-    //Release main framebuffer, renderbuffer, framebuffertexture
-    adr::adr_glDeleteFramebuffers(1, &FBO);
-    adr::adr_glDeleteRenderbuffers(1, &RBO);
-    adr::adr_glDeleteTextures(1, &frameBufferTex);
+
+    //Release framebuffer
+    frameBuffer->ReleaseFramebuffer();
+    delete frameBuffer;
+
     //logger
     Logger::Log("P", "Cleared graphics");
 }
 
-/*
-PURPOSE: Create a main frame buffer to draw it on the imgui window as a texture
-*/
-void Graphics::CreateFramebuffer(int width, int height)
-{
-    //frame buffer
-    adr::adr_glGenFramebuffers(1, &FBO);
-    adr::adr_glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-
-    //generate a texture and bind it to frame buffer
-    adr::adr_glGenTextures(1, &frameBufferTex);
-
-    adr::adr_glBindTexture(GL_TEXTURE_2D, frameBufferTex);
-    adr::adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    adr::adr_glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTex, 0);
-
-    //check the status of frame buffer
-    if (adr::adr_glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        Logger::Log("E", "Framebuffer is not complete");
-
-    //generate render buffer and bind it to the frame buffer
-    adr::adr_glGenRenderbuffers(1, &RBO);
-    adr::adr_glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    adr::adr_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    adr::adr_glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-
-    //release all buffers
-    adr::adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    adr::adr_glBindTexture(GL_TEXTURE_2D, 0);
-    adr::adr_glBindRenderbuffer(GL_RENDERBUFFER, 0);
-}
-
-/*
-PURPOSE: Rescale frame buffer to handle changing gameviewport size
-*/
-void Graphics::RescaleFramebuffer(int width, int height)
-{
-    adr::adr_glBindTexture(GL_TEXTURE_2D, frameBufferTex);
-    adr::adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    adr::adr_glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTex, 0);
-
-    adr::adr_glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    adr::adr_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    adr::adr_glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-}
 
 /*
 PURPOSE: Loads a texture from path and returns it

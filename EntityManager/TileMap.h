@@ -54,6 +54,9 @@ public:
 	//tile size
 	int tileWidth = 0;
 	int tileHeight = 0;
+
+	//Is this tilemap drawing on tilemapviewer
+	bool drawingViewer = false;
 private:
 	//properties
 	std::shared_ptr<TileMapParams> params;

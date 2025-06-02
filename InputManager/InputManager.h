@@ -22,7 +22,7 @@ public:
 	//main functions
 	INPUTMANAGER_API bool				  InitEngine(GLFWwindow* window, ImGuiContext* context);
 	INPUTMANAGER_API void				  ReleaseEngine();
-	INPUTMANAGER_API void				  Update();
+	INPUTMANAGER_API void				  Update(GLFWwindow* window);
 
 	//keys
 	INPUTMANAGER_API bool				  IsKeyJustPressed(int key);
@@ -44,9 +44,6 @@ public:
 
 	//setter for mouse positions
 	INPUTMANAGER_API void				  SetMousePos(int x, int y);
-
-	//Callbacks
-	INPUTMANAGER_API static void          CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
 	//getter for the instance
 	INPUTMANAGER_API static InputManager& GetInstance();

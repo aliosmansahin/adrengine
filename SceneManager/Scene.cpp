@@ -30,7 +30,6 @@ void Scene::DrawScene(int window_width, int window_height, glm::vec3 currentScen
 	//If there is an entity manager, draw each entity via entity manager
 	if(entityManager)
 		entityManager->DrawEntities(window_width, window_height, currentSceneCameraPos, (sceneType == Utils::SCENE_3D));
-
 }
 
 /*
@@ -39,6 +38,7 @@ PURPOSE: Update scene objects and handles camera updates
 void Scene::UpdateScene(
 	bool isPlaying,
 	bool windowGameViewportIsHovered,
+	bool windowGameViewportIsFocused,
 	int screenWidth,
 	int screenHeight,
 	int window_width,
@@ -86,6 +86,7 @@ void Scene::UpdateScene(
 		//Get if delete key is pressed
 		deletePressed = InputManager::GetInstance().IsKeyPressed(GLFW_KEY_DELETE);
 
+		//Reset delta mouse position
 		deltaX = 0.0f;
 		deltaY = 0.0f;
 
@@ -109,77 +110,79 @@ void Scene::UpdateScene(
 			float resX = (float)deltaMouseX * (float)windowWidth / (float)screenWidth;
 			float resY = (float)deltaMouseY * (float)windowHeight / (float)screenHeight;
 
+			//Save delta mouse position to use it from another window
 			deltaX = resX;
 			deltaY = resY;
 
-			//If the type of the scene is 2d
-			if (sceneType == Utils::SCENE_2D) {
-				//Move the camera
-				cameraX -= resX;
-				cameraY -= resY;
-			}
-			//If the type of the scene is 3d
-			else if (sceneType == Utils::SCENE_3D) {
-				//Change the camera position
-				yaw += resX * 0.5f;
-				pitch += -resY * 0.5f;
-
-				//Limit the pitch
-				if (pitch > 89.0f)
-					pitch = 89.0f;
-				if (pitch < -89.0f)
-					pitch = -89.0f;
-
-				//Convert yaw and pitch to a vector
-				glm::vec3 direction{};
-				direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-				direction.y = sin(glm::radians(pitch));
-				direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-				eye = glm::normalize(direction);
-
-				//Set the speed of the camera
-				float speed = 20.0f * Timer::GetDeltaTime();
-
-				//Movement controls
-				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
-					cameraX += eye.x * speed;
-					cameraY += eye.y * speed;
-					cameraZ += eye.z * speed;
+			if (windowGameViewportIsFocused) {
+				//If the type of the scene is 2d
+				if (sceneType == Utils::SCENE_2D) {
+					//Move the camera
+					cameraX -= resX;
+					cameraY -= resY;
 				}
-				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_S)) {
-					cameraX -= eye.x * speed;
-					cameraY -= eye.y * speed;
-					cameraZ -= eye.z * speed;
-				}
-				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_D)) {
-					glm::vec3 right = glm::normalize(glm::cross(eye, glm::vec3(0.0f, 1.0f, 0.0f)));
+				//If the type of the scene is 3d
+				else if (sceneType == Utils::SCENE_3D) {
+					//Change the camera position
+					yaw += resX * 0.5f;
+					pitch += -resY * 0.5f;
 
-					cameraX += right.x * speed;
-					cameraY += right.y * speed;
-					cameraZ += right.z * speed;
-				}
-				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_A)) {
-					glm::vec3 right = glm::normalize(glm::cross(eye, glm::vec3(0.0f, 1.0f, 0.0f)));
+					//Limit the pitch
+					if (pitch > 89.0f)
+						pitch = 89.0f;
+					if (pitch < -89.0f)
+						pitch = -89.0f;
 
-					cameraX -= right.x * speed;
-					cameraY -= right.y * speed;
-					cameraZ -= right.z * speed;
-				}
-				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_SPACE)) {
-					glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+					//Convert yaw and pitch to a vector
+					glm::vec3 direction{};
+					direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+					direction.y = sin(glm::radians(pitch));
+					direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+					eye = glm::normalize(direction);
 
-					cameraX += up.x * speed;
-					cameraY += up.y * speed;
-					cameraZ += up.z * speed;
-				}
-				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
-					glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+					//Set the speed of the camera
+					float speed = 20.0f * Timer::GetDeltaTime();
 
-					cameraX -= up.x * speed;
-					cameraY -= up.y * speed;
-					cameraZ -= up.z * speed;
-				}
+					//Movement controls
+					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
+						cameraX += eye.x * speed;
+						cameraY += eye.y * speed;
+						cameraZ += eye.z * speed;
+					}
+					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_S)) {
+						cameraX -= eye.x * speed;
+						cameraY -= eye.y * speed;
+						cameraZ -= eye.z * speed;
+					}
+					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_D)) {
+						glm::vec3 right = glm::normalize(glm::cross(eye, glm::vec3(0.0f, 1.0f, 0.0f)));
 
+						cameraX += right.x * speed;
+						cameraY += right.y * speed;
+						cameraZ += right.z * speed;
+					}
+					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_A)) {
+						glm::vec3 right = glm::normalize(glm::cross(eye, glm::vec3(0.0f, 1.0f, 0.0f)));
+
+						cameraX -= right.x * speed;
+						cameraY -= right.y * speed;
+						cameraZ -= right.z * speed;
+					}
+					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_SPACE)) {
+						glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+						cameraX += up.x * speed;
+						cameraY += up.y * speed;
+						cameraZ += up.z * speed;
+					}
+					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
+						glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+						cameraX -= up.x * speed;
+						cameraY -= up.y * speed;
+						cameraZ -= up.z * speed;
+					}
+				}
 			}
 
 			//Set last mouse to current mouse

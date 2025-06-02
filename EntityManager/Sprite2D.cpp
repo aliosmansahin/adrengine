@@ -114,8 +114,6 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 
 		//AMBIENT(This makes the texture not effected by lights)
 		ShaderManager::GetInstance().ApplyUniformVec3("materialAmbient", glm::vec3(1.0f));
-
-		adr_glEnable(GL_DEPTH_TEST);
 	}
 
 	//Draw the texture
@@ -126,7 +124,6 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	adr_glActiveTexture(GL_TEXTURE0);
 	adr_glBindTexture(GL_TEXTURE_2D, 0);
 	adr_glBindVertexArray(0);
-	adr_glDisable(GL_DEPTH_TEST);
 }
 
 /*

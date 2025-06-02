@@ -15,7 +15,7 @@ public:
 	//main funcs
 	void Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH, std::pair<int, int> tileType);
 	void Update();
-	void Draw(int tileW, int tileH, int translateX, int translateY);
+	void Draw(int tileW, int tileH, int translateX, int translateY, int translateZ = 0.0f);
 	void Release();
 
 	//Getters and setters

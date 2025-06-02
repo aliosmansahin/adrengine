@@ -69,21 +69,27 @@ void Tile::Update()
 /*
 PURPOSE: Draws the tile
 */
-void Tile::Draw(int tileW, int tileH, int translateX, int translateY)
+void Tile::Draw(int tileW, int tileH, int translateX, int translateY, int translateZ)
 {
 	//Set some transform
 	glm::mat4 model = glm::mat4(1.0f);
 
-	glm::vec3 tra = glm::vec3(x * tileW + translateX, y * tileH + translateY, 0.0f);
+	glm::vec3 tra = glm::vec3(x * tileW + translateX, y * tileH + translateY, translateZ);
+	float rotate = 0.0f;
 	glm::vec3 sca = glm::vec3(1.0f);
 
-	model = glm::translate(model, tra);
-	model = glm::scale(model, sca); //TODO: Change it with mouse scroll
+	if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
+		tra /= 32.0f;
+		sca /= 32.0f;
+		rotate = 180.0f;
+	}
 
+	model = glm::translate(model, tra);
+	model = glm::rotate(model, glm::radians(rotate), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, sca); //TODO: Change it with mouse scroll
 
 	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
 	
-
 	//Draw the texture
 	adr_glBindVertexArray(tileVAO);
 	adr_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
