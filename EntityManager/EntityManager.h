@@ -17,6 +17,7 @@
 #include "SpotLight.h"
 #include "PointLight.h"
 #include "TileMap.h"
+#include "FlipBook.h"
 #include "AssetSaver.h"
 
 #include "glad_wrapper.h"
