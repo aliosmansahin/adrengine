@@ -18,6 +18,10 @@ public:
 	ENTITYMANAGER_API void Update() override;
 	ENTITYMANAGER_API void Draw(glm::vec3 currentSceneCameraPos) override;
 
+	//frames
+	ENTITYMANAGER_API void CreateInspectFrameBuffer(float textureWidth, float textureHeight, int frameWidth, int frameHeight);
+	ENTITYMANAGER_API bool IsInspectCreated();
+
 	/*
 	PURPOSE: Clones the entity and return it
 	*/
@@ -33,4 +37,9 @@ public:
 private:
 	//properties
 	std::shared_ptr<FlipBookParams> params;
+
+	//inspector framebuffer
+	unsigned int inspectFrameBuffer = -1;
+	unsigned int inspectRenderBuffer = -1;
+	unsigned int inspectTexture = -1;
 };
