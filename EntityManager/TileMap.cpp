@@ -6,7 +6,7 @@ PURPOSE: Initializes the entity
 */
 bool TileMap::CreateEntity(std::shared_ptr<EntityParams> params)
 {
-	//Cast EntityParams to Sprite2DParams to use its properties
+	//Cast EntityParams to TileMapParams to use its properties
 	auto casted = std::dynamic_pointer_cast<TileMapParams>(params);
 	if (!casted) {
 		Logger::Log("E", "Casting failed at dynamic_cast<TileMapParams*>(params)");
