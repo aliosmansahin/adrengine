@@ -158,6 +158,8 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="EntityParams.h" />
+    <ClInclude Include="FlipBook.h" />
+    <ClInclude Include="FlipBookParams.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="LightParams.h" />
@@ -181,6 +183,8 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="EntityParams.cpp" />
+    <ClCompile Include="FlipBook.cpp" />
+    <ClCompile Include="FlipBookParams.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightParams.cpp" />
     <ClCompile Include="Object.cpp" />
