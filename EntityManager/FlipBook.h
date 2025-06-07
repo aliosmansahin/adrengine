@@ -9,7 +9,7 @@
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class FlipBook : public Entity
+class FlipBook : public Sprite2D
 {
 public:
 	//main functions
