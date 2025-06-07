@@ -166,6 +166,7 @@
     <ClInclude Include="WindowAssetExplorer.h" />
     <ClInclude Include="WindowEditorSettings.h" />
     <ClInclude Include="WindowEntityProperties.h" />
+    <ClInclude Include="WindowFlipBookEdit.h" />
     <ClInclude Include="WindowGameViewport.h" />
     <ClInclude Include="WindowProjectSettings.h" />
     <ClInclude Include="WindowScene.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="WindowAssetExplorer.cpp" />
     <ClCompile Include="WindowEditorSettings.cpp" />
     <ClCompile Include="WindowEntityProperties.cpp" />
+    <ClCompile Include="WindowFlipBookEdit.cpp" />
     <ClCompile Include="WindowGameViewport.cpp" />
     <ClCompile Include="WindowProjectSettings.cpp" />
     <ClCompile Include="WindowScene.cpp" />
