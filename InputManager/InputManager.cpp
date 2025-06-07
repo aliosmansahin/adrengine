@@ -15,6 +15,8 @@ PURPOSE: Initialize input engine
 */
 bool InputManager::InitEngine(GLFWwindow* window, ImGuiContext* context)
 {
+    Logger::Log("P", "Initializing input manager");
+
     //Set glfw window pointer
     this->window = window;
 
