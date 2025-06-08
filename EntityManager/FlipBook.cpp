@@ -273,6 +273,9 @@ ENTITYMANAGER_API void FlipBook::CreateInspectFrameBuffer(float textureWidth, fl
 	adr_glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
+/*
+PURPOSE: Check if buffers for inspector are created
+*/
 ENTITYMANAGER_API bool FlipBook::IsInspectCreated()
 {
 	if (inspectFrameBuffer == -1)
@@ -384,19 +387,6 @@ PURPOSE: Creates buffers, a new "frames" vector for storing each frame that is s
 */
 ENTITYMANAGER_API void FlipBook::StartFlipBook()
 {
-	if (frameVAO != -1) {
-		adr_glDeleteVertexArrays(1, &frameVAO);
-		frameVAO = -1;
-	}
-	if (frameVBO != -1) {
-		adr_glDeleteBuffers(1, &frameVBO);
-		frameVBO = -1;
-	}
-	if (frameEBO != -1) {
-		adr_glDeleteBuffers(1, &frameEBO);
-		frameEBO = -1;
-	}
-
 	//Store selected frames into another vector
 	for (auto& frame : createdFrames) {
 		if (!frame.first)
@@ -407,47 +397,6 @@ ENTITYMANAGER_API void FlipBook::StartFlipBook()
 
 	//Set current index at 0
 	currentIndex = 0;
-
-	//------ TEXTURE FRAME ------
-
-	//Vertices for the texture
-	float vertices[] = {
-		//X					Y	   Z	 U     V
-		 (float)frameWidth, (float)frameHeight, 0.0f, 1.0f, 0.0f, // top right
-		 0.0f,	            (float)frameHeight, 0.0f, 0.0f, 0.0f, // bottom right
-		 0.0f,              0.0f,               0.0f, 0.0f, 1.0f, // bottom left
-		 (float)frameWidth, 0.0f,               0.0f, 1.0f, 1.0f, // top left 
-	};
-	//Indices for the texture
-	unsigned int indices[] = {
-		0, 1, 3,  // first Triangle
-		1, 2, 3   // second Triangle
-	};
-
-	//Create buffers and bind them with vertices and indices
-	adr_glGenBuffers(1, &frameVBO);
-	adr_glGenBuffers(1, &frameEBO);
-
-	adr_glGenVertexArrays(1, &frameVAO);
-	adr_glBindVertexArray(frameVAO);
-
-	adr_glBindBuffer(GL_ARRAY_BUFFER, frameVBO);
-	adr_glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	adr_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frameEBO);
-	adr_glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	//Set the vertex attrib pointers (position = 0)
-	adr_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	adr_glEnableVertexAttribArray(0);
-
-	//Set the vertex attrib pointers (position = 1)
-	adr_glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	adr_glEnableVertexAttribArray(1);
-
-	//Release buffers
-	adr_glBindBuffer(GL_ARRAY_BUFFER, 0);
-	adr_glBindVertexArray(0);
 }
 
 /*
@@ -470,5 +419,50 @@ ENTITYMANAGER_API nlohmann::json FlipBook::ToJson()
 		j = params->ToJson();
 	}
 
+	nlohmann::json c; //For created frames
+	for (auto& frame : createdFrames) {
+		//Add a selected status
+		nlohmann::json frameJson = frame.second->ToJson();
+		frameJson.push_back({ "selected", frame.first });
+		c.push_back(frameJson);
+	}
+	j["created-frames"] = c;
+
+	//Tile size
+	j["frame-width"] = frameWidth;
+	j["frame-height"] = frameHeight;
+
 	return j;
+}
+
+/*
+PURPOSE: FlipBook has a fromjson function to load existing drawing frames and created frames from json
+*/
+ENTITYMANAGER_API void FlipBook::FromJson(nlohmann::json json)
+{
+	//Tiles to brush
+	if (json.contains("created-frames")) {
+		nlohmann::json c = json["created-frames"];
+		for (auto& t : c) {
+			//Create a new type of tile
+			bool selected = t.value("selected", true);
+
+			FlipBookFrame* frame = new FlipBookFrame();
+			frame->Create(
+				t.value("x", 0),
+				t.value("y", 0),
+				t.value("width", 0),
+				t.value("height", 0),
+				t.value("u", 0.0f),
+				t.value("v", 0.0f),
+				t.value("tex-w", 0.0f),
+				t.value("tex-h", 0.0f)
+			); // We don't have to have a "fromjson" function, "create" handles it
+
+			//Add a new type
+			createdFrames.push_back({ selected, std::shared_ptr<FlipBookFrame>(frame) });
+		}
+	}
+
+	StartFlipBook();
 }

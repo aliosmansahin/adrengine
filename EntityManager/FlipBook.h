@@ -48,6 +48,7 @@ public:
 
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
+	ENTITYMANAGER_API void FromJson(nlohmann::json json);
 public:
 	int frameWidth = 0;
 	int frameHeight = 0;
@@ -67,11 +68,6 @@ private:
 	unsigned int VAO = -1;
 	unsigned int VBO = -1;
 	unsigned int EBO = -1;
-
-	//drawing current frame
-	unsigned int frameVAO = -1;
-	unsigned int frameVBO = -1;
-	unsigned int frameEBO = -1;
 
 	//createdFrames
 	std::vector<std::pair<bool, std::shared_ptr<FlipBookFrame>>> createdFrames;

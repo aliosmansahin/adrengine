@@ -126,6 +126,9 @@ void Tile::SetPos(int x, int y)
 	this->y = y;
 }
 
+/*
+PURPOSE: Gets json content of the tile
+*/
 nlohmann::json Tile::ToJson()
 {
 	nlohmann::json j;

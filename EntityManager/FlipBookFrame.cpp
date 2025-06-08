@@ -115,3 +115,24 @@ ENTITYMANAGER_API void FlipBookFrame::Release()
 		EBO = -1;
 	}
 }
+
+/*
+PURPOSE: Gets json content of the frame
+*/
+ENTITYMANAGER_API nlohmann::json FlipBookFrame::ToJson()
+{
+	nlohmann::json j;
+
+	//position and size of the frame
+	j["x"] = x;
+	j["y"] = y;
+	j["width"] = width;
+	j["height"] = height;
+
+	//position and size of the texture
+	j["u"] = u;
+	j["v"] = v;
+	j["tex-w"] = textureWidth;
+	j["tex-h"] = textureHeight;
+	return j;
+}
