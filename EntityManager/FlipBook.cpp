@@ -428,7 +428,7 @@ ENTITYMANAGER_API nlohmann::json FlipBook::ToJson()
 	}
 	j["created-frames"] = c;
 
-	//Tile size
+	//Frame size
 	j["frame-width"] = frameWidth;
 	j["frame-height"] = frameHeight;
 
@@ -440,13 +440,14 @@ PURPOSE: FlipBook has a fromjson function to load existing drawing frames and cr
 */
 ENTITYMANAGER_API void FlipBook::FromJson(nlohmann::json json)
 {
-	//Tiles to brush
+	//Frames to create
 	if (json.contains("created-frames")) {
 		nlohmann::json c = json["created-frames"];
 		for (auto& t : c) {
-			//Create a new type of tile
+			//Get the selected status
 			bool selected = t.value("selected", true);
 
+			//Create a frame from the json content
 			FlipBookFrame* frame = new FlipBookFrame();
 			frame->Create(
 				t.value("x", 0),
@@ -459,10 +460,11 @@ ENTITYMANAGER_API void FlipBook::FromJson(nlohmann::json json)
 				t.value("tex-h", 0.0f)
 			); // We don't have to have a "fromjson" function, "create" handles it
 
-			//Add a new type
+			//Add a new frame
 			createdFrames.push_back({ selected, std::shared_ptr<FlipBookFrame>(frame) });
 		}
 	}
 
+	//Create frames from selected ones of createdFrames and start flipbook
 	StartFlipBook();
 }
