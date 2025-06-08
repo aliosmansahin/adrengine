@@ -35,6 +35,7 @@ public:
 	ENTITYMANAGER_API std::vector<std::shared_ptr<FlipBookFrame>>& GetFrames();
 	ENTITYMANAGER_API FlipBookFrame* GetCurrentFrame();
 	ENTITYMANAGER_API void StartFlipBook();
+	ENTITYMANAGER_API void RestartFlipBook();
 
 	/*
 	PURPOSE: Clones the entity and return it
@@ -50,10 +51,11 @@ public:
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
 	ENTITYMANAGER_API void FromJson(nlohmann::json json);
 public:
+	//frame size
 	int frameWidth = 0;
 	int frameHeight = 0;
-	float frameWait = 0.1f; //Seconds, duration between each frame //TODO: user will control it from the entity properies window
-	bool loop = true; //TODO: user will control it from the entity properties window
+
+	//is the frame ended
 	bool ended = false;
 private:
 	//properties

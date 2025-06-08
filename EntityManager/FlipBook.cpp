@@ -41,12 +41,12 @@ ENTITYMANAGER_API void FlipBook::Update()
 		float deltaTime = currentTime - lastTime;
 
 		//Update current index
-		if (deltaTime > frameWait && currentIndex != frames.size()) {
+		if (deltaTime > params->frameWait && currentIndex != frames.size()) {
 			currentIndex++;
 
 			//Current index will continue from beginning of frames
 			if (currentIndex == frames.size()) {
-				if (loop)
+				if (params->loop)
 					currentIndex = 0;
 				else
 					ended = true;
@@ -56,7 +56,8 @@ ENTITYMANAGER_API void FlipBook::Update()
 			lastTime = currentTime;
 
 			//Update current frame
-			frames[currentIndex]->Update();
+			if(currentIndex < frames.size())
+				frames[currentIndex]->Update();
 		}
 	}
 }
@@ -67,7 +68,7 @@ PURPOSE: Draws the entity.
 */
 ENTITYMANAGER_API void FlipBook::Draw(glm::vec3 currentSceneCameraPos)
 {
-	if (!frames.empty()) {
+	if (!frames.empty() && currentIndex < frames.size() && currentIndex >= 0) {
 		//Set the texture
 		adr_glActiveTexture(GL_TEXTURE0);
 		adr_glBindTexture(GL_TEXTURE_2D, params->texture);
@@ -396,6 +397,11 @@ ENTITYMANAGER_API void FlipBook::StartFlipBook()
 	}
 
 	//Set current index at 0
+	currentIndex = 0;
+}
+
+ENTITYMANAGER_API void FlipBook::RestartFlipBook()
+{
 	currentIndex = 0;
 }
 

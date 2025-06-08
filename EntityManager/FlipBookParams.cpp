@@ -21,4 +21,8 @@ ENTITYMANAGER_API void FlipBookParams::FromJson(const nlohmann::json& j)
 	if (assetTexture) {
 		texture = assetTexture->texture;
 	}
+	
+	//Showing frames
+	frameWait = j.value("frame-wait", 0.1f);
+	loop = j.value("loop", false);
 }

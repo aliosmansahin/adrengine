@@ -188,10 +188,12 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
 
                 ImGui::SetCursorPos(ImVec2(windowPos.x, windowPos.y + deltaPos.y + padding));
 
+                //Button for starting the flipbook
                 if (ImGui::Button("Start FlipBook")) {
                     edittingFlipBook->StartFlipBook();
                 }
 
+                //Drawing a preview for the current frame
                 auto& frames = edittingFlipBook->GetFrames();
                 if (!frames.empty()) {
                     auto currentFrame = edittingFlipBook->GetCurrentFrame();
@@ -204,8 +206,6 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                         imageSize,
                         ImVec2(currentFrame->u, currentFrame->v),
                         ImVec2(currentFrame->u + currentFrame->textureWidth, currentFrame->v + currentFrame->textureHeight));
-
-                    ImGui::DragFloat("Frame Duration", &edittingFlipBook->frameWait, 0.01f);
                 }
 
                 if (ImGui::Button("Done")) {

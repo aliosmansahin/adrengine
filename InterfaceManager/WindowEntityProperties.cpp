@@ -314,6 +314,13 @@ void WindowEntityProperties::DrawWindow(
                     WindowFlipBookEdit::GetInstance().showWindow = true;
                     WindowFlipBookEdit::GetInstance().edittingFlipBook = flipBook;
                 }
+
+                if (!flipBook->GetFrames().empty()) {
+                    ImGui::DragFloat("Frame Duration", &casted->frameWait, 0.001f, 0.0f);
+                    ImGui::Checkbox("Loop", &casted->loop);
+                    if (ImGui::Button("Restart FlipBook"))
+                        flipBook->RestartFlipBook();
+                }
             }
         }
     }

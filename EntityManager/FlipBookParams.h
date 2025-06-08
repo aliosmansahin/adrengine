@@ -42,6 +42,8 @@ public:
 
 		//Save the type
 		j["type"] = GetType();
+		j["frame-wait"] = frameWait;
+		j["loop"] = loop;
 
 		return j;
 	};
@@ -49,7 +51,11 @@ public:
 	//json
 	ENTITYMANAGER_API void FromJson(const nlohmann::json& j) override;
 
-	//tilemap texture
+	//flipbook texture
 	std::string textureId = "";
 	unsigned int texture = 0;
+
+	//showing frames
+	float frameWait = 0.1f; //Seconds, duration between each frame
+	bool loop = true;
 };
