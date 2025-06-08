@@ -5,6 +5,7 @@
 
 #include "utils/Utils.h"
 #include "ShaderManager.h"
+#include "Timer.h"
 
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
@@ -38,6 +39,8 @@ public:
 	ENTITYMANAGER_API void DrawInspect(int width, int height, int tileW, int tileH);
 	ENTITYMANAGER_API unsigned int GetInspectTexture();
 	ENTITYMANAGER_API std::vector<std::pair<bool, std::shared_ptr<FlipBookFrame>>>& GetCreatedFrames();
+	ENTITYMANAGER_API std::vector<std::shared_ptr<FlipBookFrame>>& GetFrames();
+	ENTITYMANAGER_API FlipBookFrame* GetCurrentFrame();
 	ENTITYMANAGER_API void StartFlipBook();
 
 	/*
@@ -55,6 +58,7 @@ public:
 public:
 	int frameWidth = 0;
 	int frameHeight = 0;
+	float frameWait = 0.25f; //Seconds, duration between each frame
 private:
 	//properties
 	std::shared_ptr<FlipBookParams> params;
@@ -80,4 +84,6 @@ private:
 	//frames
 	std::vector<std::shared_ptr<FlipBookFrame>> frames;
 	int currentIndex = -1;
+
+	float lastTime = Timer::GetCurTime();
 };

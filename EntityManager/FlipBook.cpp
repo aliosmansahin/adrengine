@@ -29,7 +29,27 @@ PURPOSE: Updates the entity
 */
 ENTITYMANAGER_API void FlipBook::Update()
 {
-	
+	if (!frames.empty()) {
+		//Get elapsed time
+		float currentTime = Timer::GetCurTime();
+
+		float deltaTime = currentTime - lastTime;
+
+		//Update current index
+		if (deltaTime > frameWait) {
+
+			std::cout << deltaTime << std::endl;
+
+			currentIndex++;
+
+			//Current index will continue from beginning of frames
+			if (currentIndex == frames.size())
+				currentIndex = 0;
+
+			//Set the last time
+			lastTime = currentTime;
+		}
+	}
 }
 
 /*
@@ -320,6 +340,22 @@ PURPOSE: Returns created frames
 ENTITYMANAGER_API std::vector<std::pair<bool, std::shared_ptr<FlipBookFrame>>>& FlipBook::GetCreatedFrames()
 {
 	return createdFrames;
+}
+
+/*
+PURPOSE: Returns frames
+*/
+ENTITYMANAGER_API std::vector<std::shared_ptr<FlipBookFrame>>& FlipBook::GetFrames()
+{
+	return frames;
+}
+
+/*
+PURPOSE: Returns current frame as a pure pointer
+*/
+ENTITYMANAGER_API FlipBookFrame* FlipBook::GetCurrentFrame()
+{
+	return frames[currentIndex].get();
 }
 
 /*

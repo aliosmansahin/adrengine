@@ -116,15 +116,15 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                 edittingFlipBook->CreateFrames((float)textureWidth, (float)textureHeight, (float)frameWidth, (float)frameHeight);
             }
 
-            auto& frames = edittingFlipBook->GetCreatedFrames();
-            if (!frames.empty()) {
+            auto& createdFrames = edittingFlipBook->GetCreatedFrames();
+            if (!createdFrames.empty()) {
                 ImGui::SeparatorText("Created Tiles");
                 ImVec2 windowPos = ImGui::GetCursorPos();
                 ImVec2 pos = ImGui::GetCursorScreenPos();
                 ImVec2 startPos = ImGui::GetCursorScreenPos();
 
-                for (int i = 0; i < frames.size(); ++i) {
-                    FlipBookFrame* frame = frames[i].second.get();
+                for (int i = 0; i < createdFrames.size(); ++i) {
+                    FlipBookFrame* frame = createdFrames[i].second.get();
 
                     pos = ImGui::GetCursorScreenPos();
 
@@ -152,7 +152,7 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                     currentButtonPos.y = windowPos.y + tileY * (edittingFlipBook->frameHeight + padding);
 
                     //Change color when its selected
-                    bool selected = frames[i].first;
+                    bool selected = createdFrames[i].first;
                     ImVec4 bgColor = ImVec4(0.2f, 0.2f, 0.5, 1.0f);
                     if (selected)
                         bgColor = ImVec4(0.0f, 0.7f, 0.0, 1.0f);
@@ -172,7 +172,7 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                         ImVec2(u, v),
                         ImVec2(u + tw, v + th)
                     )) {
-                        frames[i].first = !frames[i].first;
+                        createdFrames[i].first = !createdFrames[i].first;
                     }
 
                     //Disalbe color sets
@@ -189,8 +189,25 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                 ImGui::SetCursorPos(ImVec2(windowPos.x, windowPos.y + deltaPos.y + padding));
 
                 if (ImGui::Button("Start FlipBook")) {
-
+                    edittingFlipBook->StartFlipBook();
                 }
+
+                auto& frames = edittingFlipBook->GetFrames();
+                if (!frames.empty()) {
+                    auto currentFrame = edittingFlipBook->GetCurrentFrame();
+
+                    std::string imageButtonId = "##current_frame_image";
+                    ImVec2 imageSize = ImVec2((float)currentFrame->width, (float)currentFrame->height);
+
+                    ImGui::Image(
+                        (ImTextureID)(intptr_t)params->texture,
+                        imageSize,
+                        ImVec2(currentFrame->u, currentFrame->v),
+                        ImVec2(currentFrame->u + currentFrame->textureWidth, currentFrame->v + currentFrame->textureHeight));
+
+                    ImGui::DragFloat("Frame Duration", &edittingFlipBook->frameWait, 0.01f);
+                }
+
 
                 if (ImGui::Button("Done")) {
                     showWindow = false;
