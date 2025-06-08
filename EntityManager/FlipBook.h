@@ -7,20 +7,13 @@
 #include "ShaderManager.h"
 #include "Timer.h"
 
+#include "FlipBookFrame.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
-
-struct FlipBookFrame {
-	int x, y;
-	int width, height; //texture size
-
-	//coordinates to store which part of texture will be shown
-	float u, v;
-	float textureWidth, textureHeight;
-};
 
 class FlipBook : public Sprite2D
 {
@@ -58,7 +51,9 @@ public:
 public:
 	int frameWidth = 0;
 	int frameHeight = 0;
-	float frameWait = 0.25f; //Seconds, duration between each frame
+	float frameWait = 0.1f; //Seconds, duration between each frame //TODO: user will control it from the entity properies window
+	bool loop = true; //TODO: user will control it from the entity properties window
+	bool ended = false;
 private:
 	//properties
 	std::shared_ptr<FlipBookParams> params;

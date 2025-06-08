@@ -208,7 +208,6 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                     ImGui::DragFloat("Frame Duration", &edittingFlipBook->frameWait, 0.01f);
                 }
 
-
                 if (ImGui::Button("Done")) {
                     showWindow = false;
                     edittingFlipBook = nullptr;

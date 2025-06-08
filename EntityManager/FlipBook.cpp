@@ -36,18 +36,22 @@ ENTITYMANAGER_API void FlipBook::Update()
 		float deltaTime = currentTime - lastTime;
 
 		//Update current index
-		if (deltaTime > frameWait) {
-
-			std::cout << deltaTime << std::endl;
-
+		if (deltaTime > frameWait && currentIndex != frames.size()) {
 			currentIndex++;
 
 			//Current index will continue from beginning of frames
-			if (currentIndex == frames.size())
-				currentIndex = 0;
+			if (currentIndex == frames.size()) {
+				if (loop)
+					currentIndex = 0;
+				else
+					ended = true;
+			}
 
 			//Set the last time
 			lastTime = currentTime;
+
+			//Update current frame
+			frames[currentIndex]->Update();
 		}
 	}
 }
@@ -58,6 +62,19 @@ PURPOSE: Draws the entity.
 */
 ENTITYMANAGER_API void FlipBook::Draw(glm::vec3 currentSceneCameraPos)
 {
+	if (!frames.empty()) {
+		//Set the texture
+		adr_glActiveTexture(GL_TEXTURE0);
+		adr_glBindTexture(GL_TEXTURE_2D, params->texture);
+		ShaderManager::GetInstance().ApplyTexture("texture1");
+
+		//Draw the current frame
+		frames[currentIndex]->Draw(frameWidth, frameHeight, realPos, realRot, realSca);
+
+		//Disable the texture for tiles
+		adr_glActiveTexture(GL_TEXTURE0);
+		adr_glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 /*
@@ -66,7 +83,10 @@ PURPOSE: Creates each frame and starts updating it
 ENTITYMANAGER_API void FlipBook::CreateFrames(float textureWidth, float textureHeight, float frameWidth, float frameHeight)
 {
 	//Clear previous
+	for (auto& frame : createdFrames)
+		frame.second->Release();
 	createdFrames.clear();
+	frames.clear();
 
 	//Save framesize
 	this->frameWidth = (int)frameWidth;
@@ -82,14 +102,14 @@ ENTITYMANAGER_API void FlipBook::CreateFrames(float textureWidth, float textureH
 			It they don't we will give them as most size as possible,
 			In this scenario, we will give them the last texture size.
 		*/
-		//pass tile height into a new variable
+		//pass frame height into a new variable
 		int realTileHeight = (int)frameHeight;
 
-		//if heights of the tiles aren't equal to each other
+		//if heights of the frames aren't equal to each other
 		if ((int)textureHeight % (int)frameHeight != 0) {
-			//if this tile is the last in y coord in the tilemap
+			//if this frame is the last in y coord in the flipbook
 			if (y == frameCountY - 1) {
-				//calculate y position of the tile in the tilemap and sub it from tilemap width
+				//calculate y position of the frame in the flipbook and sub it from flipbook width
 				int currentPosYInTileMap = y * (int)frameHeight;
 				int lastTextureSizeY = (int)textureHeight - currentPosYInTileMap;
 
@@ -99,15 +119,15 @@ ENTITYMANAGER_API void FlipBook::CreateFrames(float textureWidth, float textureH
 		}
 
 		for (int x = 0; x < frameCountX; ++x) {
-			//pass tile width into a new variable
+			//pass frame width into a new variable
 			int realTileWidth = (int)frameWidth;
 
-			//if widths of the tiles aren't equal to each other
+			//if widths of the frames aren't equal to each other
 			if ((int)textureWidth % (int)frameWidth != 0) {
 
-				//if this tile is the last in x coord in the tilemap
+				//if this frame is the last in x coord in the flipbook
 				if (x == frameCountX - 1) {
-					//calculate x position of the tile in the tilemap and sub it from tilemap width
+					//calculate x position of the tile in the flipbook and sub it from flipbook width
 					int currentPosXInTileMap = x * (int)frameWidth;
 					int lastTextureSizeX = (int)textureWidth - currentPosXInTileMap;
 
@@ -116,7 +136,7 @@ ENTITYMANAGER_API void FlipBook::CreateFrames(float textureWidth, float textureH
 				}
 			}
 
-			//Create tile and insert it into createdTiles
+			//Create frame and insert it into createdFrames
 			FlipBookFrame* frame = new FlipBookFrame();
 			float texturePosX = x * frameWidth;
 			float texturePosY = y * frameHeight;
@@ -129,18 +149,11 @@ ENTITYMANAGER_API void FlipBook::CreateFrames(float textureWidth, float textureH
 			float u = texturePosX * 1.0f / textureWidth;
 			float v = texturePosY * 1.0f / textureHeight;
 
-			//TT* stands for "translated tile width/height" btw
-			float TTX = realTileWidth * 1.0f / textureWidth;
-			float TTY = realTileHeight * 1.0f / textureHeight;
+			//TF* stands for "translated frame width/height" btw
+			float TFX = realTileWidth * 1.0f / textureWidth;
+			float TFY = realTileHeight * 1.0f / textureHeight;
 
-			frame->width = realTileWidth;
-			frame->height = realTileHeight;
-			frame->u = u;
-			frame->v = v;
-			frame->textureWidth = TTX;
-			frame->textureHeight = TTY;
-			frame->x = x;
-			frame->y = y;
+			frame->Create(x, y, realTileWidth, realTileHeight, u, v, TFX, TFY);
 
 			createdFrames.push_back({ true, std::shared_ptr<FlipBookFrame>(frame) });
 		}
@@ -153,7 +166,10 @@ PURPOSE: Creates a framebuffer and other buffer objects for the inspector
 ENTITYMANAGER_API void FlipBook::CreateInspectFrameBuffer(float textureWidth, float textureHeight, int frameWidth, int frameHeight)
 {
     //------ RELEASING ------
+	for (auto& frame : createdFrames)
+		frame.second->Release();
 	createdFrames.clear();
+	frames.clear();
 	
 	//Delete old Buffers
 	if (inspectFrameBuffer != -1) {
@@ -392,10 +408,10 @@ ENTITYMANAGER_API void FlipBook::StartFlipBook()
 	//Vertices for the texture
 	float vertices[] = {
 		//X					Y	   Z	 U     V
-		 frameWidth, frameHeight, 0.0f, 1.0f, 0.0f, // top right
-		 0.0f,	     frameHeight, 0.0f, 0.0f, 0.0f, // bottom right
-		 0.0f,       0.0f,        0.0f, 0.0f, 1.0f, // bottom left
-		 frameWidth, 0.0f,        0.0f, 1.0f, 1.0f, // top left 
+		 (float)frameWidth, (float)frameHeight, 0.0f, 1.0f, 0.0f, // top right
+		 0.0f,	            (float)frameHeight, 0.0f, 0.0f, 0.0f, // bottom right
+		 0.0f,              0.0f,               0.0f, 0.0f, 1.0f, // bottom left
+		 (float)frameWidth, 0.0f,               0.0f, 1.0f, 1.0f, // top left 
 	};
 	//Indices for the texture
 	unsigned int indices[] = {
