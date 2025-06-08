@@ -22,6 +22,11 @@ PURPOSE: Unitializes the entity
 */
 ENTITYMANAGER_API void FlipBook::DeleteEntity()
 {
+	for (auto& frame : createdFrames)
+		frame.second->Release();
+	createdFrames.clear();
+
+	frames.clear();
 }
 
 /*
