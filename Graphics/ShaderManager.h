@@ -23,7 +23,6 @@ public:
 	GRAPHICS_API bool			   InitShaders(Utils::ShaderType shaderType);
 	GRAPHICS_API void			   UseShaders(Utils::ShaderType shaderType);
 	GRAPHICS_API Utils::ShaderType GetCurrentType();
-	GRAPHICS_API void			   ApplyTransformMatrix(const char* uniformName, glm::mat4 mat);
 	GRAPHICS_API void			   ApplyUniformVec3(const char* uniformName, glm::vec3 vec);
 	GRAPHICS_API void			   ApplyUniformInt(const char* uniformName, int value);
 	GRAPHICS_API void			   ApplyUniformFloat(const char* uniformName, float value);
@@ -32,7 +31,7 @@ public:
 	GRAPHICS_API void			   ApplyTexture(const char* uniformName);
 	GRAPHICS_API void			   UpdateTransformMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY, bool invertY = false);
 	GRAPHICS_API void			   UpdateTransformMatrix3D(glm::vec3 eye, int windowWidth, int windowHeight, float cameraX, float cameraY, float cameraZ, float yaw, float pitch);
-	GRAPHICS_API glm::mat4		   GetProjectionMatrix2D(int windowWidth, int windowHeight);
+	GRAPHICS_API glm::mat4		   GetProjectionMatrix2D(int windowWidth, int windowHeight, bool invertY = false);
 	GRAPHICS_API void			   ReleaseShaderManager();
 	//getter for the instance of class
 	GRAPHICS_API static ShaderManager& GetInstance();

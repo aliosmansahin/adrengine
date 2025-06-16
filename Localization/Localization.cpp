@@ -24,7 +24,7 @@ bool Localization::LoadLanguage()
 			we are not closing when program can't find out which language will be used,
 			we will use english for default
 		*/
-		Logger::Log("E", "Current language file couldn't be loaded, english will have loaded");
+		Logger::Log("E", "Current language file couldn't be loaded, english will be loaded");
 		current = "english";
 	}
 
@@ -44,6 +44,7 @@ bool Localization::LoadLanguage()
 	std::string value;
 
 	while (file >> key) {
+		//Remove the first character which is a space
 		std::getline(file, value);
 		value.erase(value.begin());
 		language.insert(std::pair<const char*, const char*>(key.c_str(), value.c_str()));
@@ -60,7 +61,10 @@ PURPOSE: To get value of key that was requested
 const char* Localization::GetString(std::string key)
 {
 	auto item = language.find(key);
-	if (item == language.end())
-		return "";
+	if (item == language.end()) {
+		//GetString will return key if there is not a value for this key
+		const char* keyStr = key.c_str();
+		return keyStr;
+	}
 	return item->second.c_str();
 }

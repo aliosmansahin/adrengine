@@ -96,7 +96,7 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	model = glm::scale(model, realSca);
 
 	//Send the transformation matrix to the shader
-	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
+	ShaderManager::GetInstance().ApplyUniformMatrix("uModel", model);
 
 	//Set the texture
 	adr_glActiveTexture(GL_TEXTURE0);

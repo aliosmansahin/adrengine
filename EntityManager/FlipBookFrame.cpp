@@ -87,7 +87,7 @@ ENTITYMANAGER_API void FlipBookFrame::Draw(int tileW, int tileH, glm::vec3 trans
 	model = glm::rotate(model, glm::radians(rotate.z), glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, sca); //TODO: Change it with mouse scroll
 
-	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
+	ShaderManager::GetInstance().ApplyUniformMatrix("uModel", model);
 
 	//Draw the texture
 	adr_glBindVertexArray(VAO);

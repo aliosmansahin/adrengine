@@ -12,15 +12,15 @@ bool Engine::InitEngine(GLFWwindow* window)
     //set class variables
     this->window = window;
 
+    //initialize all of entity types into the unordered_map
+    InitEntityTypes();
+
+    //------ INITIALIZE SUB ENGINES ------
+    
     //initialize graphics engine
     if (!Graphics::GetInstance().InitGraphics(window))
         return false;
 
-    //initialize all of entity types into the unordered_map
-    InitEntityTypes();
-    
-    //------ INITIALIZE OTHER ENGINES ------
-    
     //interface manager
     ImGuiContext* context = nullptr;
     if (!InterfaceManager::GetInstance().InitInterface(window, context))

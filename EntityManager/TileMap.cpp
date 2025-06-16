@@ -415,9 +415,9 @@ ENTITYMANAGER_API void TileMap::DrawInspect(int width, int height, int tileW, in
 	glm::mat4 view = glm::mat4(1.0f);
 
 	//Send the transformation matrix to the shader
-	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
-	ShaderManager::GetInstance().ApplyTransformMatrix("uProjection", proj);
-	ShaderManager::GetInstance().ApplyTransformMatrix("uView", view);
+	ShaderManager::GetInstance().ApplyUniformMatrix("uModel", model);
+	ShaderManager::GetInstance().ApplyUniformMatrix("uProjection", proj);
+	ShaderManager::GetInstance().ApplyUniformMatrix("uView", view);
 	ShaderManager::GetInstance().ApplyUniformInt("tileW", tileW);
 	ShaderManager::GetInstance().ApplyUniformInt("tileH", tileH);
 	ShaderManager::GetInstance().ApplyUniformInt("textureWidth", width);

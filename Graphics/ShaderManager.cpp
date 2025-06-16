@@ -6,9 +6,6 @@ PURPOSE: Initializes vertex, fragment and (if it's exists) geomerty shaders
 */
 bool ShaderManager::InitShaders(Utils::ShaderType shaderType)
 {
-    //create a shader program
-    unsigned int program = adr_glCreateProgram();
-
     //create a shader instance
     Shader* shader = nullptr;
 
@@ -16,37 +13,55 @@ bool ShaderManager::InitShaders(Utils::ShaderType shaderType)
     if (shaderType == Utils::SHADER_2D) {
         Logger::Log("P", "Initializing SHADER_2D");
         shader = new Shader();
-        if (!shader->CreateShader("shaders/2DVertexShader.glsl", "shaders/2DFragmentShader.glsl"))
+        if (!shader->CreateShader("shaders/2DVertexShader.glsl", "shaders/2DFragmentShader.glsl")) {
+            shader->ReleaseShader();
+            delete shader;
             return false;
+        }
     }
     else if (shaderType == Utils::SHADER_3D) {
         Logger::Log("P", "Initializing SHADER_3D");
         shader = new Shader();
-        if (!shader->CreateShader("shaders/VertexShader.glsl", "shaders/FragmentShader.glsl"))
+        if (!shader->CreateShader("shaders/VertexShader.glsl", "shaders/FragmentShader.glsl")) {
+            shader->ReleaseShader();
+            delete shader;
             return false;
+        }
     }
     else if (shaderType == Utils::DEPTH) {
         Logger::Log("P", "Initializing DEPTH");
         shader = new Shader();
-        if (!shader->CreateShader("shaders/DepthVertexShader.glsl", "shaders/DepthFragmentShader.glsl"))
+        if (!shader->CreateShader("shaders/DepthVertexShader.glsl", "shaders/DepthFragmentShader.glsl")) {
+            shader->ReleaseShader();
+            delete shader;
             return false;
+        }
     }
     else if (shaderType == Utils::DEPTH_CUBE) {
         Logger::Log("P", "Initializing DEPTH_CUBE");
         shader = new Shader();
-        if (!shader->CreateShader("shaders/DepthCubeVertexShader.glsl", "shaders/DepthCubeFragmentShader.glsl", "shaders/DepthCubeGeometryShader.glsl"))
+        if (!shader->CreateShader("shaders/DepthCubeVertexShader.glsl", "shaders/DepthCubeFragmentShader.glsl", "shaders/DepthCubeGeometryShader.glsl")) {
+            shader->ReleaseShader();
+            delete shader;
             return false;
+        }
     }
     else if (shaderType == Utils::SHADER_INSPECT_TILE) {
         Logger::Log("P", "Initializing SHADER_INSPECT_TILE");
         shader = new Shader();
-        if (!shader->CreateShader("shaders/TileMapInspectVertexShader.glsl", "shaders/TileMapInspectFragmentShader.glsl"))
+        if (!shader->CreateShader("shaders/TileMapInspectVertexShader.glsl", "shaders/TileMapInspectFragmentShader.glsl")) {
+            shader->ReleaseShader();
+            delete shader;
             return false;
+        }
     }
     else {
         Logger::Log("E", "Invalid shader type");
         return false;
     }
+
+    //create a shader program
+    unsigned int program = adr_glCreateProgram();
 
     //attach and link
     adr_glAttachShader(program, shader->GetVertexShader());
@@ -64,6 +79,11 @@ bool ShaderManager::InitShaders(Utils::ShaderType shaderType)
     if (!success) {
         adr_glGetProgramInfoLog(program, 512, NULL, infoLog);
         Logger::Log("E", infoLog);
+
+        shader->ReleaseShader();
+        delete shader;
+
+        adr_glDeleteProgram(program);
         return false;
     }
 
@@ -97,15 +117,6 @@ PURPOSE: Gets type of current shader
 Utils::ShaderType ShaderManager::GetCurrentType()
 {
     return currentType;
-}
-
-/*
-PURPOSE: Sends transform matrix to uniform
-*/
-void ShaderManager::ApplyTransformMatrix(const char* uniformName, glm::mat4 mat)
-{
-    unsigned int transformLoc = adr_glGetUniformLocation(currentProgram, uniformName);
-    adr_glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 /*
@@ -168,21 +179,12 @@ PURPOSE: Updates 2d projection and view matrices and send them to uniforms,
 */
 void ShaderManager::UpdateTransformMatrix2D(int windowWidth, int windowHeight, int cameraX, int cameraY, bool invertY)
 {
-    float aspect = (float)windowWidth / (float)windowHeight;
-
-    float orthoWidth = 800.0f;
-    float orthoHeight = orthoWidth / aspect;
-
-    glm::mat4 projection;
-    if (invertY)
-        projection = glm::ortho(0.0f, orthoWidth, 0.0f, orthoHeight, -100.0f, 100.0f);
-    else
-        projection = glm::ortho(0.0f, orthoWidth, orthoHeight, 0.0f, -100.0f, 100.0f);
+    glm::mat4 projection = GetProjectionMatrix2D(windowWidth, windowHeight, invertY);
 
     glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, 0));
 
-    ApplyTransformMatrix("uProjection", projection);
-    ApplyTransformMatrix("uView", translate);
+    ApplyUniformMatrix("uProjection", projection);
+    ApplyUniformMatrix("uView", translate);
 }
 
 /*
@@ -202,18 +204,26 @@ void ShaderManager::UpdateTransformMatrix3D(glm::vec3 eye, int windowWidth, int 
 
     glm::mat4 proj = glm::perspective(glm::radians(fov), aspect, 0.01f, 1000.0f);
 
-    ApplyTransformMatrix("uView", look);
-    ApplyTransformMatrix("uProjection", proj);
+    ApplyUniformMatrix("uView", look);
+    ApplyUniformMatrix("uProjection", proj);
 }
 
-GRAPHICS_API glm::mat4 ShaderManager::GetProjectionMatrix2D(int windowWidth, int windowHeight)
+/*
+PURPOSE: Calculates projection matrix for 2d
+*/
+GRAPHICS_API glm::mat4 ShaderManager::GetProjectionMatrix2D(int windowWidth, int windowHeight, bool invertY)
 {
     float aspect = (float)windowWidth / (float)windowHeight;
 
     float orthoWidth = 800.0f;
     float orthoHeight = orthoWidth / aspect;
 
-    glm::mat4 projection = glm::ortho(0.0f, orthoWidth, orthoHeight, 0.0f, -100.0f, 100.0f);
+    glm::mat4 projection;
+
+    if (invertY)
+        projection = glm::ortho(0.0f, orthoWidth, 0.0f, orthoHeight, -100.0f, 100.0f);
+    else
+        projection = glm::ortho(0.0f, orthoWidth, orthoHeight, 0.0f, -100.0f, 100.0f);
 
     return projection;
 }
@@ -226,6 +236,7 @@ void ShaderManager::ReleaseShaderManager()
     //Delete each program
     for(auto& iter : programs)
         adr_glDeleteProgram(iter.second);
+
     //set the current program to nothing
     currentProgram = -1;
 
@@ -246,6 +257,9 @@ ShaderManager& ShaderManager::GetInstance()
 PURPOSE: Initialize the manager
 */
 bool ShaderManager::InitShaderManager()
-{   
+{
+    //initilize shader manager
+    Logger::Log("P", "Initializing shader manager");
+
     return true;
 }
