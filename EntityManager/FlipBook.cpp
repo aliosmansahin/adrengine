@@ -72,7 +72,13 @@ ENTITYMANAGER_API void FlipBook::Draw(glm::vec3 currentSceneCameraPos)
 		//Set the texture
 		adr_glActiveTexture(GL_TEXTURE0);
 		adr_glBindTexture(GL_TEXTURE_2D, params->texture);
-		ShaderManager::GetInstance().ApplyTexture("texture1");
+		if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
+			ShaderManager::GetInstance().ApplyTexture("texture1");
+		else if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
+			//SET THE SHADER TO DRAW BLENDING TEXTURE
+			ShaderManager::GetInstance().ApplyUniformBool("isBlending", true);
+			ShaderManager::GetInstance().ApplyTexture("objTexture");
+		}
 
 		//Draw the current frame
 		frames[currentIndex]->Draw(frameWidth, frameHeight, realPos, realRot, realSca);
@@ -253,9 +259,9 @@ ENTITYMANAGER_API void FlipBook::CreateInspectFrameBuffer(float textureWidth, fl
 	//generate a texture and bind it to frame buffer
 	adr_glGenTextures(1, &inspectTexture);
 	adr_glBindTexture(GL_TEXTURE_2D, inspectTexture);
-	adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)textureWidth, (GLsizei)textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)textureWidth, (GLsizei)textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	adr_glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, inspectTexture, 0);
 
 	//check the status of frame buffer

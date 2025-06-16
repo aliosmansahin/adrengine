@@ -39,6 +39,7 @@ uniform vec3 viewPos;
 uniform sampler2D objTexture;
 uniform bool hasTexture;
 uniform bool useGammaCorrection;
+uniform bool isBlending;
 
 //Material
 uniform vec3 materialAmbient;   // Ka
@@ -145,93 +146,100 @@ float SpotLightShadow(vec4 fragPosLight, vec3 lightDirection, vec3 normal, sampl
 }
 
 void main() {
-    vec3 norm = normalize(Normal);
-    vec3 viewDir = normalize(viewPos - FragPos);
+    //Check if the object will be drawen blended
+    if(!isBlending) {
+        vec3 norm = normalize(Normal);
+        vec3 viewDir = normalize(viewPos - FragPos);
 
-    // Emissive component (Lights itself)
-    vec3 emissive = materialEmission;
+        // Emissive component (Lights itself)
+        vec3 emissive = materialEmission;
 
-    // If the material has a texture
-    vec3 diffuseColor = hasTexture ? texture(objTexture, TexCoord).rgb : materialDiffuse;
-    vec3 ambient = materialAmbient * diffuseColor;
+        // If the material has a texture
+        vec3 diffuseColor = hasTexture ? texture(objTexture, TexCoord).rgb : materialDiffuse;
+        vec3 ambient = materialAmbient * diffuseColor;
 
-    vec3 diffuse;
-    vec3 specular;
+        vec3 diffuse;
+        vec3 specular;
 
-    vec3 result = emissive + ambient;
+        vec3 result = emissive + ambient;
 
-    for (int i = 0; i < numLights; ++i) {
-        vec3 lightDir;
-        float attenuation = 1.0;
-        float intensity = 1.0;
-        float shadow = 0.0;
+        for (int i = 0; i < numLights; ++i) {
+            vec3 lightDir;
+            float attenuation = 1.0;
+            float intensity = 1.0;
+            float shadow = 0.0;
 
-        // SHADOWS ARE DISABLED EXCEPT FOR DIRECTIONAL
-        // Calculate direction of the light and shadow
-        if (lights[i].type == LIGHT_TYPE_DIRECTIONAL) {
-            lightDir = normalize(-lights[i].direction);
-            shadow = DirectionalLightShadow(lightSpaceMatrices[i] * WorldPosition, norm, lightDir, shadowMaps[i]);
-        } else {
-            lightDir = normalize(lights[i].position - FragPos);
-            float dist = length(lights[i].position - FragPos);
-            attenuation = 1.0 / (lights[i].constant + lights[i].linear * dist + lights[i].quadratic * dist * dist);
-            if (lights[i].type == LIGHT_TYPE_POINT) {
-                //shadow = PointLightShadow(FragPos, i, lights[i].position);
-                shadow = 0;
+            // SHADOWS ARE DISABLED EXCEPT FOR DIRECTIONAL
+            // Calculate direction of the light and shadow
+            if (lights[i].type == LIGHT_TYPE_DIRECTIONAL) {
+                lightDir = normalize(-lights[i].direction);
+                shadow = DirectionalLightShadow(lightSpaceMatrices[i] * WorldPosition, norm, lightDir, shadowMaps[i]);
+            } else {
+                lightDir = normalize(lights[i].position - FragPos);
+                float dist = length(lights[i].position - FragPos);
+                attenuation = 1.0 / (lights[i].constant + lights[i].linear * dist + lights[i].quadratic * dist * dist);
+                if (lights[i].type == LIGHT_TYPE_POINT) {
+                    //shadow = PointLightShadow(FragPos, i, lights[i].position);
+                    shadow = 0;
+                }
             }
+
+            if (lights[i].type == LIGHT_TYPE_SPOT) {
+                float theta = dot(lightDir, normalize(-lights[i].direction));
+                float epsilon = max(lights[i].cutOff - lights[i].outerCutOff, 0.001); // prevent epsilon = 0
+                intensity = clamp((theta - lights[i].outerCutOff) / epsilon, 0.0, 1.0);
+                //shadow = SpotLightShadow(lightSpaceMatrices[i] * WorldPosition, lightDir, norm, shadowMaps[i]);
+                shadow = 0; // 0 NO SHADOW 1 SHADOW
+            }
+
+            // Calculate diffuse and specular (Phong)
+            float diff = max(dot(norm, lightDir), 0.0);
+            vec3 reflectDir = reflect(-lightDir, norm);
+            float spec = 0.0;
+
+            if(diff > 0.0)
+                spec = pow(max(dot(viewDir, reflectDir), 0.0), materialShininess);
+
+            diffuse = diff * diffuseColor * lights[i].color;
+            specular = spec * materialSpecular * lights[i].color;
+
+            // Reduce light effect if there is a shadow
+            float shadowFactor = 1.0 - shadow;
+
+            result += intensity * attenuation * shadowFactor * (diffuse + specular);
         }
 
-        if (lights[i].type == LIGHT_TYPE_SPOT) {
-            float theta = dot(lightDir, normalize(-lights[i].direction));
-            float epsilon = max(lights[i].cutOff - lights[i].outerCutOff, 0.001); // prevent epsilon = 0
-            intensity = clamp((theta - lights[i].outerCutOff) / epsilon, 0.0, 1.0);
-            //shadow = SpotLightShadow(lightSpaceMatrices[i] * WorldPosition, lightDir, norm, shadowMaps[i]);
-            shadow = 0; // 0 NO SHADOW 1 SHADOW
+        // Opacity
+        float alpha = materialOpacity;
+
+        // Gamma correction
+        if(useGammaCorrection) {
+            vec3 gammaCorrected = pow(result, vec3(1.0/2.2));
+
+            FragColor = vec4(gammaCorrected, alpha);
+        }
+        else {
+            FragColor = vec4(result, alpha);
         }
 
-        // Calculate diffuse and specular (Phong)
-        float diff = max(dot(norm, lightDir), 0.0);
-        vec3 reflectDir = reflect(-lightDir, norm);
-        float spec = 0.0;
+        //----- DEBUG -----
+        //Disable gamma correction
+        //FragColor = vec4(result, alpha);
 
-        if(diff > 0.0)
-            spec = pow(max(dot(viewDir, reflectDir), 0.0), materialShininess);
-
-        diffuse = diff * diffuseColor * lights[i].color;
-        specular = spec * materialSpecular * lights[i].color;
-
-        // Reduce light effect if there is a shadow
-        float shadowFactor = 1.0 - shadow;
-
-        result += intensity * attenuation * shadowFactor * (diffuse + specular);
-    }
-
-    // Opacity
-    float alpha = materialOpacity;
-
-    // Gamma correction
-    if(useGammaCorrection) {
-        vec3 gammaCorrected = pow(result, vec3(1.0/2.2));
-
-        FragColor = vec4(gammaCorrected, alpha);
+        //Only show ambient
+        //FragColor = vec4(ambient, 1.0);
+    
+        //Only show diffuse
+        //FragColor = vec4(diffuse, 1.0);
+    
+        //Only show specular
+        //FragColor = vec4(specular, 1.0);
+    
+        //Only show emissive
+        //FragColor = vec4(emissive, 1.0);
     }
     else {
-        FragColor = vec4(result, alpha);
+        //Draw the texture will its alpha
+        FragColor = texture(objTexture, TexCoord);
     }
-
-    //----- DEBUG -----
-    //Disable gamma correction
-    //FragColor = vec4(result, alpha);
-
-    //Only show ambient
-    //FragColor = vec4(ambient, 1.0);
-    
-    //Only show diffuse
-    //FragColor = vec4(diffuse, 1.0);
-    
-    //Only show specular
-    //FragColor = vec4(specular, 1.0);
-    
-    //Only show emissive
-    //FragColor = vec4(emissive, 1.0);
 }

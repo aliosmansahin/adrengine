@@ -52,7 +52,6 @@ namespace adr {
     ENGINE_GLAD_API PFNGLUNIFORM1IPROC adr_glUniform1i = nullptr;
     ENGINE_GLAD_API PFNGLUNIFORM1FPROC adr_glUniform1f = nullptr;
     ENGINE_GLAD_API PFNGLDELETEPROGRAMPROC adr_glDeleteProgram = nullptr;
-
     ENGINE_GLAD_API PFNGLENABLEPROC adr_glEnable = nullptr;
     ENGINE_GLAD_API PFNGLBLENDFUNCPROC adr_glBlendFunc = nullptr;
     ENGINE_GLAD_API PFNGLCULLFACEPROC adr_glCullFace = nullptr;
@@ -60,10 +59,11 @@ namespace adr {
     ENGINE_GLAD_API PFNGLDISABLEPROC adr_glDisable = nullptr;
     ENGINE_GLAD_API PFNGLDRAWELEMENTSPROC adr_glDrawElements = nullptr;
     ENGINE_GLAD_API PFNGLDRAWARRAYSPROC adr_glDrawArrays = nullptr;
-
     ENGINE_GLAD_API PFNGLTEXPARAMETERFVPROC adr_glTexParameterfv = nullptr;
     ENGINE_GLAD_API PFNGLDRAWBUFFERPROC adr_glDrawBuffer = nullptr;
     ENGINE_GLAD_API PFNGLREADBUFFERPROC adr_glReadBuffer = nullptr;
-
     ENGINE_GLAD_API PFNGLFRAMEBUFFERTEXTUREPROC adr_glFramebufferTexture = nullptr;
+    ENGINE_GLAD_API PFNGLBLENDFUNCSEPARATEPROC adr_glBlendFuncSeparate = nullptr;
+    ENGINE_GLAD_API PFNGLDEPTHMASKPROC adr_glDepthMask = nullptr;
+    ENGINE_GLAD_API PFNGLDEPTHFUNCPROC adr_glDepthFunc = nullptr;
 }

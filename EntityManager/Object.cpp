@@ -65,6 +65,9 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 			//Send material to the shader
 			auto& material = object->material;
 
+			//SET THE SHADER TO DRAW OBJECTS
+			ShaderManager::GetInstance().ApplyUniformBool("isBlending", false);
+
 			//ENABLE GAMMA CORRECTION
 			ShaderManager::GetInstance().ApplyUniformBool("useGammaCorrection", true);
 			

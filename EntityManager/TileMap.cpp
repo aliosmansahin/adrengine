@@ -49,8 +49,14 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 	//Set the texture for tiles
 	adr_glActiveTexture(GL_TEXTURE0);
 	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
-	ShaderManager::GetInstance().ApplyTexture("texture1");
-
+	if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
+		ShaderManager::GetInstance().ApplyTexture("texture1");
+	else if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
+		//SET THE SHADER TO DRAW BLENDING TEXTURE
+		ShaderManager::GetInstance().ApplyUniformBool("isBlending", true);
+		ShaderManager::GetInstance().ApplyTexture("objTexture");
+	}
+	
 	//Draw tiles
 	for (auto& tile : tiles) {
 		if(drawingViewer)

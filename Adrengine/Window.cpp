@@ -135,7 +135,9 @@ void Window::LoadGLFunctions()
     adr::adr_glDrawBuffer = glad_glDrawBuffer;
     adr::adr_glReadBuffer = glad_glReadBuffer;
     adr::adr_glFramebufferTexture = glad_glFramebufferTexture;
-
+    adr::adr_glBlendFuncSeparate = glad_glBlendFuncSeparate;
+    adr::adr_glDepthMask = glad_glDepthMask;
+    adr::adr_glDepthFunc = glad_glDepthFunc;
 }
 
 //PURPOSE: To get the instance of window singleton class

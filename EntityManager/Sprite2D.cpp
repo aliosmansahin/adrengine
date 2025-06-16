@@ -104,16 +104,9 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 	if(ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
 		ShaderManager::GetInstance().ApplyTexture("texture1");
 	else if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
-
-		//DISABLE GAMMA CORRECTION (This is a better view for Sprite2Ds)
-		ShaderManager::GetInstance().ApplyUniformBool("useGammaCorrection", false);
-
-		//TEXTURE
-		ShaderManager::GetInstance().ApplyUniformBool("hasTexture", true);
+		//SET THE SHADER TO DRAW BLENDING TEXTURE
+		ShaderManager::GetInstance().ApplyUniformBool("isBlending", true);
 		ShaderManager::GetInstance().ApplyTexture("objTexture");
-
-		//AMBIENT(This makes the texture not effected by lights)
-		ShaderManager::GetInstance().ApplyUniformVec3("materialAmbient", glm::vec3(1.0f));
 	}
 
 	//Draw the texture
