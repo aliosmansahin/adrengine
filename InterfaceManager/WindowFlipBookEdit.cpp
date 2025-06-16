@@ -143,13 +143,13 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                     pos.y += tileY * (frameHeight + padding);
 
                     //Image Button spec
-                    ImVec2 imageSize = ImVec2((float)edittingFlipBook->frameWidth, (float)edittingFlipBook->frameHeight);
+                    ImVec2 imageSize = ImVec2((float)edittingFlipBook->GetFrameSize().first, (float)edittingFlipBook->GetFrameSize().second);
                     std::string imageButtonId = "##image_button" + std::to_string(i);
 
                     //Calculate current button positions
                     ImVec2 currentButtonPos;
-                    currentButtonPos.x = windowPos.x + tileX * (edittingFlipBook->frameWidth + padding);
-                    currentButtonPos.y = windowPos.y + tileY * (edittingFlipBook->frameHeight + padding);
+                    currentButtonPos.x = windowPos.x + tileX * (edittingFlipBook->GetFrameSize().first + padding);
+                    currentButtonPos.y = windowPos.y + tileY * (edittingFlipBook->GetFrameSize().second + padding);
 
                     //Change color when its selected
                     bool selected = createdFrames[i].first;

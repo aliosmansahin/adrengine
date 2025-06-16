@@ -49,6 +49,8 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 	//Set the texture for tiles
 	adr_glActiveTexture(GL_TEXTURE0);
 	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
+
+	//Shader uniforms
 	if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
 		ShaderManager::GetInstance().ApplyTexture("texture1");
 	else if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
@@ -68,7 +70,6 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 	//Disable the texture for tiles
 	adr_glActiveTexture(GL_TEXTURE0);
 	adr_glBindTexture(GL_TEXTURE_2D, 0);
-
 
 	//Tile indicator
 	if (tileIndicator.get() && drawTileIndicator) {
@@ -91,32 +92,21 @@ PURPOSE: Add a tile which is selected from createdTiles to the map
 */
 ENTITYMANAGER_API void TileMap::AddTileToMap(int mouseX, int mouseY, float cameraX, float cameraY, std::pair<int, int> selectedTile)
 {
-	//Get the tile pos on the scene
-	float tileXAtScene = (float)mouseX + cameraX;
-	float tileYAtScene = (float)mouseY + cameraY;
-
-	//Calculate the tile pos on the tileMap
-	int tileX = (int)tileXAtScene / tileWidth;
-	int tileY = (int)tileYAtScene / tileHeight;
-
-	//We will add 1 when tile pos is sub-zero
-	if (tileXAtScene < 0.0f)
-		tileX--;
-	if (tileYAtScene < 0.0f)
-		tileY--;
-
 	//Get the selected tile and insert it to tiles to draw
 	auto createdTileIter = createdTiles.find(selectedTile);
 	if (createdTileIter == createdTiles.end())
 		return;
 
+	//Calculte position of the tile
+	std::pair<int, int> tilePos = GetTilePos((float)mouseX, (float)mouseY, cameraX, cameraY);
+
 	//Check if there is a tile on this coordinates
-	auto tileIter = tiles.find({ tileX, tileY });
+	auto tileIter = tiles.find({ tilePos.first, tilePos.second });
 
 	//Add a tile if there is not
 	if (tileIter == tiles.end()) {
 		std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTileIter->second.get());
-		tiles.insert({ { tileX, tileY }, tile });
+		tiles.insert({ { tilePos.first, tilePos.second }, tile });
 	}
 }
 
@@ -125,22 +115,11 @@ PURPOSE: Removes the tile which is located by mouse from the map
 */
 ENTITYMANAGER_API void TileMap::RemoveTileFromMap(int mouseX, int mouseY, float cameraX, float cameraY)
 {
-	//Get the tile pos on the scene
-	float tileXAtScene = (float)mouseX + cameraX;
-	float tileYAtScene = (float)mouseY + cameraY;
-
-	//Calculate the tile pos on the tileMap
-	int tileX = (int)tileXAtScene / tileWidth;
-	int tileY = (int)tileYAtScene / tileHeight;
-
-	//We will add 1 when tile pos is sub-zero
-	if (tileXAtScene < 0.0f)
-		tileX--;
-	if (tileYAtScene < 0.0f)
-		tileY--;
+	//Calculte position of the tile
+	std::pair<int, int> tilePos = GetTilePos((float)mouseX, (float)mouseY, cameraX, cameraY);
 
 	//Check if there is a tile on this coordinates
-	auto tileIter = tiles.find({ tileX, tileY });
+	auto tileIter = tiles.find({ tilePos.first, tilePos.second });
 
 	//Remove the tile if there is
 	if (tileIter != tiles.end()) {
@@ -153,9 +132,24 @@ PURPOSE: Draws a rectange to indicate which tile coordinates will be filled
 */
 void TileMap::UpdateMouseTileIndicator(int mouseX, int mouseY, float cameraX, float cameraY)
 {
+	//Calculte position of the tile
+	std::pair<int, int> tilePos = GetTilePos((float)mouseX, (float)mouseY, cameraX, cameraY);
+
+	//Set position of the tile indicator and activate to show
+	if (tileIndicator.get()) {
+		tileIndicator->SetPos(tilePos.first, tilePos.second);
+		drawTileIndicator = true;
+	}
+}
+
+/*
+PURPOSE: Calculates and returns the position of the tile that will be processed from camera and mouse positions
+*/
+ENTITYMANAGER_API std::pair<int, int> TileMap::GetTilePos(float mouseX, float mouseY, float cameraX, float cameraY)
+{
 	//Get the tile pos on the scene
-	float tileXAtScene = (float)mouseX + cameraX;
-	float tileYAtScene = (float)mouseY + cameraY;
+	float tileXAtScene = mouseX + cameraX;
+	float tileYAtScene = mouseY + cameraY;
 
 	//Calculate the tile pos on the tileMap
 	int tileX = (int)(tileXAtScene / (float)tileWidth);
@@ -167,11 +161,7 @@ void TileMap::UpdateMouseTileIndicator(int mouseX, int mouseY, float cameraX, fl
 	if (tileYAtScene < 0.0f)
 		tileY--;
 
-	//Set position of the tile indicator and activate to show
-	if (tileIndicator.get()) {
-		tileIndicator->SetPos(tileX, tileY);
-		drawTileIndicator = true;
-	}
+	return { tileX, tileY };
 }
 
 /*
@@ -253,10 +243,6 @@ ENTITYMANAGER_API void TileMap::CreateTiles(float textureWidth, float textureHei
 			tile->Create(x, y, realTileWidth, realTileHeight, u, v, TTX, TTY, { x, y });
 
 			createdTiles.insert({ { x, y }, std::shared_ptr<Tile>(tile) });
-
-			//std::cout << "x: " << x << " " << " y: " << y << std::endl;
-			//std::cout << "u " << u << " " << u + TTX << " v " << v << " " << v + TTY << std::endl;
-			//std::cout << "x: " << realTileWidth << " y: " << realTileHeight << std::endl;
 		}
 	}
 
@@ -282,17 +268,9 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 	//------ RELEASING ------
 	
 	//Delete old Buffers
-	if (inspectFrameBuffer != -1) {
-		adr_glDeleteFramebuffers(1, &inspectFrameBuffer);
-		inspectFrameBuffer = -1;
-	}
-	if (inspectRenderBuffer != -1) {
-		adr_glDeleteRenderbuffers(1, &inspectRenderBuffer);
-		inspectRenderBuffer = -1;
-	}
-	if (inspectTexture != -1) {
-		adr_glDeleteTextures(1, &inspectTexture);
-		inspectTexture = -1;
+	if (inspectFramebuffer) {
+		delete inspectFramebuffer;
+		inspectFramebuffer = nullptr;
 	}
 	if (VAO != -1) {
 		adr_glDeleteVertexArrays(1, &VAO);
@@ -357,32 +335,8 @@ ENTITYMANAGER_API void TileMap::CreateInspectFrameBuffer(float width, float heig
 
 	//------ FRAME BUFFER ------
 
-	//frame buffer
-	adr_glGenFramebuffers(1, &inspectFrameBuffer);
-	adr_glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
-
-	//generate a texture and bind it to frame buffer
-	adr_glGenTextures(1, &inspectTexture);
-	adr_glBindTexture(GL_TEXTURE_2D, inspectTexture);
-	adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	adr_glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, inspectTexture, 0);
-
-	//check the status of frame buffer
-	if (adr_glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		Logger::Log("E", "Framebuffer is not complete");
-
-	//generate render buffer and bind it to the frame buffer
-	adr_glGenRenderbuffers(1, &inspectRenderBuffer);
-	adr_glBindRenderbuffer(GL_RENDERBUFFER, inspectRenderBuffer);
-	adr_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (GLsizei)width, (GLsizei)height);
-	adr_glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, inspectRenderBuffer);
-
-	//release all buffers
-	adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	adr_glBindTexture(GL_TEXTURE_2D, 0);
-	adr_glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	inspectFramebuffer = new FramebufferProvider();
+	inspectFramebuffer->CreateFramebuffer((int)width, (int)height);
 }
 
 /*
@@ -404,7 +358,7 @@ ENTITYMANAGER_API void TileMap::DrawInspect(int width, int height, int tileW, in
 	ShaderManager::GetInstance().UseShaders(Utils::SHADER_INSPECT_TILE);
 
 	//Set the framebuffer
-	adr_glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
+	inspectFramebuffer->BindFramebuffer();
 	Graphics::GetInstance().Clear();
 	adr_glViewport(0, 0, (GLsizei)(width * scale), (GLsizei)(height * scale));
 
@@ -432,9 +386,8 @@ ENTITYMANAGER_API void TileMap::DrawInspect(int width, int height, int tileW, in
 	adr_glBindVertexArray(VAO);
 	adr_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	//Disable after drawing
+	inspectFramebuffer->UnbindFramebuffer();
 	adr_glActiveTexture(GL_TEXTURE0);
 	adr_glBindTexture(GL_TEXTURE_2D, 0);
 	adr_glBindVertexArray(0);
@@ -447,11 +400,7 @@ PURPOSE: Check if buffers for inspector are created
 */
 ENTITYMANAGER_API bool TileMap::IsInspectCreated()
 {
-	if (inspectFrameBuffer == -1)
-		return false;
-	if (inspectRenderBuffer == -1)
-		return false;
-	if (inspectTexture == -1)
+	if (!inspectFramebuffer)
 		return false;
 	if (VAO == -1)
 		return false;
@@ -469,7 +418,7 @@ PURPOSE: Gets the texture of the inspector
 */
 ENTITYMANAGER_API unsigned int TileMap::GetInspectTexture()
 {
-	return inspectTexture;
+	return inspectFramebuffer->GetFrameBufferTex();
 }
 
 /*

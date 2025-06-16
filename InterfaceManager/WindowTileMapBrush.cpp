@@ -57,15 +57,15 @@ void WindowTileMapBrush::DrawWindow()
             float th = tile.second->textureHeight;
 
             //Image Button spec
-            ImVec2 imageSize = ImVec2((float)editingTileMap->tileWidth, (float)editingTileMap->tileHeight);
+            ImVec2 imageSize = ImVec2((float)editingTileMap->GetTileSize().first, (float)editingTileMap->GetTileSize().second);
             std::string imageButtonId = "##image_button" + std::to_string(index);
 
             if (!editing) {
                 pos = ImGui::GetCursorScreenPos();
 
                 //Set the position of the preview of the tile
-                pos.x += tileX * (editingTileMap->tileWidth + padding);
-                pos.y += tileY * (editingTileMap->tileHeight + padding);
+                pos.x += tileX * (editingTileMap->GetTileSize().first + padding);
+                pos.y += tileY * (editingTileMap->GetTileSize().second + padding);
 
                 //Draw the tile
                 ImGui::GetWindowDrawList()->AddImage(
@@ -83,8 +83,8 @@ void WindowTileMapBrush::DrawWindow()
             else {
                 //Calculate current button positions
                 ImVec2 currentButtonPos;
-                currentButtonPos.x = windowPos.x + tileX * (editingTileMap->tileWidth + padding);
-                currentButtonPos.y = windowPos.y + tileY * (editingTileMap->tileHeight + padding);
+                currentButtonPos.x = windowPos.x + tileX * (editingTileMap->GetTileSize().first + padding);
+                currentButtonPos.y = windowPos.y + tileY * (editingTileMap->GetTileSize().second + padding);
 
                 //Change color when its selected
                 bool selected = (tileX == selectedTile.first && tileY == selectedTile.second);
