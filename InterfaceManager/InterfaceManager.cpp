@@ -190,6 +190,10 @@ void InterfaceManager::DrawInterface(
 
 				if (WindowTileMapViewer::GetInstance().showWindow)
 					WindowTileMapViewer::GetInstance().DrawWindow(screenWidth, screenHeight);
+
+				//FlipBook windows
+				if (WindowFlipBookEdit::GetInstance().showWindow)
+					WindowFlipBookEdit::GetInstance().DrawWindow();
 			}
 		}
 		else if (openedTab->tabType == Utils::VisualScriptEditor) {

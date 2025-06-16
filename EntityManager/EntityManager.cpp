@@ -250,9 +250,58 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 	Graphics::GetInstance().Clear();
 	adr_glViewport(0, 0, window_width, window_height);
 
-	//Main drawing
-	for (auto& entity : entities) {
-		entity.second->Draw(currentSceneCameraPos);
+	/*
+		Main drawing
+		INFO: Here we are sorting entities and pass them into a vector,
+		for 2d we want to draw blending objects ordered as their z-axis,
+		for 3d we will calculate the distance between each object and camera
+		otherwise blending might not work correctly
+	*/
+	if (is3D) {
+		std::vector<std::shared_ptr<Entity>> sortedEntities;
+
+		//Draw not blending objects
+		for (auto& entity : entities) {
+			//Check if the object is a blending object
+			if(entity.second->GetEntityParams()->GetType() != "FlipBook" &&
+				entity.second->GetEntityParams()->GetType() != "TileMap" &&
+				entity.second->GetEntityParams()->GetType() != "Sprite2D")
+				//Unless, draw the object
+				entity.second->Draw(currentSceneCameraPos);
+			else {
+				//Pass the blending object into another vector
+				sortedEntities.push_back(entity.second);
+			}
+		}
+
+		//Sort objects
+		std::sort(sortedEntities.begin(), sortedEntities.end(), [&currentSceneCameraPos](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) {
+			//calculate distance between camera and the object
+			float disA = glm::distance(currentSceneCameraPos, glm::vec3(a->GetEntityParams()->x, a->GetEntityParams()->y, a->GetEntityParams()->z));
+			float disB = glm::distance(currentSceneCameraPos, glm::vec3(b->GetEntityParams()->x, b->GetEntityParams()->y, b->GetEntityParams()->z));
+
+			return disA < disB;
+			});
+
+		//Draw blending object as sorted order
+		for (auto& entity : sortedEntities) {
+			if (!(entity->GetEntityParams()->GetType() != "FlipBook" &&
+				entity->GetEntityParams()->GetType() != "TileMap" &&
+				entity->GetEntityParams()->GetType() != "Sprite2D"))
+				entity->Draw(currentSceneCameraPos);
+		}
+	}
+	else {
+		//Sort all 2d entities and draw them
+		std::vector<std::pair<std::string, std::shared_ptr<Entity>>> sortedEntities(entities.begin(), entities.end());
+
+		std::sort(sortedEntities.begin(), sortedEntities.end(), [](const std::pair<std::string, std::shared_ptr<Entity>>& a, const std::pair<std::string, std::shared_ptr<Entity>>& b) {
+			return a.second->GetEntityParams()->z < b.second->GetEntityParams()->z;
+			});
+
+		for (auto& entity : sortedEntities) {
+			entity.second->Draw(currentSceneCameraPos);
+		}
 	}
 
 	//Disable the frame buffer to draw ImGui image

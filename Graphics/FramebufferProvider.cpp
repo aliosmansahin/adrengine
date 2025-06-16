@@ -22,9 +22,9 @@ GRAPHICS_API void FramebufferProvider::CreateFramebuffer(int width, int height)
     adr::adr_glGenTextures(1, &frameBufferTex);
 
     adr::adr_glBindTexture(GL_TEXTURE_2D, frameBufferTex);
-    adr::adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    adr::adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     adr::adr_glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTex, 0);
 
     //check the status of frame buffer
@@ -41,7 +41,6 @@ GRAPHICS_API void FramebufferProvider::CreateFramebuffer(int width, int height)
     adr::adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
     adr::adr_glBindTexture(GL_TEXTURE_2D, 0);
     adr::adr_glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    adr::adr_glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 /*
@@ -51,7 +50,7 @@ GRAPHICS_API void FramebufferProvider::RescaleFramebuffer(int width, int height)
 {
     //rescale texture
     adr::adr_glBindTexture(GL_TEXTURE_2D, frameBufferTex);
-    adr::adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    adr::adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     adr::adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     adr::adr_glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTex, 0);

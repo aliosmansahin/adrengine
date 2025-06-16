@@ -77,6 +77,10 @@ ENGINE_API void Engine::InitEntityTypes()
         std::make_shared<TileMap>(),
         std::make_shared<TileMapParams>()
     };
+    entityTypes["FlipBook"] = {
+        std::make_shared<FlipBook>(),
+        std::make_shared<FlipBookParams>()
+    };
 }
 
 /*

@@ -65,6 +65,7 @@ namespace adr {
     extern ENGINE_GLAD_API PFNGLDRAWBUFFERPROC adr_glDrawBuffer;
     extern ENGINE_GLAD_API PFNGLREADBUFFERPROC adr_glReadBuffer;
     extern ENGINE_GLAD_API PFNGLFRAMEBUFFERTEXTUREPROC adr_glFramebufferTexture;
-    
-
+    extern ENGINE_GLAD_API PFNGLBLENDFUNCSEPARATEPROC adr_glBlendFuncSeparate;
+    extern ENGINE_GLAD_API PFNGLDEPTHMASKPROC adr_glDepthMask;
+    extern ENGINE_GLAD_API PFNGLDEPTHFUNCPROC adr_glDepthFunc;
 }

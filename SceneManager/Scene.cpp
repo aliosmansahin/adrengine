@@ -287,11 +287,18 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 				params->FromJson(entityJson);
 				entity->CreateEntity(params);
 				
-				//TileMap has own fromjson function except other entities
+				//TileMap has own fromjson function
 				if (type == "TileMap") {
 					auto tileMap = std::dynamic_pointer_cast<TileMap>(entity);
 					if (tileMap.get()) {
 						tileMap->FromJson(entityJson);
+					}
+				}
+				//FlipBook has own fromjson function
+				else if (type == "FlipBook") {
+					auto flipBook = std::dynamic_pointer_cast<FlipBook>(entity);
+					if (flipBook.get()) {
+						flipBook->FromJson(entityJson);
 					}
 				}
 			}

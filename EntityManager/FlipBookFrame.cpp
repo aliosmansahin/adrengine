@@ -1,22 +1,19 @@
 #include "pch.h"
-#include "Tile.h"
+#include "FlipBookFrame.h"
 
 /*
-PURPOSE: Creates the tile buffers.
-	Parameters: x coordinate, y coordinate, width in pixels, height in pixels, x coord in texture, y coord of texture, texture width, texture height
+PURPOSE: Creates the frame
 */
-void Tile::Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH, std::pair<int, int> tileType)
+ENTITYMANAGER_API void FlipBookFrame::Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH)
 {
-	//Setup parameters
-	this->x = x;
-	this->y = y;
-	this->width = width;
-	this->height = height;
-	this->u = u;
-	this->v = v;
-	this->textureWidth = textureW;
-	this->textureHeight = textureH;
-	this->tileType = tileType;
+    this->x = x;
+    this->y = y;
+    this->width = width;
+    this->height = height;
+    this->u = u;
+    this->v = v;
+    this->textureWidth = textureW;
+    this->textureHeight = textureH;
 
 	//------ TEXTURE TILE ------
 	//Vertices for the texture
@@ -34,16 +31,16 @@ void Tile::Create(int x, int y, int width, int height, float u, float v, float t
 	};
 
 	//Create buffers and bind them with vertices and indices
-	adr_glGenBuffers(1, &tileVBO);
-	adr_glGenBuffers(1, &tileEBO);
+	adr_glGenBuffers(1, &VBO);
+	adr_glGenBuffers(1, &EBO);
 
-	adr_glGenVertexArrays(1, &tileVAO);
-	adr_glBindVertexArray(tileVAO);
+	adr_glGenVertexArrays(1, &VAO);
+	adr_glBindVertexArray(VAO);
 
-	adr_glBindBuffer(GL_ARRAY_BUFFER, tileVBO);
+	adr_glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	adr_glBufferData(GL_ARRAY_BUFFER, sizeof(tileVertices), tileVertices, GL_STATIC_DRAW);
 
-	adr_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tileEBO);
+	adr_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	adr_glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tileIndices), tileIndices, GL_STATIC_DRAW);
 
 	//Set the vertex attrib pointers (position = 0)
@@ -60,38 +57,40 @@ void Tile::Create(int x, int y, int width, int height, float u, float v, float t
 }
 
 /*
-PURPOSE: Updates the tile
+PURPOSE: Updates the frame
 */
-void Tile::Update()
+ENTITYMANAGER_API void FlipBookFrame::Update()
 {
 }
 
 /*
-PURPOSE: Draws the tile
+PURPOSE: Draws the frame
 */
-void Tile::Draw(int tileW, int tileH, int translateX, int translateY, int translateZ)
+ENTITYMANAGER_API void FlipBookFrame::Draw(int tileW, int tileH, glm::vec3 translate, glm::vec3 rotate, glm::vec3 scale)
 {
 	//Set some transform
 	glm::mat4 model = glm::mat4(1.0f);
 
-	glm::vec3 tra = glm::vec3(x * tileW + translateX, y * tileH + translateY, translateZ);
-	float rotate = 0.0f;
-	glm::vec3 sca = glm::vec3(1.0f);
+	glm::vec3 tra = translate;
+	float rot= 0.0f;
+	glm::vec3 sca = scale;
 
 	if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
 		tra /= 32.0f;
 		sca /= 32.0f;
-		rotate = 180.0f;
+		rot = 180.0f;
 	}
 
 	model = glm::translate(model, tra);
-	model = glm::rotate(model, glm::radians(rotate), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(rot + rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(rotate.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(rotate.z), glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, sca); //TODO: Change it with mouse scroll
 
 	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
-	
+
 	//Draw the texture
-	adr_glBindVertexArray(tileVAO);
+	adr_glBindVertexArray(VAO);
 	adr_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	//Disable after drawing
@@ -99,43 +98,32 @@ void Tile::Draw(int tileW, int tileH, int translateX, int translateY, int transl
 }
 
 /*
-PURPOSE: Releases the tile (buffers and other stuff)
+PURPOSE: Releases the frame
 */
-void Tile::Release()
+ENTITYMANAGER_API void FlipBookFrame::Release()
 {
-	if (tileVAO != -1) {
-		adr_glDeleteVertexArrays(1, &tileVAO);
-		tileVAO = -1;
+	if (VAO != -1) {
+		adr_glDeleteVertexArrays(1, &VAO);
+		VAO = -1;
 	}
-	if (tileVBO != -1) {
-		adr_glDeleteBuffers(1, &tileVBO);
-		tileVBO = -1;
+	if (VBO != -1) {
+		adr_glDeleteBuffers(1, &VBO);
+		VBO = -1;
 	}
-	if (tileEBO != -1) {
-		adr_glDeleteBuffers(1, &tileEBO);
-		tileEBO = -1;
+	if (EBO != -1) {
+		adr_glDeleteBuffers(1, &EBO);
+		EBO = -1;
 	}
 }
 
 /*
-PURPOSE: Sets the position of the tile
+PURPOSE: Gets json content of the frame
 */
-void Tile::SetPos(int x, int y)
-{
-	this->x = x;
-	this->y = y;
-}
-
-/*
-PURPOSE: Gets json content of the tile
-*/
-nlohmann::json Tile::ToJson()
+ENTITYMANAGER_API nlohmann::json FlipBookFrame::ToJson()
 {
 	nlohmann::json j;
-	j["type-x"] = tileType.first;
-	j["type-y"] = tileType.second;
 
-	//position and size of the tile
+	//position and size of the frame
 	j["x"] = x;
 	j["y"] = y;
 	j["width"] = width;

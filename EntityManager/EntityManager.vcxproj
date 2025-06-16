@@ -126,7 +126,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GladWrapper.lib;Common.lib;Asset.lib;Logger.lib;Graphics.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GladWrapper.lib;Common.lib;Asset.lib;Timer.lib;Logger.lib;Graphics.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,7 +149,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GladWrapper.lib;Common.lib;Asset.lib;Logger.lib;Graphics.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GladWrapper.lib;Common.lib;Asset.lib;Timer.lib;Logger.lib;Graphics.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -158,6 +158,9 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="EntityParams.h" />
+    <ClInclude Include="FlipBook.h" />
+    <ClInclude Include="FlipBookFrame.h" />
+    <ClInclude Include="FlipBookParams.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="LightParams.h" />
@@ -181,6 +184,9 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="EntityParams.cpp" />
+    <ClCompile Include="FlipBook.cpp" />
+    <ClCompile Include="FlipBookFrame.cpp" />
+    <ClCompile Include="FlipBookParams.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightParams.cpp" />
     <ClCompile Include="Object.cpp" />

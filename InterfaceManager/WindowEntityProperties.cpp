@@ -302,6 +302,27 @@ void WindowEntityProperties::DrawWindow(
                 }
             }
         }
+        else if (currentEntity->GetEntityParams()->GetType() == "FlipBook") {
+            auto casted = dynamic_cast<FlipBookParams*>(currentEntity->GetEntityParams());
+            if (casted) {
+                FlipBook* flipBook = dynamic_cast<FlipBook*>(currentEntity);
+
+                ImGui::Separator();
+                ImGui::SeparatorText("FlipBook");
+
+                if (ImGui::Button("Edit this FlipBook")) {
+                    WindowFlipBookEdit::GetInstance().showWindow = true;
+                    WindowFlipBookEdit::GetInstance().edittingFlipBook = flipBook;
+                }
+
+                if (!flipBook->GetFrames().empty()) {
+                    ImGui::DragFloat("Frame Duration", &casted->frameWait, 0.001f, 0.0f);
+                    ImGui::Checkbox("Loop", &casted->loop);
+                    if (ImGui::Button("Restart FlipBook"))
+                        flipBook->RestartFlipBook();
+                }
+            }
+        }
     }
     else {
         ImGui::TextColored(ImVec4(0, 255, 0, 255), "Select an entity to modify");

@@ -17,6 +17,7 @@
 
 #include "WindowTileMapEdit.h"
 #include "WindowTileMapBrush.h"
+#include "WindowFlipBookEdit.h"
 
 #include "utils/Utils.h"
 

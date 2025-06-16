@@ -382,5 +382,5 @@ PURPOSE: Clears the drawing buffer
 void Graphics::Clear()
 {
     adr::adr_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    adr::adr_glClearColor(0, 0, 0, 0);
+    adr::adr_glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }

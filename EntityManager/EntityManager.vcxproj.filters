@@ -31,6 +31,12 @@
     <Filter Include="Entity\Sprite2D\TileMap\Tile">
       <UniqueIdentifier>{8415d77f-325c-4378-9d63-d32c68704450}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity\Sprite2D\FlipBook">
+      <UniqueIdentifier>{f5010b2a-5f75-44ea-9f57-193c94e1281f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Sprite2D\FlipBook\FlipBookFrame">
+      <UniqueIdentifier>{54a01873-844b-4d25-857a-6fb52f2ca7cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -91,6 +97,15 @@
     <ClInclude Include="Tile.h">
       <Filter>Entity\Sprite2D\TileMap\Tile</Filter>
     </ClInclude>
+    <ClInclude Include="FlipBook.h">
+      <Filter>Entity\Sprite2D\FlipBook</Filter>
+    </ClInclude>
+    <ClInclude Include="FlipBookParams.h">
+      <Filter>Entity\Sprite2D\FlipBook</Filter>
+    </ClInclude>
+    <ClInclude Include="FlipBookFrame.h">
+      <Filter>Entity\Sprite2D\FlipBook\FlipBookFrame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -150,6 +165,15 @@
     </ClCompile>
     <ClCompile Include="Tile.cpp">
       <Filter>Entity\Sprite2D\TileMap\Tile</Filter>
+    </ClCompile>
+    <ClCompile Include="FlipBook.cpp">
+      <Filter>Entity\Sprite2D\FlipBook</Filter>
+    </ClCompile>
+    <ClCompile Include="FlipBookParams.cpp">
+      <Filter>Entity\Sprite2D\FlipBook</Filter>
+    </ClCompile>
+    <ClCompile Include="FlipBookFrame.cpp">
+      <Filter>Entity\Sprite2D\FlipBook\FlipBookFrame</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
