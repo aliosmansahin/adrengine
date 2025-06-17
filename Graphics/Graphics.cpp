@@ -22,9 +22,6 @@ bool Graphics::InitGraphics(GLFWwindow* window)
     //set the glfw window
     this->window = window;
 
-    //initilize shader manager
-    Logger::Log("P", "Initializing shader manager");
-
     if (!ShaderManager::GetInstance().InitShaderManager())
         return false;
 
@@ -99,6 +96,9 @@ unsigned int Graphics::LoadTexture(const char* id, const char* path, int& width,
         str += "\"";
 
         Logger::Log("E", str.c_str());
+
+        UnloadTexture(texture);
+
         return -1;
     }
 
@@ -239,7 +239,7 @@ GRAPHICS_API bool Graphics::LoadMesh(const char* id, const char* path, std::vect
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    Timer::StartChrono("meshLoad"); //START TIME //TODO:
+    Timer::StartChrono("meshLoad"); //START TIME
 
     //Load obj file
     std::string base_dir = ExtractDirectoryFromPath(path); // helper: Get directiory from path

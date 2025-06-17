@@ -50,21 +50,22 @@ public:
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
 	ENTITYMANAGER_API void FromJson(nlohmann::json json);
-public:
-	//frame size
-	int frameWidth = 0;
-	int frameHeight = 0;
 
+	//Getters
+	ENTITYMANAGER_API std::pair<int, int> GetFrameSize() { return { frameWidth, frameHeight }; };
+public:
 	//is the frame ended
 	bool ended = false;
 private:
 	//properties
 	std::shared_ptr<FlipBookParams> params;
 
+	//frame size
+	int frameWidth = 0;
+	int frameHeight = 0;
+
 	//inspector framebuffer
-	unsigned int inspectFrameBuffer = -1;
-	unsigned int inspectRenderBuffer = -1;
-	unsigned int inspectTexture = -1;
+	FramebufferProvider* inspectFramebuffer = nullptr;
 
 	//drawing flipbook
 	unsigned int VAO = -1;

@@ -47,10 +47,10 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 
 	//Send matrices to the shader
 	if (ShaderManager::GetInstance().GetCurrentType() == Utils::DEPTH) {
-		ShaderManager::GetInstance().ApplyTransformMatrix("model", model);
+		ShaderManager::GetInstance().ApplyUniformMatrix("model", model);
 	}
 	else if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
-		ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
+		ShaderManager::GetInstance().ApplyUniformMatrix("uModel", model);
 
 		glm::vec3 cameraPos = glm::vec3(currentSceneCameraPos);
 		ShaderManager::GetInstance().ApplyUniformVec3("viewPos", cameraPos);

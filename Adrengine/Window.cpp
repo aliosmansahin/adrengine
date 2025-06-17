@@ -47,13 +47,10 @@ bool Window::CreateWindow(int width, int height, const char* title)
         Logger::Log("E", "Could not load icon of program, using default");
     }
 
-    //FIXME:
-    //this class will be window pointer, i might delete it
-    glfwSetWindowUserPointer(window, this);
-
     //make the window's context current and check if it's corrent
     glfwMakeContextCurrent(window);
-
+    
+    //Check for the context
     if (!glfwGetCurrentContext()) {
         Logger::Log("E", "No current OpenGL context");
         return false;
@@ -66,6 +63,10 @@ bool Window::CreateWindow(int width, int height, const char* title)
         return false;
     }
     
+    /*
+        INFO: Glad functions that are loaded in exe don't work corrently in DLLs because of some access violation error,
+        So we are loading them in exe, after that the funcion pointers will be passed to GladWrapper in order to use it in other DLLs
+    */
     LoadGLFunctions();
 
     Logger::Log("P", "Loaded OpenGL Version 3.3");
@@ -76,6 +77,9 @@ bool Window::CreateWindow(int width, int height, const char* title)
     return true;
 }
 
+/*
+PURPOSE: Passes glad function pointers to GladWrapper
+*/
 void Window::LoadGLFunctions()
 {
     adr::adr_glClear = glad_glClear;
@@ -150,10 +154,14 @@ Window& Window::GetInstance()
 //To release window and close it
 void Window::CloseWindow()
 {
-    glfwSetKeyCallback(window, nullptr);
-    glfwSetCursorPosCallback(window, nullptr);
+    //Window size callback
+    glfwSetWindowSizeCallback(window, nullptr);
+
+    //GLFW termination
     if (isGLFWInited) {
         glfwTerminate();
     }
+
+    //Log
     Logger::Log("P", "Closed window");
 }

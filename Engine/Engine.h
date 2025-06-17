@@ -53,6 +53,7 @@ public:
 	std::string projectName = "project";
 	std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\"; //This is for mine
 	//std::string projectPath = "";//TODO: Change it to yours
+	std::string projectDir = projectPath + projectName + "/";
 
 	//store screen width and height
 	int screenWidth = 0;

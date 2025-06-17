@@ -72,6 +72,8 @@ ENTITYMANAGER_API void FlipBook::Draw(glm::vec3 currentSceneCameraPos)
 		//Set the texture
 		adr_glActiveTexture(GL_TEXTURE0);
 		adr_glBindTexture(GL_TEXTURE_2D, params->texture);
+
+		//Shader uniforms
 		if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
 			ShaderManager::GetInstance().ApplyTexture("texture1");
 		else if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
@@ -184,17 +186,9 @@ ENTITYMANAGER_API void FlipBook::CreateInspectFrameBuffer(float textureWidth, fl
 	frames.clear();
 	
 	//Delete old Buffers
-	if (inspectFrameBuffer != -1) {
-		adr_glDeleteFramebuffers(1, &inspectFrameBuffer);
-		inspectFrameBuffer = -1;
-	}
-	if (inspectRenderBuffer != -1) {
-		adr_glDeleteRenderbuffers(1, &inspectRenderBuffer);
-		inspectRenderBuffer = -1;
-	}
-	if (inspectTexture != -1) {
-		adr_glDeleteTextures(1, &inspectTexture);
-		inspectTexture = -1;
+	if (inspectFramebuffer) {
+		delete inspectFramebuffer;
+		inspectFramebuffer = nullptr;
 	}
 	if (VAO != -1) {
 		adr_glDeleteVertexArrays(1, &VAO);
@@ -252,32 +246,8 @@ ENTITYMANAGER_API void FlipBook::CreateInspectFrameBuffer(float textureWidth, fl
 
 	//------ FRAME BUFFER ------
 
-	//frame buffer
-	adr_glGenFramebuffers(1, &inspectFrameBuffer);
-	adr_glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
-
-	//generate a texture and bind it to frame buffer
-	adr_glGenTextures(1, &inspectTexture);
-	adr_glBindTexture(GL_TEXTURE_2D, inspectTexture);
-	adr_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)textureWidth, (GLsizei)textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	adr_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	adr_glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, inspectTexture, 0);
-
-	//check the status of frame buffer
-	if (adr_glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		Logger::Log("E", "Framebuffer is not complete");
-
-	//generate render buffer and bind it to the frame buffer
-	adr_glGenRenderbuffers(1, &inspectRenderBuffer);
-	adr_glBindRenderbuffer(GL_RENDERBUFFER, inspectRenderBuffer);
-	adr_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (GLsizei)textureWidth, (GLsizei)textureHeight);
-	adr_glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, inspectRenderBuffer);
-
-	//release all buffers
-	adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	adr_glBindTexture(GL_TEXTURE_2D, 0);
-	adr_glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	inspectFramebuffer = new FramebufferProvider();
+	inspectFramebuffer->CreateFramebuffer((int)textureWidth, (int)textureHeight);
 }
 
 /*
@@ -285,11 +255,7 @@ PURPOSE: Check if buffers for inspector are created
 */
 ENTITYMANAGER_API bool FlipBook::IsInspectCreated()
 {
-	if (inspectFrameBuffer == -1)
-		return false;
-	if (inspectRenderBuffer == -1)
-		return false;
-	if (inspectTexture == -1)
+	if (!inspectFramebuffer)
 		return false;
 	if (VAO == -1)
 		return false;
@@ -319,7 +285,7 @@ ENTITYMANAGER_API void FlipBook::DrawInspect(int width, int height, int frameW, 
 	ShaderManager::GetInstance().UseShaders(Utils::SHADER_INSPECT_TILE);
 
 	//Set the framebuffer
-	adr_glBindFramebuffer(GL_FRAMEBUFFER, inspectFrameBuffer);
+	inspectFramebuffer->BindFramebuffer();
 	Graphics::GetInstance().Clear();
 	adr_glViewport(0, 0, (GLsizei)(width), (GLsizei)(height));
 
@@ -330,9 +296,9 @@ ENTITYMANAGER_API void FlipBook::DrawInspect(int width, int height, int frameW, 
 	glm::mat4 view = glm::mat4(1.0f);
 
 	//Send the transformation matrix to the shader
-	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
-	ShaderManager::GetInstance().ApplyTransformMatrix("uProjection", proj);
-	ShaderManager::GetInstance().ApplyTransformMatrix("uView", view);
+	ShaderManager::GetInstance().ApplyUniformMatrix("uModel", model);
+	ShaderManager::GetInstance().ApplyUniformMatrix("uProjection", proj);
+	ShaderManager::GetInstance().ApplyUniformMatrix("uView", view);
 	ShaderManager::GetInstance().ApplyUniformInt("tileW", frameW);
 	ShaderManager::GetInstance().ApplyUniformInt("tileH", frameH);
 	ShaderManager::GetInstance().ApplyUniformInt("textureWidth", width);
@@ -347,9 +313,8 @@ ENTITYMANAGER_API void FlipBook::DrawInspect(int width, int height, int frameW, 
 	adr_glBindVertexArray(VAO);
 	adr_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	adr_glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	//Disable after drawing
+	inspectFramebuffer->UnbindFramebuffer();
 	adr_glActiveTexture(GL_TEXTURE0);
 	adr_glBindTexture(GL_TEXTURE_2D, 0);
 	adr_glBindVertexArray(0);
@@ -362,7 +327,7 @@ PURPOSE: Gets the texture of the inspector
 */
 ENTITYMANAGER_API unsigned int FlipBook::GetInspectTexture()
 {
-	return inspectTexture;
+	return inspectFramebuffer->GetFrameBufferTex();
 }
 
 /*

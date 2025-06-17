@@ -88,7 +88,7 @@ void Tile::Draw(int tileW, int tileH, int translateX, int translateY, int transl
 	model = glm::rotate(model, glm::radians(rotate), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::scale(model, sca); //TODO: Change it with mouse scroll
 
-	ShaderManager::GetInstance().ApplyTransformMatrix("uModel", model);
+	ShaderManager::GetInstance().ApplyUniformMatrix("uModel", model);
 	
 	//Draw the texture
 	adr_glBindVertexArray(tileVAO);

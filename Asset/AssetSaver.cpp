@@ -59,8 +59,6 @@ nlohmann::json AssetSaver::LoadSceneFromFile(const std::string& filepath, std::s
     nlohmann::json jsonData;
     file >> jsonData;
 
-
-
     return jsonData;
 }
 

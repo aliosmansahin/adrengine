@@ -12,15 +12,15 @@ bool Engine::InitEngine(GLFWwindow* window)
     //set class variables
     this->window = window;
 
+    //initialize all of entity types into the unordered_map
+    InitEntityTypes();
+
+    //------ INITIALIZE SUB ENGINES ------
+    
     //initialize graphics engine
     if (!Graphics::GetInstance().InitGraphics(window))
         return false;
 
-    //initialize all of entity types into the unordered_map
-    InitEntityTypes();
-    
-    //------ INITIALIZE OTHER ENGINES ------
-    
     //interface manager
     ImGuiContext* context = nullptr;
     if (!InterfaceManager::GetInstance().InitInterface(window, context))
@@ -124,8 +124,6 @@ void Engine::Draw()
     
     InterfaceManager::GetInstance().StartFrame();
 
-    std::string projectDir = projectPath + projectName + "/";
-    
     InterfaceManager::GetInstance().DrawInterface(projectDir, [this]() { SaveProject(); }, entityTypes, FPS, ms, screenWidth, screenHeight);
     
     InterfaceManager::GetInstance().EndFrame();
@@ -138,14 +136,12 @@ PURPOSE: Close all engines include this one
 */
 void Engine::CloseEngine()
 {
-    //SaveProject();
-
     InputManager::GetInstance().ReleaseEngine();
     InterfaceManager::GetInstance().CloseInterface();
     SceneManager::GetInstance().ClearManager();
     VisualScriptManager::GetInstance().ReleaseManager();
-    entityTypes.clear();
     Graphics::GetInstance().ReleaseGraphics();
+    entityTypes.clear();
     Logger::Log("P", "Cleared engine");
 }
 
@@ -155,7 +151,6 @@ PURPOSE: To load existing project
 void Engine::LoadProject()
 {
     //set up the project file and load it
-    std::string projectDir = projectPath + projectName + "/";
     std::string projectFile = projectDir + projectName + ".adrengineproject";
     std::ifstream file(projectFile);
 
@@ -223,7 +218,6 @@ PURPOSE: To save the project
 void Engine::SaveProject()
 {
     //saves the project to the project file
-    std::string projectDir = projectPath + projectName + "/";
     std::string projectFile = projectDir + projectName + ".adrengineproject";
 
     auto openedTab = InterfaceManager::GetInstance().openedTab;
@@ -300,8 +294,6 @@ PURPOSE: To update current scene
 ENGINE_API void Engine::UpdateCurrentScene()
 {
     if (SceneManager::GetInstance().currentScene) {
-        std::string projectDir = projectPath + projectName + "/"; //TODO: control from one point
-
         //We will use tileMapBrush when "start drawing" button clicked
         TileMap* edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
 
@@ -329,9 +321,6 @@ PURPOSE: To perform delete actions like deleting scene
 */
 ENGINE_API void Engine::PerformDeleteActions()
 {
-    //store project directory
-    std::string projectDir = projectPath + projectName + "/";
-
     //perform deleting scene
     if (WindowAllScenes::GetInstance().pendingDelete) {
         std::string oldSceneId = "";

@@ -36,6 +36,7 @@ public:
 	ENTITYMANAGER_API void AddTileToMap(int mouseX, int mouseY, float cameraX, float cameraY, std::pair<int, int> selectedTile);
 	ENTITYMANAGER_API void RemoveTileFromMap(int mouseX, int mouseY, float cameraX, float cameraY);
 	ENTITYMANAGER_API void UpdateMouseTileIndicator(int mouseX, int mouseY, float cameraX, float cameraY);
+	ENTITYMANAGER_API std::pair<int, int> GetTilePos(float mouseX, float mouseY, float cameraX, float cameraY);
 
 	/*
 	PURPOSE: Clones the entity and return it
@@ -50,21 +51,22 @@ public:
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
 	ENTITYMANAGER_API void FromJson(nlohmann::json json);
-public:
-	//tile size
-	int tileWidth = 0;
-	int tileHeight = 0;
 
+	//Getters
+	ENTITYMANAGER_API std::pair<int, int> GetTileSize() { return { tileWidth, tileHeight }; };
+public:
 	//Is this tilemap drawing on tilemapviewer
 	bool drawingViewer = false;
 private:
 	//properties
 	std::shared_ptr<TileMapParams> params;
 
+	//tile size
+	int tileWidth = 0;
+	int tileHeight = 0;
+
 	//inspector framebuffer
-	unsigned int inspectFrameBuffer = -1;
-	unsigned int inspectRenderBuffer = -1;
-	unsigned int inspectTexture = -1;
+	FramebufferProvider* inspectFramebuffer = nullptr;
 
 	//drawing tilemap
 	unsigned int VAO = -1;

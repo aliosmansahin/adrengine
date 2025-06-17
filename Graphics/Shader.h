@@ -23,9 +23,13 @@ public:
 	GRAPHICS_API unsigned int GetVertexShader()   { return vertexShader; }
 	GRAPHICS_API unsigned int GetFragmentShader() { return fragmentShader; }
 	GRAPHICS_API unsigned int GetGeometryShader() { return geometryShader; }
+
+private:
+	GRAPHICS_API bool		  LoadShader(unsigned int shaderTypeAsOpenGL, const char* shaderPath, unsigned int& shader);
+
 private:
 	//each shaders
-	unsigned int vertexShader;
-	unsigned int fragmentShader;
-	unsigned int geometryShader;
+	unsigned int vertexShader = -1;
+	unsigned int fragmentShader = -1;
+	unsigned int geometryShader = -1;
 };
