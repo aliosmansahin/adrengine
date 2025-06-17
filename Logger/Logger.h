@@ -9,8 +9,6 @@
 
 #include <iostream>
 
-struct Tab;
-
 class LOGGER_API Logger
 {
 public:
