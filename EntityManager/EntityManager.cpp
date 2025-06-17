@@ -329,7 +329,8 @@ void EntityManager::UpdateEntities(
 	std::function<void()> selectFunction,
 	std::string& projectDir,
 	std::string& sceneId,
-	nlohmann::json& currentSceneJson)
+	nlohmann::json& currentSceneJson,
+	Camera*& gameCamera)
 {
 	//Perform deleting entity actions
 	if (windowSceneFocused && windowSceneDeletePressed) {
@@ -353,6 +354,12 @@ void EntityManager::UpdateEntities(
 	//Update all entities
 	for (auto& entity : entities) {
 		entity.second->Update();
+		if (entity.second->GetEntityParams()->GetType() == "Camera") {
+			Camera* camera = dynamic_cast<Camera*>(entity.second.get());
+			if (camera) {
+				gameCamera = camera;
+			}
+		}
 	}
 }
 

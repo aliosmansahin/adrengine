@@ -45,7 +45,8 @@ public:
 		std::function<void()> selectFunction,
 		std::string& projectDir,
 		std::string& sceneId,
-		nlohmann::json& currentSceneJson
+		nlohmann::json& currentSceneJson,
+		Camera*& gameCamera
 		);
 	ENTITYMANAGER_API void ReleaseEntityManager();
 
