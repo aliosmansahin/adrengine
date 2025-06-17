@@ -6,7 +6,7 @@
 /*
 PURPOSE: Initialize interface manager
 */
-INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, ImGuiContext*& context)
+INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, ImGuiContext*& context, ImNodesContext*& nodesContext)
 {
 	//initialize interface
 	Logger::Log("P", "Initializing interface");
@@ -39,6 +39,7 @@ INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, Im
 
 	//Save the current context to set context of other managers
 	context = ImGui::GetCurrentContext();
+	nodesContext = ImNodes::GetCurrentContext();
 
 	return true;
 }

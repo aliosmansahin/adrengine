@@ -4,8 +4,12 @@
 /*
 PURPOSE: Initializes the manager
 */
-bool VisualScriptManager::InitManager()
+bool VisualScriptManager::InitManager(ImGuiContext* imguiContext, ImNodesContext* nodesContext)
 {
+    //Set imgui context
+    ImGui::SetCurrentContext(imguiContext);
+    ImNodes::SetCurrentContext(nodesContext);
+
     //Create all node types
     types = { {
         {"Begin", std::make_shared<Begin>()},

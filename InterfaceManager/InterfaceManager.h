@@ -24,7 +24,7 @@ class InterfaceManager
 {
 public:
 	//main funcs
-	INTERFACEMANAGER_API bool InitInterface(GLFWwindow* window, ImGuiContext*& context);
+	INTERFACEMANAGER_API bool InitInterface(GLFWwindow* window, ImGuiContext*& context, ImNodesContext*& nodesContext);
 	INTERFACEMANAGER_API void CloseInterface();
 	//drawing
 	INTERFACEMANAGER_API void StartFrame();

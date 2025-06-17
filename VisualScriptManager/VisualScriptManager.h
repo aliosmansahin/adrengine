@@ -17,7 +17,7 @@ class VisualScriptManager
 {
 public:
 	//main functions
-	VISUALSCRIPTMANAGER_API bool														   InitManager();
+	VISUALSCRIPTMANAGER_API bool														   InitManager(ImGuiContext* imguiContext, ImNodesContext* nodesContext);
 	VISUALSCRIPTMANAGER_API void														   ReleaseManager();
 
 	//script functions

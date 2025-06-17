@@ -23,7 +23,8 @@ bool Engine::InitEngine(GLFWwindow* window)
 
     //interface manager
     ImGuiContext* context = nullptr;
-    if (!InterfaceManager::GetInstance().InitInterface(window, context))
+    ImNodesContext* nodesContext = nullptr;
+    if (!InterfaceManager::GetInstance().InitInterface(window, context, nodesContext))
         return false;
 
     //input manager
@@ -35,7 +36,7 @@ bool Engine::InitEngine(GLFWwindow* window)
         return false;
 
     //visual script manager
-    if (!VisualScriptManager::GetInstance().InitManager())
+    if (!VisualScriptManager::GetInstance().InitManager(context, nodesContext))
         return false;
 
     //load existing project
