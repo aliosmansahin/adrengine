@@ -14,5 +14,5 @@ ENTITYMANAGER_API void CameraParams::FromJson(const nlohmann::json& j)
 	EntityParams::FromJson(j);
 
 	//Set some properties
-	//TODO: Implement
+	projectionType = j.value("projection-type", (CameraProjection)PERPECTIVE);
 }

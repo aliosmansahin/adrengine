@@ -11,9 +11,6 @@ void WindowGameViewport::DrawWindow(
     float engineFPS,
     float engineMS)
 {
-    //Store current camera position in a vector
-    glm::vec3 currentSceneCameraPos = glm::vec3(SceneManager::GetInstance().currentScene->cameraX, SceneManager::GetInstance().currentScene->cameraY, SceneManager::GetInstance().currentScene->cameraZ);
-
     //We will use tileMapBrush when "start drawing" button clicked
     TileMap* edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
 
@@ -66,16 +63,16 @@ void WindowGameViewport::DrawWindow(
 
     ImGui::SameLine();
 
-    std::string cameraInfo = "CamX: " + std::to_string(SceneManager::GetInstance().currentScene->cameraX) + " / ";
+    std::string cameraInfo = "CamX: " + std::to_string(SceneManager::GetInstance().currentScene->currentCamera->GetEntityParams()->x) + " / ";
     ImGui::Text(cameraInfo.c_str());
     ImGui::SameLine();
 
-    cameraInfo = "CamY: " + std::to_string(SceneManager::GetInstance().currentScene->cameraY) + " / ";
+    cameraInfo = "CamY: " + std::to_string(SceneManager::GetInstance().currentScene->currentCamera->GetEntityParams()->y) + " / ";
     ImGui::Text(cameraInfo.c_str());
     ImGui::SameLine();
 
     if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_3D) {
-        cameraInfo = "CamZ: " + std::to_string(SceneManager::GetInstance().currentScene->cameraZ) + " / ";
+        cameraInfo = "CamZ: " + std::to_string(SceneManager::GetInstance().currentScene->currentCamera->GetEntityParams()->z) + " / ";
         ImGui::Text(cameraInfo.c_str());
         ImGui::SameLine();
     }
@@ -87,12 +84,6 @@ void WindowGameViewport::DrawWindow(
     //Some sets
     window_width = ImGui::GetContentRegionAvail().x;
     window_height = ImGui::GetContentRegionAvail().y;
-
-    //Update the transform matrix depends on the scene type
-    if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_2D)
-        ShaderManager::GetInstance().UpdateTransformMatrix2D((int)window_width, (int)window_height, (int)SceneManager::GetInstance().currentScene->cameraX, (int)SceneManager::GetInstance().currentScene->cameraY);
-    else if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_3D)
-        ShaderManager::GetInstance().UpdateTransformMatrix3D(SceneManager::GetInstance().currentScene->eye, (int)window_width, (int)window_height, SceneManager::GetInstance().currentScene->cameraX, SceneManager::GetInstance().currentScene->cameraY, SceneManager::GetInstance().currentScene->cameraZ, SceneManager::GetInstance().currentScene->yaw, SceneManager::GetInstance().currentScene->pitch);
 
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
@@ -115,8 +106,7 @@ void WindowGameViewport::DrawWindow(
     */
     SceneManager::GetInstance().currentScene->DrawScene(
         (int)window_width,
-        (int)window_height,
-        currentSceneCameraPos);
+        (int)window_height);
 
     //Draw the main frameBuffer texture as an image
     ImGui::Image((ImTextureID)(intptr_t)Graphics::GetInstance().GetMainFramebuffer()->GetFrameBufferTex(),

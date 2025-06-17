@@ -22,7 +22,7 @@ class Scene
 public:
 	//main functions
 	SCENEMANAGER_API bool			CreateScene(std::string sceneId, Utils::SceneType sceneType);
-	SCENEMANAGER_API void			DrawScene(int window_width, int window_height, glm::vec3 currentSceneCameraPos);
+	SCENEMANAGER_API void			DrawScene(int window_width, int window_height);
 	SCENEMANAGER_API void			UpdateScene(
 		bool isPlaying,
 		bool windowGameViewportIsHovered,
@@ -51,12 +51,9 @@ public:
 	Utils::SceneType sceneType;
 
 	//camera
-	float cameraX = 0;
-	float cameraY = 0;
-	float cameraZ = 0;
-	float yaw = -90.0f;
-	float pitch = 0.0f;
-	glm::vec3 eye = glm::vec3(0.0f, 0.0f, -1.0f);
+	Camera* editorCamera = nullptr;
+	Camera* gameCamera = nullptr;
+	Camera* currentCamera = nullptr;
 
 	//Delta mouse position
 	float deltaX;

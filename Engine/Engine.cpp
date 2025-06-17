@@ -81,6 +81,10 @@ ENGINE_API void Engine::InitEntityTypes()
         std::make_shared<FlipBook>(),
         std::make_shared<FlipBookParams>()
     };
+    entityTypes["Camera"] = {
+        std::make_shared<Camera>(),
+        std::make_shared<CameraParams>()
+    };
 }
 
 /*

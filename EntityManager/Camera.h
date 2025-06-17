@@ -30,7 +30,21 @@ public:
 
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
+
+	//Camera specs
+	ENTITYMANAGER_API void AddPosition(glm::vec3 posAdd);
+	ENTITYMANAGER_API void AddRotation(float _yaw, float _pitch);
+
+	ENTITYMANAGER_API void SetPosition(glm::vec3 newPos);
+	ENTITYMANAGER_API void SetRotation(float _yaw, float _pitch);
+
+	//first -> yaw, second -> pitch
+	ENTITYMANAGER_API std::pair<float, float> GetYawPitch();
+	ENTITYMANAGER_API CameraProjection GetProjectionType() { return params->projectionType; };
 private:
 	//properties
 	std::shared_ptr<CameraParams> params;
+
+	float yaw = -90.0f;
+	float pitch = 0.0f;
 };

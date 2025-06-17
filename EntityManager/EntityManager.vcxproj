@@ -153,6 +153,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraParams.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="DirectionalLightParams.h" />
     <ClInclude Include="Entity.h" />
@@ -178,6 +180,8 @@
     <ClInclude Include="TileMapParams.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraParams.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="DirectionalLightParams.cpp" />
     <ClCompile Include="dllmain.cpp" />

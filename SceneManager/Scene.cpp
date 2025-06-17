@@ -19,17 +19,29 @@ bool Scene::CreateScene(std::string sceneId, Utils::SceneType sceneType)
 	firstMouseX = InputManager::GetInstance().GetMouseX();
 	firstMouseY = InputManager::GetInstance().GetMouseY();
 
+	editorCamera = new Camera();
+	CameraParams* cameraParams = new CameraParams();
+
+	//Set type of projection
+	if (sceneType == Utils::SCENE_2D)
+		cameraParams->projectionType = CameraProjection::ORTHOGRAPHIC;
+	if (sceneType == Utils::SCENE_3D)
+		cameraParams->projectionType = CameraProjection::PERPECTIVE;
+
+	editorCamera->CreateEntity(std::shared_ptr<CameraParams>(cameraParams));
+	currentCamera = editorCamera;
+
 	return true;
 }
 
 /*
 PURPOSE: Draws the scene
 */
-void Scene::DrawScene(int window_width, int window_height, glm::vec3 currentSceneCameraPos)
+void Scene::DrawScene(int window_width, int window_height)
 {
 	//If there is an entity manager, draw each entity via entity manager
 	if(entityManager)
-		entityManager->DrawEntities(window_width, window_height, currentSceneCameraPos, (sceneType == Utils::SCENE_3D));
+		entityManager->DrawEntities(window_width, window_height, glm::vec3(currentCamera->GetEntityParams()->x, currentCamera->GetEntityParams()->y, currentCamera->GetEntityParams()->z), (sceneType == Utils::SCENE_3D));
 }
 
 /*
@@ -55,12 +67,16 @@ void Scene::UpdateScene(
 	int currentMouseY = InputManager::GetInstance().GetMouseY();
 
 	if (isPlaying) {
+		if(gameCamera)
+			currentCamera = gameCamera;
 		/*
 			TODO: If user plays the scene,
 				give the controls to the visual scripts or the entities or some kind of stuffs...
 		*/
 	}
 	else {
+		currentCamera = editorCamera;
+
 		/*
 			If user doesn't play the scene,
 				give all controls to the scene,
@@ -118,69 +134,44 @@ void Scene::UpdateScene(
 				//If the type of the scene is 2d
 				if (sceneType == Utils::SCENE_2D) {
 					//Move the camera
-					cameraX -= resX;
-					cameraY -= resY;
+					currentCamera->AddPosition(glm::vec3(-resX, -resY, 0.0f));
 				}
 				//If the type of the scene is 3d
 				else if (sceneType == Utils::SCENE_3D) {
 					//Change the camera position
-					yaw += resX * 0.5f;
-					pitch += -resY * 0.5f;
-
-					//Limit the pitch
-					if (pitch > 89.0f)
-						pitch = 89.0f;
-					if (pitch < -89.0f)
-						pitch = -89.0f;
-
-					//Convert yaw and pitch to a vector
-					glm::vec3 direction{};
-					direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-					direction.y = sin(glm::radians(pitch));
-					direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-					eye = glm::normalize(direction);
+					currentCamera->AddRotation(resX * 0.5f, -resY * 0.5f);
 
 					//Set the speed of the camera
 					float speed = 20.0f * Timer::GetDeltaTime();
 
+					glm::vec3 forwardVector = glm::vec3(currentCamera->GetEntityParams()->rx, currentCamera->GetEntityParams()->ry, currentCamera->GetEntityParams()->rz);
+
 					//Movement controls
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
-						cameraX += eye.x * speed;
-						cameraY += eye.y * speed;
-						cameraZ += eye.z * speed;
+						currentCamera->AddPosition(forwardVector * speed);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_S)) {
-						cameraX -= eye.x * speed;
-						cameraY -= eye.y * speed;
-						cameraZ -= eye.z * speed;
+						currentCamera->AddPosition(forwardVector * -speed);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_D)) {
-						glm::vec3 right = glm::normalize(glm::cross(eye, glm::vec3(0.0f, 1.0f, 0.0f)));
+						glm::vec3 right = glm::normalize(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
 
-						cameraX += right.x * speed;
-						cameraY += right.y * speed;
-						cameraZ += right.z * speed;
+						currentCamera->AddPosition(right * speed);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_A)) {
-						glm::vec3 right = glm::normalize(glm::cross(eye, glm::vec3(0.0f, 1.0f, 0.0f)));
+						glm::vec3 right = glm::normalize(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
 
-						cameraX -= right.x * speed;
-						cameraY -= right.y * speed;
-						cameraZ -= right.z * speed;
+						currentCamera->AddPosition(right * -speed);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_SPACE)) {
 						glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-						cameraX += up.x * speed;
-						cameraY += up.y * speed;
-						cameraZ += up.z * speed;
+						currentCamera->AddPosition(up * speed);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
 						glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-						cameraX -= up.x * speed;
-						cameraY -= up.y * speed;
-						cameraZ -= up.z * speed;
+						currentCamera->AddPosition(up * -speed);
 					}
 				}
 			}
@@ -190,6 +181,14 @@ void Scene::UpdateScene(
 			firstMouseY = currentMouseY;
 		}
 	}
+
+	//Update the transform matrix depends on the scene type
+	if (currentCamera->GetProjectionType() == CameraProjection::ORTHOGRAPHIC)
+		ShaderManager::GetInstance().UpdateTransformMatrix2D((int)window_width, (int)window_height, (int)currentCamera->GetEntityParams()->x, (int)currentCamera->GetEntityParams()->y);
+	if (currentCamera->GetProjectionType() == CameraProjection::PERPECTIVE)
+		ShaderManager::GetInstance().UpdateTransformMatrix3D(glm::vec3(currentCamera->GetEntityParams()->rx, currentCamera->GetEntityParams()->ry, currentCamera->GetEntityParams()->rz),
+			(int)window_width, (int)window_height, currentCamera->GetEntityParams()->x, currentCamera->GetEntityParams()->y, currentCamera->GetEntityParams()->z);
+
 	//Update each entity via entity manager
 	if (entityManager) {
 		nlohmann::json sceneJson = ToJson();
@@ -217,11 +216,11 @@ nlohmann::json Scene::ToJson()
 	nlohmann::json j;
 	j["id"] = sceneId;
 	j["name"] = sceneName;
-	j["cameraX"] = cameraX;
-	j["cameraY"] = cameraY;
-	j["cameraZ"] = cameraZ;
-	j["yaw"] = yaw;
-	j["pitch"] = pitch;
+	j["cameraX"] = editorCamera->GetEntityParams()->x;
+	j["cameraY"] = editorCamera->GetEntityParams()->y;
+	j["cameraZ"] = editorCamera->GetEntityParams()->z;
+	j["yaw"] = editorCamera->GetYawPitch().first;
+	j["pitch"] = editorCamera->GetYawPitch().second;
 	j["type"] = sceneType;
 
 	//Add each entity to json
@@ -243,18 +242,24 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 	sceneId = json.value("id", "");
 	sceneName = json.value("name", "");
 	sceneType = (Utils::SceneType)json.value("type", Utils::SCENE_2D);
-	cameraX = json.value("cameraX", 0.0f);
-	cameraY = json.value("cameraY", 0.0f);
-	cameraZ = json.value("cameraZ", 0.0f);
-	yaw = json.value("yaw", 0.0f);
-	pitch = json.value("pitch", -90.0f);
 
-	//Setup the eye vector from yaw and pitch
-	glm::vec3 direction{};
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	eye = glm::normalize(direction);
+	//Create editor camera and set it
+	editorCamera = new Camera();
+	CameraParams* cameraParams = new CameraParams();
+	editorCamera->CreateEntity(std::shared_ptr<CameraParams>(cameraParams));
+
+	glm::vec3 cameraPos = glm::vec3(0.0f);
+	cameraPos.x = json.value("cameraX", 0.0f);
+	cameraPos.y = json.value("cameraY", 0.0f);
+	cameraPos.z = json.value("cameraZ", 0.0f);
+	
+	float yaw = json.value("yaw", -90.0f);
+	float pitch = json.value("pitch", 0.0f);
+
+	editorCamera->SetPosition(cameraPos);
+	editorCamera->SetRotation(yaw, pitch);
+
+	currentCamera = editorCamera;
 
 	//Create an entity manager
 	entityManager = new EntityManager();

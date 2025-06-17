@@ -60,3 +60,85 @@ ENTITYMANAGER_API nlohmann::json Camera::ToJson()
 	}
 	return j;
 }
+
+/*
+PURPOSE: Adds position vector to camera's position
+*/
+ENTITYMANAGER_API void Camera::AddPosition(glm::vec3 posAdd)
+{
+	params->x += posAdd.x;
+	params->y += posAdd.y;
+	params->z += posAdd.z;
+}
+
+/*
+PURPOSE: Adds rotation vector to camera's rotation, and calculates rotation vector
+*/
+ENTITYMANAGER_API void Camera::AddRotation(float _yaw, float _pitch)
+{
+	yaw += _yaw;
+	pitch += _pitch;
+
+	//Limit the pitch
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	//Convert yaw and pitch to a vector
+	glm::vec3 direction{};
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	glm::vec3 eye = glm::normalize(direction);
+
+	params->rx = eye.x;
+	params->ry = eye.y;
+	params->rz = eye.z;
+}
+
+/*
+PURPOSE: Sets camera's position
+*/
+ENTITYMANAGER_API void Camera::SetPosition(glm::vec3 newPos)
+{
+	params->x = newPos.x;
+	params->y = newPos.y;
+	params->z = newPos.z;
+}
+
+/*
+PURPOSE: Sets camera's rotation and calculates rotation vector
+*/
+ENTITYMANAGER_API void Camera::SetRotation(float _yaw, float _pitch)
+{
+	yaw = _yaw;
+	pitch = _pitch;
+
+	//Limit the pitch
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	//Convert yaw and pitch to a vector
+	glm::vec3 direction{};
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	glm::vec3 eye = glm::normalize(direction);
+
+	params->rx = eye.x;
+	params->ry = eye.y;
+	params->rz = eye.z;
+}
+
+/*
+PURPOSE: Returns yaw and pitch in a pair
+	first -> yaw
+	second -> pitch
+*/
+ENTITYMANAGER_API std::pair<float, float> Camera::GetYawPitch()
+{
+	return { yaw, pitch };
+}

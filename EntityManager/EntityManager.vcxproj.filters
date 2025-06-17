@@ -37,6 +37,9 @@
     <Filter Include="Entity\Sprite2D\FlipBook\FlipBookFrame">
       <UniqueIdentifier>{54a01873-844b-4d25-857a-6fb52f2ca7cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity\Camera">
+      <UniqueIdentifier>{17423638-af15-4897-8eaa-8ffe1e655c6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -106,6 +109,12 @@
     <ClInclude Include="FlipBookFrame.h">
       <Filter>Entity\Sprite2D\FlipBook\FlipBookFrame</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Entity\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraParams.h">
+      <Filter>Entity\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -174,6 +183,12 @@
     </ClCompile>
     <ClCompile Include="FlipBookFrame.cpp">
       <Filter>Entity\Sprite2D\FlipBook\FlipBookFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Entity\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraParams.cpp">
+      <Filter>Entity\Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

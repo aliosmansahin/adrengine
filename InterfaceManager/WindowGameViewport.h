@@ -36,8 +36,8 @@ public:
 	bool isPlaying = false;
 	bool isFocused = false;
 	bool isHovered = false;
-	float window_width = 0;
-	float window_height = 0;
+	float window_width = 800;
+	float window_height = 600;
 	int mouseX;
 	int mouseY;
 };

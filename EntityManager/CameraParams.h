@@ -8,6 +8,11 @@
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
+enum CameraProjection {
+	PERPECTIVE,
+	ORTHOGRAPHIC
+};
+
 class CameraParams : public EntityParams
 {
 public:
@@ -37,7 +42,7 @@ public:
 		auto j = EntityParams::ToJson();
 
 		//Save some properties
-		//TODO: Implement
+		j["projection-type"] = projectionType;
 
 		//Save the type
 		j["type"] = GetType();
@@ -49,5 +54,5 @@ public:
 	ENTITYMANAGER_API void FromJson(const nlohmann::json& j) override;
 
 	//Variables for the Camera
+	CameraProjection projectionType = CameraProjection::PERPECTIVE;
 };
-
