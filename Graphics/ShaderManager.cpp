@@ -191,7 +191,7 @@ void ShaderManager::UpdateTransformMatrix2D(int windowWidth, int windowHeight, i
 PURPOSE: Updates 3d projection and view matrices and send them to uniforms,
     the model matrix will be sent from each entities
 */
-void ShaderManager::UpdateTransformMatrix3D(glm::vec3 eye, int windowWidth, int windowHeight, float cameraX, float cameraY, float cameraZ)
+void ShaderManager::UpdateTransformMatrix3D(glm::vec3 eye, int windowWidth, int windowHeight, float cameraX, float cameraY, float cameraZ, float fov)
 {
     glm::vec3 pos = glm::vec3(cameraX, cameraY, cameraZ);
     glm::vec3 target = eye + pos;
@@ -200,7 +200,6 @@ void ShaderManager::UpdateTransformMatrix3D(glm::vec3 eye, int windowWidth, int 
     glm::mat4 look = glm::lookAt(pos, target, up);
 
     float aspect = (float)windowWidth / (float)windowHeight;
-    float fov = 70.0f;
 
     glm::mat4 proj = glm::perspective(glm::radians(fov), aspect, 0.01f, 1000.0f);
 

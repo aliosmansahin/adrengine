@@ -323,6 +323,32 @@ void WindowEntityProperties::DrawWindow(
                 }
             }
         }
+        else if (currentEntity->GetEntityParams()->GetType() == "Camera") {
+            auto casted = dynamic_cast<CameraParams*>(currentEntity->GetEntityParams());
+            if (casted) {
+                Camera* flipBook = dynamic_cast<Camera*>(currentEntity);
+
+                ImGui::Separator();
+                ImGui::SeparatorText("Projection");
+
+                ImGui::Text("Projection Type"); ImGui::SameLine();
+
+                //Selection for the type of the scene
+                ImGui::RadioButton("2D", &(int&)casted->projectionType, (int)CameraProjection::ORTHOGRAPHIC); ImGui::SameLine();
+                ImGui::RadioButton("3D", &(int&)casted->projectionType, (int)CameraProjection::PERPECTIVE);
+
+                if (casted->projectionType == CameraProjection::ORTHOGRAPHIC) {
+                    ImGui::Separator();
+                    ImGui::SeparatorText("Orthographic");
+                }
+                else if(casted->projectionType == CameraProjection::PERPECTIVE) {
+                    ImGui::Separator();
+                    ImGui::SeparatorText("Perspective");
+
+                    ImGui::DragFloat("FOV", &casted->fov, 1.0f, 10.0f, 170.0f);
+                }
+            }
+        }
     }
     else {
         ImGui::TextColored(ImVec4(0, 255, 0, 255), "Select an entity to modify");

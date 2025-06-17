@@ -15,4 +15,5 @@ ENTITYMANAGER_API void CameraParams::FromJson(const nlohmann::json& j)
 
 	//Set some properties
 	projectionType = j.value("projection-type", (CameraProjection)PERPECTIVE);
+	fov = j.value("fov", 70.0f);
 }

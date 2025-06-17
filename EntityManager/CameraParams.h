@@ -43,6 +43,7 @@ public:
 
 		//Save some properties
 		j["projection-type"] = projectionType;
+		j["fov"] = fov;
 
 		//Save the type
 		j["type"] = GetType();
@@ -55,4 +56,5 @@ public:
 
 	//Variables for the Camera
 	CameraProjection projectionType = CameraProjection::PERPECTIVE;
+	float fov = 70.0f;
 };

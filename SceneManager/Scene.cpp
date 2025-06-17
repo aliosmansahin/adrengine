@@ -67,6 +67,7 @@ void Scene::UpdateScene(
 	int currentMouseY = InputManager::GetInstance().GetMouseY();
 
 	if (isPlaying) {
+		//Scene will use the camera that user creates
 		if(gameCamera)
 			currentCamera = gameCamera;
 		/*
@@ -75,6 +76,7 @@ void Scene::UpdateScene(
 		*/
 	}
 	else {
+		//Use editor camera
 		currentCamera = editorCamera;
 
 		/*
@@ -187,7 +189,9 @@ void Scene::UpdateScene(
 		ShaderManager::GetInstance().UpdateTransformMatrix2D((int)window_width, (int)window_height, (int)currentCamera->GetEntityParams()->x, (int)currentCamera->GetEntityParams()->y);
 	if (currentCamera->GetProjectionType() == CameraProjection::PERPECTIVE)
 		ShaderManager::GetInstance().UpdateTransformMatrix3D(glm::vec3(currentCamera->GetEntityParams()->rx, currentCamera->GetEntityParams()->ry, currentCamera->GetEntityParams()->rz),
-			(int)window_width, (int)window_height, currentCamera->GetEntityParams()->x, currentCamera->GetEntityParams()->y, currentCamera->GetEntityParams()->z);
+			(int)window_width, (int)window_height,
+			currentCamera->GetEntityParams()->x, currentCamera->GetEntityParams()->y, currentCamera->GetEntityParams()->z,
+			currentCamera->GetFOV());
 
 	//Update each entity via entity manager
 	if (entityManager) {
@@ -246,6 +250,13 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 	//Create editor camera and set it
 	editorCamera = new Camera();
 	CameraParams* cameraParams = new CameraParams();
+
+	//Set type of projection
+	if (sceneType == Utils::SCENE_2D)
+		cameraParams->projectionType = CameraProjection::ORTHOGRAPHIC;
+	if (sceneType == Utils::SCENE_3D)
+		cameraParams->projectionType = CameraProjection::PERPECTIVE;
+
 	editorCamera->CreateEntity(std::shared_ptr<CameraParams>(cameraParams));
 
 	glm::vec3 cameraPos = glm::vec3(0.0f);

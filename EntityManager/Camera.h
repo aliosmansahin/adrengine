@@ -40,7 +40,8 @@ public:
 
 	//first -> yaw, second -> pitch
 	ENTITYMANAGER_API std::pair<float, float> GetYawPitch();
-	ENTITYMANAGER_API CameraProjection GetProjectionType() { return params->projectionType; };
+	ENTITYMANAGER_API CameraProjection        GetProjectionType() { return params->projectionType; };
+	ENTITYMANAGER_API float                   GetFOV() { return params->fov; };
 private:
 	//properties
 	std::shared_ptr<CameraParams> params;
