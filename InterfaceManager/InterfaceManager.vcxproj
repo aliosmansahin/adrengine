@@ -121,6 +121,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\GladWrapper;..\InputManager;..\Timer;..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,6 +144,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\GladWrapper;..\InputManager;..\Timer;..\Graphics;..\Common;..\Logger;..\SceneManager;..\VisualScriptManager;..\Localization;..\EntityManager;..\Asset</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

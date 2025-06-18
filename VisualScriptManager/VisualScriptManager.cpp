@@ -13,8 +13,8 @@ bool VisualScriptManager::InitManager(ImGuiContext* imguiContext, ImNodesContext
     //Create all node types
     types = { {
         {"Begin", std::make_shared<Begin>()},
-        {"Return", std::make_shared<Return>()},
-        {"Print", std::make_shared<Print>()}
+        {"Print", std::make_shared<Print>()},
+        {"Const String", std::make_shared<ConstString>()},
     } };
 	return true;
 }
@@ -43,12 +43,9 @@ std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Utils::Tab>> VisualScri
 {
     //If the script or tab is opened, interrupt the function
     auto openedScriptIter = openedScripts.find(scriptId);
-    if (openedScriptIter != openedScripts.end()) {
-        return {nullptr, nullptr};
-    }
     auto tabIter = tabs.find(scriptId);
-    if (tabIter != tabs.end()) {
-        return { nullptr, nullptr };
+    if (openedScriptIter != openedScripts.end() && tabIter != tabs.end()) {
+        return { openedScriptIter->second, tabIter->second };
     }
 
     //If the script doesn't exists in all scripts
@@ -302,15 +299,12 @@ bool VisualScriptManager::SaveScript(std::shared_ptr<VisualScript> script, std::
 }
 
 /*
-PURPOSE: Runs all begin scripts
+PURPOSE: Runs begin nodes off all scripts
 */
 void VisualScriptManager::RunScriptsBegin()
 {
     for (auto& script : scripts) {
-        auto& compiled = script.second->compiled;
-        for (auto& compile : compiled) {
-            compile();
-        }
+        script.second->ExecuteBeginScript();
     }
 }
 

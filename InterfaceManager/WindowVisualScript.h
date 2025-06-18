@@ -11,9 +11,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "imnodes/imnodes.h"
-#include "Print.h"
 #include "Begin.h"
-#include "Return.h"
 #include "VisualScriptManager.h"
 
 #include "utils/Utils.h"
@@ -28,6 +26,7 @@ public:
 		Utils::Tab*& openedTab,
 		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs
 		);
+	INTERFACEMANAGER_API Pin* FindPinById(int id);
 	INTERFACEMANAGER_API static WindowVisualScript& GetInstance();
 private:
 	//singleton

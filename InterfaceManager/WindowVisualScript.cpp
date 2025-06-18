@@ -37,17 +37,17 @@ void WindowVisualScript::DrawWindow(
     static int selected = false;
 
     //Compile button
-    if (ImGui::Selectable("Compile", selected, ImGuiSelectableFlags_None, ImVec2((float)toolbarWidth, 50))) {
-        //Save the script
-        VisualScriptManager::GetInstance().SaveScript(VisualScriptManager::GetInstance().currentScript, projectDir, openedTab, SceneManager::GetInstance().scenes, tabs);
+    //if (ImGui::Selectable("Compile", selected, ImGuiSelectableFlags_None, ImVec2((float)toolbarWidth, 50))) {
+    //    //Save the script
+    //    VisualScriptManager::GetInstance().SaveScript(VisualScriptManager::GetInstance().currentScript, projectDir, openedTab, SceneManager::GetInstance().scenes, tabs);
 
-        //Compile the script and write the result of the compilation
-        std::string result = VisualScriptManager::GetInstance().currentScript->CompileScript();
-        if (result.empty())
-            Logger::Log("P", "Current script was compiled successfully");
-        else
-            Logger::Log("E", result.c_str());
-    }
+    //    //Compile the script and write the result of the compilation
+    //    std::string result = VisualScriptManager::GetInstance().currentScript->CompileScript();
+    //    if (result.empty())
+    //        Logger::Log("P", "Current script was compiled successfully");
+    //    else
+    //        Logger::Log("E", result.c_str());
+    //}
 
     //End the toolbar
     ImGui::End();
@@ -58,43 +58,58 @@ void WindowVisualScript::DrawWindow(
     ImGui::Begin("Visual Script", &showWindow);
     ImNodes::BeginNodeEditor();
 
+    //The id will start from 1000 and will increment by the node
+    static int nextId = 1000;
+
     //Draw each nodes
     for (auto& node : VisualScriptManager::GetInstance().currentScript->nodes) {
-        node.second->Draw();
+        NodeVisual* vis = &node.second;
+        Node* node = vis->logicNode.get();
+
+        node->Draw(vis);
     }
 
-    //Draw each links
-    for (auto& link : VisualScriptManager::GetInstance().currentScript->links) {
+    //Draw each link
+    for (const auto link : VisualScriptManager::GetInstance().currentScript->links) {
         ImNodes::Link(link.first, link.second.first, link.second.second);
     }
 
     //End node editor
     ImNodes::EndNodeEditor();
 
-    //The id will start from 5 and will increment by the node
-    static int nextId = 5; //TODO: change after thich node
-
-    //Store the link id
-    static int maxLinkId = 0;
-
     //Store start and end of the link
     int start_attr, end_attr;
 
     //When user creates a link
     if (ImNodes::IsLinkCreated(&start_attr, &end_attr)) {
-        //Set the next link id
-        maxLinkId = std::max(maxLinkId + 1, (int)VisualScriptManager::GetInstance().currentScript->links.size());
+        Pin* from = FindPinById(start_attr);
+        Pin* to = FindPinById(end_attr);
+        
+        std::cout << from << " " << to << std::endl;
 
-        //Add a new link
-        VisualScriptManager::GetInstance().currentScript->links.insert(std::pair<int, std::pair<int, int>>(maxLinkId, std::make_pair(start_attr, end_attr)));
+        if (from && to && from->type == to->type) {
+            to->connectedTo = from;
+            from->connectedTo = to;
+            VisualScriptManager::GetInstance().currentScript->links.insert({ nextId++, {from->id, to->id} });
+        }
     }
 
     //When user deletes a link
     int linkId;
     if (ImNodes::IsLinkHovered(&linkId) && ImGui::IsKeyReleased(ImGuiKey_Delete)) {
         auto link = VisualScriptManager::GetInstance().currentScript->links.find(linkId);
-        if (link != VisualScriptManager::GetInstance().currentScript->links.end())
+
+        if (link != VisualScriptManager::GetInstance().currentScript->links.end()) {
+            Pin* from = FindPinById(link->second.first);
+            Pin* to = FindPinById(link->second.second);
+
+            if (to && to->connectedTo == from) {
+                to->connectedTo = nullptr;
+                from->connectedTo = nullptr;
+            }
+
             VisualScriptManager::GetInstance().currentScript->links.erase(link);
+        }
     }
 
     //End the script editor window
@@ -171,26 +186,52 @@ void WindowVisualScript::DrawWindow(
 
                 if (it == manager.types.end()) return;
 
+                //If the Begin node exists, won't create another one
+                if (type == "Begin" && VisualScriptManager::GetInstance().currentScript->nodes.find(0) != VisualScriptManager::GetInstance().currentScript->nodes.end())
+                    break;
+
                 std::shared_ptr<Node> node = it->second->clone();
 
                 //Set ids for each type
-                if (type == "Begin") {
-                    node->SetId(0);
-                }
-                else if (type == "Return") {
-                    node->SetId(2);
-                }
-                else {
-                    node->SetId(nextId);
-                }
-
                 node->SetPos((int)pos.x, (int)pos.y);
+                node->SetPins();
 
                 //Add a new node
-                VisualScriptManager::GetInstance().currentScript->nodes[node->GetId()] = node;
+                NodeVisual nodeVisual;
+                nodeVisual.logicNode = node;
 
-                //Set the next id from the node
-                nextId += node->GetIdPass();
+                //Store node id into another variable
+                int idForThisNode = nextId;
+
+                std::cout << idForThisNode << std::endl;
+
+                //Set id for special nodes
+                if (nodeVisual.logicNode->GetType() == "Begin") {
+                    idForThisNode = 0; //Begin node always has id 0
+                }
+                nodeVisual.id = idForThisNode++;
+
+                //Set pin ids
+                for (auto& pin : node->inputPins) {
+                    pin->id = idForThisNode++;
+
+                    nodeVisual.inputIds.push_back(pin->id);
+                }
+
+                for (auto& pin : node->outputPins) {
+                    pin->id = idForThisNode++;
+
+                    nodeVisual.outputIds.push_back(pin->id);
+                }
+
+                VisualScriptManager::GetInstance().currentScript->nodes[nodeVisual.id] = nodeVisual;
+                
+                //Set the next id from the stored id
+                if (nodeVisual.logicNode->GetType() == "Begin") {
+                    nextId += idForThisNode;
+                }
+                else
+                    nextId = idForThisNode;
 
                 //Close the window and clear input buffer
                 showAddNode = false;
@@ -203,6 +244,29 @@ void WindowVisualScript::DrawWindow(
         ImGui::EndChild();
         ImGui::End();
     }
+}
+
+Pin* WindowVisualScript::FindPinById(int id)
+{
+    if (!VisualScriptManager::GetInstance().currentScript.get())
+        return nullptr;
+
+    for (const auto& iter : VisualScriptManager::GetInstance().currentScript->nodes) {
+        const NodeVisual* vis = &iter.second;
+
+        //Check for input pins
+        for (auto& pin : vis->logicNode->inputPins) {
+            if (pin->id == id)
+                return pin.get();
+        }
+
+        //Check for output pins
+        for (auto& pin : vis->logicNode->outputPins) {
+            if (pin->id == id)
+                return pin.get();
+        }
+    }
+    return nullptr;
 }
 
 /*

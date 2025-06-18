@@ -1,18 +1,18 @@
 #include "pch.h"
-#include "Begin.h"
+#include "ConstString.h"
 
 /*
-PORPOSE: Constructor
+PURPOSE: Constructor
 */
-Begin::Begin()
+ConstString::ConstString()
 {
-    title = "Begin Entrypoint";
+	title = "Const String";
 }
 
 /*
 PURPOSE: Draws begin node
 */
-void Begin::Draw(NodeVisual* nodeVisual)
+void ConstString::Draw(NodeVisual* nodeVisual)
 {
     //In the first frame, set the node position
     if (first) {
@@ -26,11 +26,8 @@ void Begin::Draw(NodeVisual* nodeVisual)
     ImGui::Text(title.c_str());
     ImNodes::EndNodeTitleBar();
 
-    for (size_t i = 0; i < inputPins.size(); ++i) {
-        ImNodes::BeginInputAttribute(nodeVisual->inputIds[i], inputPins[i]->type == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
-        ImGui::Text(inputPins[i]->name.c_str());
-        ImNodes::EndInputAttribute();
-    }
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputText("Text", buf, sizeof(buf));
 
     for (size_t i = 0; i < outputPins.size(); ++i) {
         ImNodes::BeginOutputAttribute(nodeVisual->outputIds[i], outputPins[i]->type == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
@@ -42,18 +39,34 @@ void Begin::Draw(NodeVisual* nodeVisual)
 }
 
 /*
-PURPOSE: Runs this node
+PURPOSE: This function doesn't do anything
 */
-VISUALSCRIPTMANAGER_API void Begin::Execute()
+VISUALSCRIPTMANAGER_API void ConstString::Execute()
 {
-    Node* next = GetNextExecNode(outputPins[0].get());
-    if(next) next->Execute();
+}
+
+/*
+PURPOSE: Returns result of this node, other nodes can access it with this function
+*/
+Value ConstString::Evaluate(Pin* pin)
+{
+    buf[sizeof(buf) - 1] = '\0';
+    std::string value = buf;
+    return value;
+}
+
+/*
+PURPOSE: This function doesn't do anything
+*/
+Value ConstString::EvaluateInput(Pin* pin)
+{
+    return Value();
 }
 
 /*
 PURPOSE: Sets the position of the node
 */
-void Begin::SetPos(int x, int y)
+void ConstString::SetPos(int x, int y)
 {
     this->x = x;
     this->y = y;
@@ -62,31 +75,25 @@ void Begin::SetPos(int x, int y)
 /*
 PURPOSE: Sets pins for this node
 */
-void Begin::SetPins()
+void ConstString::SetPins()
 {
     outputPins = {
-        std::make_shared<Pin>("OutExec", PinType::Exec, PinDirection::Output, this),
+        std::make_shared<Pin>("Value", PinType::String, PinDirection::Output, this),
     };
 }
 
 /*
 PURPOSE: Creates a json from the node
 */
-nlohmann::json Begin::ToJson()
+nlohmann::json ConstString::ToJson()
 {
-    nlohmann::json j;
-    j["x"] = x;
-    j["y"] = y;
-    j["type"] = GetType();
-    return j;
+	return nlohmann::json();
 }
 
 /*
 PURPOSE: Sets a node from its json
 */
-bool Begin::FromJson(nlohmann::json json)
+bool ConstString::FromJson(nlohmann::json json)
 {
-    x = json.value("x", 0);
-    y = json.value("y", 0);
-    return true;
+	return false;
 }

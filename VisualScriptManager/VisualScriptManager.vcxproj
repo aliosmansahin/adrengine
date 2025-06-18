@@ -156,16 +156,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Begin.h" />
+    <ClInclude Include="ConstString.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Pin.h" />
     <ClInclude Include="Print.h" />
-    <ClInclude Include="Return.h" />
     <ClInclude Include="VisualScript.h" />
     <ClInclude Include="VisualScriptManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Begin.cpp" />
+    <ClCompile Include="ConstString.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="pch.cpp">
@@ -174,8 +176,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Pin.cpp" />
     <ClCompile Include="Print.cpp" />
-    <ClCompile Include="Return.cpp" />
     <ClCompile Include="VisualScript.cpp" />
     <ClCompile Include="VisualScriptManager.cpp" />
   </ItemGroup>
