@@ -71,7 +71,10 @@ public:
 
 	//status
 	ENTITYMANAGER_API size_t										  GetEntityCount() { return entities.size(); }
+
+	//getters
 	ENTITYMANAGER_API std::map<std::string, std::shared_ptr<Entity>>& GetEntities() { return entities; }
+	ENTITYMANAGER_API std::shared_ptr<Entity> GetEntityById(std::string id);
 private:
 	//stores lights
 

@@ -39,6 +39,8 @@ public:
 		Utils::Tab*& openedTab,
 		std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts);
 
+	//getters
+	SCENEMANAGER_API std::shared_ptr<Scene> GetSceneById(std::string id);
 	//getter for instance
 	SCENEMANAGER_API static SceneManager& GetInstance();
 private:
@@ -50,7 +52,7 @@ private:
 public:
 	//variables
 	std::map<std::string, std::string> scenes;
-	std::map<std::string, std::unique_ptr<Scene>> openedScenes;
+	std::map<std::string, std::shared_ptr<Scene>> openedScenes;
 	Scene* currentScene = nullptr;
 };
 

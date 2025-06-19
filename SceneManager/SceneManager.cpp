@@ -263,6 +263,15 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir,
     return true;
 }
 
+SCENEMANAGER_API std::shared_ptr<Scene> SceneManager::GetSceneById(std::string id)
+{
+    auto sceneIter = openedScenes.find(id);
+    if (sceneIter == openedScenes.end())
+        return nullptr;
+
+    return sceneIter->second;
+}
+
 /*
 PURPOSE: Gets the instance of the class
 */

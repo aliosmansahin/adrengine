@@ -388,6 +388,15 @@ ENTITYMANAGER_API void EntityManager::SetEntityRealStats(Entity* entity)
 	}
 }
 
+ENTITYMANAGER_API std::shared_ptr<Entity> EntityManager::GetEntityById(std::string id)
+{
+	auto entityIter = entities.find(id);
+	if (entityIter == entities.end())
+		return nullptr;
+
+	return entityIter->second;
+}
+
 /*
 PURPOSE: Releases all manager stuff
 */

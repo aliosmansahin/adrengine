@@ -12,6 +12,10 @@
 #include "Begin.h"
 #include "Print.h"
 #include "ConstString.h"
+#include "GetThisEntity.h"
+#include "GetPositionVector.h"
+
+#include "SceneManager.h"
 
 class VisualScript
 {

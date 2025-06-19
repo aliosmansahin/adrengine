@@ -95,7 +95,19 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 			continue;
 		int nodeId = nodeJson.value("id", 100000);
 		auto type = typeIter->second->clone();
+
 		type->FromJson(nodeJson);
+
+		if (nodeType == "GetThisEntity") {
+			GetThisEntity* entityNode = dynamic_cast<GetThisEntity*>(type.get());
+
+			if (entityNode) {
+				Scene* scene = SceneManager::GetInstance().GetSceneById(belongsScene).get();
+				if (scene) {
+					entityNode->entity = scene->GetEntityManager()->GetEntityById(belongsTo).get();
+				}
+			}
+		}
 
 		//Add a new node
 		NodeVisual nodeVisual;

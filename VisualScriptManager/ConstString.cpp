@@ -25,8 +25,8 @@ void ConstString::Draw(NodeVisual* nodeVisual)
 
     //Save current position of the node
     ImVec2 pos = ImNodes::GetNodeScreenSpacePos(nodeVisual->id);
-    x = pos.x;
-    y = pos.y;
+    x = (int)pos.x;
+    y = (int)pos.y;
 
     ImNodes::BeginNodeTitleBar();
     ImGui::Text(title.c_str());
@@ -59,14 +59,6 @@ Value ConstString::Evaluate(Pin* pin)
     buf[sizeof(buf) - 1] = '\0';
     std::string value = buf;
     return value;
-}
-
-/*
-PURPOSE: This function doesn't do anything
-*/
-Value ConstString::EvaluateInput(Pin* pin)
-{
-    return Value();
 }
 
 /*
@@ -116,8 +108,6 @@ bool ConstString::FromJson(nlohmann::json json)
         strcpy_s(buf, sizeof(buf), value.c_str());
 
     SetPins();
-
-    first = true;
 
     return true;
 }

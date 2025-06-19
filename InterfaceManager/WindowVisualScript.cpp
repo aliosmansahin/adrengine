@@ -193,6 +193,14 @@ void WindowVisualScript::DrawWindow(
                 node->SetPos((int)pos.x, (int)pos.y);
                 node->SetPins();
 
+                if (type == "GetThisEntity") {
+                    GetThisEntity* entityNode = dynamic_cast<GetThisEntity*>(node.get());
+
+                    if (entityNode) {
+                        entityNode->entity = SceneManager::GetInstance().GetSceneById(VisualScriptManager::GetInstance().currentScript->belongsScene)->GetEntityManager()->GetEntityById(VisualScriptManager::GetInstance().currentScript->belongsTo).get();
+                    }
+                }
+
                 //Add a new node
                 NodeVisual nodeVisual;
                 nodeVisual.logicNode = node;
@@ -234,6 +242,7 @@ void WindowVisualScript::DrawWindow(
                 showAddNode = false;
                 memset(typeBuf, 0, sizeof(typeBuf));
                 types.clear();
+                break;
             }
         }
 

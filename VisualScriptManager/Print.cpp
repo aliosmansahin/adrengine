@@ -25,8 +25,8 @@ VISUALSCRIPTMANAGER_API void Print::Draw(NodeVisual* nodeVisual)
 
     //Save current position of the node
     ImVec2 pos = ImNodes::GetNodeScreenSpacePos(nodeVisual->id);
-    x = pos.x;
-    y = pos.y;
+    x = (int)pos.x;
+    y = (int)pos.y;
 
     ImNodes::BeginNodeTitleBar();
     ImGui::Text(title.c_str());
