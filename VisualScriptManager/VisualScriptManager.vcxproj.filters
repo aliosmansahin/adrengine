@@ -51,6 +51,9 @@
     <ClInclude Include="SeparateVector3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ToString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -87,6 +90,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SeparateVector3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

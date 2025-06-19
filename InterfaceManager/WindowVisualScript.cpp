@@ -84,7 +84,7 @@ void WindowVisualScript::DrawWindow(
         Pin* from = VisualScriptManager::GetInstance().currentScript->FindPinById(start_attr);
         Pin* to = VisualScriptManager::GetInstance().currentScript->FindPinById(end_attr);
         
-        if (from && to && from->type == to->type) {
+        if (from && to && (from->type == to->type || from->type == PinType::Any || to->type == PinType::Any)) {
             to->connectedTo = from;
             from->connectedTo = to;
             VisualScriptManager::GetInstance().currentScript->links.insert({ VisualScriptManager::GetInstance().currentScript->nextId++, {from->id, to->id} });

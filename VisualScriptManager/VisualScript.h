@@ -15,6 +15,7 @@
 #include "GetThisEntity.h"
 #include "GetPositionVector.h"
 #include "SeparateVector3.h"
+#include "ToString.h"
 
 #include "SceneManager.h"
 
