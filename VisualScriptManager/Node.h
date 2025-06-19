@@ -41,7 +41,7 @@ public:
 
 	//Drawing
 	VISUALSCRIPTMANAGER_API void			BeginDraw(NodeVisual* nodeVisual);
-	VISUALSCRIPTMANAGER_API virtual void	Draw(NodeVisual* nodeVisual) = 0;
+	VISUALSCRIPTMANAGER_API virtual void	Draw(NodeVisual* nodeVisual);
 	VISUALSCRIPTMANAGER_API void			EndDraw();
 
 	//Setters

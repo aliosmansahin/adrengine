@@ -35,6 +35,24 @@ VISUALSCRIPTMANAGER_API void Node::BeginDraw(NodeVisual* nodeVisual)
 }
 
 /*
+PURPOSE: Draws print node
+*/
+VISUALSCRIPTMANAGER_API void Node::Draw(NodeVisual* nodeVisual)
+{
+    for (size_t i = 0; i < inputPins.size(); ++i) {
+        ImNodes::BeginInputAttribute(nodeVisual->inputIds[i], inputPins[i]->type == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
+        ImGui::Text(inputPins[i]->name.c_str());
+        ImNodes::EndInputAttribute();
+    }
+
+    for (size_t i = 0; i < outputPins.size(); ++i) {
+        ImNodes::BeginOutputAttribute(nodeVisual->outputIds[i], outputPins[i]->type == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
+        ImGui::Text(outputPins[i]->name.c_str());
+        ImNodes::EndOutputAttribute();
+    }
+}
+
+/*
 PURPOSE: End the node
 */
 VISUALSCRIPTMANAGER_API void Node::EndDraw()

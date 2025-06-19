@@ -84,8 +84,6 @@ void WindowVisualScript::DrawWindow(
         Pin* from = VisualScriptManager::GetInstance().currentScript->FindPinById(start_attr);
         Pin* to = VisualScriptManager::GetInstance().currentScript->FindPinById(end_attr);
         
-        std::cout << from << " " << to << std::endl;
-
         if (from && to && from->type == to->type) {
             to->connectedTo = from;
             from->connectedTo = to;
@@ -209,8 +207,6 @@ void WindowVisualScript::DrawWindow(
 
                 //Store node id into another variable
                 int idForThisNode = VisualScriptManager::GetInstance().currentScript->nextId;
-
-                std::cout << idForThisNode << std::endl;
 
                 //Set id for special nodes
                 if (nodeVisual.logicNode->GetType() == "Begin") {

@@ -8,21 +8,21 @@
 #define VISUALSCRIPTMANAGER_API __declspec(dllimport)
 #endif
 
-class Print : public Node
+class SeparateVector3 : public Node
 {
 public:
 	//execution
-	VISUALSCRIPTMANAGER_API void				  Execute() override;
+	VISUALSCRIPTMANAGER_API virtual Value		  Evaluate(Pin* pin);
 
 	//getters and setters
 	VISUALSCRIPTMANAGER_API void				  SetPins() override;
 	VISUALSCRIPTMANAGER_API std::string			  GetType() override {
-		return "Print";
+		return "SeparateVector3";
 	}
 
 	//clone
 	VISUALSCRIPTMANAGER_API std::shared_ptr<Node> clone() override {
-		return std::make_shared<Print>(*this);
+		return std::make_shared<SeparateVector3>(*this);
 	}
 };
 

@@ -11,9 +11,6 @@
 class GetPositionVector : public Node
 {
 public:
-	//drawing
-	VISUALSCRIPTMANAGER_API void				  Draw(NodeVisual* nodeVisual) override;
-
 	//execution
 	VISUALSCRIPTMANAGER_API Value				  Evaluate(Pin* pin) override;
 

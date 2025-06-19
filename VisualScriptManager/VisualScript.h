@@ -14,6 +14,7 @@
 #include "ConstString.h"
 #include "GetThisEntity.h"
 #include "GetPositionVector.h"
+#include "SeparateVector3.h"
 
 #include "SceneManager.h"
 

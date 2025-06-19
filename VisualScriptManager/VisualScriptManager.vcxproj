@@ -164,6 +164,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Pin.h" />
     <ClInclude Include="Print.h" />
+    <ClInclude Include="SeparateVector3.h" />
     <ClInclude Include="VisualScript.h" />
     <ClInclude Include="VisualScriptManager.h" />
   </ItemGroup>
@@ -182,6 +183,7 @@
     </ClCompile>
     <ClCompile Include="Pin.cpp" />
     <ClCompile Include="Print.cpp" />
+    <ClCompile Include="SeparateVector3.cpp" />
     <ClCompile Include="VisualScript.cpp" />
     <ClCompile Include="VisualScriptManager.cpp" />
   </ItemGroup>
