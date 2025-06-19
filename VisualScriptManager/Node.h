@@ -37,24 +37,38 @@ struct NodeVisual {
 class Node
 {
 public:
-	VISUALSCRIPTMANAGER_API virtual ~Node()												= default;
-	VISUALSCRIPTMANAGER_API virtual void			      Draw(NodeVisual* nodeVisual)	= 0;
-	VISUALSCRIPTMANAGER_API virtual void			      SetPos(int x, int y)			= 0;
-	VISUALSCRIPTMANAGER_API virtual void			      SetPins()						= 0;
-	VISUALSCRIPTMANAGER_API virtual void				  Execute()						= 0;
-	VISUALSCRIPTMANAGER_API virtual Value				  Evaluate(Pin* pin) {
-		return std::monostate{};
-	};
-	VISUALSCRIPTMANAGER_API	Node* GetNextExecNode(Pin* execOutputPin) {
-		if (execOutputPin->connectedTo)
-			return execOutputPin->connectedTo->parentNode;
-		return nullptr;
-	}
-	VISUALSCRIPTMANAGER_API virtual std::string			  GetType()						= 0;
-	VISUALSCRIPTMANAGER_API virtual std::shared_ptr<Node> clone()						= 0;
-	VISUALSCRIPTMANAGER_API virtual nlohmann::json		  ToJson()						= 0;
-	VISUALSCRIPTMANAGER_API virtual bool				  FromJson(nlohmann::json json) = 0;
+	VISUALSCRIPTMANAGER_API virtual ~Node()	= default;
+
+	//Drawing
+	VISUALSCRIPTMANAGER_API void			BeginDraw(NodeVisual* nodeVisual);
+	VISUALSCRIPTMANAGER_API virtual void	Draw(NodeVisual* nodeVisual) = 0;
+	VISUALSCRIPTMANAGER_API void			EndDraw();
+
+	//Setters
+	VISUALSCRIPTMANAGER_API void			SetPos(int x, int y);
+	VISUALSCRIPTMANAGER_API virtual void	SetPins() = 0;
+
+	//Execution
+	VISUALSCRIPTMANAGER_API virtual void	Execute();
+	VISUALSCRIPTMANAGER_API virtual Value	Evaluate(Pin* pin);
+	VISUALSCRIPTMANAGER_API Value			EvaluateInput(Pin* pin);
+	VISUALSCRIPTMANAGER_API Node*			GetNextExecNode(Pin* execOutputPin);
+
+	//Getters
+	VISUALSCRIPTMANAGER_API virtual std::string	GetType() = 0;
+
+	//Clone
+	VISUALSCRIPTMANAGER_API virtual std::shared_ptr<Node> clone() = 0;
+
+	//Json
+	VISUALSCRIPTMANAGER_API virtual nlohmann::json	ToJson();
+	VISUALSCRIPTMANAGER_API virtual bool			FromJson(nlohmann::json json);
+public:
+	//pins
 	std::vector<std::shared_ptr<Pin>> inputPins;
 	std::vector<std::shared_ptr<Pin>> outputPins;
-	std::string title;
+protected:
+	//variables
+	int x = 0, y = 0;
+	bool first = true;
 };

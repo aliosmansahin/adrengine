@@ -63,7 +63,9 @@ void WindowVisualScript::DrawWindow(
         NodeVisual* vis = &node.second;
         Node* node = vis->logicNode.get();
 
+        node->BeginDraw(vis);
         node->Draw(vis);
+        node->EndDraw();
     }
 
     //Draw each link
