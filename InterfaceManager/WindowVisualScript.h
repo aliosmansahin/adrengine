@@ -26,7 +26,6 @@ public:
 		Utils::Tab*& openedTab,
 		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs
 		);
-	INTERFACEMANAGER_API Pin* FindPinById(int id);
 	INTERFACEMANAGER_API static WindowVisualScript& GetInstance();
 private:
 	//singleton

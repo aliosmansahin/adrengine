@@ -22,6 +22,12 @@ void Begin::Draw(NodeVisual* nodeVisual)
 
     //Draw the node
     ImNodes::BeginNode(nodeVisual->id);
+
+    //Save current position of the node
+    ImVec2 pos = ImNodes::GetNodeScreenSpacePos(nodeVisual->id);
+    x = pos.x;
+    y = pos.y;
+
     ImNodes::BeginNodeTitleBar();
     ImGui::Text(title.c_str());
     ImNodes::EndNodeTitleBar();
@@ -88,5 +94,8 @@ bool Begin::FromJson(nlohmann::json json)
 {
     x = json.value("x", 0);
     y = json.value("y", 0);
+
+    SetPins();
+
     return true;
 }

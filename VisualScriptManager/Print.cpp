@@ -22,6 +22,12 @@ VISUALSCRIPTMANAGER_API void Print::Draw(NodeVisual* nodeVisual)
 
     //Draw the node
     ImNodes::BeginNode(nodeVisual->id);
+
+    //Save current position of the node
+    ImVec2 pos = ImNodes::GetNodeScreenSpacePos(nodeVisual->id);
+    x = pos.x;
+    y = pos.y;
+
     ImNodes::BeginNodeTitleBar();
     ImGui::Text(title.c_str());
     ImNodes::EndNodeTitleBar();
@@ -94,7 +100,12 @@ PURPOSE: Creates a json from the node
 */
 VISUALSCRIPTMANAGER_API nlohmann::json Print::ToJson()
 {
-    return nlohmann::json();
+    nlohmann::json j;
+    j["x"] = x;
+    j["y"] = y;
+    j["type"] = GetType();
+
+    return j;
 }
 
 /*
@@ -102,5 +113,10 @@ PURPOSE: Sets a node from its json
 */
 VISUALSCRIPTMANAGER_API bool Print::FromJson(nlohmann::json json)
 {
-    return bool();
+    x = json.value("x", 0);
+    y = json.value("y", 0);
+
+    SetPins();
+
+    return true;
 }

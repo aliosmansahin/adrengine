@@ -22,6 +22,12 @@ void ConstString::Draw(NodeVisual* nodeVisual)
 
     //Draw the node
     ImNodes::BeginNode(nodeVisual->id);
+
+    //Save current position of the node
+    ImVec2 pos = ImNodes::GetNodeScreenSpacePos(nodeVisual->id);
+    x = pos.x;
+    y = pos.y;
+
     ImNodes::BeginNodeTitleBar();
     ImGui::Text(title.c_str());
     ImNodes::EndNodeTitleBar();
@@ -87,7 +93,13 @@ PURPOSE: Creates a json from the node
 */
 nlohmann::json ConstString::ToJson()
 {
-	return nlohmann::json();
+    nlohmann::json j;
+    j["x"] = x;
+    j["y"] = y;
+    j["type"] = GetType();
+
+    j["value"] = buf;
+    return j;
 }
 
 /*
@@ -95,5 +107,17 @@ PURPOSE: Sets a node from its json
 */
 bool ConstString::FromJson(nlohmann::json json)
 {
-	return false;
+    x = json.value("x", 0);
+    y = json.value("y", 0);
+
+    std::string value = json.value("value", "");
+
+    if(value.size() + 1 <= sizeof(buf))
+        strcpy_s(buf, sizeof(buf), value.c_str());
+
+    SetPins();
+
+    first = true;
+
+    return true;
 }

@@ -14,7 +14,7 @@ bool VisualScriptManager::InitManager(ImGuiContext* imguiContext, ImNodesContext
     types = { {
         {"Begin", std::make_shared<Begin>()},
         {"Print", std::make_shared<Print>()},
-        {"Const String", std::make_shared<ConstString>()},
+        {"ConstString", std::make_shared<ConstString>()},
     } };
 	return true;
 }
