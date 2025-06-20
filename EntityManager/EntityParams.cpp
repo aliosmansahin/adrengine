@@ -2,6 +2,8 @@
 #include "EntityParams.h"
 #include "Entity.h"
 
+#include "VisualScriptManager.h"
+
 /*
 PURPOSE: Creates json content from properties of the entity
 */
@@ -17,7 +19,8 @@ nlohmann::json EntityParams::ToJson() {
 	j["ry"] = ry;
 	j["rz"] = rz;
 	j["id"] = id;
-	j["scriptId"] = scriptId;
+	if(script)
+		j["scriptId"] = script->scriptId;
 	j["name"] = name;
 	if (parent)
 		j["parentId"] = parentId;
@@ -28,7 +31,7 @@ nlohmann::json EntityParams::ToJson() {
 /*
 PURPOSE: Sets properties of the entity from its json
 */
-void EntityParams::FromJson(const nlohmann::json& j) {
+void EntityParams::FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) {
 	x = j.value("x", 0.0f);
 	y = j.value("y", 0.0f);
 	z = j.value("z", 0.0f);
@@ -40,6 +43,11 @@ void EntityParams::FromJson(const nlohmann::json& j) {
 	rz = j.value("rz", 0.0f);
 	id = j.value("id", "");
 	name = j.value("name", "");
-	scriptId = j.value("scriptId", "");
+
+	//TODO: Load own script
+	std::string scriptId = j.value("scriptId", "");
+	
+	script = VisualScriptManager::GetInstance().LoadScript(scriptId, projectDir, scene);
+
 	parentId = j.value("parentId", "");
 }

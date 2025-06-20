@@ -4,11 +4,12 @@
 /*
 PURPOSE: Creates a new script and set some variables
 */
-bool VisualScript::CreateScript(std::string scriptId, std::string belongsTo, std::string belongsScene)
+bool VisualScript::CreateScript(std::string scriptId, std::string belongsEntity, std::string belongsScene)
 {
 	this->scriptId = scriptId;
-	this->belongsTo = belongsTo;
 	this->belongsScene = belongsScene;
+	this->belongsEntity = belongsEntity;
+
 	return true;
 }
 
@@ -26,18 +27,20 @@ PURPOSE: Releases the script
 */
 void VisualScript::ReleaseScript()
 {
-	compiled.clear();
 	//The variables is already being deleted
 }
 
 /*
-PURPOSE: Calls compiled functions
+PURPOSE: Executes begin node of this script
 */
-void VisualScript::RunCompiled()
+void VisualScript::ExecuteBeginScript()
 {
-	for (auto& code : compiled) {
-		code();
+	auto beginNode = nodes.find(0); //0 for Begin Entrypoint
+	if (beginNode == nodes.end()) {
+		Logger::Log("W", "Begin Node not found!");
+		return;
 	}
+	beginNode->second.logicNode->Execute();
 }
 
 /*
@@ -48,13 +51,15 @@ nlohmann::json VisualScript::ToJson()
 	nlohmann::json j;
 
 	//Script properties
-	j["id"] = scriptId;
-	j["belongs-to"] = belongsTo;
+	j["script-id"] = scriptId;
+	j["belongs-entity"] = belongsEntity;
 	j["belongs-scene"] = belongsScene;
 
 	//All nodes
 	for (auto& node : nodes) {
-		j["nodes"].push_back(node.second->ToJson());
+		nlohmann::json nodeJson = node.second.logicNode->ToJson();
+		nodeJson["id"] = node.second.id;
+		j["nodes"].push_back(nodeJson);
 	}
 
 	//All links
@@ -66,18 +71,23 @@ nlohmann::json VisualScript::ToJson()
 		j["links"].push_back(l);
 	}
 
+	j["next-id"] = nextId;
+
 	return j;
 }
 
 /*
 PURPOSE: Sets the visual script from its json
 */
-void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types)
+void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types, IScene* scene)
 {
 	//Script properties
-	scriptId = json["id"];
-	belongsTo = json["belongs-to"];
-	belongsScene = json["belongs-scene"];
+	scriptId = json.value("script-id", "");
+	belongsScene = json.value("belongs-scene", "");
+	belongsEntity = json.value("belongs-entity", "");
+
+	//Load next id
+	nextId = json.value("next-id", 1000);
 
 	//Load each node from its json and insert it to "nodes"
 	for (auto& nodeJson : json["nodes"]) {
@@ -87,83 +97,80 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 		auto typeIter = types.find(nodeType);
 		if (typeIter == types.end())
 			continue;
+		int nodeId = nodeJson.value("id", 100000);
 		auto type = typeIter->second->clone();
+
 		type->FromJson(nodeJson);
 
-		nodes.insert({ type->GetId(), type });
+		if (nodeType == "GetThisEntity") {
+			GetThisEntity* entityNode = dynamic_cast<GetThisEntity*>(type.get());
+
+			if (entityNode) {
+				if (scene) {
+					entityNode->entity = scene->GetEntityManager()->GetEntityById(belongsEntity);
+				}
+			}
+		}
+
+		//Add a new node
+		NodeVisual nodeVisual;
+		nodeVisual.logicNode = type;
+
+		nodeVisual.id = nodeId++;
+
+		//Set pin ids
+		for (auto& pin : type->inputPins) {
+			pin->id = nodeId++;
+
+			nodeVisual.inputIds.push_back(pin->id);
+		}
+
+		for (auto& pin : type->outputPins) {
+			pin->id = nodeId++;
+
+			nodeVisual.outputIds.push_back(pin->id);
+		}
+
+		nodes.insert({ nodeVisual.id, nodeVisual });
 	}
 
-	//Load each link and insert it to "links"
+	//Load each link, insert it to "links" and set pins
 	for (auto& link : json["links"]) {
 		int first = link.value("first", -1);
 		int second = link.value("second", -1);
 		int id = link.value("id", -1);
 		if (first != -1 && second != -1 && id != -1) {
-			links.insert({ id, {first, second} });
+			Pin* from = FindPinById(first);
+			Pin* to = FindPinById(second);
+
+			if (from && to && (from->type == to->type || from->type == PinType::Any || to->type == PinType::Any)) {
+				to->connectedTo = from;
+				from->connectedTo = to;
+				links.insert({ nextId++, {from->id, to->id} });
+			}
 		}
 	}
-
-	//Compile the script after loading
-	CompileScript();
 }
 
 /*
-PURPOSE: Compiles the script
+PURPOSE: Gets pin from id
 */
-std::string VisualScript::CompileScript()
+Pin* VisualScript::FindPinById(int id)
 {
-	//Some stuff
-	std::unordered_map<int, int> organizedNodes;
+	for (const auto& iter : nodes) {
+		const NodeVisual* vis = &iter.second;
 
-	//Look for begin node
-	auto begin = nodes.find(0);
-	if (begin == nodes.end())
-		return "Compile: Begin Entrypoint could not found";
+		//Check for input pins
+		for (auto& pin : vis->logicNode->inputPins) {
+			if (pin->id == id)
+				return pin.get();
+		}
 
-	//Look for return node
-	auto returnNode = nodes.find(2);
-	if (returnNode == nodes.end())
-		return "Compile: Return could not found";
-
-	bool returnConnected = false;
-
-	
-	//Organize nodes by links
-	for (auto& link : links) {
-		int first = link.second.first;
-		int second = link.second.second;
-
-		auto beforeNode = nodes.find(first - 1); //-1 output //-2 input
-		auto afterNode = nodes.find(second - 2);
-
-		organizedNodes.insert(std::pair<int, int>(beforeNode->first, afterNode->first));
-
-		//Check if the return node is connected to another node
-		if (second == 2 + 2) { //Return Id 
-			returnConnected = true;
+		//Check for output pins
+		for (auto& pin : vis->logicNode->outputPins) {
+			if (pin->id == id)
+				return pin.get();
 		}
 	}
-
-	//Check the begin node and end node are connected
-	int id = 0;
-	std::unordered_map<int, int>::iterator organizedNode = organizedNodes.find(id);
-	if (organizedNode == organizedNodes.end())
-		return "Compile: Begin Entrypoint wasn't connected to any node";
-
-	if (!returnConnected)
-		return "Compile: Return wasn't connected to any node";
-
-	//Compile each organized node and push compiled code to the vector
-	compiled.clear();
-
-	while (true) {
-		auto nodeIter = nodes.find(organizedNode->second);
-		if (nodeIter->second->GetType() == "Return")
-			break;
-		compiled.push_back(nodeIter->second->Compile());
-		organizedNode = organizedNodes.find(organizedNode->second);
-	}
-
-	//Return nothing if compilation was successful
-	return "";
+	return nullptr;
 }

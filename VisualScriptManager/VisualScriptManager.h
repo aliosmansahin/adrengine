@@ -7,7 +7,6 @@
 #endif
 
 #include "VisualScript.h"
-#include "Entity.h"
 #include "AssetSaver.h"
 #include "Logger.h"
 
@@ -21,8 +20,8 @@ public:
 	VISUALSCRIPTMANAGER_API void														   ReleaseManager();
 
 	//script functions
-	VISUALSCRIPTMANAGER_API std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Utils::Tab>> OpenScript(std::string scriptId, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs);
-	VISUALSCRIPTMANAGER_API bool														   LoadScript(std::string scriptId, std::string& projectDir, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs);
+	VISUALSCRIPTMANAGER_API std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Utils::Tab>> OpenScript(std::shared_ptr<VisualScript> source, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs);
+	VISUALSCRIPTMANAGER_API std::shared_ptr<VisualScript>								   LoadScript(std::string scriptId, std::string& projectDir, IScene* scene);
 	VISUALSCRIPTMANAGER_API bool														   CloseScript(
 		std::string scriptId,
 		std::string& projectDir,
@@ -31,7 +30,7 @@ public:
 		Utils::Tab*& openedTab,
 		std::map<std::string, std::string>& scenes
 	);
-	VISUALSCRIPTMANAGER_API bool														   CreateScript(Utils::ScriptBelongsTo sbt, std::string& projectDir, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
+	VISUALSCRIPTMANAGER_API std::shared_ptr<VisualScript>								   CreateScript(Utils::ScriptBelongsTo sbt, std::string& projectDir, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
 		Utils::Tab*& openedTab, std::string& selectedTabId, std::map<std::string, std::string>& scenes);
 	VISUALSCRIPTMANAGER_API bool														   DeleteScript(std::string scriptId, Utils::ScriptBelongsTo sbt);
 	VISUALSCRIPTMANAGER_API bool														   SaveScript(
@@ -56,7 +55,6 @@ private:
 public:
 	//scripts
 	std::unordered_map<std::string, std::shared_ptr<VisualScript>> openedScripts;
-	std::unordered_map<std::string, std::shared_ptr<VisualScript>> scripts;
 	std::shared_ptr<VisualScript> currentScript = nullptr;
 
 	//node types

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "EntityManager.h"
 #include "Graphics.h"
+#include "VisualScript.h"
 
 /*
 PURPOSE: Initialize the entity manager
@@ -389,6 +390,33 @@ ENTITYMANAGER_API void EntityManager::SetEntityRealStats(Entity* entity)
 }
 
 /*
+PURPOSE: Runs begin nodes of all scripts of entities
+*/
+ENTITYMANAGER_API void EntityManager::RunEntitiesScriptBegin()
+{
+	for (auto& entity : entities) {
+		entity.second->GetEntityParams()->script->ExecuteBeginScript();
+	}
+}
+
+/*
+PURPOSE: Returns entity by id, check out getElementById of javascript
+*/
+ENTITYMANAGER_API Entity* EntityManager::GetEntityById(std::string id)
+{
+	std::cout << id << std::endl;
+
+	for (auto& iter : entities)
+		std::cout << iter.first << std::endl;
+
+	auto entityIter = entities.find(id);
+	if (entityIter == entities.end())
+		return nullptr;
+
+	return entityIter->second.get();
+}
+
+/*
 PURPOSE: Releases all manager stuff
 */
 void EntityManager::ReleaseEntityManager()
@@ -536,7 +564,7 @@ bool EntityManager::RemoveEntity(
 	auto entity = entityIter->second.get();
 
 	//If the entity has a parent, remove it from the parent's children
-	auto parent = entity->GetEntityParams()->parent.get();
+	Entity* parent = entity->GetEntityParams()->parent.get();
 	if (parent) {
 		auto& children = parent->GetEntityParams()->children;
 		children.erase(std::remove_if(children.begin(), children.end(), [&](std::shared_ptr<Entity>& child) {

@@ -52,7 +52,7 @@ public:
 	};
 
 	//json
-	ENTITYMANAGER_API void FromJson(const nlohmann::json& j) override;
+	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) override;
 
 	//Variables for the Camera
 	CameraProjection projectionType = CameraProjection::PERPECTIVE;

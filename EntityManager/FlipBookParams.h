@@ -49,7 +49,7 @@ public:
 	};
 
 	//json
-	ENTITYMANAGER_API void FromJson(const nlohmann::json& j) override;
+	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) override;
 
 	//flipbook texture
 	std::string textureId = "";

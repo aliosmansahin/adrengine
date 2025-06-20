@@ -286,6 +286,7 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 			nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(entityFile);
 
 			std::shared_ptr<Entity> entity;
+			std::shared_ptr<EntityParams> params;
 			if (!entityJson.is_null()) {
 				std::string type = entityJson.value("type", "");
 				if (type.empty())
@@ -299,8 +300,7 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 				entity = typeIter->second.first->clone();
 
 				//Create parameter object for the entity
-				std::shared_ptr<EntityParams> params = typeIter->second.second->clone();
-				params->FromJson(entityJson);
+				params = typeIter->second.second->clone();
 				entity->CreateEntity(params);
 				
 				//TileMap has own fromjson function
@@ -320,7 +320,10 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 			}
 			//Add the entity to entity manager
 			if(entity.get())
-				entityManager->GetEntities().insert(std::pair<std::string, std::shared_ptr<Entity>>(entity->GetEntityParams()->id, entity));
+				entityManager->GetEntities().insert(std::pair<std::string, std::shared_ptr<Entity>>(entityJson.value("id", ""), entity));
+
+			if(params.get())
+				params->FromJson(entityJson, projectDir, this);
 		}
 	}
 

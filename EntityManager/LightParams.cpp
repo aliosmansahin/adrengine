@@ -4,14 +4,14 @@
 /*
 PURPOSE: Sets properties of the entity from its json
 */
-void LightParams::FromJson(const nlohmann::json& j)
+void LightParams::FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene)
 {
 	/*
 		Its kind of "super" function.
 		Which calls the function of the base class.
 		In this function, we are overriding the function, so we need it
 	*/
-	EntityParams::FromJson(j);
+	EntityParams::FromJson(j, projectDir, scene);
 
 	//Set some properties
 	color.x = j.value("color-x", 1.0f);

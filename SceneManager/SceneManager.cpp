@@ -9,7 +9,6 @@ PURPOSE: Initializes the scene manager
 */
 bool SceneManager::InitializeManager()
 {
-    //CreateScene();
     return true;
 }
 
@@ -18,15 +17,12 @@ PURPOSE: Releases the scene manager
 */
 void SceneManager::ClearManager()
 {
-    //Release each scene
-    for (auto& scene : openedScenes)
-        scene.second->ReleaseScene();
-
-    //currentScene is nullptr anymore
-    currentScene = nullptr;
+    //Release opened scene
+    if(openedScene)
+        openedScene->ReleaseScene();
+    openedScene = nullptr;
 
     //Clear the scene maps
-    openedScenes.clear();
     scenes.clear();
 
     //Logger
@@ -38,12 +34,13 @@ PURPOSE: Creates a scene and opens it
 */
 bool SceneManager::CreateScene(
     Utils::SceneType sceneType,
-    std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-    Utils::Tab*& openedTab,
-    std::string& selectedTabId,
-    std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts)
+    std::string& projectDir)
 {
+    //If there is a old scene, release it
+    if (openedScene.get()) {
+        CloseScene(openedScene->sceneId, projectDir);
+    }
+
     //Set the scene id
     int index = 0;
     std::string sceneId;
@@ -65,7 +62,6 @@ bool SceneManager::CreateScene(
     scenes.insert(std::pair<std::string, std::string>(scene->sceneId, scene->sceneName));
 
     //Save the scene
-    //std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
     std::string scenesDir = projectDir + "scenes/";
     std::filesystem::create_directory(scenesDir);
     std::string sceneDir = scenesDir + scene->sceneId + "/";
@@ -74,27 +70,7 @@ bool SceneManager::CreateScene(
 
     AssetSaver::SaveSceneToFile(scene->ToJson(), sceneFile, projectDir);
 
-    //Insert it to opened scenes to open it
-    openedScenes.insert(std::pair<std::string, std::unique_ptr<Scene>>(scene->sceneId, std::unique_ptr<Scene>(scene)));
-
-    //Create a new tab and insert it to all tabs
-    Utils::Tab* tab = new Utils::Tab();
-    tab->id = sceneId;
-    tab->tabType = Utils::SceneEditor;
-
-    tabs.insert(std::pair<std::string, std::unique_ptr<Utils::Tab>>(tab->id, std::unique_ptr<Utils::Tab>(tab)));
-
-    //Set the current scene and tab to the new scene and tab
-    currentScene = scene;
-    openedTab = tab;
-    selectedTabId = tab->id;
-
-    //Save the project
-    std::string projectFile = projectDir + "project.adrengineproject";
-
-    nlohmann::json projectJson = Utils::CreateProjectJson(openedTab->id, scenes, scripts, tabs);
-
-    AssetSaver::SaveProjectToFile(projectFile, projectJson);
+    openedScene = std::shared_ptr<Scene>(scene);
 
     return true;
 }
@@ -103,21 +79,14 @@ bool SceneManager::CreateScene(
 PURPOSE: Loads the scene and opens it
 */
 Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
     std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
 {
-    //If the scene or tab exists, don't create a new one
-    auto sceneIter = openedScenes.find(sceneId);
-    if (sceneIter != openedScenes.end()) {
-        return sceneIter->second.get();
-    }
-    auto tabIter = tabs.find(sceneId);
-    if (tabIter != tabs.end()) {
-        return nullptr;
+    //If there is a old scene, release it
+    if (openedScene.get()) {
+        CloseScene(openedScene->sceneId, projectDir);
     }
 
     //Load the scene
-    //std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
     std::string scenesDir = projectDir + "scenes/";
     std::filesystem::create_directory(scenesDir);
     std::string sceneDir = scenesDir + sceneId + "/";
@@ -133,16 +102,7 @@ Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
     Scene* scene = new Scene();
     scene->FromJson(sceneJson, projectDir, entityTypes);
 
-    //Insert the scene to opened scenes to open it
-    openedScenes.insert(std::pair<std::string, std::unique_ptr<Scene>>(scene->sceneId, std::unique_ptr<Scene>(scene)));
-
-    //Create a new tab
-    Utils::Tab* tab = new Utils::Tab();
-    tab->id = sceneId;
-    tab->tabType = Utils::SceneEditor;
-
-    //Insert the tab to tabs map
-    tabs.insert(std::pair<std::string, std::unique_ptr<Utils::Tab>>(tab->id, std::unique_ptr<Utils::Tab>(tab)));
+    openedScene = std::shared_ptr<Scene>(scene);
 
     return scene;
 }
@@ -150,115 +110,51 @@ Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
 /*
 PURPOSE: Saves and closes the scene
 */
-bool SceneManager::CloseScene(std::string sceneId, std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-    Utils::Tab*& openedTab,
-    std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts)
+bool SceneManager::CloseScene(std::string sceneId, std::string& projectDir)
 {
     //If the scene or tab doesn't exists, interrupt the function
-    auto sceneIter = openedScenes.find(sceneId);
-    if (sceneIter == openedScenes.end()) {
+    if (!openedScene.get())
         return false;
-    }
-    auto tabIter = tabs.find(sceneId);
-    if (tabIter == tabs.end()) {
-        return false;
-    }
 
-    auto scene = sceneIter->second.get();
-    
     //Save the scene
-    //std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
     std::string scenesDir = projectDir + "scenes/";
     std::filesystem::create_directory(scenesDir);
     std::string sceneDir = scenesDir + sceneId + "/";
     std::filesystem::create_directory(sceneDir);
     std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-    AssetSaver::SaveSceneToFile(scene->ToJson(), sceneFile, projectDir);
+    AssetSaver::SaveSceneToFile(openedScene->ToJson(), sceneFile, projectDir);
 
     //Release the scene
-    scene->ReleaseScene();
+    openedScene->ReleaseScene();
+    openedScene = nullptr;
 
-    //Remove the scene from opened scenes
-    openedScenes.erase(sceneIter);
-
-    //Remove the tab from tabs
-    tabs.erase(tabIter);
-
-    //Save project
-    std::string projectFile = projectDir + "project.adrengineproject";
-
-    std::string openedTabId = "";
-
-    if (openedTab) {
-        openedTabId = openedTab->id;
-    }
-
-    nlohmann::json projectJson = Utils::CreateProjectJson(openedTabId, scenes, scripts, tabs);
-    AssetSaver::SaveProjectToFile(projectFile, projectJson);
     return true;
 }
 
 /*
 PURPOSE: Deletes scene object and its folder
 */
-bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir,
-    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-    Utils::Tab*& openedTab,
-    std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts)
+bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
 {
     //If the scene doesn't exist, interrupt the function
     auto sceneIter = scenes.find(sceneId);
-    if (sceneIter == scenes.end()) {
+    if (sceneIter == scenes.end())
         return false;
-    }
 
-    //Remove the scene from opened scenes
-    auto openedIter = openedScenes.find(sceneId);
-    if (openedIter != openedScenes.end()) {
-        openedIter->second->ReleaseScene();
-        openedScenes.erase(openedIter);
-    }
-
-    //Remove the tab from tabs
-    auto tabIter = tabs.find(sceneId);
-    if (tabIter != tabs.end()) {
-        auto& tab = tabIter->second;
-        std::string openedSceneId = tab->id;
-        std::string oldSceneId = "";
-
-        //If closing scene is the opened scene
-        if (SceneManager::GetInstance().currentScene)
-            oldSceneId = SceneManager::GetInstance().currentScene->sceneId;
-        if (SceneManager::GetInstance().currentScene && oldSceneId == openedSceneId) {
-            SceneManager::GetInstance().currentScene = nullptr;
-        }
-
-        //Remove tab
-        tabs.erase(tabIter);
-        if (openedTab)
-            openedTab = nullptr;
+    //Check if the scene that will be deleted is an opened scene
+    if (openedScene.get() && openedScene->sceneId == sceneId) {
+        //Remove the opened scene
+        openedScene->ReleaseScene();
+        openedScene = nullptr;
     }
     
     //Delete scene directory
-    //std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
     std::string scenesDir = projectDir + "scenes/";
     std::string sceneDir = scenesDir + sceneId + "/";
     std::filesystem::remove_all(sceneDir);
 
     //Remove scene from scenes map
     scenes.erase(sceneIter);
-
-    //Save project
-    std::string projectFile = projectDir + "project.adrengineproject";
-    std::string openedTabId = "";
-
-    if (openedTab) {
-        openedTabId = openedTab->id;
-    }
-
-    nlohmann::json projectJson = Utils::CreateProjectJson(openedTabId, scenes, scripts, tabs);
-    AssetSaver::SaveProjectToFile(projectFile, projectJson);
 
     return true;
 }

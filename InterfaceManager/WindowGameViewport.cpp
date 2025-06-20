@@ -49,7 +49,7 @@ void WindowGameViewport::DrawWindow(
     else {
         if (ImGui::Selectable("Play", false, ImGuiSelectableFlags_None, ImVec2(100, (float)toolbarHeight))) {
             //When user plays the scene, run the scripts
-            VisualScriptManager::GetInstance().RunScriptsBegin();
+            SceneManager::GetInstance().openedScene->GetEntityManager()->RunEntitiesScriptBegin();
             isPlaying = true;
         }
     }
@@ -63,16 +63,16 @@ void WindowGameViewport::DrawWindow(
 
     ImGui::SameLine();
 
-    std::string cameraInfo = "CamX: " + std::to_string(SceneManager::GetInstance().currentScene->currentCamera->GetEntityParams()->x) + " / ";
+    std::string cameraInfo = "CamX: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->x) + " / ";
     ImGui::Text(cameraInfo.c_str());
     ImGui::SameLine();
 
-    cameraInfo = "CamY: " + std::to_string(SceneManager::GetInstance().currentScene->currentCamera->GetEntityParams()->y) + " / ";
+    cameraInfo = "CamY: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->y) + " / ";
     ImGui::Text(cameraInfo.c_str());
     ImGui::SameLine();
 
-    if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_3D) {
-        cameraInfo = "CamZ: " + std::to_string(SceneManager::GetInstance().currentScene->currentCamera->GetEntityParams()->z) + " / ";
+    if (SceneManager::GetInstance().openedScene->sceneType == Utils::SCENE_3D) {
+        cameraInfo = "CamZ: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->z) + " / ";
         ImGui::Text(cameraInfo.c_str());
         ImGui::SameLine();
     }
@@ -104,7 +104,7 @@ void WindowGameViewport::DrawWindow(
         Draw the scene, this function stores the frame into the frameBufferTex texture,
         after that, draw the texture as a texture via ImGui
     */
-    SceneManager::GetInstance().currentScene->DrawScene(
+    SceneManager::GetInstance().openedScene->DrawScene(
         (int)window_width,
         (int)window_height);
 

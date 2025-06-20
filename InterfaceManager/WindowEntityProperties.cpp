@@ -90,24 +90,22 @@ void WindowEntityProperties::DrawWindow(
         //Script selections
         ImGui::SeparatorText("Script");
         //If this entity has no script, draw an add button
-        if (currentEntity->GetEntityParams()->scriptId.empty()) {
+        if (!currentEntity->GetEntityParams()->script) {
             ImGui::Text("No Script");
             ImGui::SameLine();
             if (ImGui::Button("Add Script")) {
                 Utils::ScriptBelongsTo sbt;
-                sbt.entity = currentEntity;
-                sbt.sceneJson = SceneManager::GetInstance().currentScene->ToJson();
-                VisualScriptManager::GetInstance().CreateScript(sbt, projectDir, tabs, openedTab, selectedTabId, SceneManager::GetInstance().scenes);
-                selectedTabId = currentEntity->GetEntityParams()->scriptId;
+                sbt.entityJson = currentEntity->ToJson();
+                sbt.sceneJson = SceneManager::GetInstance().openedScene->ToJson();
+                currentEntity->GetEntityParams()->script = VisualScriptManager::GetInstance().CreateScript(sbt, projectDir, tabs, openedTab, selectedTabId, SceneManager::GetInstance().scenes);
             }
         }
         //Otherwise draw an edit button for the script
         else {
-            ImGui::Text(currentEntity->GetEntityParams()->scriptId.c_str());
+            ImGui::Text(currentEntity->GetEntityParams()->script->scriptId.c_str());
             ImGui::SameLine();
             if (ImGui::Button("Edit Script")) {
-                auto result = VisualScriptManager::GetInstance().OpenScript(currentEntity->GetEntityParams()->scriptId, tabs);
-                VisualScriptManager::GetInstance().currentScript = result.first;
+                auto result = VisualScriptManager::GetInstance().OpenScript(currentEntity->GetEntityParams()->script, tabs);
                 openedTab = result.second.get();
                 selectedTabId = result.second->id;
             }

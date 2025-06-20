@@ -27,7 +27,28 @@ void WindowAddScene::DrawWindow(
 
     //When the user selects the add button
     if(ImGui::Button("Add")) {
-        SceneManager::GetInstance().CreateScene(activeSceneType, projectDir, tabs, openedTab, selectedTabId, VisualScriptManager::GetInstance().scripts); // pass activeSceneType as parameter
+        SceneManager::GetInstance().CreateScene(activeSceneType, projectDir);
+
+        tabs.clear();
+
+        //Create a new tab and insert it to all tabs
+        Utils::Tab* tab = new Utils::Tab();
+        tab->id = SceneManager::GetInstance().openedScene->sceneId;
+        tab->tabType = Utils::SceneEditor;
+
+        tabs.insert(std::pair<std::string, std::unique_ptr<Utils::Tab>>(tab->id, std::unique_ptr<Utils::Tab>(tab)));
+
+        //Set the current scene and tab to the new scene and tab
+        openedTab = tab;
+        selectedTabId = tab->id;
+
+        //Save the project
+        std::string projectFile = projectDir + "project.adrengineproject";
+
+        nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, SceneManager::GetInstance().openedScene->sceneId);
+
+        AssetSaver::SaveProjectToFile(projectFile, projectJson);
+
         WindowEntityProperties::GetInstance().currentEntity = nullptr;
         WindowScene::GetInstance().selectedId = "";
         showWindow = false;

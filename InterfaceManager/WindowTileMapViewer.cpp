@@ -95,7 +95,7 @@ INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow(int screenWidth, int s
     float ndcY = 1.0f - (localMousePos.y / window_height) * 2.0f;
 
     //Inverting y-axis of viewer. See calling UpdateTransformMatrix2D below!
-    if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_3D)
+    if (SceneManager::GetInstance().openedScene->sceneType == Utils::SCENE_3D)
         ndcY = -ndcY;
 
     //Clip scene vector from NDC
@@ -114,13 +114,13 @@ INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow(int screenWidth, int s
 
     if (isFocused) {
         //Update the camera for tilemapviewer
-        cameraX -= SceneManager::GetInstance().currentScene->deltaX;
+        cameraX -= SceneManager::GetInstance().openedScene->deltaX;
 
         //Inverting y-axis of the camera. See calling UpdateTransformMatrix2D below!
-        if (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_3D)
-            cameraY += SceneManager::GetInstance().currentScene->deltaY;
+        if (SceneManager::GetInstance().openedScene->sceneType == Utils::SCENE_3D)
+            cameraY += SceneManager::GetInstance().openedScene->deltaY;
         else
-            cameraY -= SceneManager::GetInstance().currentScene->deltaY;
+            cameraY -= SceneManager::GetInstance().openedScene->deltaY;
     }
 
     if (isHovered) {
@@ -147,7 +147,7 @@ INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow(int screenWidth, int s
     ShaderManager::GetInstance().UpdateTransformMatrix2D(
         (int)window_width, (int)window_height,
         (int)cameraX, (int)cameraY,
-        (SceneManager::GetInstance().currentScene->sceneType == Utils::SCENE_3D));
+        (SceneManager::GetInstance().openedScene->sceneType == Utils::SCENE_3D));
 
     //Set the drawing mode of the tilemap
     edittingTileMap->drawingViewer = true;
@@ -167,11 +167,11 @@ INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow(int screenWidth, int s
         ImVec2((float)window_width, (float)window_height), ImVec2(0, 1), ImVec2(1, 0));
 
     if (isFocused && isHovered) {
-        if (SceneManager::GetInstance().currentScene->leftPressed) {
+        if (SceneManager::GetInstance().openedScene->leftPressed) {
             //TileMap will add a tile to its own tiles
             edittingTileMap->AddTileToMap(mouseX, mouseY, cameraX, cameraY, WindowTileMapBrush::GetInstance().selectedTile);
         }
-        if (SceneManager::GetInstance().currentScene->deletePressed) {
+        if (SceneManager::GetInstance().openedScene->deletePressed) {
             //TileMap will remove the tile from its own tiles
             edittingTileMap->RemoveTileFromMap(mouseX, mouseY, cameraX, cameraY);
         }

@@ -7,13 +7,15 @@
 
 #include "EntityParams.h"
 
+#include "interfaces/IEntity/IEntity.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class Entity
+class Entity : public IEntity
 {
 public:
 	//main funcs
@@ -30,7 +32,7 @@ public:
 	}
 	
 	//properties
-	ENTITYMANAGER_API virtual EntityParams*  GetEntityParams();
+	ENTITYMANAGER_API virtual EntityParams* GetEntityParams() override;
 
 	//json
 	ENTITYMANAGER_API virtual nlohmann::json ToJson();

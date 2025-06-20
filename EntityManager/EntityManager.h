@@ -23,6 +23,8 @@
 
 #include "glad_wrapper.h"
 
+#include "interfaces/IEntityManager/IEntityManager.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
@@ -31,7 +33,7 @@
 
 using namespace adr;
 
-class EntityManager
+class EntityManager : public IEntityManager
 {
 public:
 	//main funcs
@@ -69,12 +71,15 @@ public:
 
 	ENTITYMANAGER_API void		  SetEntityRealStats(Entity* entity);
 
+	ENTITYMANAGER_API void		  RunEntitiesScriptBegin();
+
 	//status
 	ENTITYMANAGER_API size_t										  GetEntityCount() { return entities.size(); }
-	ENTITYMANAGER_API std::map<std::string, std::shared_ptr<Entity>>& GetEntities() { return entities; }
-private:
-	//stores lights
 
+	//getters
+	ENTITYMANAGER_API std::map<std::string, std::shared_ptr<Entity>>& GetEntities() { return entities; }
+	ENTITYMANAGER_API Entity* GetEntityById(std::string id) override;
+private:
 	//stores entities
 	std::map<std::string, std::shared_ptr<Entity>> entities;
 
