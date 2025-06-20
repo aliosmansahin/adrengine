@@ -10,9 +10,6 @@
     <Filter Include="Entity\Sprite2D">
       <UniqueIdentifier>{47e87fd2-2325-473c-9105-35f3684cd70f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DllDep">
-      <UniqueIdentifier>{5af8bbb9-a8fd-4080-b47f-00fc44044ce3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Entity\Light">
       <UniqueIdentifier>{5013989f-57d9-4bdf-84a9-b6d1e93db649}</UniqueIdentifier>
     </Filter>
@@ -39,6 +36,9 @@
     </Filter>
     <Filter Include="Entity\Camera">
       <UniqueIdentifier>{17423638-af15-4897-8eaa-8ffe1e655c6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dll">
+      <UniqueIdentifier>{5af8bbb9-a8fd-4080-b47f-00fc44044ce3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -79,10 +79,10 @@
       <Filter>Entity\Sprite2D</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>DllDep</Filter>
+      <Filter>Dll</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
-      <Filter>DllDep</Filter>
+      <Filter>Dll</Filter>
     </ClInclude>
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Light.h">
@@ -154,10 +154,10 @@
       <Filter>Entity\Sprite2D</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
-      <Filter>DllDep</Filter>
+      <Filter>Dll</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>DllDep</Filter>
+      <Filter>Dll</Filter>
     </ClCompile>
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Light.cpp">

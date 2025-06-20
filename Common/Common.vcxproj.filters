@@ -1,44 +1,153 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="nlohmann_json\json.hpp" />
-    <ClInclude Include="nlohmann_json\json_fwd.hpp" />
-    <ClInclude Include="stbi\stb_image.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_impl_glfw.h" />
-    <ClInclude Include="imgui\imgui_impl_opengl3.h" />
-    <ClInclude Include="imgui\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="imgui\imgui_impl_win32.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="imnodes\imnodes.h" />
-    <ClInclude Include="imnodes\imnodes_internal.h" />
-    <ClInclude Include="glad\glad.h" />
-    <ClInclude Include="glad\khrplatform.h" />
-    <ClInclude Include="utils\Utils.h" />
-    <ClInclude Include="glfw\glfw3.h" />
-    <ClInclude Include="glfw\glfw3native.h" />
-    <ClInclude Include="interfaces\IEntity\IEntity.h" />
-    <ClInclude Include="interfaces\IEntity\IEntityParams.h" />
-    <ClInclude Include="interfaces\IScene\IScene.h" />
-    <ClInclude Include="interfaces\IEntityManager\IEntityManager.h" />
+    <ClInclude Include="glad\glad.h">
+      <Filter>glad</Filter>
+    </ClInclude>
+    <ClInclude Include="glad\khrplatform.h">
+      <Filter>glad</Filter>
+    </ClInclude>
+    <ClInclude Include="glfw\glfw3.h">
+      <Filter>glfw</Filter>
+    </ClInclude>
+    <ClInclude Include="glfw\glfw3native.h">
+      <Filter>glfw</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_glfw.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_opengl3.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_opengl3_loader.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_win32.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imnodes\imnodes.h">
+      <Filter>imnodes</Filter>
+    </ClInclude>
+    <ClInclude Include="imnodes\imnodes_internal.h">
+      <Filter>imnodes</Filter>
+    </ClInclude>
+    <ClInclude Include="nlohmann_json\json_fwd.hpp">
+      <Filter>nlohmann_json</Filter>
+    </ClInclude>
+    <ClInclude Include="nlohmann_json\json.hpp">
+      <Filter>nlohmann_json</Filter>
+    </ClInclude>
+    <ClInclude Include="stbi\stb_image.h">
+      <Filter>stbi</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Utils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\IEntity.h">
+      <Filter>interfaces\IEntity</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntityManager\IEntityManager.h">
+      <Filter>interfaces\IEntityManager</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\IEntityParams.h">
+      <Filter>interfaces\IEntity</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IScene\IScene.h">
+      <Filter>interfaces\IScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_glfw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="imnodes\imnodes.cpp" />
-    <ClCompile Include="interfaces\IEntity\IEntity.cpp" />
-    <ClCompile Include="interfaces\IEntity\IEntityParams.cpp" />
-    <ClCompile Include="interfaces\IScene\IScene.cpp" />
-    <ClCompile Include="interfaces\IEntityManager\IEntityManager.cpp" />
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_glfw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_win32.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imnodes\imnodes.cpp">
+      <Filter>imnodes</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\IEntity.cpp">
+      <Filter>interfaces\IEntity</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntityManager\IEntityManager.cpp">
+      <Filter>interfaces\IEntityManager</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\IEntityParams.cpp">
+      <Filter>interfaces\IEntity</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IScene\IScene.cpp">
+      <Filter>interfaces\IScene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="glad">
+      <UniqueIdentifier>{06709b2d-64ae-4d9c-b40c-b4a5e4fee23f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glfw">
+      <UniqueIdentifier>{daddad2e-dfe0-41cf-bdb4-e6b371be103e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{26850e30-ce74-482c-a361-39204d71ef5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imnodes">
+      <UniqueIdentifier>{cd9d729a-672d-4ad1-8640-f3620c2edd77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nlohmann_json">
+      <UniqueIdentifier>{27e9da74-6d82-4069-8067-8abf66bc7d7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="stbi">
+      <UniqueIdentifier>{797b0c11-ab67-45f0-a3db-3eb0402e636f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{5376d77b-e696-4956-8034-7db81c51b20e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces">
+      <UniqueIdentifier>{773937c8-1ebb-46a8-9ad6-5c3abdd352c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity">
+      <UniqueIdentifier>{7806d202-65a1-4262-a31b-d3ec1850787c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntityManager">
+      <UniqueIdentifier>{b7858aca-df78-40e2-8606-0eccab0a5113}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IScene">
+      <UniqueIdentifier>{26a10e63-8c3e-4628-bf98-6143b8f7bbc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -1,45 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Dll">
+      <UniqueIdentifier>{6b9ddaa2-81fa-4018-ac8e-f8f0d15a3902}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="AssetDatabase">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="AssetSaver">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="AssetDatabase.h">
+      <Filter>AssetDatabase</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
+      <Filter>Dll</Filter>
     </ClInclude>
-    <ClInclude Include="AssetDatabase.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="framework.h">
+      <Filter>Dll</Filter>
     </ClInclude>
     <ClInclude Include="AssetSaver.h">
-      <Filter>Header Files</Filter>
+      <Filter>AssetSaver</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="AssetSaver.cpp">
+      <Filter>AssetSaver</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Dll</Filter>
     </ClCompile>
     <ClCompile Include="AssetDatabase.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>AssetDatabase</Filter>
     </ClCompile>
-    <ClCompile Include="AssetSaver.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="pch.cpp">
+      <Filter>Dll</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

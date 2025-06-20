@@ -1,60 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="Dll">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="tiny_obj_loader">
+      <UniqueIdentifier>{60a710de-4e0b-4849-bbd8-894e3fedc468}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderManager">
+      <UniqueIdentifier>{7a5f9fc1-becf-472c-b607-0ba339f7b274}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderManager\Shader">
+      <UniqueIdentifier>{8eac85ce-1f76-42f3-8827-a6a02e8095e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FramebufferProvider">
+      <UniqueIdentifier>{3ae75024-5552-4e2c-a78e-43f97d824e51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
+      <Filter>Dll</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="framework.h">
+      <Filter>Dll</Filter>
     </ClInclude>
     <ClInclude Include="tiny_obj_loader.h">
-      <Filter>Header Files</Filter>
+      <Filter>tiny_obj_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>ShaderManager\Shader</Filter>
     </ClInclude>
     <ClInclude Include="FramebufferProvider.h">
-      <Filter>Header Files</Filter>
+      <Filter>FramebufferProvider</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Dll</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Dll</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ShaderManager\Shader</Filter>
     </ClCompile>
     <ClCompile Include="FramebufferProvider.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>FramebufferProvider</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics.cpp" />
   </ItemGroup>
 </Project>
