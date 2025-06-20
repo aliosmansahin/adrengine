@@ -44,7 +44,7 @@ public:
 		bool windowSceneDeletePressed,
 		bool& pendingDelete,
 		std::string selectedId,
-		std::function<void()> selectFunction,
+		std::function<void(std::string)> extraDeletingFunc,
 		std::string& projectDir,
 		std::string& sceneId,
 		nlohmann::json& currentSceneJson,
@@ -63,7 +63,7 @@ public:
 		bool newEntity = true
 	);
 	ENTITYMANAGER_API bool		  RemoveEntity(
-		std::string which,
+		Entity* entity,
 		std::string& projectDir,
 		std::string& sceneId,
 		nlohmann::json& currentSceneJson,

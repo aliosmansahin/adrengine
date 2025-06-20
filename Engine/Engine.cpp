@@ -290,7 +290,14 @@ ENGINE_API void Engine::UpdateCurrentScene()
             WindowScene::GetInstance().deletePressed,
             WindowScene::GetInstance().pendingDelete,
             WindowScene::GetInstance().selectedId,
-            []() {
+            [](std::string scriptId) {
+                //Delete tab
+                auto iter = InterfaceManager::GetInstance().tabs.find(scriptId);
+                if (iter != InterfaceManager::GetInstance().tabs.end()) {
+                    InterfaceManager::GetInstance().tabs.erase(iter);
+                }
+
+                //Select nothing
                 WindowEntityProperties::GetInstance().SelectEntity(nullptr);
             },
             projectDir);

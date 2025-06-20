@@ -28,6 +28,7 @@ PURPOSE: Releases the script
 void VisualScript::ReleaseScript()
 {
 	//The variables is already being deleted
+	nodes.clear();
 }
 
 /*

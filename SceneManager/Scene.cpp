@@ -59,7 +59,7 @@ void Scene::UpdateScene(
 	bool windowSceneDeletePressed,
 	bool& pendingDelete,
 	std::string selectedId,
-	std::function<void()> selectFunction,
+	std::function<void(std::string)> extraDeletingFunc,
 	std::string& projectDir)
 {
 	//Setups for mouse positions
@@ -196,7 +196,7 @@ void Scene::UpdateScene(
 	//Update each entity via entity manager
 	if (entityManager) {
 		nlohmann::json sceneJson = ToJson();
-		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, selectedId, selectFunction, projectDir, sceneId, sceneJson, gameCamera);
+		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, selectedId, extraDeletingFunc, projectDir, sceneId, sceneJson, gameCamera);
 	}
 }
 

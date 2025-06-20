@@ -327,21 +327,42 @@ void EntityManager::UpdateEntities(
 	bool windowSceneDeletePressed,
 	bool& pendingDelete,
 	std::string selectedId,
-	std::function<void()> selectFunction,
+	std::function<void(std::string)> extraDeletingFunc,
 	std::string& projectDir,
 	std::string& sceneId,
 	nlohmann::json& currentSceneJson,
 	Camera*& gameCamera)
 {
 	//Perform deleting entity actions
-	if (windowSceneFocused && windowSceneDeletePressed) {
-		RemoveEntity(selectedId, projectDir, sceneId, currentSceneJson);
-		selectFunction();
-	}
-	if (pendingDelete) {
-		RemoveEntity(selectedId, projectDir, sceneId, currentSceneJson);
-		selectFunction();
-		pendingDelete = false;
+	if ((windowSceneFocused && windowSceneDeletePressed) || pendingDelete) {
+		//Check if the entity exists
+		auto entityIter = entities.find(selectedId);
+
+		if (entityIter == entities.end()) {
+			std::string str = "There is not any entity which has given id \"";
+			str += selectedId;
+			str += "\"";
+			Logger::Log("E", str.c_str());
+		}
+
+		//Get script id of the entity
+		std::string scriptId = "";
+		if (entityIter->second->GetEntityParams()->script)
+			scriptId = entityIter->second->GetEntityParams()->script->scriptId;
+
+		//Remove the entity
+		RemoveEntity(entityIter->second.get(), projectDir, sceneId, currentSceneJson);
+
+		//Erase it
+		entities.erase(entityIter);
+
+		//Callback function for deleting tab and select entity to nothing
+		extraDeletingFunc(scriptId);
+
+		//Pending delete
+		if (pendingDelete) {
+			pendingDelete = false;
+		}
 	}
 
 	/*
@@ -544,25 +565,12 @@ std::string EntityManager::CreateEntity(
 PURPOSE: Deletes entity from project directory and removes it from the scene
 */
 bool EntityManager::RemoveEntity(
-	std::string which,
+	Entity* entity,
 	std::string& projectDir,
 	std::string& sceneId,
 	nlohmann::json& currentSceneJson,
 	bool saveScene)
 {
-	//Check if the entity exists
-	auto entityIter = entities.find(which);
-
-	if (entityIter == entities.end()) {
-		std::string str = "There is not any entity which has given id \"";
-		str += which;
-		str += "\"";
-		Logger::Log("E", str.c_str());
-		return false;
-	}
-
-	auto entity = entityIter->second.get();
-
 	//If the entity has a parent, remove it from the parent's children
 	Entity* parent = entity->GetEntityParams()->parent.get();
 	if (parent) {
@@ -575,16 +583,30 @@ bool EntityManager::RemoveEntity(
 	//Recursive removing function to delete all children of the entity
 	auto& children = entity->GetEntityParams()->children;
 	for (auto& child : children) {
-		RemoveEntity(child->GetEntityParams()->id, projectDir, sceneId, currentSceneJson, false);
+		RemoveEntity(child.get(), projectDir, sceneId, currentSceneJson, false);
 	}
+
+	//Get script id
+	std::string scriptId = "";
+	if (entity->GetEntityParams()->script)
+		scriptId = entity->GetEntityParams()->script->scriptId;
+
+	if (!scriptId.empty()) {
+		std::string scriptsDir = projectDir + "scripts/";
+		std::string scriptDir = scriptsDir + scriptId + "/";
+
+		std::filesystem::remove_all(scriptDir);
+	}
+
+	//Get the id of the entity
+	std::string entityId = entity->GetEntityParams()->id;
 
 	//Remove the entity from the scene
 	entity->DeleteEntity();
-	entities.erase(entityIter);
 
 	//Delete entity directory
 	std::string entitiesDir = projectDir + "entities/";
-	std::string entityDir = entitiesDir + which + "/";
+	std::string entityDir = entitiesDir + entityId + "/";
 	std::filesystem::remove_all(entityDir);
 
 	//Save the scene
@@ -598,17 +620,16 @@ bool EntityManager::RemoveEntity(
 		//The scene will no longer have the entity
 		auto& entitiesJson = currentSceneJson["entities"];
 
-		auto entityIter = entitiesJson.find(which);
-		if (entityIter != entitiesJson.end()) {
-			entitiesJson.erase(entitiesJson);
-		}
+		auto iter = std::find(entitiesJson.begin(), entitiesJson.end(), entityId);
+		if (iter != entitiesJson.end())
+			entitiesJson.erase(iter);
 
 		AssetSaver::SaveSceneToFile(currentSceneJson, sceneFile, projectDir);
 	}
 
 	//Log
 	std::string str = "Removed entity \"";
-	str += which;
+	str += entityId;
 	str += "\"";
 	Logger::Log("P", str.c_str());
 	return true;
