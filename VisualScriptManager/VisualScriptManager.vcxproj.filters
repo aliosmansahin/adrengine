@@ -1,99 +1,117 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="Dll">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="VisualScript">
+      <UniqueIdentifier>{7d588385-3e26-4a79-8905-afc02be15063}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node">
+      <UniqueIdentifier>{5c2ac363-12a8-466f-aec5-aa5b37102ce3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Pin">
+      <UniqueIdentifier>{2ccc55d8-eb7b-421b-be0d-d1c629a7d29d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\Print">
+      <UniqueIdentifier>{59f38dc0-8510-423d-ae95-46e86996e82c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\Begin">
+      <UniqueIdentifier>{48e5fb08-45c9-41d4-b47d-8d84428b557c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\ConstString">
+      <UniqueIdentifier>{8f9c8766-0842-4dbc-a117-0abedea01914}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\GetPositionVector">
+      <UniqueIdentifier>{ec91598b-4480-45b1-8db4-ef858a506a10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\GetThisEntity">
+      <UniqueIdentifier>{d075c057-3214-4aba-8338-395329f258ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\SeparateVector3">
+      <UniqueIdentifier>{bdcac79c-9bf7-4b63-9c97-9ae79bb23855}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\ToString">
+      <UniqueIdentifier>{6b8917ef-16ad-49cd-bcd4-9cee7509d223}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="VisualScriptManager.h" />
     <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
+      <Filter>Dll</Filter>
     </ClInclude>
-    <ClInclude Include="Begin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="framework.h">
+      <Filter>Dll</Filter>
     </ClInclude>
     <ClInclude Include="VisualScript.h">
-      <Filter>Header Files</Filter>
+      <Filter>VisualScript</Filter>
     </ClInclude>
-    <ClInclude Include="VisualScriptManager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Node.h">
+      <Filter>VisualScript\Node</Filter>
     </ClInclude>
     <ClInclude Include="Pin.h">
-      <Filter>Header Files</Filter>
+      <Filter>VisualScript\Pin</Filter>
     </ClInclude>
     <ClInclude Include="Print.h">
-      <Filter>Header Files</Filter>
+      <Filter>VisualScript\Node\Print</Filter>
+    </ClInclude>
+    <ClInclude Include="Begin.h">
+      <Filter>VisualScript\Node\Begin</Filter>
     </ClInclude>
     <ClInclude Include="ConstString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GetThisEntity.h">
-      <Filter>Header Files</Filter>
+      <Filter>VisualScript\Node\ConstString</Filter>
     </ClInclude>
     <ClInclude Include="GetPositionVector.h">
-      <Filter>Header Files</Filter>
+      <Filter>VisualScript\Node\GetPositionVector</Filter>
+    </ClInclude>
+    <ClInclude Include="GetThisEntity.h">
+      <Filter>VisualScript\Node\GetThisEntity</Filter>
     </ClInclude>
     <ClInclude Include="SeparateVector3.h">
-      <Filter>Header Files</Filter>
+      <Filter>VisualScript\Node\SeparateVector3</Filter>
     </ClInclude>
     <ClInclude Include="ToString.h">
-      <Filter>Header Files</Filter>
+      <Filter>VisualScript\Node\ToString</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="VisualScriptManager.cpp" />
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Dll</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Begin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Node.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Dll</Filter>
     </ClCompile>
     <ClCompile Include="VisualScript.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>VisualScript</Filter>
     </ClCompile>
-    <ClCompile Include="VisualScriptManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Node.cpp">
+      <Filter>VisualScript\Node</Filter>
     </ClCompile>
     <ClCompile Include="Pin.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>VisualScript\Pin</Filter>
     </ClCompile>
     <ClCompile Include="Print.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>VisualScript\Node\Print</Filter>
+    </ClCompile>
+    <ClCompile Include="Begin.cpp">
+      <Filter>VisualScript\Node\Begin</Filter>
     </ClCompile>
     <ClCompile Include="ConstString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GetThisEntity.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>VisualScript\Node\ConstString</Filter>
     </ClCompile>
     <ClCompile Include="GetPositionVector.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>VisualScript\Node\GetPositionVector</Filter>
+    </ClCompile>
+    <ClCompile Include="GetThisEntity.cpp">
+      <Filter>VisualScript\Node\GetThisEntity</Filter>
     </ClCompile>
     <ClCompile Include="SeparateVector3.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>VisualScript\Node\SeparateVector3</Filter>
     </ClCompile>
     <ClCompile Include="ToString.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>VisualScript\Node\ToString</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
