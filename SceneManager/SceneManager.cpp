@@ -147,10 +147,42 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
         openedScene->ReleaseScene();
         openedScene = nullptr;
     }
-    
-    //Delete scene directory
+
     std::string scenesDir = projectDir + "scenes/";
     std::string sceneDir = scenesDir + sceneId + "/";
+    std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
+
+    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(sceneFile, projectDir);
+
+    //Delete each entity that belong to the scene
+    if (!sceneJson.is_null()) {
+        if (sceneJson.contains("entities")) {
+            auto& entities = sceneJson["entities"];
+
+            for (auto& entity : entities) {
+                std::string entitiesDir = projectDir + "entities/";
+                std::string entityDir = entitiesDir + entity.get<std::string>() + "/";
+                std::string entityFile = entityDir + entity.get<std::string>() + ".adrengineentity";
+
+                //Load entity json
+                nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(entityFile);
+                
+                //Delete script that belongs to the entity
+                std::string scriptId = entityJson.value("scriptId", "");
+                if (!scriptId.empty()) {
+                    std::string scriptsDir = projectDir + "scripts/";
+                    std::string scriptDir = scriptsDir + scriptId + "/";
+
+                    std::filesystem::remove_all(scriptDir);
+                }
+
+                //Delete entity directory
+                std::filesystem::remove_all(entityDir);
+            }
+        }
+    }
+
+    //Delete scene directory
     std::filesystem::remove_all(sceneDir);
 
     //Remove scene from scenes map

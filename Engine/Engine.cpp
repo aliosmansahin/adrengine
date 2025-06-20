@@ -201,7 +201,12 @@ void Engine::SaveProject()
     //saves the project to the project file
     std::string projectFile = projectDir + projectName + ".adrengineproject";
 
-    nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, SceneManager::GetInstance().openedScene->sceneId);
+    //get scene id
+    std::string sceneId = "";
+    if (SceneManager::GetInstance().openedScene.get())
+        sceneId = SceneManager::GetInstance().openedScene->sceneId;
+
+    nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, sceneId);
 
     AssetSaver::SaveProjectToFile(projectFile, projectJson);
 
