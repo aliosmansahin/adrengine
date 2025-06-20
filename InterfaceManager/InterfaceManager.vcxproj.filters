@@ -1,135 +1,172 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="Dll">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="MenuBar">
+      <UniqueIdentifier>{64a0e25c-06da-4772-b2af-b6b2f26bbfca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowAddAsset">
+      <UniqueIdentifier>{59185fae-92f1-4bd0-a0b6-97288052edb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowAddEntity">
+      <UniqueIdentifier>{fd9520fe-d364-491c-9572-949d08f16b6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowAddScene">
+      <UniqueIdentifier>{4a46ad38-52f5-45bf-a122-ddb66c7b123d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowAllScenes">
+      <UniqueIdentifier>{6a3c5998-f6d2-445c-81db-2d15ddedd3a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowAssetExplorer">
+      <UniqueIdentifier>{1d544851-084a-48c9-b154-024655a76f0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowEditorSettings">
+      <UniqueIdentifier>{e44a39a6-3e34-4af9-b3bf-2fcd72b3df1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowEntityProperties">
+      <UniqueIdentifier>{5c4f5e56-7429-47f2-a759-64d763fb1508}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowFlipBookEdit">
+      <UniqueIdentifier>{8cbb6fca-b550-4a03-a1ae-812bcd468457}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowGameViewport">
+      <UniqueIdentifier>{ad34e1bd-776e-4459-8d74-518e9c8cc464}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowProjectSettings">
+      <UniqueIdentifier>{415944d1-268c-47d3-afdd-e807f8bc9909}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowScene">
+      <UniqueIdentifier>{fd1d76cc-afb4-473a-946d-740164e488d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowTileMapBrush">
+      <UniqueIdentifier>{f5c55a50-055c-41c6-94d0-8cc10fbdb438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowTileMapEdit">
+      <UniqueIdentifier>{57b47a0d-98b8-4317-bee6-ebdbc6dbe77e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowTileMapViewer">
+      <UniqueIdentifier>{ca401a49-754e-4623-a142-1bbac3bbf2b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowVisualScript">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
+      <Filter>Dll</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
+      <Filter>Dll</Filter>
     </ClInclude>
-    <ClInclude Include="WindowVisualScript.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="InterfaceManager.h" />
+    <ClInclude Include="MenuBar.h">
+      <Filter>MenuBar</Filter>
     </ClInclude>
     <ClInclude Include="WindowAddAsset.h">
-      <Filter>Header Files</Filter>
+      <Filter>WindowAddAsset</Filter>
     </ClInclude>
     <ClInclude Include="WindowAddEntity.h">
-      <Filter>Header Files</Filter>
+      <Filter>WindowAddEntity</Filter>
     </ClInclude>
     <ClInclude Include="WindowAddScene.h">
-      <Filter>Header Files</Filter>
+      <Filter>WindowAddScene</Filter>
     </ClInclude>
     <ClInclude Include="WindowAllScenes.h">
-      <Filter>Header Files</Filter>
+      <Filter>WindowAllScenes</Filter>
     </ClInclude>
     <ClInclude Include="WindowAssetExplorer.h">
-      <Filter>Header Files</Filter>
+      <Filter>WindowAssetExplorer</Filter>
     </ClInclude>
     <ClInclude Include="WindowEditorSettings.h">
-      <Filter>Header Files</Filter>
+      <Filter>WindowEditorSettings</Filter>
     </ClInclude>
     <ClInclude Include="WindowEntityProperties.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowGameViewport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowProjectSettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InterfaceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowTileMapEdit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowTileMapBrush.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowTileMapViewer.h">
-      <Filter>Header Files</Filter>
+      <Filter>WindowEntityProperties</Filter>
     </ClInclude>
     <ClInclude Include="WindowFlipBookEdit.h">
-      <Filter>Header Files</Filter>
+      <Filter>WindowFlipBookEdit</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowGameViewport.h">
+      <Filter>WindowGameViewport</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowProjectSettings.h">
+      <Filter>WindowProjectSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowScene.h">
+      <Filter>WindowScene</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowTileMapBrush.h">
+      <Filter>WindowTileMapBrush</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowTileMapEdit.h">
+      <Filter>WindowTileMapEdit</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowTileMapViewer.h">
+      <Filter>WindowTileMapViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowVisualScript.h">
+      <Filter>WindowVisualScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="WindowVisualScript.cpp">
+      <Filter>WindowVisualScript</Filter>
+    </ClCompile>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Dll</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Dll</Filter>
+    </ClCompile>
+    <ClCompile Include="InterfaceManager.cpp" />
+    <ClCompile Include="MenuBar.cpp">
+      <Filter>MenuBar</Filter>
     </ClCompile>
     <ClCompile Include="WindowAddAsset.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WindowAddAsset</Filter>
     </ClCompile>
     <ClCompile Include="WindowAddEntity.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WindowAddEntity</Filter>
     </ClCompile>
     <ClCompile Include="WindowAddScene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WindowAddScene</Filter>
     </ClCompile>
     <ClCompile Include="WindowAllScenes.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WindowAllScenes</Filter>
     </ClCompile>
     <ClCompile Include="WindowAssetExplorer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WindowAssetExplorer</Filter>
     </ClCompile>
     <ClCompile Include="WindowEditorSettings.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WindowEditorSettings</Filter>
     </ClCompile>
     <ClCompile Include="WindowEntityProperties.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowGameViewport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowProjectSettings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowVisualScript.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InterfaceManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MenuBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowTileMapEdit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowTileMapBrush.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowTileMapViewer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WindowEntityProperties</Filter>
     </ClCompile>
     <ClCompile Include="WindowFlipBookEdit.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WindowFlipBookEdit</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowGameViewport.cpp">
+      <Filter>WindowGameViewport</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowProjectSettings.cpp">
+      <Filter>WindowProjectSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowScene.cpp">
+      <Filter>WindowScene</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTileMapBrush.cpp">
+      <Filter>WindowTileMapBrush</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTileMapEdit.cpp">
+      <Filter>WindowTileMapEdit</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTileMapViewer.cpp">
+      <Filter>WindowTileMapViewer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
