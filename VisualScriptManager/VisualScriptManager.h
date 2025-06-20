@@ -21,7 +21,7 @@ public:
 
 	//script functions
 	VISUALSCRIPTMANAGER_API std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Utils::Tab>> OpenScript(std::shared_ptr<VisualScript> source, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs);
-	VISUALSCRIPTMANAGER_API std::shared_ptr<VisualScript>								   LoadScript(std::string scriptId, std::string& projectDir);
+	VISUALSCRIPTMANAGER_API std::shared_ptr<VisualScript>								   LoadScript(std::string scriptId, std::string& projectDir, IScene* scene);
 	VISUALSCRIPTMANAGER_API bool														   CloseScript(
 		std::string scriptId,
 		std::string& projectDir,

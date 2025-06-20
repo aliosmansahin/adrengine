@@ -17,7 +17,9 @@
 #include "Timer.h"
 #include "InputManager.h"
 
-class Scene
+#include "interfaces/IScene/IScene.h"
+
+class Scene : public IScene
 {
 public:
 	//main functions
@@ -39,7 +41,7 @@ public:
 		std::string& projectDir
 	);
 	SCENEMANAGER_API void			ReleaseScene();
-	SCENEMANAGER_API EntityManager* GetEntityManager() { return entityManager; }
+	SCENEMANAGER_API EntityManager* GetEntityManager() override { return entityManager; }
 
 	//json functions
 	SCENEMANAGER_API nlohmann::json ToJson();

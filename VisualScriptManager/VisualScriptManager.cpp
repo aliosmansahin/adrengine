@@ -69,7 +69,7 @@ std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Utils::Tab>> VisualScri
 /*
 PURPOSE: Loads the script to run
 */
-std::shared_ptr<VisualScript> VisualScriptManager::LoadScript(std::string scriptId, std::string& projectDir)
+std::shared_ptr<VisualScript> VisualScriptManager::LoadScript(std::string scriptId, std::string& projectDir, IScene* scene)
 {
     //Load the script
     std::string scriptsDir = projectDir + "scripts/";
@@ -80,7 +80,7 @@ std::shared_ptr<VisualScript> VisualScriptManager::LoadScript(std::string script
 
     //Create a script object and insert it to scripts
     VisualScript* script = new VisualScript();
-    script->FromJson(scriptJson, types);
+    script->FromJson(scriptJson, types, scene);
 
     return std::shared_ptr<VisualScript>(script);
 }

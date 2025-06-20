@@ -7,12 +7,12 @@
 
 #include "glm/glm.hpp"
 
-class Entity;
+class IEntity;
 
 enum class PinType { Exec, Bool, Int, Float, String, Entity, Vector3, Any };
 enum PinDirection { Input, Output };
 
-using Value = std::variant<std::monostate, bool, int, float, std::string, Entity*, glm::vec3, std::any>;
+using Value = std::variant<std::monostate, bool, int, float, std::string, IEntity*, glm::vec3>;
 
 class Node;
 

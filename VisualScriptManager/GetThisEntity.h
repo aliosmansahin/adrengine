@@ -26,6 +26,6 @@ public:
 	}
 public:
 	//Entity ptr
-	Entity* entity = nullptr;
+	IEntity* entity = nullptr;
 };
 

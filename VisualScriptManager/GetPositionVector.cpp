@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "GetPositionVector.h"
 
+#include "interfaces/IEntity/IEntity.h"
+
 /*
 PURPOSE: Returns result of this node, other nodes can access it with this function
 */
@@ -8,14 +10,13 @@ VISUALSCRIPTMANAGER_API Value GetPositionVector::Evaluate(Pin* pin)
 {
     Value entityValue = EvaluateInput(inputPins[0].get());
 
-    if (!std::holds_alternative<Entity*>(entityValue)) {
+    if (!std::holds_alternative<IEntity*>(entityValue)) {
         return std::monostate{};
     }
 
-    Entity* entity = std::get<Entity*>(entityValue);
+    IEntity* entity = std::get<IEntity*>(entityValue);
 
-    //glm::vec3 vector = glm::vec3(entity->GetEntityParams()->x, entity->GetEntityParams()->y, entity->GetEntityParams()->z);
-    glm::vec3 vector = glm::vec3(1.0f);
+    glm::vec3 vector = entity->GetEntityParams()->GetPosition();
 
     return vector;
 }

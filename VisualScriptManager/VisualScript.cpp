@@ -4,9 +4,12 @@
 /*
 PURPOSE: Creates a new script and set some variables
 */
-bool VisualScript::CreateScript(std::string scriptId, std::string belongsTo, std::string belongsScene)
+bool VisualScript::CreateScript(std::string scriptId, std::string belongsEntity, std::string belongsScene)
 {
 	this->scriptId = scriptId;
+	this->belongsScene = belongsScene;
+	this->belongsEntity = belongsEntity;
+
 	return true;
 }
 
@@ -49,6 +52,8 @@ nlohmann::json VisualScript::ToJson()
 
 	//Script properties
 	j["script-id"] = scriptId;
+	j["belongs-entity"] = belongsEntity;
+	j["belongs-scene"] = belongsScene;
 
 	//All nodes
 	for (auto& node : nodes) {
@@ -74,10 +79,12 @@ nlohmann::json VisualScript::ToJson()
 /*
 PURPOSE: Sets the visual script from its json
 */
-void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types)
+void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types, IScene* scene)
 {
 	//Script properties
 	scriptId = json.value("script-id", "");
+	belongsScene = json.value("belongs-scene", "");
+	belongsEntity = json.value("belongs-entity", "");
 
 	//Load next id
 	nextId = json.value("next-id", 1000);
@@ -95,16 +102,15 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 
 		type->FromJson(nodeJson);
 
-		/*if (nodeType == "GetThisEntity") {
+		if (nodeType == "GetThisEntity") {
 			GetThisEntity* entityNode = dynamic_cast<GetThisEntity*>(type.get());
 
 			if (entityNode) {
-				Scene* scene = SceneManager::GetInstance().GetSceneById(belongsScene).get();
 				if (scene) {
-					entityNode->entity = scene->GetEntityManager()->GetEntityById(belongsTo).get();
+					entityNode->entity = scene->GetEntityManager()->GetEntityById(belongsEntity);
 				}
 			}
-		}*/
+		}
 
 		//Add a new node
 		NodeVisual nodeVisual;
@@ -137,7 +143,7 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 			Pin* from = FindPinById(first);
 			Pin* to = FindPinById(second);
 
-			if (from && to && from->type == to->type) {
+			if (from && to && (from->type == to->type || from->type == PinType::Any || to->type == PinType::Any)) {
 				to->connectedTo = from;
 				from->connectedTo = to;
 				links.insert({ nextId++, {from->id, to->id} });

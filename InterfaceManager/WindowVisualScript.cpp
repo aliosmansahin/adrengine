@@ -182,13 +182,13 @@ void WindowVisualScript::DrawWindow(
                 node->SetPos((int)pos.x, (int)pos.y);
                 node->SetPins();
 
-                /*if (type == "GetThisEntity") {
+                if (type == "GetThisEntity") {
                     GetThisEntity* entityNode = dynamic_cast<GetThisEntity*>(node.get());
 
                     if (entityNode) {
-                        entityNode->entity = SceneManager::GetInstance().GetSceneById(VisualScriptManager::GetInstance().currentScript->belongsScene)->GetEntityManager()->GetEntityById(VisualScriptManager::GetInstance().currentScript->belongsTo).get();
+                        entityNode->entity = SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntityById(VisualScriptManager::GetInstance().currentScript->belongsEntity);
                     }
-                }*/
+                }
 
                 //Add a new node
                 NodeVisual nodeVisual;

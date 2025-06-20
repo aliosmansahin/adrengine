@@ -4,14 +4,14 @@
 /*
 PURPOSE: Sets properties of the entity from its json
 */
-void Sprite2DParams::FromJson(const nlohmann::json& j, std::string& projectDir)
+void Sprite2DParams::FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene)
 {
 	/*
 		Its kind of "super" function.
 		Which calls the function of the base class.
 		In this function, we are overriding the function, so we need it
 	*/
-	EntityParams::FromJson(j, projectDir);
+	EntityParams::FromJson(j, projectDir, scene);
 
 	//Set some properties
 	r = j["r"];

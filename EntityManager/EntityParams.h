@@ -5,6 +5,9 @@
 
 #include "nlohmann_json/json.hpp"
 
+#include "interfaces/IEntity/IEntityParams.h"
+#include "interfaces/IScene/IScene.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
@@ -18,7 +21,7 @@
 class Entity;
 class VisualScript;
 
-class EntityParams {
+class EntityParams : public IEntityParams {
 public:
 	//Destructor
 	ENTITYMANAGER_API virtual ~EntityParams() = default;
@@ -35,6 +38,13 @@ public:
 	*/
 	ENTITYMANAGER_API virtual std::shared_ptr<EntityParams> clone() const {
 		return std::make_shared<EntityParams>(*this);
+	}
+
+	/*
+	PURPOSE: Returns position vector of the entity
+	*/
+	ENTITYMANAGER_API glm::vec3 GetPosition() const override {
+		return glm::vec3(x, y, z);
 	}
 
 	//Some properties for the entity
@@ -56,5 +66,5 @@ public:
 
 	//json
 	ENTITYMANAGER_API virtual nlohmann::json ToJson();
-	ENTITYMANAGER_API virtual void			 FromJson(const nlohmann::json& j, std::string& projectDir);
+	ENTITYMANAGER_API virtual void			 FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene);
 };

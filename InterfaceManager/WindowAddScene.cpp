@@ -29,6 +29,8 @@ void WindowAddScene::DrawWindow(
     if(ImGui::Button("Add")) {
         SceneManager::GetInstance().CreateScene(activeSceneType, projectDir);
 
+        tabs.clear();
+
         //Create a new tab and insert it to all tabs
         Utils::Tab* tab = new Utils::Tab();
         tab->id = SceneManager::GetInstance().openedScene->sceneId;

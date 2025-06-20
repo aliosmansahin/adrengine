@@ -4,14 +4,14 @@
 /*
 PURPOSE: Sets properties of the entity from its json
 */
-ENTITYMANAGER_API void CameraParams::FromJson(const nlohmann::json& j, std::string& projectDir)
+ENTITYMANAGER_API void CameraParams::FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene)
 {
 	/*
 		Its kind of "super" function.
 		Which calls the function of the base class.
 		In this function, we are overriding the function, so we need it
 	*/
-	EntityParams::FromJson(j, projectDir);
+	EntityParams::FromJson(j, projectDir, scene);
 
 	//Set some properties
 	projectionType = j.value("projection-type", (CameraProjection)PERPECTIVE);

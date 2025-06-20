@@ -31,7 +31,7 @@ nlohmann::json EntityParams::ToJson() {
 /*
 PURPOSE: Sets properties of the entity from its json
 */
-void EntityParams::FromJson(const nlohmann::json& j, std::string& projectDir) {
+void EntityParams::FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) {
 	x = j.value("x", 0.0f);
 	y = j.value("y", 0.0f);
 	z = j.value("z", 0.0f);
@@ -47,7 +47,7 @@ void EntityParams::FromJson(const nlohmann::json& j, std::string& projectDir) {
 	//TODO: Load own script
 	std::string scriptId = j.value("scriptId", "");
 	
-	script = VisualScriptManager::GetInstance().LoadScript(scriptId, projectDir);
+	script = VisualScriptManager::GetInstance().LoadScript(scriptId, projectDir, scene);
 
 	parentId = j.value("parentId", "");
 }

@@ -21,6 +21,10 @@
     <ClInclude Include="utils\Utils.h" />
     <ClInclude Include="glfw\glfw3.h" />
     <ClInclude Include="glfw\glfw3native.h" />
+    <ClInclude Include="interfaces\IEntity\IEntity.h" />
+    <ClInclude Include="interfaces\IEntity\IEntityParams.h" />
+    <ClInclude Include="interfaces\IScene\IScene.h" />
+    <ClInclude Include="interfaces\IEntityManager\IEntityManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp" />
@@ -32,5 +36,9 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imnodes\imnodes.cpp" />
+    <ClCompile Include="interfaces\IEntity\IEntity.cpp" />
+    <ClCompile Include="interfaces\IEntity\IEntityParams.cpp" />
+    <ClCompile Include="interfaces\IScene\IScene.cpp" />
+    <ClCompile Include="interfaces\IEntityManager\IEntityManager.cpp" />
   </ItemGroup>
 </Project>

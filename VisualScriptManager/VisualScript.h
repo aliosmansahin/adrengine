@@ -19,23 +19,27 @@
 
 #include "Logger.h"
 
+#include "interfaces/IScene/IScene.h"
+
 class VisualScript
 {
 public:
 	//main functions
-	VISUALSCRIPTMANAGER_API bool		   CreateScript(std::string scriptId, std::string belongsTo, std::string belongsScene);
+	VISUALSCRIPTMANAGER_API bool		   CreateScript(std::string scriptId, std::string belongsEntity, std::string belongsScene);
 	VISUALSCRIPTMANAGER_API void		   DrawScript();
 	VISUALSCRIPTMANAGER_API void		   ReleaseScript();
 	VISUALSCRIPTMANAGER_API void		   ExecuteBeginScript();
 	//json
 	VISUALSCRIPTMANAGER_API nlohmann::json ToJson();
-	VISUALSCRIPTMANAGER_API void		   FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types);
+	VISUALSCRIPTMANAGER_API void		   FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types, IScene* scene);
 
 	//Find
 	VISUALSCRIPTMANAGER_API Pin*		   FindPinById(int id);
 public:
 	//script variables
 	std::string scriptId = "";
+	std::string belongsEntity = "";
+	std::string belongsScene = "";
 
 	//nodes
 	std::unordered_map<int, NodeVisual> nodes;

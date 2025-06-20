@@ -71,13 +71,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;$(ExternalIncludePath)</ExternalIncludePath>
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
     <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
     <LibraryPath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glm-master;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>C:\Users\osman\OneDrive\Desktop\Ali Osman\Dev Dependencies\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
   </PropertyGroup>
@@ -142,6 +142,9 @@
     <ClInclude Include="glad\khrplatform.h" />
     <ClInclude Include="glfw\glfw3.h" />
     <ClInclude Include="glfw\glfw3native.h" />
+    <ClInclude Include="interfaces\IEntityManager\IEntityManager.h" />
+    <ClInclude Include="interfaces\IEntity\IEntityParams.h" />
+    <ClInclude Include="interfaces\IEntity\IEntity.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
@@ -154,12 +157,16 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="imnodes\imnodes.h" />
     <ClInclude Include="imnodes\imnodes_internal.h" />
+    <ClInclude Include="interfaces\IScene\IScene.h" />
     <ClInclude Include="nlohmann_json\json.hpp" />
     <ClInclude Include="nlohmann_json\json_fwd.hpp" />
     <ClInclude Include="stbi\stb_image.h" />
     <ClInclude Include="utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="interfaces\IEntityManager\IEntityManager.cpp" />
+    <ClCompile Include="interfaces\IEntity\IEntityParams.cpp" />
+    <ClCompile Include="interfaces\IEntity\IEntity.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -169,6 +176,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imnodes\imnodes.cpp" />
+    <ClCompile Include="interfaces\IScene\IScene.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

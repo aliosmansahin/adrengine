@@ -402,13 +402,18 @@ ENTITYMANAGER_API void EntityManager::RunEntitiesScriptBegin()
 /*
 PURPOSE: Returns entity by id, check out getElementById of javascript
 */
-ENTITYMANAGER_API std::shared_ptr<Entity> EntityManager::GetEntityById(std::string id)
+ENTITYMANAGER_API Entity* EntityManager::GetEntityById(std::string id)
 {
+	std::cout << id << std::endl;
+
+	for (auto& iter : entities)
+		std::cout << iter.first << std::endl;
+
 	auto entityIter = entities.find(id);
 	if (entityIter == entities.end())
 		return nullptr;
 
-	return entityIter->second;
+	return entityIter->second.get();
 }
 
 /*
@@ -559,7 +564,7 @@ bool EntityManager::RemoveEntity(
 	auto entity = entityIter->second.get();
 
 	//If the entity has a parent, remove it from the parent's children
-	auto parent = entity->GetEntityParams()->parent.get();
+	Entity* parent = entity->GetEntityParams()->parent.get();
 	if (parent) {
 		auto& children = parent->GetEntityParams()->children;
 		children.erase(std::remove_if(children.begin(), children.end(), [&](std::shared_ptr<Entity>& child) {

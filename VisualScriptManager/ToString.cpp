@@ -10,20 +10,10 @@ VISUALSCRIPTMANAGER_API Value ToString::Evaluate(Pin* pin)
     Value input = EvaluateInput(inputPins[0].get());
 
     //Check if it is an entity
-    if (!std::holds_alternative<std::any>(input))
-        return 0.0f;
-
-    //Get glm::any
-    std::any any = std::get<glm::vec3>(input);
-
-    const std::type_info& ti = any.type();
-
-    //Check if the value can be converted
-    if(ti == typeid(int))
-        return ArithmeticToString(std::any_cast<int>(any));
-
-    if (ti == typeid(float))
-        return ArithmeticToString(std::any_cast<float>(any));
+    if (std::holds_alternative<float>(input))
+        return ArithmeticToString(std::get<float>(input));
+    if (std::holds_alternative<int>(input))
+        return ArithmeticToString(std::get<int>(input));
 
     return "";
 }
