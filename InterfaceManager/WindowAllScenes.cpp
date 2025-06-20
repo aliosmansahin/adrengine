@@ -8,7 +8,7 @@ void WindowAllScenes::DrawWindow(
 	std::string& projectDir,
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 	bool& windowAddSceneShowWindow,
-	Entity* windowEntityPropertiesCurrentEntity,
+	Entity*& windowEntityPropertiesCurrentEntity,
 	std::string& windowSceneSelectedId,
 	std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
 	std::string& selectedTabId,
