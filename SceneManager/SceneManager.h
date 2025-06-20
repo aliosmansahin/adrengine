@@ -18,29 +18,13 @@ public:
 	SCENEMANAGER_API void				  ClearManager();
 
 	//scene functions
-	SCENEMANAGER_API bool				  CreateScene(
-		Utils::SceneType sceneType,
-		std::string& projectDir,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-		Utils::Tab*& openedTab,
-		std::string& selectedTabId,
-		std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts
-	);
+	SCENEMANAGER_API bool				  CreateScene(Utils::SceneType sceneType, std::string& projectDir);
 	SCENEMANAGER_API Scene*				  LoadScene(std::string sceneId, std::string& projectDir,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes
 		);
-	SCENEMANAGER_API bool				  CloseScene(std::string sceneId, std::string& projectDir,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-		Utils::Tab*& openedTab,
-		std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts);
-	SCENEMANAGER_API bool				  DeleteScene(std::string sceneId, std::string& projectDir,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-		Utils::Tab*& openedTab,
-		std::unordered_map<std::string, std::shared_ptr<VisualScript>>& scripts);
+	SCENEMANAGER_API bool				  CloseScene(std::string sceneId, std::string& projectDir);
+	SCENEMANAGER_API bool				  DeleteScene(std::string sceneId, std::string& projectDir);
 
-	//getters
-	SCENEMANAGER_API std::shared_ptr<Scene> GetSceneById(std::string id);
 	//getter for instance
 	SCENEMANAGER_API static SceneManager& GetInstance();
 private:
@@ -52,7 +36,6 @@ private:
 public:
 	//variables
 	std::map<std::string, std::string> scenes;
-	std::map<std::string, std::shared_ptr<Scene>> openedScenes;
-	Scene* currentScene = nullptr;
+	std::shared_ptr<Scene> openedScene;
 };
 

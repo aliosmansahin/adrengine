@@ -17,7 +17,7 @@
 #include "SeparateVector3.h"
 #include "ToString.h"
 
-#include "SceneManager.h"
+#include "Logger.h"
 
 class VisualScript
 {
@@ -36,8 +36,6 @@ public:
 public:
 	//script variables
 	std::string scriptId = "";
-	std::string belongsTo = "";
-	std::string belongsScene = "";
 
 	//nodes
 	std::unordered_map<int, NodeVisual> nodes;

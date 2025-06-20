@@ -52,10 +52,9 @@ public:
 	std::vector<std::shared_ptr<Entity>> children;
 
 	//Stores the script of the entity
-	std::string scriptId = "";
-	VisualScript* script = nullptr;
+	std::shared_ptr<VisualScript> script;
 
 	//json
 	ENTITYMANAGER_API virtual nlohmann::json ToJson();
-	ENTITYMANAGER_API virtual void			 FromJson(const nlohmann::json& j);
+	ENTITYMANAGER_API virtual void			 FromJson(const nlohmann::json& j, std::string& projectDir);
 };

@@ -14,7 +14,8 @@ VISUALSCRIPTMANAGER_API Value GetPositionVector::Evaluate(Pin* pin)
 
     Entity* entity = std::get<Entity*>(entityValue);
 
-    glm::vec3 vector = glm::vec3(entity->GetEntityParams()->x, entity->GetEntityParams()->y, entity->GetEntityParams()->z);
+    //glm::vec3 vector = glm::vec3(entity->GetEntityParams()->x, entity->GetEntityParams()->y, entity->GetEntityParams()->z);
+    glm::vec3 vector = glm::vec3(1.0f);
 
     return vector;
 }

@@ -300,7 +300,7 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 
 				//Create parameter object for the entity
 				std::shared_ptr<EntityParams> params = typeIter->second.second->clone();
-				params->FromJson(entityJson);
+				params->FromJson(entityJson, projectDir);
 				entity->CreateEntity(params);
 				
 				//TileMap has own fromjson function

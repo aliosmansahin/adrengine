@@ -1,7 +1,13 @@
 #pragma once
 
 #include <variant>
-#include "Entity.h"
+#include <string>
+#include <any>
+#include <iostream>
+
+#include "glm/glm.hpp"
+
+class Entity;
 
 enum class PinType { Exec, Bool, Int, Float, String, Entity, Vector3, Any };
 enum PinDirection { Input, Output };

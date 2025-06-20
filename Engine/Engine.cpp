@@ -175,45 +175,21 @@ void Engine::LoadProject()
     for (auto& scene : projectJson["scenes"]) {
         SceneManager::GetInstance().scenes.insert(std::pair<std::string, std::string>(scene, scene));
     }
-    for (auto& script : projectJson["scripts"]) {
-        VisualScriptManager::GetInstance().LoadScript(script, projectDir, InterfaceManager::GetInstance().tabs);
-    }
 
-    //loads all opened tabs and load scene or script depends on the tabType
-    for (auto& tab : projectJson["opened-tabs"]) {
-        //TODO: i might sync the tabs to the scene or script(which one is opened). However it won't be here i will write it in interfacemanager
-        if (!tab["type"].empty()) {
-            std::string tabId = tab["id"];
-            std::string tabType = tab["type"];
-            std::string currentTabId = projectJson.value("current-tab", "");
-            Scene* scene = nullptr;
-            std::shared_ptr<VisualScript> script = nullptr;
-            if (tabType == "SceneEditor") {
-                //it is a scene so load the scene
-                scene = SceneManager::GetInstance().LoadScene(tabId, projectDir, InterfaceManager::GetInstance().tabs, entityTypes);
-            }
-            else if (tabType == "VisualScriptEditor") {
-                //it is a script so load the script
-                script = VisualScriptManager::GetInstance().OpenScript(tabId, InterfaceManager::GetInstance().tabs).first;
-            }
-            //check if the loaded tab is the last opened one
-            if (!currentTabId.empty()) {
-                if (tabId == currentTabId) {
-                    //set the current scene or script
-                    if (scene)
-                        SceneManager::GetInstance().currentScene = scene;
-                    if (script)
-                        VisualScriptManager::GetInstance().currentScript = script;
+    if (projectJson.contains("opened-scene")) {
+        //it is a scene so load the scene
+        Scene* scene = SceneManager::GetInstance().LoadScene(projectJson["opened-scene"], projectDir, entityTypes);
+        if (!scene)
+            return;
 
-                    //set the current tab
-                    auto iter = InterfaceManager::GetInstance().tabs.find(tabId);
-                    if (iter != InterfaceManager::GetInstance().tabs.end()) {
-                        InterfaceManager::GetInstance().openedTab = iter->second.get();
-                        InterfaceManager::GetInstance().selectedTabId = iter->second->id;
-                    }
-                }
-            }
-        }
+        //Create a tab and insert it to tabs
+        std::shared_ptr<Utils::Tab> tab = std::make_shared<Utils::Tab>();
+        tab->id = scene->sceneId;
+        tab->tabType = Utils::SceneEditor;
+        InterfaceManager::GetInstance().tabs.insert(std::pair<std::string, std::shared_ptr<Utils::Tab>>(tab->id, tab));
+
+        InterfaceManager::GetInstance().openedTab = tab.get();
+        InterfaceManager::GetInstance().selectedTabId = tab->id;
     }
 }
 
@@ -225,13 +201,7 @@ void Engine::SaveProject()
     //saves the project to the project file
     std::string projectFile = projectDir + projectName + ".adrengineproject";
 
-    auto openedTab = InterfaceManager::GetInstance().openedTab;
-
-    std::string openedTabId = "";
-    if (openedTab)
-        openedTabId = openedTab->id;
-    
-    nlohmann::json projectJson = CreateProjectJson(openedTabId, SceneManager::GetInstance().scenes, VisualScriptManager::GetInstance().scripts, InterfaceManager::GetInstance().tabs);
+    nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, SceneManager::GetInstance().openedScene->sceneId);
 
     AssetSaver::SaveProjectToFile(projectFile, projectJson);
 
@@ -245,8 +215,9 @@ void Engine::SaveProject()
     std::filesystem::create_directory(entitiesDir);
     std::string scriptsDir = projectDir + "scripts/";
     std::filesystem::create_directory(scriptsDir);
-    for (auto& sceneIter : SceneManager::GetInstance().openedScenes) {
-        auto scene = sceneIter.second.get();
+
+    Scene* scene = SceneManager::GetInstance().openedScene.get();
+    if (scene) {
         std::string sceneDir = scenesDir + scene->sceneId + "/";
         std::filesystem::create_directory(sceneDir);
         std::string sceneFile = sceneDir + scene->sceneId + ".adrenginescene";
@@ -298,11 +269,11 @@ PURPOSE: To update current scene
 */
 ENGINE_API void Engine::UpdateCurrentScene()
 {
-    if (SceneManager::GetInstance().currentScene) {
+    if (SceneManager::GetInstance().openedScene) {
         //We will use tileMapBrush when "start drawing" button clicked
         TileMap* edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
 
-        SceneManager::GetInstance().currentScene->UpdateScene(
+        SceneManager::GetInstance().openedScene->UpdateScene(
             WindowGameViewport::GetInstance().isPlaying,
             WindowGameViewport::GetInstance().isHovered,
             WindowGameViewport::GetInstance().isFocused,
@@ -328,15 +299,22 @@ ENGINE_API void Engine::PerformDeleteActions()
 {
     //perform deleting scene
     if (WindowAllScenes::GetInstance().pendingDelete) {
-        std::string oldSceneId = "";
+        SceneManager::GetInstance().DeleteScene(WindowAllScenes::GetInstance().selectedSceneId, projectDir);
 
-        if (SceneManager::GetInstance().currentScene) {
-            oldSceneId = SceneManager::GetInstance().currentScene->sceneId;
-            if (oldSceneId == InterfaceManager::GetInstance().selectedTabId) {
-                SceneManager::GetInstance().currentScene = nullptr;
-            }
-        }
-        SceneManager::GetInstance().DeleteScene(WindowAllScenes::GetInstance().selectedSceneId, projectDir, InterfaceManager::GetInstance().tabs, InterfaceManager::GetInstance().openedTab, VisualScriptManager::GetInstance().scripts);
+        //Clear all tabs
+        InterfaceManager::GetInstance().tabs.clear();
+        InterfaceManager::GetInstance().openedTab = nullptr;
+
+        //Save project
+        std::string projectFile = projectDir + "project.adrengineproject";
+
+        std::string openedSceneId = "";
+        if (SceneManager::GetInstance().openedScene)
+            openedSceneId = SceneManager::GetInstance().openedScene->sceneId;
+
+        nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, openedSceneId);
+        AssetSaver::SaveProjectToFile(projectFile, projectJson);
+
         WindowAllScenes::GetInstance().pendingDelete = false;
     }
 
@@ -347,15 +325,21 @@ ENGINE_API void Engine::PerformDeleteActions()
             auto tab = tabIter->second.get();
             //if tabType is scene
             if (tab->tabType == Utils::SceneEditor) {
-                std::string openedSceneId = tab->id;
-                std::string oldSceneId = "";
-                if (SceneManager::GetInstance().currentScene)
-                    oldSceneId = SceneManager::GetInstance().currentScene->sceneId;
-                if (SceneManager::GetInstance().currentScene && oldSceneId == openedSceneId) {
-                    SceneManager::GetInstance().currentScene = nullptr;
-                    InterfaceManager::GetInstance().openedTab = nullptr;
-                }
-                SceneManager::GetInstance().CloseScene(openedSceneId, projectDir, InterfaceManager::GetInstance().tabs, InterfaceManager::GetInstance().openedTab, VisualScriptManager::GetInstance().scripts);
+                SceneManager::GetInstance().CloseScene(tab->id, projectDir);
+
+                //Remove the tab from tabs
+                InterfaceManager::GetInstance().tabs.clear();
+                InterfaceManager::GetInstance().openedTab = nullptr;
+
+                //Save project
+                std::string projectFile = projectDir + "project.adrengineproject";
+
+                std::string openedSceneId = "";
+                if (SceneManager::GetInstance().openedScene)
+                    openedSceneId = SceneManager::GetInstance().openedScene->sceneId;
+
+                nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, openedSceneId);
+                AssetSaver::SaveProjectToFile(projectFile, projectJson);
             }
             //if tabType is visualscript
             else if (tab->tabType == Utils::VisualScriptEditor) {

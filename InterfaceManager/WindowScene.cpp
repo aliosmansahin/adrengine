@@ -50,7 +50,7 @@ void WindowScene::DrawWindow()
 			std::string droppedId(payloadData, payload->DataSize);
 
 			//Get the dropped entity
-			auto& entities = SceneManager::GetInstance().currentScene->GetEntityManager()->GetEntities();
+			auto& entities = SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities();
 			auto droppedRef = entities.find(droppedId);
 			if (droppedRef != entities.end()) {
 				auto& dropped = droppedRef->second;
@@ -79,7 +79,7 @@ void WindowScene::DrawWindow()
 	}
 
 	//Draw each entity
-	for (auto& entity : SceneManager::GetInstance().currentScene->GetEntityManager()->GetEntities()) {
+	for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
 		if(entity.second.get()->GetEntityParams()->parent == nullptr) {
 			DrawEntity(entity.second);
 		}
@@ -175,7 +175,7 @@ void WindowScene::DrawEntity(std::shared_ptr<Entity>& entity, int depth)
 
 				//Do the change process after
 				deferredEntityChanges.push_back([=]() {
-					auto& entities = SceneManager::GetInstance().currentScene->GetEntityManager()->GetEntities();
+					auto& entities = SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities();
 
 					//Get dropped and target entities from their ids
 					auto droppedRef = entities.find(droppedId);
@@ -229,7 +229,7 @@ void WindowScene::DrawEntity(std::shared_ptr<Entity>& entity, int depth)
 
 				std::string id = params->id;
 
-				auto scene = SceneManager::GetInstance().currentScene;
+				auto scene = SceneManager::GetInstance().openedScene;
 				if (!scene) return;
 
 				auto manager = scene->GetEntityManager();

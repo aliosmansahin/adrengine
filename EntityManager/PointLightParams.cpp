@@ -4,14 +4,14 @@
 /*
 PURPOSE: Sets properties of the entity from its json
 */
-void PointLightParams::FromJson(const nlohmann::json& j)
+void PointLightParams::FromJson(const nlohmann::json& j, std::string& projectDir)
 {
 	/*
 		Its kind of "super" function.
 		Which calls the function of the base class.
 		In this function, we are overriding the function, so we need it
 	*/
-	LightParams::FromJson(j);
+	LightParams::FromJson(j, projectDir);
 
 	//Set some properties
 	constant = j.value("constant", 1.0f);

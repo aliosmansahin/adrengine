@@ -62,6 +62,9 @@ public:
 	//Buttons and keys
 	bool leftPressed = false;
 	bool deletePressed = false;
+
+	//This is the script of the scene
+	std::shared_ptr<VisualScript> sceneScript;
 private:
 	//entity manager
 	EntityManager* entityManager = nullptr;

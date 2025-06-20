@@ -62,15 +62,20 @@ void WindowAllScenes::DrawWindow(
 				windowSceneSelectedId = "";
 
 				//Load the scene
-				Scene* scenePtr = SceneManager::GetInstance().LoadScene(scene, projectDir, tabs, entityTypes);
+				Scene* scenePtr = SceneManager::GetInstance().LoadScene(scene, projectDir, entityTypes);
 				if (scenePtr) {
-					//Change the selectedTab and currentScene
-					auto iter = tabs.find(scene);
-					if (iter != tabs.end()) {
-						SceneManager::GetInstance().currentScene = scenePtr;
-						openedTab = iter->second.get();
-						selectedTabId = iter->second->id;
-					}
+					tabs.clear();
+
+					//Create a new tab
+					Utils::Tab* tab = new Utils::Tab();
+					tab->id = scene;
+					tab->tabType = Utils::SceneEditor;
+
+					openedTab = tab;
+					selectedTabId = tab->id;
+
+					//Insert the tab to tabs map
+					tabs.insert(std::pair<std::string, std::unique_ptr<Utils::Tab>>(tab->id, std::unique_ptr<Utils::Tab>(tab)));
 				}
 			}
 		}

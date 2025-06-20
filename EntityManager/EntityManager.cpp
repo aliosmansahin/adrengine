@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "EntityManager.h"
 #include "Graphics.h"
+#include "VisualScript.h"
 
 /*
 PURPOSE: Initialize the entity manager
@@ -388,6 +389,19 @@ ENTITYMANAGER_API void EntityManager::SetEntityRealStats(Entity* entity)
 	}
 }
 
+/*
+PURPOSE: Runs begin nodes of all scripts of entities
+*/
+ENTITYMANAGER_API void EntityManager::RunEntitiesScriptBegin()
+{
+	for (auto& entity : entities) {
+		entity.second->GetEntityParams()->script->ExecuteBeginScript();
+	}
+}
+
+/*
+PURPOSE: Returns entity by id, check out getElementById of javascript
+*/
 ENTITYMANAGER_API std::shared_ptr<Entity> EntityManager::GetEntityById(std::string id)
 {
 	auto entityIter = entities.find(id);

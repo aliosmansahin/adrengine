@@ -51,7 +51,7 @@ public:
 	};
 
 	//json
-	ENTITYMANAGER_API void FromJson(const nlohmann::json& j) override;
+	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir) override;
 
 	//Variables for the SpotLight
 	glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);

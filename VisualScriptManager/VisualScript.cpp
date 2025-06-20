@@ -7,8 +7,6 @@ PURPOSE: Creates a new script and set some variables
 bool VisualScript::CreateScript(std::string scriptId, std::string belongsTo, std::string belongsScene)
 {
 	this->scriptId = scriptId;
-	this->belongsTo = belongsTo;
-	this->belongsScene = belongsScene;
 	return true;
 }
 
@@ -50,9 +48,7 @@ nlohmann::json VisualScript::ToJson()
 	nlohmann::json j;
 
 	//Script properties
-	j["id"] = scriptId;
-	j["belongs-to"] = belongsTo;
-	j["belongs-scene"] = belongsScene;
+	j["script-id"] = scriptId;
 
 	//All nodes
 	for (auto& node : nodes) {
@@ -81,9 +77,10 @@ PURPOSE: Sets the visual script from its json
 void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types)
 {
 	//Script properties
-	scriptId = json["id"];
-	belongsTo = json["belongs-to"];
-	belongsScene = json["belongs-scene"];
+	scriptId = json.value("script-id", "");
+
+	//Load next id
+	nextId = json.value("next-id", 1000);
 
 	//Load each node from its json and insert it to "nodes"
 	for (auto& nodeJson : json["nodes"]) {
@@ -98,7 +95,7 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 
 		type->FromJson(nodeJson);
 
-		if (nodeType == "GetThisEntity") {
+		/*if (nodeType == "GetThisEntity") {
 			GetThisEntity* entityNode = dynamic_cast<GetThisEntity*>(type.get());
 
 			if (entityNode) {
@@ -107,7 +104,7 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 					entityNode->entity = scene->GetEntityManager()->GetEntityById(belongsTo).get();
 				}
 			}
-		}
+		}*/
 
 		//Add a new node
 		NodeVisual nodeVisual;
@@ -147,9 +144,6 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 			}
 		}
 	}
-
-	//Load next id
-	nextId = json.value("next-id", 1000);
 }
 
 /*

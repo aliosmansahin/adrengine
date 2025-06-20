@@ -11,46 +11,35 @@ void WindowVisualScript::DrawWindow(
     Utils::Tab*& openedTab,
     std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs)
 {
-    //Some variables
-    int windowHeight = (int)ImGui::GetWindowHeight();
-    int toolbarWidth = 100;
-    int toolbarHeight = (int)ImGui::GetContentRegionAvail().y - tabHeight;
+    //TODO: Active it when it became necessary
+    // 
+    // 
+    // 
+    ////Some variables
+    //int windowHeight = (int)ImGui::GetWindowHeight();
+    //int toolbarWidth = 100;
+    //int toolbarHeight = (int)ImGui::GetContentRegionAvail().y - tabHeight;
 
-    //Settings for the toolbar and begin it
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ////Settings for the toolbar and begin it
+    //ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+    //const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-    ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
-    float titleHeight = ImGui::GetFontSize() + windowPadding.y;
-    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y + tabHeight + titleHeight));
-    ImGui::SetNextWindowSize(ImVec2((float)toolbarWidth, viewport->WorkSize.y - tabHeight - titleHeight));
-    //ImGui::SetNextWindowViewport(viewport->ID);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    ImGui::Begin("Toolbar", nullptr, window_flags);
-    ImGui::SetWindowFontScale(1.5f);
-    ImGui::PopStyleVar(3);
+    //ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
+    //float titleHeight = ImGui::GetFontSize() + windowPadding.y;
+    //ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y + tabHeight + titleHeight));
+    //ImGui::SetNextWindowSize(ImVec2((float)toolbarWidth, viewport->WorkSize.y - tabHeight - titleHeight));
+    ////ImGui::SetNextWindowViewport(viewport->ID);
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    //window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    //window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    //ImGui::Begin("Toolbar", nullptr, window_flags);
+    //ImGui::SetWindowFontScale(1.5f);
+    //ImGui::PopStyleVar(3);
 
-    static int selected = false;
-
-    //Compile button
-    //if (ImGui::Selectable("Compile", selected, ImGuiSelectableFlags_None, ImVec2((float)toolbarWidth, 50))) {
-    //    //Save the script
-    //    VisualScriptManager::GetInstance().SaveScript(VisualScriptManager::GetInstance().currentScript, projectDir, openedTab, SceneManager::GetInstance().scenes, tabs);
-
-    //    //Compile the script and write the result of the compilation
-    //    std::string result = VisualScriptManager::GetInstance().currentScript->CompileScript();
-    //    if (result.empty())
-    //        Logger::Log("P", "Current script was compiled successfully");
-    //    else
-    //        Logger::Log("E", result.c_str());
-    //}
-
-    //End the toolbar
-    ImGui::End();
+    ////End the toolbar
+    //ImGui::End();
 
     //TODO: Error handling
 
@@ -193,13 +182,13 @@ void WindowVisualScript::DrawWindow(
                 node->SetPos((int)pos.x, (int)pos.y);
                 node->SetPins();
 
-                if (type == "GetThisEntity") {
+                /*if (type == "GetThisEntity") {
                     GetThisEntity* entityNode = dynamic_cast<GetThisEntity*>(node.get());
 
                     if (entityNode) {
                         entityNode->entity = SceneManager::GetInstance().GetSceneById(VisualScriptManager::GetInstance().currentScript->belongsScene)->GetEntityManager()->GetEntityById(VisualScriptManager::GetInstance().currentScript->belongsTo).get();
                     }
-                }
+                }*/
 
                 //Add a new node
                 NodeVisual nodeVisual;

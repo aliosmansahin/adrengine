@@ -125,15 +125,10 @@ void InterfaceManager::DrawInterface(
 		}
 		if (tab && tab->id.c_str()) {
 			if (ImGui::Selectable(tab->id.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(100, (float)tabHeight))) {
-				SceneManager::GetInstance().currentScene = nullptr;
 				VisualScriptManager::GetInstance().currentScript = nullptr;
 				//If the tabType is scene, set the currentScene
 				if (tab->tabType == Utils::SceneEditor) {
-					auto openedScene = SceneManager::GetInstance().openedScenes.find(tab->id);
-					if (openedScene != SceneManager::GetInstance().openedScenes.end()) {
-						SceneManager::GetInstance().currentScene = openedScene->second.get();
-						openedTab = tab;
-					}
+					openedTab = tab;
 				}
 				//If the tabType is script, set the currentScript
 				else if (tab->tabType == Utils::VisualScriptEditor) {
@@ -163,7 +158,7 @@ void InterfaceManager::DrawInterface(
 	if (openedTab) {
 		if (openedTab->tabType == Utils::SceneEditor) {
 			//If openedTabType is scene, draw scene windows
-			if (SceneManager::GetInstance().currentScene && SceneManager::GetInstance().currentScene->GetEntityManager()) {
+			if (SceneManager::GetInstance().openedScene && SceneManager::GetInstance().openedScene->GetEntityManager()) {
 				if (WindowScene::GetInstance().showWindow)
 					WindowScene::GetInstance().DrawWindow();
 

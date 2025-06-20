@@ -120,14 +120,14 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\GladWrapper;..\Asset;..\Engine;..\Timer;..\InputManager;..\SceneManager;..\Graphics;..\EntityManager;..\Common;..\InterfaceManager;..\Logger;..\Localization</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\GladWrapper;..\Asset;..\Timer;..\InputManager;..\Graphics;..\Common;..\Logger;..\Localization</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>glfw3dll.lib;Common.lib;Logger.lib;Asset.lib;GladWrapper.lib;EntityManager.lib;SceneManager.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3dll.lib;Common.lib;Logger.lib;Asset.lib;GladWrapper.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -142,7 +142,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\GladWrapper;..\Asset;..\Engine;..\Timer;..\InputManager;..\SceneManager;..\Graphics;..\EntityManager;..\Common;..\InterfaceManager;..\Logger;..\Localization</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\GladWrapper;..\Asset;..\Timer;..\InputManager;..\Graphics;..\Common;..\Logger;..\Localization</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +151,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib;Common.lib;Logger.lib;Asset.lib;GladWrapper.lib;EntityManager.lib;SceneManager.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3dll.lib;Common.lib;Logger.lib;Asset.lib;GladWrapper.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
