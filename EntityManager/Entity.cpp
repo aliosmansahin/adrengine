@@ -17,7 +17,8 @@ PURPOSE: Unitializes the entity
 */
 void Entity::DeleteEntity()
 {
-    params->script->ReleaseScript();
+    if(params->script)
+        params->script->ReleaseScript();
 }
 
 /*

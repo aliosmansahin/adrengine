@@ -535,7 +535,6 @@ std::string EntityManager::CreateEntity(
 		auto params = entity->GetEntityParams();
 		if (!params || params->id.empty()) continue;
 
-		//std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
 		std::string entitiesDir = projectDir + "entities/";
 		std::filesystem::create_directory(entitiesDir);
 

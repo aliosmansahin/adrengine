@@ -2,6 +2,7 @@
 #include "SceneManager.h"
 #include "AssetSaver.h"
 #include "InputManager.h"
+#include "VisualScriptManager.h"
 #include <GLFW/glfw3.h>
 
 /*
@@ -141,13 +142,6 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
     if (sceneIter == scenes.end())
         return false;
 
-    //Check if the scene that will be deleted is an opened scene
-    if (openedScene.get() && openedScene->sceneId == sceneId) {
-        //Remove the opened scene
-        openedScene->ReleaseScene();
-        openedScene = nullptr;
-    }
-
     std::string scenesDir = projectDir + "scenes/";
     std::string sceneDir = scenesDir + sceneId + "/";
     std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
@@ -169,9 +163,16 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
                 
                 //Delete script that belongs to the entity
                 std::string scriptId = entityJson.value("scriptId", "");
+
                 if (!scriptId.empty()) {
                     std::string scriptsDir = projectDir + "scripts/";
                     std::string scriptDir = scriptsDir + scriptId + "/";
+
+                    //Delete opened script
+                    auto script = VisualScriptManager::GetInstance().openedScripts.find(scriptId);
+                    if (script != VisualScriptManager::GetInstance().openedScripts.end()) {
+                        VisualScriptManager::GetInstance().openedScripts.erase(script);
+                    }
 
                     std::filesystem::remove_all(scriptDir);
                 }
@@ -180,6 +181,13 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
                 std::filesystem::remove_all(entityDir);
             }
         }
+    }
+
+    //Check if the scene that will be deleted is an opened scene
+    if (openedScene.get() && openedScene->sceneId == sceneId) {
+        //Remove the opened scene
+        openedScene->ReleaseScene();
+        openedScene = nullptr;
     }
 
     //Delete scene directory

@@ -98,6 +98,17 @@ void WindowEntityProperties::DrawWindow(
                 sbt.entityJson = currentEntity->ToJson();
                 sbt.sceneJson = SceneManager::GetInstance().openedScene->ToJson();
                 currentEntity->GetEntityParams()->script = VisualScriptManager::GetInstance().CreateScript(sbt, projectDir, tabs, openedTab, selectedTabId, SceneManager::GetInstance().scenes);
+
+                sbt.entityJson["scriptId"] = currentEntity->GetEntityParams()->script->scriptId;
+
+                std::string entitiesDir = projectDir + "entities/";
+                std::filesystem::create_directory(entitiesDir);
+
+                std::string entityDir = entitiesDir + currentEntity->GetEntityParams()->id + "/";
+                std::filesystem::create_directory(entityDir);
+
+                std::string entityFile = entityDir + currentEntity->GetEntityParams()->id + ".adrengineentity";
+                AssetSaver::SaveEntityToFile(sbt.entityJson, entityFile);
             }
         }
         //Otherwise draw an edit button for the script
@@ -108,6 +119,22 @@ void WindowEntityProperties::DrawWindow(
                 auto result = VisualScriptManager::GetInstance().OpenScript(currentEntity->GetEntityParams()->script, tabs);
                 openedTab = result.second.get();
                 selectedTabId = result.second->id;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Delete Script")) {
+                VisualScriptManager::GetInstance().DeleteScript(currentEntity->GetEntityParams()->script.get(), tabs, openedTab, projectDir);
+
+                currentEntity->GetEntityParams()->script = nullptr;
+                auto json = currentEntity->ToJson();
+
+                std::string entitiesDir = projectDir + "entities/";
+                std::filesystem::create_directory(entitiesDir);
+
+                std::string entityDir = entitiesDir + currentEntity->GetEntityParams()->id + "/";
+                std::filesystem::create_directory(entityDir);
+
+                std::string entityFile = entityDir + currentEntity->GetEntityParams()->id + ".adrengineentity";
+                AssetSaver::SaveEntityToFile(currentEntity->ToJson(), entityFile);
             }
         }
 

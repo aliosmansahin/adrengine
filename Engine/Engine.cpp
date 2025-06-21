@@ -297,6 +297,12 @@ ENGINE_API void Engine::UpdateCurrentScene()
                     InterfaceManager::GetInstance().tabs.erase(iter);
                 }
 
+                //Delete opened script
+                auto script = VisualScriptManager::GetInstance().openedScripts.find(scriptId);
+                if (script != VisualScriptManager::GetInstance().openedScripts.end()) {
+                    VisualScriptManager::GetInstance().openedScripts.erase(script);
+                }
+
                 //Select nothing
                 WindowEntityProperties::GetInstance().SelectEntity(nullptr);
             },

@@ -200,18 +200,36 @@ std::shared_ptr<VisualScript> VisualScriptManager::CreateScript(Utils::ScriptBel
 /*
 PURPOSE: Deletes the script
 */
-bool VisualScriptManager::DeleteScript(std::string scriptId, Utils::ScriptBelongsTo sbt)
+bool VisualScriptManager::DeleteScript(
+    VisualScript* script,
+    std::unordered_map<std::string,
+    std::shared_ptr<Utils::Tab>>&tabs,
+    Utils::Tab*& openedTab,
+    std::string& projectDir)
 {
-    /*std::string sbtStr = "";
-    if (sbt.entity) {
-        sbt.entity->GetEntityParams()->scriptId = scriptId;
-        sbtStr = "entity";
-    }*/
-    
-    //TODO: Write deleting script codes
+    //Release script
+    script->ReleaseScript();
+
+    //Delete directory of the script
+    std::string scriptsDir = projectDir + "scripts/";
+    std::string scriptDir = scriptsDir + script->scriptId + "/";
+
+    std::filesystem::remove_all(scriptDir);
+
+    //Remove tab
+    auto tab = tabs.find(script->scriptId);
+    if (tab != tabs.end()) {
+        tabs.erase(tab);
+    }
+
+    //Delete opened script
+    auto scriptIter = VisualScriptManager::GetInstance().openedScripts.find(script->scriptId);
+    if (scriptIter != VisualScriptManager::GetInstance().openedScripts.end()) {
+        VisualScriptManager::GetInstance().openedScripts.erase(script->scriptId);
+    }
 
     std::string str = "Deleted script \"";
-    str += scriptId;
+    str += script->scriptId;
     str += "\"";
     Logger::Log("P", str.c_str());
 	return true;
