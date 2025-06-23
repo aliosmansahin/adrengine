@@ -37,7 +37,7 @@ public:
 		bool windowSceneDeletePressed,
 		bool& pendingDelete,
 		std::string selectedId,
-		std::function<void()> selectFunction,
+		std::function<void(std::string)> extraDeletingFunc,
 		std::string& projectDir
 	);
 	SCENEMANAGER_API void			ReleaseScene();

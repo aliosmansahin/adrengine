@@ -28,6 +28,7 @@ PURPOSE: Releases the script
 void VisualScript::ReleaseScript()
 {
 	//The variables is already being deleted
+	nodes.clear();
 }
 
 /*
@@ -51,7 +52,7 @@ nlohmann::json VisualScript::ToJson()
 	nlohmann::json j;
 
 	//Script properties
-	j["script-id"] = scriptId;
+	j["id"] = scriptId;
 	j["belongs-entity"] = belongsEntity;
 	j["belongs-scene"] = belongsScene;
 
@@ -82,7 +83,7 @@ PURPOSE: Sets the visual script from its json
 void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types, IScene* scene)
 {
 	//Script properties
-	scriptId = json.value("script-id", "");
+	scriptId = json.value("id", "");
 	belongsScene = json.value("belongs-scene", "");
 	belongsEntity = json.value("belongs-entity", "");
 

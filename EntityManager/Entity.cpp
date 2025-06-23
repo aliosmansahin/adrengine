@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Entity.h"
 
+#include "VisualScript.h"
+
 /*
 PURPOSE: Initializes the entity
 */
@@ -15,6 +17,8 @@ PURPOSE: Unitializes the entity
 */
 void Entity::DeleteEntity()
 {
+    if(params->script)
+        params->script->ReleaseScript();
 }
 
 /*

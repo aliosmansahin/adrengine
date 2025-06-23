@@ -59,7 +59,7 @@ void Scene::UpdateScene(
 	bool windowSceneDeletePressed,
 	bool& pendingDelete,
 	std::string selectedId,
-	std::function<void()> selectFunction,
+	std::function<void(std::string)> extraDeletingFunc,
 	std::string& projectDir)
 {
 	//Setups for mouse positions
@@ -196,7 +196,7 @@ void Scene::UpdateScene(
 	//Update each entity via entity manager
 	if (entityManager) {
 		nlohmann::json sceneJson = ToJson();
-		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, selectedId, selectFunction, projectDir, sceneId, sceneJson, gameCamera);
+		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, selectedId, extraDeletingFunc, projectDir, sceneId, sceneJson, gameCamera);
 	}
 }
 
@@ -280,10 +280,7 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 	if (json.contains("entities")) {
 		for (auto& entity : json["entities"]) {
 			//Load entity
-			std::string entitiesDir = projectDir + "entities/";
-			std::string entityDir = entitiesDir + std::string(entity) + "/";
-			std::string entityFile = entityDir + std::string(entity) + ".adrengineentity";
-			nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(entityFile);
+			nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(projectDir, std::string(entity));
 
 			std::shared_ptr<Entity> entity;
 			std::shared_ptr<EntityParams> params;

@@ -25,21 +25,16 @@ public:
 	VISUALSCRIPTMANAGER_API bool														   CloseScript(
 		std::string scriptId,
 		std::string& projectDir,
-		std::unordered_map<std::string,
-		std::shared_ptr<Utils::Tab>>&tabs,
-		Utils::Tab*& openedTab,
-		std::map<std::string, std::string>& scenes
+		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs
 	);
 	VISUALSCRIPTMANAGER_API std::shared_ptr<VisualScript>								   CreateScript(Utils::ScriptBelongsTo sbt, std::string& projectDir, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
 		Utils::Tab*& openedTab, std::string& selectedTabId, std::map<std::string, std::string>& scenes);
-	VISUALSCRIPTMANAGER_API bool														   DeleteScript(std::string scriptId, Utils::ScriptBelongsTo sbt);
-	VISUALSCRIPTMANAGER_API bool														   SaveScript(
-		std::shared_ptr<VisualScript> script,
-		std::string& projectDir,
-		Utils::Tab*& openedTab,
-		std::map<std::string, std::string>& scenes,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs
-		);
+	VISUALSCRIPTMANAGER_API bool														   DeleteScript(
+		VisualScript* script,
+		std::unordered_map<std::string,
+		std::shared_ptr<Utils::Tab>>&tabs,
+		Utils::Tab*& openedTab, std::string& projectDir);
+	VISUALSCRIPTMANAGER_API bool														   SaveScript(std::shared_ptr<VisualScript> script, std::string& projectDir);
 
 	//compilation
 	VISUALSCRIPTMANAGER_API void														   RunScriptsBegin();

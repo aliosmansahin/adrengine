@@ -2,6 +2,7 @@
 #include "SceneManager.h"
 #include "AssetSaver.h"
 #include "InputManager.h"
+#include "VisualScriptManager.h"
 #include <GLFW/glfw3.h>
 
 /*
@@ -62,13 +63,7 @@ bool SceneManager::CreateScene(
     scenes.insert(std::pair<std::string, std::string>(scene->sceneId, scene->sceneName));
 
     //Save the scene
-    std::string scenesDir = projectDir + "scenes/";
-    std::filesystem::create_directory(scenesDir);
-    std::string sceneDir = scenesDir + scene->sceneId + "/";
-    std::filesystem::create_directory(sceneDir);
-    std::string sceneFile = sceneDir + scene->sceneId + ".adrenginescene";
-
-    AssetSaver::SaveSceneToFile(scene->ToJson(), sceneFile, projectDir);
+    AssetSaver::SaveSceneToFile(scene->ToJson(), projectDir, sceneId);
 
     openedScene = std::shared_ptr<Scene>(scene);
 
@@ -87,13 +82,7 @@ Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
     }
 
     //Load the scene
-    std::string scenesDir = projectDir + "scenes/";
-    std::filesystem::create_directory(scenesDir);
-    std::string sceneDir = scenesDir + sceneId + "/";
-    std::filesystem::create_directory(sceneDir);
-    std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-
-    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(sceneFile, projectDir);
+    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(projectDir, sceneId);
 
     if (sceneJson.is_null())
         return nullptr;
@@ -117,12 +106,7 @@ bool SceneManager::CloseScene(std::string sceneId, std::string& projectDir)
         return false;
 
     //Save the scene
-    std::string scenesDir = projectDir + "scenes/";
-    std::filesystem::create_directory(scenesDir);
-    std::string sceneDir = scenesDir + sceneId + "/";
-    std::filesystem::create_directory(sceneDir);
-    std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-    AssetSaver::SaveSceneToFile(openedScene->ToJson(), sceneFile, projectDir);
+    AssetSaver::SaveSceneToFile(openedScene->ToJson(), projectDir, sceneId);
 
     //Release the scene
     openedScene->ReleaseScene();
@@ -141,16 +125,53 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
     if (sceneIter == scenes.end())
         return false;
 
+    std::string scenesDir = projectDir + "scenes/";
+    std::string sceneDir = scenesDir + sceneId + "/";
+
+    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(projectDir, sceneId);
+
+    //Delete each entity that belong to the scene
+    if (!sceneJson.is_null()) {
+        if (sceneJson.contains("entities")) {
+            auto& entities = sceneJson["entities"];
+
+            for (auto& entity : entities) {
+                std::string entitiesDir = projectDir + "entities/";
+                std::string entityDir = entitiesDir + entity.get<std::string>() + "/";
+
+                //Load entity json
+                nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(projectDir, entity.get<std::string>());
+                
+                //Delete script that belongs to the entity
+                std::string scriptId = entityJson.value("scriptId", "");
+
+                if (!scriptId.empty()) {
+                    std::string scriptsDir = projectDir + "scripts/";
+                    std::string scriptDir = scriptsDir + scriptId + "/";
+
+                    //Delete opened script
+                    auto script = VisualScriptManager::GetInstance().openedScripts.find(scriptId);
+                    if (script != VisualScriptManager::GetInstance().openedScripts.end()) {
+                        VisualScriptManager::GetInstance().openedScripts.erase(script);
+                    }
+
+                    std::filesystem::remove_all(scriptDir);
+                }
+
+                //Delete entity directory
+                std::filesystem::remove_all(entityDir);
+            }
+        }
+    }
+
     //Check if the scene that will be deleted is an opened scene
     if (openedScene.get() && openedScene->sceneId == sceneId) {
         //Remove the opened scene
         openedScene->ReleaseScene();
         openedScene = nullptr;
     }
-    
+
     //Delete scene directory
-    std::string scenesDir = projectDir + "scenes/";
-    std::string sceneDir = scenesDir + sceneId + "/";
     std::filesystem::remove_all(sceneDir);
 
     //Remove scene from scenes map

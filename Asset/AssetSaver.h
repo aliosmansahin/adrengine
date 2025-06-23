@@ -15,17 +15,17 @@
 class ASSET_API AssetSaver {
 public:
     //entity functions
-    static void           SaveEntityToFile(nlohmann::json entityJson, const std::string& filepath);
-    static nlohmann::json LoadEntityFromFile(const std::string& filepath);
+    static void           SaveEntityToFile(nlohmann::json entityJson, const std::string& projectDir, const std::string& entityId);
+    static nlohmann::json LoadEntityFromFile(const std::string& projectDir, const std::string& entityId);
 
     //scene functions
-    static void           SaveSceneToFile(nlohmann::json sceneJson, const std::string& filepath, std::string& projectDir);
-    static nlohmann::json LoadSceneFromFile(const std::string& filepath, std::string& projectDir);
+    static void           SaveSceneToFile(nlohmann::json sceneJson, const std::string& projectDir, const std::string& sceneId);
+    static nlohmann::json LoadSceneFromFile(const std::string& projectDir, const std::string& sceneId);
     
     //project function(s)
     static void           SaveProjectToFile(const std::string& filepath, nlohmann::json projectJson);
 
     //script functions
-    static void           SaveScriptToFile(nlohmann::json scriptJson, const std::string& filepath);
-    static nlohmann::json LoadScriptFromFile(const std::string& filepath);
+    static void           SaveScriptToFile(nlohmann::json scriptJson, const std::string& projectDir, const std::string& scriptId);
+    static nlohmann::json LoadScriptFromFile(const std::string& projectDir, const std::string& scriptId);
 };

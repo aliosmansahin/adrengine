@@ -327,21 +327,42 @@ void EntityManager::UpdateEntities(
 	bool windowSceneDeletePressed,
 	bool& pendingDelete,
 	std::string selectedId,
-	std::function<void()> selectFunction,
+	std::function<void(std::string)> extraDeletingFunc,
 	std::string& projectDir,
 	std::string& sceneId,
 	nlohmann::json& currentSceneJson,
 	Camera*& gameCamera)
 {
 	//Perform deleting entity actions
-	if (windowSceneFocused && windowSceneDeletePressed) {
-		RemoveEntity(selectedId, projectDir, sceneId, currentSceneJson);
-		selectFunction();
-	}
-	if (pendingDelete) {
-		RemoveEntity(selectedId, projectDir, sceneId, currentSceneJson);
-		selectFunction();
-		pendingDelete = false;
+	if ((windowSceneFocused && windowSceneDeletePressed) || pendingDelete) {
+		//Check if the entity exists
+		auto entityIter = entities.find(selectedId);
+
+		if (entityIter == entities.end()) {
+			std::string str = "There is not any entity which has given id \"";
+			str += selectedId;
+			str += "\"";
+			Logger::Log("E", str.c_str());
+		}
+
+		//Get script id of the entity
+		std::string scriptId = "";
+		if (entityIter->second->GetEntityParams()->script)
+			scriptId = entityIter->second->GetEntityParams()->script->scriptId;
+
+		//Remove the entity
+		RemoveEntity(entityIter->second.get(), projectDir, sceneId, currentSceneJson);
+
+		//Erase it
+		entities.erase(entityIter);
+
+		//Callback function for deleting tab and select entity to nothing
+		extraDeletingFunc(scriptId);
+
+		//Pending delete
+		if (pendingDelete) {
+			pendingDelete = false;
+		}
 	}
 
 	/*
@@ -439,8 +460,7 @@ std::string EntityManager::CreateEntity(
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 	std::string sceneId,
 	nlohmann::json& currentSceneJson,
-	std::shared_ptr<Entity>& parent,
-	bool newEntity)
+	std::shared_ptr<Entity>& parent)
 {
 	//std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
 
@@ -500,12 +520,6 @@ std::string EntityManager::CreateEntity(
 	entities.insert(std::pair<std::string, std::shared_ptr<Entity>>(entityId, entity));
 
 	//Save the scene and entities which belong to the scene
-	std::string scenesDir = projectDir + "scenes/";
-	std::filesystem::create_directory(scenesDir);
-	std::string sceneDir = scenesDir + sceneId + "/";
-	std::filesystem::create_directory(sceneDir);
-	std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-
 	for (auto& entityIter : GetEntities()) {
 		//Save each entity
 		Entity* entity = entityIter.second.get();
@@ -514,20 +528,12 @@ std::string EntityManager::CreateEntity(
 		auto params = entity->GetEntityParams();
 		if (!params || params->id.empty()) continue;
 
-		//std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
-		std::string entitiesDir = projectDir + "entities/";
-		std::filesystem::create_directory(entitiesDir);
-
-		std::string entityDir = entitiesDir + params->id + "/";
-		std::filesystem::create_directory(entityDir);
-
-		std::string entityFile = entityDir + params->id + ".adrengineentity";
-		AssetSaver::SaveEntityToFile(entity->ToJson(), entityFile);
+		AssetSaver::SaveEntityToFile(entity->ToJson(), projectDir, params->id);
 	}
 
 	currentSceneJson["entities"].push_back(params->id); //The scene will have the new entity
 
-	AssetSaver::SaveSceneToFile(currentSceneJson, sceneFile, projectDir);
+	AssetSaver::SaveSceneToFile(currentSceneJson, projectDir, sceneId);
 
 	//Some logger
 	std::string str = "Created new entity \"";
@@ -544,25 +550,12 @@ std::string EntityManager::CreateEntity(
 PURPOSE: Deletes entity from project directory and removes it from the scene
 */
 bool EntityManager::RemoveEntity(
-	std::string which,
+	Entity* entity,
 	std::string& projectDir,
 	std::string& sceneId,
 	nlohmann::json& currentSceneJson,
 	bool saveScene)
 {
-	//Check if the entity exists
-	auto entityIter = entities.find(which);
-
-	if (entityIter == entities.end()) {
-		std::string str = "There is not any entity which has given id \"";
-		str += which;
-		str += "\"";
-		Logger::Log("E", str.c_str());
-		return false;
-	}
-
-	auto entity = entityIter->second.get();
-
 	//If the entity has a parent, remove it from the parent's children
 	Entity* parent = entity->GetEntityParams()->parent.get();
 	if (parent) {
@@ -575,40 +568,47 @@ bool EntityManager::RemoveEntity(
 	//Recursive removing function to delete all children of the entity
 	auto& children = entity->GetEntityParams()->children;
 	for (auto& child : children) {
-		RemoveEntity(child->GetEntityParams()->id, projectDir, sceneId, currentSceneJson, false);
+		RemoveEntity(child.get(), projectDir, sceneId, currentSceneJson, false);
 	}
+
+	//Get script id
+	std::string scriptId = "";
+	if (entity->GetEntityParams()->script)
+		scriptId = entity->GetEntityParams()->script->scriptId;
+
+	if (!scriptId.empty()) {
+		std::string scriptsDir = projectDir + "scripts/";
+		std::string scriptDir = scriptsDir + scriptId + "/";
+
+		std::filesystem::remove_all(scriptDir);
+	}
+
+	//Get the id of the entity
+	std::string entityId = entity->GetEntityParams()->id;
 
 	//Remove the entity from the scene
 	entity->DeleteEntity();
-	entities.erase(entityIter);
 
 	//Delete entity directory
 	std::string entitiesDir = projectDir + "entities/";
-	std::string entityDir = entitiesDir + which + "/";
+	std::string entityDir = entitiesDir + entityId + "/";
 	std::filesystem::remove_all(entityDir);
 
 	//Save the scene
 	if (saveScene) {
-		std::string scenesDir = projectDir + "scenes/";
-		std::filesystem::create_directory(scenesDir);
-		std::string sceneDir = scenesDir + sceneId + "/";
-		std::filesystem::create_directory(sceneDir);
-		std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-
 		//The scene will no longer have the entity
 		auto& entitiesJson = currentSceneJson["entities"];
 
-		auto entityIter = entitiesJson.find(which);
-		if (entityIter != entitiesJson.end()) {
-			entitiesJson.erase(entitiesJson);
-		}
+		auto iter = std::find(entitiesJson.begin(), entitiesJson.end(), entityId);
+		if (iter != entitiesJson.end())
+			entitiesJson.erase(iter);
 
-		AssetSaver::SaveSceneToFile(currentSceneJson, sceneFile, projectDir);
+		AssetSaver::SaveSceneToFile(currentSceneJson, projectDir, sceneId);
 	}
 
 	//Log
 	std::string str = "Removed entity \"";
-	str += which;
+	str += entityId;
 	str += "\"";
 	Logger::Log("P", str.c_str());
 	return true;

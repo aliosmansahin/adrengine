@@ -44,7 +44,7 @@ public:
 		bool windowSceneDeletePressed,
 		bool& pendingDelete,
 		std::string selectedId,
-		std::function<void()> selectFunction,
+		std::function<void(std::string)> extraDeletingFunc,
 		std::string& projectDir,
 		std::string& sceneId,
 		nlohmann::json& currentSceneJson,
@@ -59,11 +59,10 @@ public:
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 		std::string sceneId,
 		nlohmann::json& currentSceneJson,
-		std::shared_ptr<Entity>& parent,
-		bool newEntity = true
+		std::shared_ptr<Entity>& parent
 	);
 	ENTITYMANAGER_API bool		  RemoveEntity(
-		std::string which,
+		Entity* entity,
 		std::string& projectDir,
 		std::string& sceneId,
 		nlohmann::json& currentSceneJson,
