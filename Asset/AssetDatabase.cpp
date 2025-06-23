@@ -87,28 +87,30 @@ bool AssetDatabase::LoadDatabase(std::string databasePath)
 
 	//Load textures
 	if (!j.contains("textures")) {
-		std::string str = "Failed to load database file \"";
+		std::string str = "No textures detected in database file \"";
 		str += databasePath;
-		str += " \"";
+		str += "\"";
 
 		Logger::Log("E", str.c_str());
-		return false;
 	}
-	for (auto& t : j["textures"]) {
-		LoadTexture(t["id"], t["path"], t["name"]);
+	else {
+		for (auto& t : j["textures"]) {
+			LoadTexture(t["id"], t["path"], t["name"]);
+		}
 	}
 
 	//Load meshes
 	if (!j.contains("meshes")) {
-		std::string str = "Failed to load database file \"";
+		std::string str = "No meshes detected in database file \"";
 		str += databasePath;
-		str += " \"";
+		str += "\"";
 
 		Logger::Log("E", str.c_str());
-		return false;
 	}
-	for (auto& t : j["meshes"]) {
-		LoadMesh(t["id"], t["path"], t["name"]);
+	else {
+		for (auto& t : j["meshes"]) {
+			LoadMesh(t["id"], t["path"], t["name"]);
+		}
 	}
 
 	return true;
