@@ -47,7 +47,8 @@ void EntityParams::FromJson(const nlohmann::json& j, std::string& projectDir, IS
 	//TODO: Load own script
 	std::string scriptId = j.value("scriptId", "");
 	
-	script = VisualScriptManager::GetInstance().LoadScript(scriptId, projectDir, scene);
+	if(!scriptId.empty())
+		script = VisualScriptManager::GetInstance().LoadScript(scriptId, projectDir, scene);
 
 	parentId = j.value("parentId", "");
 }

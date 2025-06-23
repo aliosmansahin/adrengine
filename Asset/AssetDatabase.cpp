@@ -91,7 +91,7 @@ bool AssetDatabase::LoadDatabase(std::string databasePath)
 		str += databasePath;
 		str += "\"";
 
-		Logger::Log("E", str.c_str());
+		Logger::Log("I", str.c_str());
 	}
 	else {
 		for (auto& t : j["textures"]) {
@@ -105,7 +105,7 @@ bool AssetDatabase::LoadDatabase(std::string databasePath)
 		str += databasePath;
 		str += "\"";
 
-		Logger::Log("E", str.c_str());
+		Logger::Log("I", str.c_str());
 	}
 	else {
 		for (auto& t : j["meshes"]) {
