@@ -24,7 +24,7 @@ void WindowAddAsset::DrawWindow(std::string& projectDir, std::string& assetExplo
     }
 
     //Inputbox of path of asset
-    ImGui::SetNextItemWidth(200.0f);
+    ImGui::SetNextItemWidth(500.0f);
     ImGui::InputTextWithHint("Asset Path", "Path", buf, sizeof(buf));
     static std::string path = "";
     if (ImGui::IsItemEdited()) {
@@ -34,7 +34,10 @@ void WindowAddAsset::DrawWindow(std::string& projectDir, std::string& assetExplo
 
     ImGui::SameLine();
     if (ImGui::Button("Browse")) {
-        //TODO: Implement it
+        IGFD::FileDialogConfig config;
+        config.path = ".";
+        config.countSelectionMax = 1;
+        ImGuiFileDialog::Instance()->OpenDialog("AddAssetFileDialog", "Select a file", ".obj", config);
     }
 
     //Inputbox of asset name
@@ -68,6 +71,19 @@ void WindowAddAsset::DrawWindow(std::string& projectDir, std::string& assetExplo
         }
     }
     ImGui::End();
+
+    //Open file dialog
+    if (ImGuiFileDialog::Instance()->Display("AddAssetFileDialog")) {
+        if (ImGuiFileDialog::Instance()->IsOk()) {
+            //Get the file path with file name
+            std::string filePath = ImGuiFileDialog::Instance()->GetFilePathName();
+
+            strcpy_s(buf, sizeof(buf), filePath.c_str());
+            path = filePath;
+        }
+
+        ImGuiFileDialog::Instance()->Close();
+    }
 }
 
 /*

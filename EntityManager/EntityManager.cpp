@@ -416,7 +416,8 @@ PURPOSE: Runs begin nodes of all scripts of entities
 ENTITYMANAGER_API void EntityManager::RunEntitiesScriptBegin()
 {
 	for (auto& entity : entities) {
-		entity.second->GetEntityParams()->script->ExecuteBeginScript();
+		if(entity.second->GetEntityParams()->script)
+			entity.second->GetEntityParams()->script->ExecuteBeginScript();
 	}
 }
 
