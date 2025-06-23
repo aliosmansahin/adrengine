@@ -65,6 +65,44 @@ void WindowVisualScript::DrawWindow(
     //End node editor
     ImNodes::EndNodeEditor();
 
+    //Delete selected nodes
+    if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
+        //Get selected nodes
+        int selected_node_ids[128];
+        int num_selected_nodes = ImNodes::NumSelectedNodes();
+        if (num_selected_nodes > 0) {
+            ImNodes::GetSelectedNodes(selected_node_ids);
+
+            for (int i = 0; i < num_selected_nodes; ++i) {
+                int node_id = selected_node_ids[i];
+
+                // Delete node
+                auto& nodes = VisualScriptManager::GetInstance().currentScript->nodes;
+
+                for (auto it = nodes.begin(); it != nodes.end(); ) {
+                    if (it->second.id == node_id) {
+                        it = nodes.erase(it);
+                    }
+                    else {
+                        ++it;
+                    }
+                }
+
+                // Delete link
+                auto& links = VisualScriptManager::GetInstance().currentScript->links;
+
+                for (auto it = links.begin(); it != links.end(); ) {
+                    if (it->second.first == node_id || it->second.second == node_id) {
+                        it = links.erase(it);
+                    }
+                    else {
+                        ++it;
+                    }
+                }
+            }
+        }
+    }
+
     //Store start and end of the link
     int start_attr, end_attr;
 
