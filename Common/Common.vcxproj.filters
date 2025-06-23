@@ -73,6 +73,12 @@
     <ClInclude Include="interfaces\IScene\IScene.h">
       <Filter>interfaces\IScene</Filter>
     </ClInclude>
+    <ClInclude Include="imguifiledialog\ImGuiFileDialog.h">
+      <Filter>imguifiledialog</Filter>
+    </ClInclude>
+    <ClInclude Include="imguifiledialog\ImGuiFileDialogConfig.h">
+      <Filter>imguifiledialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp">
@@ -114,6 +120,9 @@
     <ClCompile Include="interfaces\IScene\IScene.cpp">
       <Filter>interfaces\IScene</Filter>
     </ClCompile>
+    <ClCompile Include="imguifiledialog\ImGuiFileDialog.cpp">
+      <Filter>imguifiledialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="glad">
@@ -148,6 +157,9 @@
     </Filter>
     <Filter Include="interfaces\IScene">
       <UniqueIdentifier>{26a10e63-8c3e-4628-bf98-6143b8f7bbc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imguifiledialog">
+      <UniqueIdentifier>{bccc9551-e8d3-40a2-8cd5-69c893c031bc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

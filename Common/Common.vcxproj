@@ -115,6 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,6 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,6 +144,8 @@
     <ClInclude Include="glad\khrplatform.h" />
     <ClInclude Include="glfw\glfw3.h" />
     <ClInclude Include="glfw\glfw3native.h" />
+    <ClInclude Include="imguifiledialog\ImGuiFileDialog.h" />
+    <ClInclude Include="imguifiledialog\ImGuiFileDialogConfig.h" />
     <ClInclude Include="interfaces\IEntityManager\IEntityManager.h" />
     <ClInclude Include="interfaces\IEntity\IEntityParams.h" />
     <ClInclude Include="interfaces\IEntity\IEntity.h" />
@@ -164,6 +168,7 @@
     <ClInclude Include="utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="imguifiledialog\ImGuiFileDialog.cpp" />
     <ClCompile Include="interfaces\IEntityManager\IEntityManager.cpp" />
     <ClCompile Include="interfaces\IEntity\IEntityParams.cpp" />
     <ClCompile Include="interfaces\IEntity\IEntity.cpp" />
