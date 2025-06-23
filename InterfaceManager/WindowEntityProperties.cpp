@@ -101,14 +101,7 @@ void WindowEntityProperties::DrawWindow(
 
                 sbt.entityJson["scriptId"] = currentEntity->GetEntityParams()->script->scriptId;
 
-                std::string entitiesDir = projectDir + "entities/";
-                std::filesystem::create_directory(entitiesDir);
-
-                std::string entityDir = entitiesDir + currentEntity->GetEntityParams()->id + "/";
-                std::filesystem::create_directory(entityDir);
-
-                std::string entityFile = entityDir + currentEntity->GetEntityParams()->id + ".adrengineentity";
-                AssetSaver::SaveEntityToFile(sbt.entityJson, entityFile);
+                AssetSaver::SaveEntityToFile(sbt.entityJson, projectDir, currentEntity->GetEntityParams()->id);
             }
         }
         //Otherwise draw an edit button for the script
@@ -125,16 +118,8 @@ void WindowEntityProperties::DrawWindow(
                 VisualScriptManager::GetInstance().DeleteScript(currentEntity->GetEntityParams()->script.get(), tabs, openedTab, projectDir);
 
                 currentEntity->GetEntityParams()->script = nullptr;
-                auto json = currentEntity->ToJson();
 
-                std::string entitiesDir = projectDir + "entities/";
-                std::filesystem::create_directory(entitiesDir);
-
-                std::string entityDir = entitiesDir + currentEntity->GetEntityParams()->id + "/";
-                std::filesystem::create_directory(entityDir);
-
-                std::string entityFile = entityDir + currentEntity->GetEntityParams()->id + ".adrengineentity";
-                AssetSaver::SaveEntityToFile(currentEntity->ToJson(), entityFile);
+                AssetSaver::SaveEntityToFile(currentEntity->ToJson(), projectDir, currentEntity->GetEntityParams()->id);
             }
         }
 

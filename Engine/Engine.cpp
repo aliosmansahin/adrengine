@@ -198,43 +198,27 @@ PURPOSE: To save the project
 */
 void Engine::SaveProject()
 {
-    //saves the project to the project file
-    std::string projectFile = projectDir + projectName + ".adrengineproject";
-
     //get scene id
     std::string sceneId = "";
     if (SceneManager::GetInstance().openedScene.get())
         sceneId = SceneManager::GetInstance().openedScene->sceneId;
 
+    //saves the project to the project file
+    std::string projectFile = projectDir + projectName + ".adrengineproject";
     nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, sceneId);
-
     AssetSaver::SaveProjectToFile(projectFile, projectJson);
 
     //save assets
     AssetDatabase::GetInstance().SaveDatabase(projectDir + "asset_database.adrenginedatabase");
 
     //saves each opened-scenes and each entity that belong to the scene
-    std::string scenesDir = projectDir + "scenes/";
-    std::filesystem::create_directory(scenesDir);
-    std::string entitiesDir = projectDir + "entities/";
-    std::filesystem::create_directory(entitiesDir);
-    std::string scriptsDir = projectDir + "scripts/";
-    std::filesystem::create_directory(scriptsDir);
-
     Scene* scene = SceneManager::GetInstance().openedScene.get();
     if (scene) {
-        std::string sceneDir = scenesDir + scene->sceneId + "/";
-        std::filesystem::create_directory(sceneDir);
-        std::string sceneFile = sceneDir + scene->sceneId + ".adrenginescene";
-        AssetSaver::SaveSceneToFile(scene->ToJson(), sceneFile, projectDir);
+        AssetSaver::SaveSceneToFile(scene->ToJson(), projectDir, sceneId);
 
         if (scene->GetEntityManager()) {
             for (auto& entity : scene->GetEntityManager()->GetEntities()) {
-                std::string entityDir = entitiesDir + entity.second->GetEntityParams()->id + "/";
-                std::filesystem::create_directory(entityDir);
-                std::string entityFile = entityDir + entity.second->GetEntityParams()->id + ".adrengineentity";
-
-                AssetSaver::SaveEntityToFile(entity.second->ToJson(), entityFile);
+                AssetSaver::SaveEntityToFile(entity.second->ToJson(), projectDir, entity.second->GetEntityParams()->id);
             }
         }
     }
@@ -242,10 +226,7 @@ void Engine::SaveProject()
     //saves each opened-scripts
     for (auto& scriptIter : VisualScriptManager::GetInstance().openedScripts) {
         auto script = scriptIter.second.get();
-        std::string scriptDir = scriptsDir + script->scriptId + "/";
-        std::filesystem::create_directory(scriptDir);
-        std::string scriptFile = scriptDir + script->scriptId + ".adrenginescript";
-        AssetSaver::SaveScriptToFile(script->ToJson(), scriptFile);
+        AssetSaver::SaveScriptToFile(script->ToJson(), projectDir, script->scriptId);
     }
 }
 
@@ -369,7 +350,7 @@ ENGINE_API void Engine::PerformDeleteActions()
                     VisualScriptManager::GetInstance().currentScript = nullptr;
                     InterfaceManager::GetInstance().openedTab = nullptr;
                 }
-                VisualScriptManager::GetInstance().CloseScript(openedScriptId, projectDir, InterfaceManager::GetInstance().tabs, InterfaceManager::GetInstance().openedTab, SceneManager::GetInstance().scenes);
+                VisualScriptManager::GetInstance().CloseScript(openedScriptId, projectDir, InterfaceManager::GetInstance().tabs);
             }
         }
         InterfaceManager::GetInstance().pendingTabDelete = false;

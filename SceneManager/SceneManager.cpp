@@ -63,13 +63,7 @@ bool SceneManager::CreateScene(
     scenes.insert(std::pair<std::string, std::string>(scene->sceneId, scene->sceneName));
 
     //Save the scene
-    std::string scenesDir = projectDir + "scenes/";
-    std::filesystem::create_directory(scenesDir);
-    std::string sceneDir = scenesDir + scene->sceneId + "/";
-    std::filesystem::create_directory(sceneDir);
-    std::string sceneFile = sceneDir + scene->sceneId + ".adrenginescene";
-
-    AssetSaver::SaveSceneToFile(scene->ToJson(), sceneFile, projectDir);
+    AssetSaver::SaveSceneToFile(scene->ToJson(), projectDir, sceneId);
 
     openedScene = std::shared_ptr<Scene>(scene);
 
@@ -88,13 +82,7 @@ Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
     }
 
     //Load the scene
-    std::string scenesDir = projectDir + "scenes/";
-    std::filesystem::create_directory(scenesDir);
-    std::string sceneDir = scenesDir + sceneId + "/";
-    std::filesystem::create_directory(sceneDir);
-    std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-
-    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(sceneFile, projectDir);
+    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(projectDir, sceneId);
 
     if (sceneJson.is_null())
         return nullptr;
@@ -118,12 +106,7 @@ bool SceneManager::CloseScene(std::string sceneId, std::string& projectDir)
         return false;
 
     //Save the scene
-    std::string scenesDir = projectDir + "scenes/";
-    std::filesystem::create_directory(scenesDir);
-    std::string sceneDir = scenesDir + sceneId + "/";
-    std::filesystem::create_directory(sceneDir);
-    std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-    AssetSaver::SaveSceneToFile(openedScene->ToJson(), sceneFile, projectDir);
+    AssetSaver::SaveSceneToFile(openedScene->ToJson(), projectDir, sceneId);
 
     //Release the scene
     openedScene->ReleaseScene();
@@ -144,9 +127,8 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
 
     std::string scenesDir = projectDir + "scenes/";
     std::string sceneDir = scenesDir + sceneId + "/";
-    std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
 
-    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(sceneFile, projectDir);
+    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(projectDir, sceneId);
 
     //Delete each entity that belong to the scene
     if (!sceneJson.is_null()) {
@@ -156,10 +138,9 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
             for (auto& entity : entities) {
                 std::string entitiesDir = projectDir + "entities/";
                 std::string entityDir = entitiesDir + entity.get<std::string>() + "/";
-                std::string entityFile = entityDir + entity.get<std::string>() + ".adrengineentity";
 
                 //Load entity json
-                nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(entityFile);
+                nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(projectDir, entity.get<std::string>());
                 
                 //Delete script that belongs to the entity
                 std::string scriptId = entityJson.value("scriptId", "");

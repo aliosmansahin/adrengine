@@ -460,8 +460,7 @@ std::string EntityManager::CreateEntity(
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 	std::string sceneId,
 	nlohmann::json& currentSceneJson,
-	std::shared_ptr<Entity>& parent,
-	bool newEntity)
+	std::shared_ptr<Entity>& parent)
 {
 	//std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
 
@@ -521,12 +520,6 @@ std::string EntityManager::CreateEntity(
 	entities.insert(std::pair<std::string, std::shared_ptr<Entity>>(entityId, entity));
 
 	//Save the scene and entities which belong to the scene
-	std::string scenesDir = projectDir + "scenes/";
-	std::filesystem::create_directory(scenesDir);
-	std::string sceneDir = scenesDir + sceneId + "/";
-	std::filesystem::create_directory(sceneDir);
-	std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-
 	for (auto& entityIter : GetEntities()) {
 		//Save each entity
 		Entity* entity = entityIter.second.get();
@@ -535,19 +528,12 @@ std::string EntityManager::CreateEntity(
 		auto params = entity->GetEntityParams();
 		if (!params || params->id.empty()) continue;
 
-		std::string entitiesDir = projectDir + "entities/";
-		std::filesystem::create_directory(entitiesDir);
-
-		std::string entityDir = entitiesDir + params->id + "/";
-		std::filesystem::create_directory(entityDir);
-
-		std::string entityFile = entityDir + params->id + ".adrengineentity";
-		AssetSaver::SaveEntityToFile(entity->ToJson(), entityFile);
+		AssetSaver::SaveEntityToFile(entity->ToJson(), projectDir, params->id);
 	}
 
 	currentSceneJson["entities"].push_back(params->id); //The scene will have the new entity
 
-	AssetSaver::SaveSceneToFile(currentSceneJson, sceneFile, projectDir);
+	AssetSaver::SaveSceneToFile(currentSceneJson, projectDir, sceneId);
 
 	//Some logger
 	std::string str = "Created new entity \"";
@@ -610,12 +596,6 @@ bool EntityManager::RemoveEntity(
 
 	//Save the scene
 	if (saveScene) {
-		std::string scenesDir = projectDir + "scenes/";
-		std::filesystem::create_directory(scenesDir);
-		std::string sceneDir = scenesDir + sceneId + "/";
-		std::filesystem::create_directory(sceneDir);
-		std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-
 		//The scene will no longer have the entity
 		auto& entitiesJson = currentSceneJson["entities"];
 
@@ -623,7 +603,7 @@ bool EntityManager::RemoveEntity(
 		if (iter != entitiesJson.end())
 			entitiesJson.erase(iter);
 
-		AssetSaver::SaveSceneToFile(currentSceneJson, sceneFile, projectDir);
+		AssetSaver::SaveSceneToFile(currentSceneJson, projectDir, sceneId);
 	}
 
 	//Log

@@ -72,11 +72,7 @@ PURPOSE: Loads the script to run
 std::shared_ptr<VisualScript> VisualScriptManager::LoadScript(std::string scriptId, std::string& projectDir, IScene* scene)
 {
     //Load the script
-    std::string scriptsDir = projectDir + "scripts/";
-    std::string scriptDir = scriptsDir + scriptId + "/";
-    std::string scriptFile = scriptDir + scriptId + ".adrenginescript";
-
-    nlohmann::json scriptJson = AssetSaver::LoadScriptFromFile(scriptFile);
+    nlohmann::json scriptJson = AssetSaver::LoadScriptFromFile(projectDir, scriptId);
 
     //Create a script object and insert it to scripts
     VisualScript* script = new VisualScript();
@@ -91,14 +87,10 @@ PURPOSE: Saves and closes the script
 bool VisualScriptManager::CloseScript(
     std::string scriptId,
     std::string& projectDir,
-    std::unordered_map<std::string,
-    std::shared_ptr<Utils::Tab>>& tabs,
-    Utils::Tab*& openedTab,
-    std::map<std::string, std::string>& scenes)
+    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs)
 {
     //If the tab doesn't exist, interrupt the function
     auto tab = tabs.find(scriptId);
-
     if (tab == tabs.end()) {
         return false;
     }
@@ -115,17 +107,10 @@ bool VisualScriptManager::CloseScript(
     }
     else {
         //This script is opened
-
         auto script = openedScript->second.get();
 
-        //std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
         //Save the script
-        std::string scriptsDir = projectDir + "scripts/";
-        std::filesystem::create_directory(scriptsDir);
-        std::string scriptDir = scriptsDir + scriptId + "/";
-        std::filesystem::create_directory(scriptDir);
-        std::string scriptFile = scriptDir + scriptId + ".adrenginescript";
-        AssetSaver::SaveScriptToFile(script->ToJson(), scriptFile);
+        AssetSaver::SaveScriptToFile(script->ToJson(), projectDir, script->scriptId);
 
         //Remove the tab and script from tabs and openedScripts
         tabs.erase(tab);
@@ -166,21 +151,10 @@ std::shared_ptr<VisualScript> VisualScriptManager::CreateScript(Utils::ScriptBel
     openedScripts.insert(std::pair<std::string, std::shared_ptr<VisualScript>>(scriptId, source));
 
     //Save the script
-    //to save script folder
-    std::string scriptsDir = projectDir + "scripts/";
-    std::filesystem::create_directory(scriptsDir);
-    std::string scriptDir = scriptsDir + scriptId + "/";
-    std::filesystem::create_directory(scriptDir);
-    std::string scriptFile = scriptDir + scriptId + ".adrenginescript";
-    AssetSaver::SaveScriptToFile(source->ToJson(), scriptFile);
+    AssetSaver::SaveScriptToFile(source->ToJson(), projectDir, scriptId);
 
     //Save the scene
-    std::string scenesDir = projectDir + "scenes/";
-    std::filesystem::create_directory(scenesDir);
-    std::string sceneDir = scenesDir + sceneId + "/";
-    std::filesystem::create_directory(sceneDir);
-    std::string sceneFile = sceneDir + sceneId + ".adrenginescene";
-    AssetSaver::SaveSceneToFile(sbt.sceneJson, sceneFile, projectDir);
+    AssetSaver::SaveSceneToFile(sbt.sceneJson, projectDir, sceneId);
 
     //Open a new tab and insert it to tabs
     Utils::Tab* tab = new Utils::Tab();
@@ -238,18 +212,10 @@ bool VisualScriptManager::DeleteScript(
 /*
 PURPOSE: Saves the script
 */
-bool VisualScriptManager::SaveScript(std::shared_ptr<VisualScript> script, std::string& projectDir,
-    Utils::Tab*& openedTab,
-    std::map<std::string, std::string>& scenes,
-    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs)
+bool VisualScriptManager::SaveScript(std::shared_ptr<VisualScript> script, std::string& projectDir)
 {
     //Saves the script
-    std::string scriptsDir = projectDir + "scripts/";
-    std::filesystem::create_directory(scriptsDir);
-    std::string scriptDir = scriptsDir + script->scriptId + "/";
-    std::filesystem::create_directory(scriptDir);
-    std::string scriptFile = scriptDir + script->scriptId + ".adrenginescript";
-    AssetSaver::SaveScriptToFile(script->ToJson(), scriptFile);
+    AssetSaver::SaveScriptToFile(script->ToJson(), projectDir, script->scriptId);
 
     return true;
 }
