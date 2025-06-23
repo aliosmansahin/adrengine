@@ -74,6 +74,9 @@ std::shared_ptr<VisualScript> VisualScriptManager::LoadScript(std::string script
     //Load the script
     nlohmann::json scriptJson = AssetSaver::LoadScriptFromFile(projectDir, scriptId);
 
+    if (scriptJson.is_null())
+        return nullptr;
+
     //Create a script object and insert it to scripts
     VisualScript* script = new VisualScript();
     script->FromJson(scriptJson, types, scene);
