@@ -156,25 +156,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Begin.h" />
+    <ClInclude Include="ConstFloat.h" />
     <ClInclude Include="ConstString.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GetPositionVector.h" />
     <ClInclude Include="GetThisEntity.h" />
+    <ClInclude Include="MakeVector3.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Pin.h" />
     <ClInclude Include="Print.h" />
     <ClInclude Include="SeparateVector3.h" />
+    <ClInclude Include="SetPositionVector.h" />
     <ClInclude Include="ToString.h" />
     <ClInclude Include="VisualScript.h" />
     <ClInclude Include="VisualScriptManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Begin.cpp" />
+    <ClCompile Include="ConstFloat.cpp" />
     <ClCompile Include="ConstString.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="GetPositionVector.cpp" />
     <ClCompile Include="GetThisEntity.cpp" />
+    <ClCompile Include="MakeVector3.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -185,6 +190,7 @@
     <ClCompile Include="Pin.cpp" />
     <ClCompile Include="Print.cpp" />
     <ClCompile Include="SeparateVector3.cpp" />
+    <ClCompile Include="SetPositionVector.cpp" />
     <ClCompile Include="ToString.cpp" />
     <ClCompile Include="VisualScript.cpp" />
     <ClCompile Include="VisualScriptManager.cpp" />

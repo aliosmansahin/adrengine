@@ -35,6 +35,15 @@
     <Filter Include="VisualScript\Node\ToString">
       <UniqueIdentifier>{6b8917ef-16ad-49cd-bcd4-9cee7509d223}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VisualScript\Node\SetPositionVector">
+      <UniqueIdentifier>{07507eae-c5e2-488b-aa3d-9f2256e1d484}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\MakeVector3">
+      <UniqueIdentifier>{1e1d94bb-b88f-40a5-9606-33812f671165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\ConstFloat">
+      <UniqueIdentifier>{b078bd2f-beec-4db9-aa96-ef22a99fbe78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisualScriptManager.h" />
@@ -74,6 +83,15 @@
     <ClInclude Include="ToString.h">
       <Filter>VisualScript\Node\ToString</Filter>
     </ClInclude>
+    <ClInclude Include="SetPositionVector.h">
+      <Filter>VisualScript\Node\SetPositionVector</Filter>
+    </ClInclude>
+    <ClInclude Include="MakeVector3.h">
+      <Filter>VisualScript\Node\MakeVector3</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstFloat.h">
+      <Filter>VisualScript\Node\ConstFloat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VisualScriptManager.cpp" />
@@ -112,6 +130,15 @@
     </ClCompile>
     <ClCompile Include="ToString.cpp">
       <Filter>VisualScript\Node\ToString</Filter>
+    </ClCompile>
+    <ClCompile Include="SetPositionVector.cpp">
+      <Filter>VisualScript\Node\SetPositionVector</Filter>
+    </ClCompile>
+    <ClCompile Include="MakeVector3.cpp">
+      <Filter>VisualScript\Node\MakeVector3</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstFloat.cpp">
+      <Filter>VisualScript\Node\ConstFloat</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

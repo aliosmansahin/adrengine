@@ -16,6 +16,9 @@
 #include "GetPositionVector.h"
 #include "SeparateVector3.h"
 #include "ToString.h"
+#include "SetPositionVector.h"
+#include "MakeVector3.h"
+#include "ConstFloat.h"
 
 #include "Logger.h"
 

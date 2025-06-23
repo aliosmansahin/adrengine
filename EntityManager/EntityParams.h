@@ -41,10 +41,19 @@ public:
 	}
 
 	/*
-	PURPOSE: Returns position vector of the entity
+	PURPOSE: Returns the position vector of the entity
 	*/
 	ENTITYMANAGER_API glm::vec3 GetPosition() const override {
 		return glm::vec3(x, y, z);
+	}
+
+	/*
+	PURPOSE: Sets the position vector of the entity
+	*/
+	ENTITYMANAGER_API void SetPosition(glm::vec3 vector) override {
+		x = vector.x;
+		y = vector.y;
+		z = vector.z;
 	}
 
 	//Some properties for the entity

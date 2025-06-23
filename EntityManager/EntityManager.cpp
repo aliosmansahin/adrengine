@@ -425,11 +425,6 @@ PURPOSE: Returns entity by id, check out getElementById of javascript
 */
 ENTITYMANAGER_API Entity* EntityManager::GetEntityById(std::string id)
 {
-	std::cout << id << std::endl;
-
-	for (auto& iter : entities)
-		std::cout << iter.first << std::endl;
-
 	auto entityIter = entities.find(id);
 	if (entityIter == entities.end())
 		return nullptr;
