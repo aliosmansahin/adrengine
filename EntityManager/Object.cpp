@@ -14,6 +14,10 @@ bool Object::CreateEntity(std::shared_ptr<EntityParams> params)
 	}
 	this->params = casted;
 
+	physical = std::make_shared<Physical>();
+
+	physical->ApplyImpulse(glm::vec3(0.01f, 0.0f, 0.0f));
+
 	return true;
 }
 
@@ -29,6 +33,16 @@ PURPOSE: Updates the entity
 */
 void Object::Update()
 {
+	if (physical) {
+		if (physical->IsPhysical()) {
+			//physical->ApplyForce(glm::vec3(1.0f, 0.0f, 0.0f));
+
+			physical->Update(Timer::GetDeltaTime());
+
+			glm::vec3 newPos = params->GetPosition() + physical->GetVelocity();
+			params->SetRuntimePosition(newPos);
+		}
+	}
 }
 
 /*

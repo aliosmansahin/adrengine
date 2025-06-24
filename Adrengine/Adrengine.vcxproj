@@ -116,12 +116,12 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Physics;..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Physics.lib;GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT
  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir)</AdditionalLibraryDirectories>
@@ -141,7 +141,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Physics;..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,7 +149,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Physics.lib;GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>

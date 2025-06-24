@@ -4,6 +4,9 @@
 #include "ObjectParams.h"
 #include "ShaderManager.h"
 
+#include "Physical.h"
+#include "Timer.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
@@ -35,5 +38,8 @@ private:
 
 	//properties
 	std::shared_ptr<ObjectParams> params;
+
+	//physics
+	std::shared_ptr<Physical> physical;
 };
 
