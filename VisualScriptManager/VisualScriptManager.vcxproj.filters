@@ -44,6 +44,12 @@
     <Filter Include="VisualScript\Node\ConstFloat">
       <UniqueIdentifier>{b078bd2f-beec-4db9-aa96-ef22a99fbe78}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VisualScript\Node\AddImpulse">
+      <UniqueIdentifier>{c7d95afe-8c85-4433-bc7d-32df0965675b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript\Node\CastToObject">
+      <UniqueIdentifier>{e65c6d7f-dcee-45ab-8c6a-611c8d668b7a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisualScriptManager.h" />
@@ -92,6 +98,12 @@
     <ClInclude Include="ConstFloat.h">
       <Filter>VisualScript\Node\ConstFloat</Filter>
     </ClInclude>
+    <ClInclude Include="AddImpulse.h">
+      <Filter>VisualScript\Node\AddImpulse</Filter>
+    </ClInclude>
+    <ClInclude Include="CastToObject.h">
+      <Filter>VisualScript\Node\CastToObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VisualScriptManager.cpp" />
@@ -139,6 +151,12 @@
     </ClCompile>
     <ClCompile Include="ConstFloat.cpp">
       <Filter>VisualScript\Node\ConstFloat</Filter>
+    </ClCompile>
+    <ClCompile Include="AddImpulse.cpp">
+      <Filter>VisualScript\Node\AddImpulse</Filter>
+    </ClCompile>
+    <ClCompile Include="CastToObject.cpp">
+      <Filter>VisualScript\Node\CastToObject</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

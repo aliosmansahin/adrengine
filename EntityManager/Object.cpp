@@ -16,8 +16,6 @@ bool Object::CreateEntity(std::shared_ptr<EntityParams> params)
 
 	physical = std::make_shared<Physical>();
 
-	physical->ApplyImpulse(glm::vec3(2.0f, 0.0f, 0.0f));
-
 	return true;
 }
 
@@ -134,6 +132,22 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 			adr_glBindVertexArray(0);
 		}
 	}
+}
+
+/*
+PURPOSE: Calls physics->ApplyImpulse function
+*/
+ENTITYMANAGER_API void Object::AddImpulse(glm::vec3 impulse)
+{
+	physical->ApplyImpulse(impulse);
+}
+
+/*
+PURPOSE: Resets variables of the physics
+*/
+ENTITYMANAGER_API void Object::ResetPhysics()
+{
+	physical->Reset();
 }
 
 /*

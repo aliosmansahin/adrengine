@@ -22,6 +22,8 @@ bool VisualScriptManager::InitManager(ImGuiContext* imguiContext, ImNodesContext
         {"SetPositionVector", std::make_shared<SetPositionVector>()},
         {"MakeVector3", std::make_shared<MakeVector3>()},
         {"ConstFloat", std::make_shared<ConstFloat>()},
+        {"AddImpulse", std::make_shared<AddImpulse>()},
+        {"CastToObject", std::make_shared<CastToObject>()},
     } };
 	return true;
 }

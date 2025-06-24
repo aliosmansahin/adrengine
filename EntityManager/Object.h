@@ -7,13 +7,15 @@
 #include "Physical.h"
 #include "Timer.h"
 
+#include "interfaces/IEntity/IObject/IObject.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class Object : public Entity
+class Object : public Entity, public IObject
 {
 public:
 	//main functions
@@ -21,6 +23,9 @@ public:
 	ENTITYMANAGER_API void DeleteEntity() override;
 	ENTITYMANAGER_API void Update() override;
 	ENTITYMANAGER_API void Draw(glm::vec3 currentSceneCameraPos) override;
+
+	ENTITYMANAGER_API void AddImpulse(glm::vec3 impulse) override;
+	ENTITYMANAGER_API void ResetPhysics();
 
 	/*
 	PURPOSE: Clones the entity and return it

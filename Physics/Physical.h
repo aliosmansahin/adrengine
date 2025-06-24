@@ -19,6 +19,7 @@ public:
 	PHYSICS_API bool IsPhysical();
 	PHYSICS_API void SetPhysical(bool physical);
 	PHYSICS_API glm::vec3 GetVelocity();
+	PHYSICS_API void Reset();
 private:
 	float mass = 1.0f;
 	float frictionCoefficient = 0.2f;

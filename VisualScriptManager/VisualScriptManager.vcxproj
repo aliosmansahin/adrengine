@@ -155,7 +155,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AddImpulse.h" />
     <ClInclude Include="Begin.h" />
+    <ClInclude Include="CastToObject.h" />
     <ClInclude Include="ConstFloat.h" />
     <ClInclude Include="ConstString.h" />
     <ClInclude Include="framework.h" />
@@ -173,7 +175,9 @@
     <ClInclude Include="VisualScriptManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AddImpulse.cpp" />
     <ClCompile Include="Begin.cpp" />
+    <ClCompile Include="CastToObject.cpp" />
     <ClCompile Include="ConstFloat.cpp" />
     <ClCompile Include="ConstString.cpp" />
     <ClCompile Include="dllmain.cpp" />

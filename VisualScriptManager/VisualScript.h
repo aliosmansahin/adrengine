@@ -19,6 +19,8 @@
 #include "SetPositionVector.h"
 #include "MakeVector3.h"
 #include "ConstFloat.h"
+#include "AddImpulse.h"
+#include "CastToObject.h"
 
 #include "Logger.h"
 

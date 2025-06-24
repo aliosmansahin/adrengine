@@ -425,6 +425,11 @@ ENTITYMANAGER_API void EntityManager::ResetEntitiesRuntimeValues()
 {
 	for (auto& entity : entities) {
 		entity.second->GetEntityParams()->ResetRuntimeValues();
+		if (entity.second->GetEntityParams()->GetType() == "Object") {
+			Object* object = dynamic_cast<Object*>(entity.second.get());
+			if (object)
+				object->ResetPhysics();
+		}
 	}
 }
 

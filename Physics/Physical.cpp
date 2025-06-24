@@ -87,3 +87,13 @@ PHYSICS_API glm::vec3 Physical::GetVelocity()
 {
 	return velocity;
 }
+
+/*
+PURPOSE: Resets variables
+*/
+PHYSICS_API void Physical::Reset()
+{
+    velocity = glm::vec3(0.0f);
+    force = glm::vec3(0.0f);
+    impulse = glm::vec3(0.0f);
+}

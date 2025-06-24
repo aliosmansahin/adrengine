@@ -79,6 +79,9 @@
     <ClInclude Include="imguifiledialog\ImGuiFileDialogConfig.h">
       <Filter>imguifiledialog</Filter>
     </ClInclude>
+    <ClInclude Include="interfaces\IEntity\IObject\IObject.h">
+      <Filter>interfaces\IEntity\IObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp">
@@ -123,6 +126,9 @@
     <ClCompile Include="imguifiledialog\ImGuiFileDialog.cpp">
       <Filter>imguifiledialog</Filter>
     </ClCompile>
+    <ClCompile Include="interfaces\IEntity\IObject\IObject.cpp">
+      <Filter>interfaces\IEntity\IObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="glad">
@@ -160,6 +166,9 @@
     </Filter>
     <Filter Include="imguifiledialog">
       <UniqueIdentifier>{bccc9551-e8d3-40a2-8cd5-69c893c031bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\IObject">
+      <UniqueIdentifier>{d25968f1-471a-424b-8544-451636fe1764}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
