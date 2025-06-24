@@ -6,17 +6,46 @@ PURPOSE: Calculates physics affects
 */
 void Physical::Update(float deltaTime)
 {
-	if (!physicsEffects || mass <= 0.0f)
-		return;
+    if (!physicsEffects || mass <= 0.0f)
+        return;
 
-	velocity += impulse / mass;
+    // Velocity from impulse
+    velocity += impulse / mass;
 
-	glm::vec3 acceleration = force / mass;
+    // Acceleration
+    glm::vec3 acceleration = force / mass;
+    velocity += acceleration * deltaTime;
 
-	velocity += acceleration * deltaTime;
+    // Friction and damping
+    float normalForce = mass * 9.81f;
+    float frictionMagnitude = frictionCoefficient * normalForce;
 
-	force = glm::vec3(0.0f);
-	impulse = glm::vec3(0.0f);
+    //Temporary friction calculations
+    if (pow(glm::length(velocity), 2) > 1e-6f) {
+        glm::vec3 frictionDir = -glm::normalize(velocity);
+        glm::vec3 frictionForce = frictionDir * frictionMagnitude;
+
+        glm::vec3 velocityChange = (frictionForce / mass) * deltaTime;
+
+        if (pow(glm::length(velocityChange), 2) > pow(glm::length(velocity), 2)) {
+            velocity = glm::vec3(0.0f);
+        }
+        else {
+            velocity += velocityChange;
+        }
+
+        // Damping
+        velocity *= pow(1.0f - linearDamping, deltaTime);
+    }
+
+    // Stabilize tiny velocities to zero
+    if (pow(glm::length(velocity), 2) < 1e-4f) {
+        velocity = glm::vec3(0.0f);
+    }
+
+    // Reset forces
+    force = glm::vec3(0.0f);
+    impulse = glm::vec3(0.0f);
 }
 
 /*

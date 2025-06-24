@@ -16,7 +16,7 @@ bool Object::CreateEntity(std::shared_ptr<EntityParams> params)
 
 	physical = std::make_shared<Physical>();
 
-	physical->ApplyImpulse(glm::vec3(0.01f, 0.0f, 0.0f));
+	physical->ApplyImpulse(glm::vec3(2.0f, 0.0f, 0.0f));
 
 	return true;
 }

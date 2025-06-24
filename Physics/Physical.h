@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
 #ifdef PHYSICS_EXPORTS
@@ -20,6 +21,8 @@ public:
 	PHYSICS_API glm::vec3 GetVelocity();
 private:
 	float mass = 1.0f;
+	float frictionCoefficient = 0.2f;
+	float linearDamping = 0.05f;
 	glm::vec3 velocity = glm::vec3(0.0f);
 	glm::vec3 force = glm::vec3(0.0f);
 	glm::vec3 impulse = glm::vec3(0.0f);
