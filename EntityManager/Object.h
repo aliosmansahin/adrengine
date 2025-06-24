@@ -5,6 +5,7 @@
 #include "ShaderManager.h"
 
 #include "Physical.h"
+#include "Collision.h"
 #include "Timer.h"
 
 #include "interfaces/IEntity/IObject/IObject.h"
@@ -46,5 +47,6 @@ private:
 
 	//physics
 	std::shared_ptr<Physical> physical;
+	std::shared_ptr<CollisionShape> collisionShape; //TODO: Add entity properties to control it, serialization
 };
 
