@@ -5,6 +5,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{90632513-2196-4241-90f8-1fa723100211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physical">
+      <UniqueIdentifier>{a979f675-4091-4e65-88b2-1d0398da3ac1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision\CollisionShape">
+      <UniqueIdentifier>{b195110b-afbf-485c-82fc-775ee6bd5580}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -13,7 +22,15 @@
     <ClInclude Include="framework.h">
       <Filter>Dll</Filter>
     </ClInclude>
-    <ClInclude Include="Physical.h" />
+    <ClInclude Include="Collision.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Physical.h">
+      <Filter>Physical</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionShape.h">
+      <Filter>Collision\CollisionShape</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -22,6 +39,14 @@
     <ClCompile Include="pch.cpp">
       <Filter>Dll</Filter>
     </ClCompile>
-    <ClCompile Include="Physical.cpp" />
+    <ClCompile Include="Collision.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Physical.cpp">
+      <Filter>Physical</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionShape.cpp">
+      <Filter>Collision\CollisionShape</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
