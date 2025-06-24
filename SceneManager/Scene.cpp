@@ -41,7 +41,7 @@ void Scene::DrawScene(int window_width, int window_height)
 {
 	//If there is an entity manager, draw each entity via entity manager
 	if(entityManager)
-		entityManager->DrawEntities(window_width, window_height, glm::vec3(currentCamera->GetEntityParams()->x, currentCamera->GetEntityParams()->y, currentCamera->GetEntityParams()->z), (sceneType == Utils::SCENE_3D));
+		entityManager->DrawEntities(window_width, window_height, currentCamera->GetEntityParams()->GetPosition(), (sceneType == Utils::SCENE_3D));
 }
 
 /*
@@ -136,7 +136,7 @@ void Scene::UpdateScene(
 				//If the type of the scene is 2d
 				if (sceneType == Utils::SCENE_2D) {
 					//Move the camera
-					currentCamera->AddPosition(glm::vec3(-resX, -resY, 0.0f));
+					currentCamera->AddPosition(glm::vec3(-resX, -resY, 0.0f), isPlaying);
 				}
 				//If the type of the scene is 3d
 				else if (sceneType == Utils::SCENE_3D) {
@@ -150,30 +150,30 @@ void Scene::UpdateScene(
 
 					//Movement controls
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
-						currentCamera->AddPosition(forwardVector * speed);
+						currentCamera->AddPosition(forwardVector * speed, isPlaying);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_S)) {
-						currentCamera->AddPosition(forwardVector * -speed);
+						currentCamera->AddPosition(forwardVector * -speed, isPlaying);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_D)) {
 						glm::vec3 right = glm::normalize(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
 
-						currentCamera->AddPosition(right * speed);
+						currentCamera->AddPosition(right * speed, isPlaying);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_A)) {
 						glm::vec3 right = glm::normalize(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
 
-						currentCamera->AddPosition(right * -speed);
+						currentCamera->AddPosition(right * -speed, isPlaying);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_SPACE)) {
 						glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-						currentCamera->AddPosition(up * speed);
+						currentCamera->AddPosition(up * speed, isPlaying);
 					}
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
 						glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-						currentCamera->AddPosition(up * -speed);
+						currentCamera->AddPosition(up * -speed, isPlaying);
 					}
 				}
 			}
@@ -186,11 +186,11 @@ void Scene::UpdateScene(
 
 	//Update the transform matrix depends on the scene type
 	if (currentCamera->GetProjectionType() == CameraProjection::ORTHOGRAPHIC)
-		ShaderManager::GetInstance().UpdateTransformMatrix2D((int)window_width, (int)window_height, (int)currentCamera->GetEntityParams()->x, (int)currentCamera->GetEntityParams()->y);
+		ShaderManager::GetInstance().UpdateTransformMatrix2D((int)window_width, (int)window_height, (int)currentCamera->GetEntityParams()->GetPosition().x, (int)currentCamera->GetEntityParams()->GetPosition().y);
 	if (currentCamera->GetProjectionType() == CameraProjection::PERPECTIVE)
 		ShaderManager::GetInstance().UpdateTransformMatrix3D(glm::vec3(currentCamera->GetEntityParams()->rx, currentCamera->GetEntityParams()->ry, currentCamera->GetEntityParams()->rz),
 			(int)window_width, (int)window_height,
-			currentCamera->GetEntityParams()->x, currentCamera->GetEntityParams()->y, currentCamera->GetEntityParams()->z,
+			currentCamera->GetEntityParams()->GetPosition().x, currentCamera->GetEntityParams()->GetPosition().y, currentCamera->GetEntityParams()->GetPosition().z,
 			currentCamera->GetFOV());
 
 	//Update each entity via entity manager
@@ -220,9 +220,9 @@ nlohmann::json Scene::ToJson()
 	nlohmann::json j;
 	j["id"] = sceneId;
 	j["name"] = sceneName;
-	j["cameraX"] = editorCamera->GetEntityParams()->x;
-	j["cameraY"] = editorCamera->GetEntityParams()->y;
-	j["cameraZ"] = editorCamera->GetEntityParams()->z;
+	j["cameraX"] = editorCamera->GetEntityParams()->GetPosition().x;
+	j["cameraY"] = editorCamera->GetEntityParams()->GetPosition().y;
+	j["cameraZ"] = editorCamera->GetEntityParams()->GetPosition().z;
 	j["yaw"] = editorCamera->GetYawPitch().first;
 	j["pitch"] = editorCamera->GetYawPitch().second;
 	j["type"] = sceneType;
@@ -267,7 +267,7 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 	float yaw = json.value("yaw", -90.0f);
 	float pitch = json.value("pitch", 0.0f);
 
-	editorCamera->SetPosition(cameraPos);
+	editorCamera->SetPosition(cameraPos, false);
 	editorCamera->SetRotation(yaw, pitch);
 
 	currentCamera = editorCamera;

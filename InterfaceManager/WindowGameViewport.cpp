@@ -43,6 +43,8 @@ void WindowGameViewport::DrawWindow(
     //Every selections, play/stop will be changed
     if (isPlaying) {
         if (ImGui::Selectable("Stop", false, ImGuiSelectableFlags_None, ImVec2(100, (float)toolbarHeight))) {
+            //Reset runtime values
+            SceneManager::GetInstance().openedScene->GetEntityManager()->ResetEntitiesRuntimeValues();
             isPlaying = false;
         }
     }
@@ -63,16 +65,16 @@ void WindowGameViewport::DrawWindow(
 
     ImGui::SameLine();
 
-    std::string cameraInfo = "CamX: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->x) + " / ";
+    std::string cameraInfo = "CamX: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->GetPosition().x) + " / ";
     ImGui::Text(cameraInfo.c_str());
     ImGui::SameLine();
 
-    cameraInfo = "CamY: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->y) + " / ";
+    cameraInfo = "CamY: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->GetPosition().y) + " / ";
     ImGui::Text(cameraInfo.c_str());
     ImGui::SameLine();
 
     if (SceneManager::GetInstance().openedScene->sceneType == Utils::SCENE_3D) {
-        cameraInfo = "CamZ: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->z) + " / ";
+        cameraInfo = "CamZ: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->GetPosition().z) + " / ";
         ImGui::Text(cameraInfo.c_str());
         ImGui::SameLine();
     }

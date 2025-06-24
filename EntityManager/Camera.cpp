@@ -64,11 +64,15 @@ ENTITYMANAGER_API nlohmann::json Camera::ToJson()
 /*
 PURPOSE: Adds position vector to camera's position
 */
-ENTITYMANAGER_API void Camera::AddPosition(glm::vec3 posAdd)
+ENTITYMANAGER_API void Camera::AddPosition(glm::vec3 posAdd, bool isPlaying)
 {
-	params->x += posAdd.x;
-	params->y += posAdd.y;
-	params->z += posAdd.z;
+	glm::vec3 newPosition = params->GetPosition() + posAdd;
+	if (isPlaying) {
+		params->SetRuntimePosition(newPosition);
+	}
+	else {
+		params->SetEditorPosition(newPosition);
+	}
 }
 
 /*
@@ -100,11 +104,12 @@ ENTITYMANAGER_API void Camera::AddRotation(float _yaw, float _pitch)
 /*
 PURPOSE: Sets camera's position
 */
-ENTITYMANAGER_API void Camera::SetPosition(glm::vec3 newPos)
+ENTITYMANAGER_API void Camera::SetPosition(glm::vec3 newPos, bool isPlaying)
 {
-	params->x = newPos.x;
-	params->y = newPos.y;
-	params->z = newPos.z;
+	if (isPlaying)
+		params->SetRuntimePosition(newPos);
+	else
+		params->SetEditorPosition(newPos);
 }
 
 /*

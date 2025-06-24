@@ -4,6 +4,8 @@
 #include "VisualScriptManager.h"
 #include "SceneManager.h"
 
+#include "WindowGameViewport.h"
+
 /*
 PURPOSE: Draws the window
 */
@@ -51,16 +53,21 @@ void WindowEntityProperties::DrawWindow(
             }
         }
         
+        glm::vec3 entityPosition = currentEntity->GetEntityParams()->GetPosition();
+
         //Position drags
         ImGui::SeparatorText("Position");
         ImGui::SetNextItemWidth(itemWidth - padding);
-        ImGui::DragFloat("pX", &currentEntity->GetEntityParams()->x);
+        ImGui::DragFloat("pX", &entityPosition.x);
         ImGui::SameLine();
         ImGui::SetNextItemWidth(itemWidth - padding);
-        ImGui::DragFloat("pY", &currentEntity->GetEntityParams()->y);
+        ImGui::DragFloat("pY", &entityPosition.y);
         ImGui::SameLine();
         ImGui::SetNextItemWidth(itemWidth - padding);
-        ImGui::DragFloat("pZ", &currentEntity->GetEntityParams()->z);
+        ImGui::DragFloat("pZ", &entityPosition.z);
+
+        if(!WindowGameViewport::GetInstance().isPlaying)
+            currentEntity->GetEntityParams()->SetEditorPosition(entityPosition);
 
         //Rotation drags
         ImGui::SeparatorText("Rotation");

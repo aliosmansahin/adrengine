@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "nlohmann_json/json.hpp"
 
@@ -40,24 +41,28 @@ public:
 		return std::make_shared<EntityParams>(*this);
 	}
 
+	//runtime
+	ENTITYMANAGER_API void ResetRuntimeValues();
+
 	/*
 	PURPOSE: Returns the position vector of the entity
 	*/
 	ENTITYMANAGER_API glm::vec3 GetPosition() const override {
-		return glm::vec3(x, y, z);
+		return runtimePosition;
 	}
 
 	/*
 	PURPOSE: Sets the position vector of the entity
 	*/
-	ENTITYMANAGER_API void SetPosition(glm::vec3 vector) override {
-		x = vector.x;
-		y = vector.y;
-		z = vector.z;
+	ENTITYMANAGER_API void SetRuntimePosition(glm::vec3 vector) override {
+		runtimePosition = vector;
+	}
+	ENTITYMANAGER_API void SetEditorPosition(glm::vec3 vector) {
+		editorPosition = vector;
+		runtimePosition = vector;
 	}
 
 	//Some properties for the entity
-	float x = 0.0f, y = 0.0f, z = 0.0f;
 	float sx = 1.0f, sy = 1.0f, sz = 1.0f;
 	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 	std::string id = "";
@@ -76,4 +81,8 @@ public:
 	//json
 	ENTITYMANAGER_API virtual nlohmann::json ToJson();
 	ENTITYMANAGER_API virtual void			 FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene);
+
+private:
+	glm::vec3 runtimePosition = glm::vec3(0.0f);
+	glm::vec3 editorPosition = glm::vec3(0.0f);
 };

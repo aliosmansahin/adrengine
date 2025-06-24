@@ -278,8 +278,8 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 		//Sort objects
 		std::sort(sortedEntities.begin(), sortedEntities.end(), [&currentSceneCameraPos](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) {
 			//calculate distance between camera and the object
-			float disA = glm::distance(currentSceneCameraPos, glm::vec3(a->GetEntityParams()->x, a->GetEntityParams()->y, a->GetEntityParams()->z));
-			float disB = glm::distance(currentSceneCameraPos, glm::vec3(b->GetEntityParams()->x, b->GetEntityParams()->y, b->GetEntityParams()->z));
+			float disA = glm::distance(currentSceneCameraPos, a->GetEntityParams()->GetPosition());
+			float disB = glm::distance(currentSceneCameraPos, b->GetEntityParams()->GetPosition());
 
 			return disA < disB;
 			});
@@ -297,7 +297,7 @@ void EntityManager::DrawEntities(int window_width, int window_height, glm::vec3 
 		std::vector<std::pair<std::string, std::shared_ptr<Entity>>> sortedEntities(entities.begin(), entities.end());
 
 		std::sort(sortedEntities.begin(), sortedEntities.end(), [](const std::pair<std::string, std::shared_ptr<Entity>>& a, const std::pair<std::string, std::shared_ptr<Entity>>& b) {
-			return a.second->GetEntityParams()->z < b.second->GetEntityParams()->z;
+			return a.second->GetEntityParams()->GetPosition().z < b.second->GetEntityParams()->GetPosition().z;
 			});
 
 		for (auto& entity : sortedEntities) {
@@ -395,12 +395,12 @@ ENTITYMANAGER_API void EntityManager::SetEntityRealStats(Entity* entity)
 	auto params = entity->GetEntityParams();
 	auto parent = params->parent.get();
 	if (parent) {
-		entity->realPos = parent->realPos + glm::vec3(params->x, params->y, params->z);
+		entity->realPos = parent->realPos + params->GetPosition();
 		entity->realRot = parent->realRot + glm::vec3(params->rx, params->ry, params->rz);
 		entity->realSca = parent->realSca * glm::vec3(params->sx, params->sy, params->sz);
 	}
 	else {
-		entity->realPos = glm::vec3(params->x, params->y, params->z);
+		entity->realPos = params->GetPosition();
 		entity->realRot = glm::vec3(params->rx, params->ry, params->rz);
 		entity->realSca = glm::vec3(params->sx, params->sy, params->sz);
 	}
@@ -418,6 +418,13 @@ ENTITYMANAGER_API void EntityManager::RunEntitiesScriptBegin()
 	for (auto& entity : entities) {
 		if(entity.second->GetEntityParams()->script)
 			entity.second->GetEntityParams()->script->ExecuteBeginScript();
+	}
+}
+
+ENTITYMANAGER_API void EntityManager::ResetEntitiesRuntimeValues()
+{
+	for (auto& entity : entities) {
+		entity.second->GetEntityParams()->ResetRuntimeValues();
 	}
 }
 

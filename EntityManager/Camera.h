@@ -32,10 +32,10 @@ public:
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
 
 	//Camera specs
-	ENTITYMANAGER_API void AddPosition(glm::vec3 posAdd);
+	ENTITYMANAGER_API void AddPosition(glm::vec3 posAdd, bool isPlaying);
 	ENTITYMANAGER_API void AddRotation(float _yaw, float _pitch);
 
-	ENTITYMANAGER_API void SetPosition(glm::vec3 newPos);
+	ENTITYMANAGER_API void SetPosition(glm::vec3 newPos, bool isPlaying);
 	ENTITYMANAGER_API void SetRotation(float _yaw, float _pitch);
 
 	//first -> yaw, second -> pitch

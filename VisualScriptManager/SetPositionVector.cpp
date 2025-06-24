@@ -15,7 +15,7 @@ VISUALSCRIPTMANAGER_API void SetPositionVector::Execute()
         IEntity* entity = std::get<IEntity*>(entityValue);
         glm::vec3 vector = std::get<glm::vec3>(positionValue);
 
-        entity->GetEntityParams()->SetPosition(vector);
+        entity->GetEntityParams()->SetRuntimePosition(vector);
     }
 
     Node* next = GetNextExecNode(outputPins[0].get());

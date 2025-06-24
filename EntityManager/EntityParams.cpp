@@ -5,13 +5,20 @@
 #include "VisualScriptManager.h"
 
 /*
+PURPOSE: Sets runtime values to editor values
+*/
+ENTITYMANAGER_API void EntityParams::ResetRuntimeValues() {
+	runtimePosition = editorPosition;
+}
+
+/*
 PURPOSE: Creates json content from properties of the entity
 */
 nlohmann::json EntityParams::ToJson() {
 	nlohmann::json j;
-	j["x"] = x;
-	j["y"] = y;
-	j["z"] = z;
+	j["x"] = editorPosition.x;
+	j["y"] = editorPosition.y;
+	j["z"] = editorPosition.z;
 	j["sx"] = sx;
 	j["sy"] = sy;
 	j["sz"] = sz;
@@ -32,9 +39,12 @@ nlohmann::json EntityParams::ToJson() {
 PURPOSE: Sets properties of the entity from its json
 */
 void EntityParams::FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) {
-	x = j.value("x", 0.0f);
-	y = j.value("y", 0.0f);
-	z = j.value("z", 0.0f);
+	editorPosition.x = j.value("x", 0.0f);
+	editorPosition.y = j.value("y", 0.0f);
+	editorPosition.z = j.value("z", 0.0f);
+	runtimePosition.x = editorPosition.x;
+	runtimePosition.y = editorPosition.y;
+	runtimePosition.z = editorPosition.z;
 	sx = j.value("sx", 1.0f);
 	sy = j.value("sy", 1.0f);
 	sz = j.value("sz", 1.0f);

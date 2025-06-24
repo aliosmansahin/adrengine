@@ -71,6 +71,7 @@ public:
 	ENTITYMANAGER_API void		  SetEntityRealStats(Entity* entity);
 
 	ENTITYMANAGER_API void		  RunEntitiesScriptBegin();
+	ENTITYMANAGER_API void		  ResetEntitiesRuntimeValues();
 
 	//status
 	ENTITYMANAGER_API size_t										  GetEntityCount() { return entities.size(); }
