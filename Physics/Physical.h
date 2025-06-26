@@ -19,9 +19,15 @@ public:
 	PHYSICS_API bool IsPhysical();
 	PHYSICS_API void SetPhysical(bool physical);
 	PHYSICS_API glm::vec3 GetVelocity();
+	PHYSICS_API void SetVelocity(glm::vec3 velo);
 	PHYSICS_API void Reset();
+	PHYSICS_API void ApplyForceAtPoint(const glm::vec3& appliedForce, const glm::vec3& point, const glm::vec3& centerOfMass);
+public:
+	float mass = 2.0f;
+	float inverseMass = 1.0f;
+	float friction = 0.3f;
+	float bounciness = 0.2f;
 private:
-	float mass = 1.0f;
 	float frictionCoefficient = 0.2f;
 	float linearDamping = 0.05f;
 	glm::vec3 velocity = glm::vec3(0.0f);

@@ -141,12 +141,12 @@ void Scene::UpdateScene(
 				//If the type of the scene is 3d
 				else if (sceneType == Utils::SCENE_3D) {
 					//Change the camera position
-					currentCamera->AddRotation(resX * 0.5f, -resY * 0.5f);
+					currentCamera->AddRotation(resX * 0.5f, -resY * 0.5f, isPlaying);
 
 					//Set the speed of the camera
 					float speed = 20.0f * Timer::GetDeltaTime();
 
-					glm::vec3 forwardVector = glm::vec3(currentCamera->GetEntityParams()->rx, currentCamera->GetEntityParams()->ry, currentCamera->GetEntityParams()->rz);
+					glm::vec3 forwardVector = currentCamera->GetEntityParams()->GetRotation();
 
 					//Movement controls
 					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
@@ -188,7 +188,7 @@ void Scene::UpdateScene(
 	if (currentCamera->GetProjectionType() == CameraProjection::ORTHOGRAPHIC)
 		ShaderManager::GetInstance().UpdateTransformMatrix2D((int)window_width, (int)window_height, (int)currentCamera->GetEntityParams()->GetPosition().x, (int)currentCamera->GetEntityParams()->GetPosition().y);
 	if (currentCamera->GetProjectionType() == CameraProjection::PERPECTIVE)
-		ShaderManager::GetInstance().UpdateTransformMatrix3D(glm::vec3(currentCamera->GetEntityParams()->rx, currentCamera->GetEntityParams()->ry, currentCamera->GetEntityParams()->rz),
+		ShaderManager::GetInstance().UpdateTransformMatrix3D(currentCamera->GetEntityParams()->GetRotation(),
 			(int)window_width, (int)window_height,
 			currentCamera->GetEntityParams()->GetPosition().x, currentCamera->GetEntityParams()->GetPosition().y, currentCamera->GetEntityParams()->GetPosition().z,
 			currentCamera->GetFOV());
@@ -268,7 +268,7 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 	float pitch = json.value("pitch", 0.0f);
 
 	editorCamera->SetPosition(cameraPos, false);
-	editorCamera->SetRotation(yaw, pitch);
+	editorCamera->SetRotation(yaw, pitch, false);
 
 	currentCamera = editorCamera;
 

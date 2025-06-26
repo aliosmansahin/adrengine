@@ -40,13 +40,14 @@ public:
 
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
+	std::shared_ptr<CollisionShape> collisionShape; //TODO: Add entity properties to control it, serialization
+	glm::vec3 lastPos = glm::vec3(0.0f);
+	//physics
+	std::shared_ptr<Physical> physical;
 private:
 
 	//properties
 	std::shared_ptr<ObjectParams> params;
 
-	//physics
-	std::shared_ptr<Physical> physical;
-	std::shared_ptr<CollisionShape> collisionShape; //TODO: Add entity properties to control it, serialization
 };
 

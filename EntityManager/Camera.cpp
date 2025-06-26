@@ -78,7 +78,7 @@ ENTITYMANAGER_API void Camera::AddPosition(glm::vec3 posAdd, bool isPlaying)
 /*
 PURPOSE: Adds rotation vector to camera's rotation, and calculates rotation vector
 */
-ENTITYMANAGER_API void Camera::AddRotation(float _yaw, float _pitch)
+ENTITYMANAGER_API void Camera::AddRotation(float _yaw, float _pitch, bool isPlaying)
 {
 	yaw += _yaw;
 	pitch += _pitch;
@@ -96,9 +96,12 @@ ENTITYMANAGER_API void Camera::AddRotation(float _yaw, float _pitch)
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	glm::vec3 eye = glm::normalize(direction);
 
-	params->rx = eye.x;
-	params->ry = eye.y;
-	params->rz = eye.z;
+	if (isPlaying) {
+		params->SetRuntimeRotation(eye);
+	}
+	else {
+		params->SetRuntimeRotation(eye);
+	}
 }
 
 /*
@@ -115,7 +118,7 @@ ENTITYMANAGER_API void Camera::SetPosition(glm::vec3 newPos, bool isPlaying)
 /*
 PURPOSE: Sets camera's rotation and calculates rotation vector
 */
-ENTITYMANAGER_API void Camera::SetRotation(float _yaw, float _pitch)
+ENTITYMANAGER_API void Camera::SetRotation(float _yaw, float _pitch, bool isPlaying)
 {
 	yaw = _yaw;
 	pitch = _pitch;
@@ -133,9 +136,12 @@ ENTITYMANAGER_API void Camera::SetRotation(float _yaw, float _pitch)
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	glm::vec3 eye = glm::normalize(direction);
 
-	params->rx = eye.x;
-	params->ry = eye.y;
-	params->rz = eye.z;
+	if (isPlaying) {
+		params->SetRuntimeRotation(eye);
+	}
+	else {
+		params->SetRuntimeRotation(eye);
+	}
 }
 
 /*

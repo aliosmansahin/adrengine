@@ -58,27 +58,34 @@ void WindowEntityProperties::DrawWindow(
         //Position drags
         ImGui::SeparatorText("Position");
         ImGui::SetNextItemWidth(itemWidth - padding);
-        ImGui::DragFloat("pX", &entityPosition.x);
+        ImGui::DragFloat("pX", &entityPosition.x, 0.1f);
         ImGui::SameLine();
         ImGui::SetNextItemWidth(itemWidth - padding);
-        ImGui::DragFloat("pY", &entityPosition.y);
+        ImGui::DragFloat("pY", &entityPosition.y, 0.1f);
         ImGui::SameLine();
         ImGui::SetNextItemWidth(itemWidth - padding);
-        ImGui::DragFloat("pZ", &entityPosition.z);
+        ImGui::DragFloat("pZ", &entityPosition.z, 0.1f);
 
         if(!WindowGameViewport::GetInstance().isPlaying)
             currentEntity->GetEntityParams()->SetEditorPosition(entityPosition);
 
+
+        glm::vec3 entityRotation = currentEntity->GetEntityParams()->GetRotation();
+
         //Rotation drags
         ImGui::SeparatorText("Rotation");
         ImGui::SetNextItemWidth(itemWidth - padding);
-        ImGui::DragFloat("rX", &currentEntity->GetEntityParams()->rx);
+        ImGui::DragFloat("rX", &entityRotation.x);
         ImGui::SameLine();
         ImGui::SetNextItemWidth(itemWidth - padding);
-        ImGui::DragFloat("rY", &currentEntity->GetEntityParams()->ry);
+        ImGui::DragFloat("rY", &entityRotation.y);
         ImGui::SameLine();
         ImGui::SetNextItemWidth(itemWidth - padding);
-        ImGui::DragFloat("rZ", &currentEntity->GetEntityParams()->rz);
+        ImGui::DragFloat("rZ", &entityRotation.z);
+
+        if (!WindowGameViewport::GetInstance().isPlaying)
+            currentEntity->GetEntityParams()->SetEditorRotation(entityRotation);
+
 
         //Scale drags
         float scaleDragSpeed = 0.01f;

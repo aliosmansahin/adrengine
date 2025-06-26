@@ -43,6 +43,7 @@ void Physical::Update(float deltaTime)
         velocity = glm::vec3(0.0f);
     }
 
+
     // Reset forces
     force = glm::vec3(0.0f);
     impulse = glm::vec3(0.0f);
@@ -89,6 +90,14 @@ PHYSICS_API glm::vec3 Physical::GetVelocity()
 }
 
 /*
+PURPOSE: Sets velocity
+*/
+PHYSICS_API void Physical::SetVelocity(glm::vec3 velo)
+{
+    velocity = velo;
+}
+
+/*
 PURPOSE: Resets variables
 */
 PHYSICS_API void Physical::Reset()
@@ -96,4 +105,12 @@ PHYSICS_API void Physical::Reset()
     velocity = glm::vec3(0.0f);
     force = glm::vec3(0.0f);
     impulse = glm::vec3(0.0f);
+}
+
+PHYSICS_API void Physical::ApplyForceAtPoint(const glm::vec3& appliedForce, const glm::vec3& point, const glm::vec3& centerOfMass)
+{
+    if (!physicsEffects || mass <= 0.0f)
+        return;
+
+    force += appliedForce;
 }

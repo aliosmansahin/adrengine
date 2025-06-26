@@ -15,6 +15,7 @@ bool Object::CreateEntity(std::shared_ptr<EntityParams> params)
 	this->params = casted;
 
 	physical = std::make_shared<Physical>();
+	collisionShape = std::make_shared<CollisionShape>();
 
 	return true;
 }
@@ -31,6 +32,7 @@ PURPOSE: Updates the entity
 */
 void Object::Update()
 {
+	lastPos = realPos;
 	if (physical) {
 		if (physical->IsPhysical()) {
 			//physical->ApplyForce(glm::vec3(1.0f, 0.0f, 0.0f));

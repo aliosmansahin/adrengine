@@ -62,9 +62,26 @@ public:
 		runtimePosition = vector;
 	}
 
+	/*
+	PURPOSE: Returns the rotation vector of the entity
+	*/
+	ENTITYMANAGER_API glm::vec3 GetRotation() const override {
+		return runtimeRotation;
+	}
+
+	/*
+	PURPOSE: Sets the rotation vector of the entity
+	*/
+	ENTITYMANAGER_API void SetRuntimeRotation(glm::vec3 vector) override {
+		runtimeRotation = vector;
+	}
+	ENTITYMANAGER_API void SetEditorRotation(glm::vec3 vector) {
+		editorRotation = vector;
+		runtimeRotation = vector;
+	}
+
 	//Some properties for the entity
 	float sx = 1.0f, sy = 1.0f, sz = 1.0f;
-	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 	std::string id = "";
 	std::string name = "";
 
@@ -85,4 +102,6 @@ public:
 private:
 	glm::vec3 runtimePosition = glm::vec3(0.0f);
 	glm::vec3 editorPosition = glm::vec3(0.0f);
+	glm::vec3 runtimeRotation = glm::vec3(0.0f);
+	glm::vec3 editorRotation = glm::vec3(0.0f);
 };

@@ -383,6 +383,8 @@ void EntityManager::UpdateEntities(
 			}
 		}
 	}
+
+	CheckCollisions();
 }
 
 /*
@@ -396,12 +398,12 @@ ENTITYMANAGER_API void EntityManager::SetEntityRealStats(Entity* entity)
 	auto parent = params->parent.get();
 	if (parent) {
 		entity->realPos = parent->realPos + params->GetPosition();
-		entity->realRot = parent->realRot + glm::vec3(params->rx, params->ry, params->rz);
+		entity->realRot = parent->realRot + params->GetRotation();
 		entity->realSca = parent->realSca * glm::vec3(params->sx, params->sy, params->sz);
 	}
 	else {
 		entity->realPos = params->GetPosition();
-		entity->realRot = glm::vec3(params->rx, params->ry, params->rz);
+		entity->realRot = params->GetRotation();
 		entity->realSca = glm::vec3(params->sx, params->sy, params->sz);
 	}
 	//Do that again to all children
@@ -429,6 +431,123 @@ ENTITYMANAGER_API void EntityManager::ResetEntitiesRuntimeValues()
 			Object* object = dynamic_cast<Object*>(entity.second.get());
 			if (object)
 				object->ResetPhysics();
+		}
+	}
+}
+
+ENTITYMANAGER_API void EntityManager::CheckCollisions()
+{
+	std::vector<std::shared_ptr<Entity>> collidable;
+	for (auto& entity : entities) {
+		if (entity.second->GetEntityParams()->GetType() == "Object") {
+			collidable.push_back(entity.second);
+		}
+	}
+
+	for (int i = 0; i < collidable.size(); ++i) {
+		for (int j = i + 1; j < collidable.size(); ++j) {
+			Object* a = dynamic_cast<Object*>(collidable[i].get());
+			Object* b = dynamic_cast<Object*>(collidable[j].get());
+
+			if (!a || !b)
+				continue;
+
+			if (!a->collisionShape.get() || !b->collisionShape.get())
+				continue;
+
+			if (a->collisionShape->type == CollisionType::OBB && a->collisionShape->type == CollisionType::OBB)
+			{
+				if (!(std::holds_alternative<OBB>(a->collisionShape->shape) && std::holds_alternative<OBB>(b->collisionShape->shape)))
+					continue;
+
+				glm::quat rotA = glm::quat(glm::radians(a->GetEntityParams()->GetRotation()));
+				glm::quat rotB = glm::quat(glm::radians(b->GetEntityParams()->GetRotation()));
+
+				OBB obbA;
+				obbA.center = a->realPos;
+				obbA.halfExtents = std::get<OBB>(a->collisionShape->shape).halfExtents;
+				obbA.orientation = glm::mat3_cast(rotA);
+
+				OBB obbB;
+				obbB.center = b->realPos;
+				obbB.halfExtents = std::get<OBB>(b->collisionShape->shape).halfExtents;
+				obbB.orientation = glm::mat3_cast(rotB);
+
+				CollisionManifold info;
+				if (Collision::TestOBBvsOBB(obbA, obbB, info)) {
+
+					if (info.penetration > 0.001f) {
+
+						const float percent = 0.8f;
+						glm::vec3 correction = info.normal * info.penetration * percent;
+
+						if (a->physical && !b->physical) {
+							a->GetEntityParams()->SetRuntimePosition(
+								a->GetEntityParams()->GetPosition() + correction);
+						}
+						else if (!a->physical && b->physical) {
+							b->GetEntityParams()->SetRuntimePosition(
+								b->GetEntityParams()->GetPosition() - correction);
+						}
+						else if (a->physical && b->physical) {
+							float totalMass = a->physical->inverseMass + b->physical->inverseMass;
+							float moveA = a->physical->inverseMass / totalMass;
+							float moveB = b->physical->inverseMass / totalMass;
+
+							a->GetEntityParams()->SetRuntimePosition(
+								a->GetEntityParams()->GetPosition() + correction * moveA);
+							b->GetEntityParams()->SetRuntimePosition(
+								b->GetEntityParams()->GetPosition() - correction * moveB);
+						}
+/*
+						std::cout << "a " << a->GetEntityParams()->GetPosition().x << " " << a->GetEntityParams()->GetPosition().y << " " << a->GetEntityParams()->GetPosition().z << std::endl;
+						std::cout << "b " << b->GetEntityParams()->GetPosition().x << " " << b->GetEntityParams()->GetPosition().y << " " << b->GetEntityParams()->GetPosition().z << std::endl;
+						
+						std::cout << "normal " << info.normal.x << " " << info.normal.y << " " << info.normal.z << std::endl;
+						*///std::cout << "Penetration: " << info.penetration << "\n";
+
+					}
+					// --- Velocity çözümü ---
+					//if (a->physical && a->physical->IsPhysical()) {
+					//	glm::vec3 vel = a->physical->GetVelocity();
+					//	glm::vec3 rA = info.contactPoint - a->realPos;
+					//	float dot = glm::dot(vel, info.normal);
+					//	if (dot < -0.001f) {
+					//		float restitution =	glm::clamp(a->physical->bounciness + (b->physical ? b->physical->bounciness : 0) * 0.5f, 0.0f, 1.0f);
+					//		float impulseMag = -(1.0f - restitution) * dot;
+					//		glm::vec3 impulse = info.normal * impulseMag;
+
+					//		a->physical->ApplyForce(impulse);
+
+					//		// Basit friction: tangent yönüne velocity bileþenini azalt
+					//		glm::vec3 resVel = a->physical->GetVelocity();
+					//		glm::vec3 velNormal = glm::dot(resVel, info.normal) * info.normal;
+					//		glm::vec3 tangent = resVel - velNormal;
+					//		resVel -= tangent * a->physical->friction;
+					//		a->physical->SetVelocity(resVel);
+					//	}
+					//}
+
+					//if (b->physical && b->physical->IsPhysical()) {
+					//	glm::vec3 vel = b->physical->GetVelocity();
+					//	glm::vec3 rB = info.contactPoint - b->realPos;
+					//	float dot = glm::dot(vel, -info.normal);
+					//	if (dot < -0.001f) {
+					//		float restitution = glm::clamp(b->physical->bounciness + (a->physical ? a->physical->bounciness : 0) * 0.5f, 0.0f, 1.0f);
+					//		float impulseMag = -(1.0f - restitution) * dot;
+					//		glm::vec3 impulse = info.normal * impulseMag;
+					//		b->physical->ApplyForce(impulse);
+
+
+					//		glm::vec3 resVel = b->physical->GetVelocity();
+					//		glm::vec3 velNormal = glm::dot(resVel, info.normal) * info.normal;
+					//		glm::vec3 tangent = resVel - velNormal;
+					//		resVel -= tangent * b->physical->friction;
+					//		b->physical->SetVelocity(resVel);
+					//	}
+					//}
+				}
+			}
 		}
 	}
 }

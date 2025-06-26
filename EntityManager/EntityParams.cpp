@@ -9,6 +9,7 @@ PURPOSE: Sets runtime values to editor values
 */
 ENTITYMANAGER_API void EntityParams::ResetRuntimeValues() {
 	runtimePosition = editorPosition;
+	runtimeRotation = editorRotation;
 }
 
 /*
@@ -22,9 +23,9 @@ nlohmann::json EntityParams::ToJson() {
 	j["sx"] = sx;
 	j["sy"] = sy;
 	j["sz"] = sz;
-	j["rx"] = rx;
-	j["ry"] = ry;
-	j["rz"] = rz;
+	j["rx"] = editorRotation.x;
+	j["ry"] = editorRotation.y;
+	j["rz"] = editorRotation.z;
 	j["id"] = id;
 	if(script)
 		j["scriptId"] = script->scriptId;
@@ -48,9 +49,12 @@ void EntityParams::FromJson(const nlohmann::json& j, std::string& projectDir, IS
 	sx = j.value("sx", 1.0f);
 	sy = j.value("sy", 1.0f);
 	sz = j.value("sz", 1.0f);
-	rx = j.value("rx", 0.0f);
-	ry = j.value("ry", 0.0f);
-	rz = j.value("rz", 0.0f);
+	editorRotation.x = j.value("rx", 0.0f);
+	editorRotation.y = j.value("ry", 0.0f);
+	editorRotation.z = j.value("rz", 0.0f);
+	runtimeRotation.x = editorRotation.x;
+	runtimeRotation.y = editorRotation.y;
+	runtimeRotation.z = editorRotation.z;
 	id = j.value("id", "");
 	name = j.value("name", "");
 

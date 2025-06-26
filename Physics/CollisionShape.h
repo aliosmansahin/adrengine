@@ -1,6 +1,10 @@
 #pragma once
 
+#include <variant>
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #ifdef PHYSICS_EXPORTS
 #define PHYSICS_API __declspec(dllexport)
@@ -9,8 +13,19 @@
 #endif
 
 enum class CollisionType {
-	AABB,
+	OBB,
 	Sphere
+};
+
+//Each collision type
+struct OBB {
+	glm::vec3 halfExtents = glm::vec3(1.0f);
+	glm::vec3 center;
+	glm::mat3 orientation;
+};
+
+struct Sphere {
+	float radius;
 };
 
 class CollisionShape
@@ -18,14 +33,5 @@ class CollisionShape
 public:
 	CollisionType type;
 
-	//Each collision type
-	union {
-		struct {
-			glm::vec3 halfExtents;
-		} aabb;
-
-		struct {
-			float radius;
-		} sphere;
-	};
+	std::variant<OBB, Sphere> shape;
 };
