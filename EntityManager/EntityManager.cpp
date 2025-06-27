@@ -476,7 +476,7 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 				CollisionManifold info;
 				if (Collision::TestOBBvsOBB(obbA, obbB, info)) {
 
-					if (info.penetration > 0.001f) {
+					if (info.penetration > 0.1f) {
 
 						const float percent = 0.8f;
 						glm::vec3 correction = info.normal * info.penetration * percent;
@@ -498,19 +498,20 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 								a->GetEntityParams()->GetPosition() + correction * moveA);
 							b->GetEntityParams()->SetRuntimePosition(
 								b->GetEntityParams()->GetPosition() - correction * moveB);
+							//std::cout << "a " << correction.x << " " << correction.y << " " << correction.z << std::endl;
+							/*std::cout << "a " << a->GetEntityParams()->GetPosition().x << " " << a->GetEntityParams()->GetPosition().y << " " << a->GetEntityParams()->GetPosition().z << std::endl;
+							std::cout << "b " << b->GetEntityParams()->GetPosition().x << " " << b->GetEntityParams()->GetPosition().y << " " << b->GetEntityParams()->GetPosition().z << std::endl;*/
+
+
+							//std::cout << "Penetration: " << info.penetration << "\n";
+							//std::cout << "normal " << info.normal.x << " " << info.normal.y << " " << info.normal.z << std::endl;
 						}
-/*
-						std::cout << "a " << a->GetEntityParams()->GetPosition().x << " " << a->GetEntityParams()->GetPosition().y << " " << a->GetEntityParams()->GetPosition().z << std::endl;
-						std::cout << "b " << b->GetEntityParams()->GetPosition().x << " " << b->GetEntityParams()->GetPosition().y << " " << b->GetEntityParams()->GetPosition().z << std::endl;
-						
-						std::cout << "normal " << info.normal.x << " " << info.normal.y << " " << info.normal.z << std::endl;
-						*///std::cout << "Penetration: " << info.penetration << "\n";
+
 
 					}
 					// --- Velocity çözümü ---
 					//if (a->physical && a->physical->IsPhysical()) {
 					//	glm::vec3 vel = a->physical->GetVelocity();
-					//	glm::vec3 rA = info.contactPoint - a->realPos;
 					//	float dot = glm::dot(vel, info.normal);
 					//	if (dot < -0.001f) {
 					//		float restitution =	glm::clamp(a->physical->bounciness + (b->physical ? b->physical->bounciness : 0) * 0.5f, 0.0f, 1.0f);
@@ -530,7 +531,6 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 
 					//if (b->physical && b->physical->IsPhysical()) {
 					//	glm::vec3 vel = b->physical->GetVelocity();
-					//	glm::vec3 rB = info.contactPoint - b->realPos;
 					//	float dot = glm::dot(vel, -info.normal);
 					//	if (dot < -0.001f) {
 					//		float restitution = glm::clamp(b->physical->bounciness + (a->physical ? a->physical->bounciness : 0) * 0.5f, 0.0f, 1.0f);
