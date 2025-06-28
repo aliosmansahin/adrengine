@@ -196,8 +196,9 @@ void WindowEntityProperties::DrawWindow(
         else if (currentEntity->GetEntityParams()->GetType() == "Object") {
             ImGui::Separator();
             ImGui::SeparatorText("Mesh");
+            auto object = dynamic_cast<Object*>(currentEntity);
             auto casted = dynamic_cast<ObjectParams*>(currentEntity->GetEntityParams());
-            if (casted) {
+            if (object && casted) {
                 std::string objIdStr = casted->objId; // store entity id
 
                 static char objIdBuf[32] = "";
@@ -238,6 +239,29 @@ void WindowEntityProperties::DrawWindow(
                         }
                     }
                     ImGui::EndDragDropTarget();
+                }
+
+                //PHYSICS
+                ImGui::Separator();
+                ImGui::SeparatorText("Physics");
+
+                ImGui::Checkbox("Physics effects", &object->physical->physicsEffects);
+                ImGui::DragFloat("Mass", &object->physical->mass, 0.01f);
+                ImGui::DragFloat("Restitution", &object->physical->restitution, 0.01f);
+                ImGui::DragFloat("Linear Damping", &object->physical->linearDamping, 0.01f);
+                ImGui::DragFloat("Angular Damping", &object->physical->angularDamping, 0.01f);
+
+                if (std::holds_alternative<OBB>(object->collisionShape->shape)) {
+                    glm::vec3& half = std::get<OBB>(object->collisionShape->shape).halfExtents;
+                    ImGui::SeparatorText("Half Extents");
+                    ImGui::SetNextItemWidth(itemWidth - padding);
+                    ImGui::DragFloat("X", &half.x, 0.1f);
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(itemWidth - padding);
+                    ImGui::DragFloat("Y", &half.y, 0.1f);
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(itemWidth - padding);
+                    ImGui::DragFloat("Z", &half.z, 0.1f);
                 }
             }
         }

@@ -488,7 +488,7 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 				//Test collision and fill CollisionManifold
 				CollisionManifold info;
 				if (Collision::TestOBBvsOBB(obbA, obbB, info)) {
-					float restitution = 1.0f; // 0 stick, 1 jump
+					float avgRestitution = 0.5f * (a->physical->restitution + b->physical->restitution);
 
 					//Calculate velocities after collision
 					glm::vec3 relativeVel = a->physical->velocity - b->physical->velocity;
@@ -499,7 +499,7 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 					float invMassA = !a->physical->IsPhysical() ? 0.0f : 1.0f / a->physical->mass;
 					float invMassB = !b->physical->IsPhysical() ? 0.0f : 1.0f / b->physical->mass;
 
-					float j = -(1 + restitution) * velAlongNormal;
+					float j = -(1 + avgRestitution) * velAlongNormal;
 					j /= invMassA + invMassB;
 
 					glm::vec3 impulse = info.normal * j;

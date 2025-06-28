@@ -27,11 +27,12 @@ public:
 	float mass = 1.0f;
 	glm::vec3 velocity = glm::vec3(0.0f);
 	glm::vec3 angularVelocity = glm::vec3(0.0f);
-	float friction = 0.3f;
-private:
 	float linearDamping = 0.4f;
 	float angularDamping = 0.4f;
-	glm::vec3 force = glm::vec3(0.0f);
+	float friction = 0.3f;
+	float restitution = 1.0f;// 0 stick, 1 jump
 	bool physicsEffects = true;
+private:
+	glm::vec3 force = glm::vec3(0.0f);
 };
 
