@@ -39,6 +39,10 @@ void Object::Update()
 	//Update physics and transform
 	if (physical) {
 		if (physical->IsPhysical()) {
+			//Gravity
+			physical->ApplyForce(glm::vec3(0.0f, -1.0f, 0.0f) * physical->mass * 9.81f);
+
+			//Update position and rotation
 			glm::vec3 pos = params->GetPosition();
 			glm::vec3 rot = params->GetRotation();
 			physical->Update(Timer::GetDeltaTime(), pos, rot);
