@@ -10,6 +10,10 @@ void Physical::Update(float deltaTime, glm::vec3& pos, glm::vec3& rot)
     if (!physicsEffects || mass <= 0.0f)
         return;
 
+    //Frictions
+    velocity *= std::max(0.0f, 1.0f - linearDamping * deltaTime);
+    angularVelocity *= std::max(0.0f, 1.0f - angularDamping * deltaTime);
+
     //force -> acceleration -> velocity -> position
     glm::vec3 acceleration = force / mass;
     velocity += acceleration * deltaTime * 0.5f;

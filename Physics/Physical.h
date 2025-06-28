@@ -29,8 +29,8 @@ public:
 	glm::vec3 angularVelocity = glm::vec3(0.0f);
 	float friction = 0.3f;
 private:
-	float linearDamping = 0.05f;
-	float angularDamping = 0.05f;
+	float linearDamping = 0.4f;
+	float angularDamping = 0.4f;
 	glm::vec3 force = glm::vec3(0.0f);
 	bool physicsEffects = true;
 };
