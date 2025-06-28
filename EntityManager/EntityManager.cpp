@@ -535,11 +535,11 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 					glm::vec3 contactVectorA = info.contactPoint - obbA.center;
 					glm::vec3 torqueA = glm::cross(contactVectorA, impulse);
 
-					glm::vec3 pos2 = obbA.center + obbA.halfExtents;
+					glm::vec3 pos2A = obbA.center + obbA.halfExtents;
 
-					float ixA = (1.0f / 12.0f) * a->physical->mass * (pos2.y + pos2.z);
-					float iyA = (1.0f / 12.0f) * a->physical->mass * (pos2.x + pos2.z);
-					float izA = (1.0f / 12.0f) * a->physical->mass * (pos2.x + pos2.y);
+					float ixA = (1.0f / 12.0f) * a->physical->mass * (pos2A.y + pos2A.z);
+					float iyA = (1.0f / 12.0f) * a->physical->mass * (pos2A.x + pos2A.z);
+					float izA = (1.0f / 12.0f) * a->physical->mass * (pos2A.x + pos2A.y);
 
 					glm::mat3 inertiaTensorA = glm::mat3(
 						glm::vec3(ixA, 0.0f, 0.0f),

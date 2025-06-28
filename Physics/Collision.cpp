@@ -89,7 +89,10 @@ bool Collision::TestOBBvsOBB(const OBB& a, const OBB& b, CollisionManifold& outM
     //Fill CollisionManifold
     outManifold.normal = smallestAxis;
     outManifold.penetration = minOverlap;
-    outManifold.contactPoint = a.center + outManifold.normal * (outManifold.penetration * 0.5f);
+    
+    glm::vec3 pointOnA = a.center + outManifold.normal * (a.halfExtents - outManifold.penetration * 0.5f);
+    glm::vec3 pointOnB = b.center + outManifold.normal * (b.halfExtents - outManifold.penetration * 0.5f);
+    outManifold.contactPoint = 0.5f * (pointOnA + pointOnB);
     outManifold.isColliding = true;
 
     return true;
