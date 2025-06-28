@@ -17,6 +17,7 @@ bool Object::CreateEntity(std::shared_ptr<EntityParams> params)
 	physical = std::make_shared<Physical>();
 	collisionShape = std::make_shared<CollisionShape>();
 
+
 	return true;
 }
 
@@ -32,15 +33,18 @@ PURPOSE: Updates the entity
 */
 void Object::Update()
 {
+	//Save last position
 	lastPos = realPos;
+
+	//Update physics and transform
 	if (physical) {
 		if (physical->IsPhysical()) {
-			//physical->ApplyForce(glm::vec3(1.0f, 0.0f, 0.0f));
+			glm::vec3 pos = params->GetPosition();
+			glm::vec3 rot = params->GetRotation();
+			physical->Update(Timer::GetDeltaTime(), pos, rot);
 
-			physical->Update(Timer::GetDeltaTime());
-
-			glm::vec3 newPos = params->GetPosition() + physical->GetVelocity();
-			params->SetRuntimePosition(newPos);
+			params->SetRuntimePosition(pos);
+			params->SetRuntimeRotation(rot);
 		}
 	}
 }
@@ -141,7 +145,9 @@ PURPOSE: Calls physics->ApplyImpulse function
 */
 ENTITYMANAGER_API void Object::AddImpulse(glm::vec3 impulse)
 {
-	physical->ApplyImpulse(impulse);
+	//physical->ApplyImpulse(impulse);
+
+	physical->ApplyForce(impulse);
 }
 
 /*

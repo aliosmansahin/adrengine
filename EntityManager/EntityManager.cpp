@@ -423,6 +423,9 @@ ENTITYMANAGER_API void EntityManager::RunEntitiesScriptBegin()
 	}
 }
 
+/*
+PURPOSE: Resets runtime values (position, rotation, physics...)
+*/
 ENTITYMANAGER_API void EntityManager::ResetEntitiesRuntimeValues()
 {
 	for (auto& entity : entities) {
@@ -435,8 +438,12 @@ ENTITYMANAGER_API void EntityManager::ResetEntitiesRuntimeValues()
 	}
 }
 
+/*
+PURPOSE: Checks collisions for collidable entities
+*/
 ENTITYMANAGER_API void EntityManager::CheckCollisions()
 {
+	//Get collidable entities
 	std::vector<std::shared_ptr<Entity>> collidable;
 	for (auto& entity : entities) {
 		if (entity.second->GetEntityParams()->GetType() == "Object") {
@@ -444,6 +451,7 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 		}
 	}
 
+	//Run collision test for each collidable entity
 	for (int i = 0; i < collidable.size(); ++i) {
 		for (int j = i + 1; j < collidable.size(); ++j) {
 			Object* a = dynamic_cast<Object*>(collidable[i].get());
@@ -455,11 +463,13 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 			if (!a->collisionShape.get() || !b->collisionShape.get())
 				continue;
 
+			//OBB vs OBB
 			if (a->collisionShape->type == CollisionType::OBB && a->collisionShape->type == CollisionType::OBB)
 			{
 				if (!(std::holds_alternative<OBB>(a->collisionShape->shape) && std::holds_alternative<OBB>(b->collisionShape->shape)))
 					continue;
 
+				//Fill OBB objects
 				glm::quat rotA = glm::quat(glm::radians(a->GetEntityParams()->GetRotation()));
 				glm::quat rotB = glm::quat(glm::radians(b->GetEntityParams()->GetRotation()));
 
@@ -467,85 +477,105 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 				obbA.center = a->realPos;
 				obbA.halfExtents = std::get<OBB>(a->collisionShape->shape).halfExtents;
 				obbA.orientation = glm::mat3_cast(rotA);
+				obbA.velocity = a->physical->velocity;
 
 				OBB obbB;
 				obbB.center = b->realPos;
 				obbB.halfExtents = std::get<OBB>(b->collisionShape->shape).halfExtents;
 				obbB.orientation = glm::mat3_cast(rotB);
+				obbB.velocity = b->physical->velocity;
 
+				//Test collision and fill CollisionManifold
 				CollisionManifold info;
 				if (Collision::TestOBBvsOBB(obbA, obbB, info)) {
+					float restitution = 1.0f; // 0 stick, 1 jump
 
-					if (info.penetration > 0.1f) {
+					//Calculate velocities after collision
+					glm::vec3 relativeVel = a->physical->velocity - b->physical->velocity;
+					float velAlongNormal = glm::dot(relativeVel, info.normal);
 
-						const float percent = 0.8f;
-						glm::vec3 correction = info.normal * info.penetration * percent;
+					if (velAlongNormal > 0) return;
 
-						if (a->physical && !b->physical) {
-							a->GetEntityParams()->SetRuntimePosition(
-								a->GetEntityParams()->GetPosition() + correction);
-						}
-						else if (!a->physical && b->physical) {
-							b->GetEntityParams()->SetRuntimePosition(
-								b->GetEntityParams()->GetPosition() - correction);
-						}
-						else if (a->physical && b->physical) {
-							float totalMass = a->physical->inverseMass + b->physical->inverseMass;
-							float moveA = a->physical->inverseMass / totalMass;
-							float moveB = b->physical->inverseMass / totalMass;
+					float invMassA = !a->physical->IsPhysical() ? 0.0f : 1.0f / a->physical->mass;
+					float invMassB = !b->physical->IsPhysical() ? 0.0f : 1.0f / b->physical->mass;
 
-							a->GetEntityParams()->SetRuntimePosition(
-								a->GetEntityParams()->GetPosition() + correction * moveA);
-							b->GetEntityParams()->SetRuntimePosition(
-								b->GetEntityParams()->GetPosition() - correction * moveB);
-							//std::cout << "a " << correction.x << " " << correction.y << " " << correction.z << std::endl;
-							/*std::cout << "a " << a->GetEntityParams()->GetPosition().x << " " << a->GetEntityParams()->GetPosition().y << " " << a->GetEntityParams()->GetPosition().z << std::endl;
-							std::cout << "b " << b->GetEntityParams()->GetPosition().x << " " << b->GetEntityParams()->GetPosition().y << " " << b->GetEntityParams()->GetPosition().z << std::endl;*/
+					float j = -(1 + restitution) * velAlongNormal;
+					j /= invMassA + invMassB;
 
+					glm::vec3 impulse = info.normal * j;
 
-							//std::cout << "Penetration: " << info.penetration << "\n";
-							//std::cout << "normal " << info.normal.x << " " << info.normal.y << " " << info.normal.z << std::endl;
-						}
+					//Calculate frictions after collision
+					glm::vec3 tangent = relativeVel - info.normal * glm::dot(relativeVel, info.normal);
 
-
+					float len = glm::length(tangent);
+					if (len > 1e-6f) {
+						tangent /= len;
 					}
-					// --- Velocity çözümü ---
-					//if (a->physical && a->physical->IsPhysical()) {
-					//	glm::vec3 vel = a->physical->GetVelocity();
-					//	float dot = glm::dot(vel, info.normal);
-					//	if (dot < -0.001f) {
-					//		float restitution =	glm::clamp(a->physical->bounciness + (b->physical ? b->physical->bounciness : 0) * 0.5f, 0.0f, 1.0f);
-					//		float impulseMag = -(1.0f - restitution) * dot;
-					//		glm::vec3 impulse = info.normal * impulseMag;
+					else {
+						tangent = glm::vec3(0.0f);
+					}
 
-					//		a->physical->ApplyForce(impulse);
+					float jt = -glm::dot(relativeVel, tangent);
+					jt /= invMassA + invMassB;
 
-					//		// Basit friction: tangent yönüne velocity bileþenini azalt
-					//		glm::vec3 resVel = a->physical->GetVelocity();
-					//		glm::vec3 velNormal = glm::dot(resVel, info.normal) * info.normal;
-					//		glm::vec3 tangent = resVel - velNormal;
-					//		resVel -= tangent * a->physical->friction;
-					//		a->physical->SetVelocity(resVel);
-					//	}
-					//}
+					float maxFriction = j * glm::sqrt(a->physical->friction * b->physical->friction);
+					jt = std::clamp(jt, -maxFriction, maxFriction);
 
-					//if (b->physical && b->physical->IsPhysical()) {
-					//	glm::vec3 vel = b->physical->GetVelocity();
-					//	float dot = glm::dot(vel, -info.normal);
-					//	if (dot < -0.001f) {
-					//		float restitution = glm::clamp(b->physical->bounciness + (a->physical ? a->physical->bounciness : 0) * 0.5f, 0.0f, 1.0f);
-					//		float impulseMag = -(1.0f - restitution) * dot;
-					//		glm::vec3 impulse = info.normal * impulseMag;
-					//		b->physical->ApplyForce(impulse);
+					glm::vec3 frictionImpulse = tangent * jt;
 
+					//Update velocity vectors
+					if (a->physical && a->physical->IsPhysical()) {
+						a->physical->velocity += (impulse + frictionImpulse) * invMassA;
+					}
+					if (b->physical && b->physical->IsPhysical()) {
+						b->physical->velocity += -(impulse + frictionImpulse) * invMassB;
+					}
 
-					//		glm::vec3 resVel = b->physical->GetVelocity();
-					//		glm::vec3 velNormal = glm::dot(resVel, info.normal) * info.normal;
-					//		glm::vec3 tangent = resVel - velNormal;
-					//		resVel -= tangent * b->physical->friction;
-					//		b->physical->SetVelocity(resVel);
-					//	}
-					//}
+					//Calculate angular velocity for obbA
+					glm::vec3 contactVectorA = info.contactPoint - obbA.center;
+					glm::vec3 torqueA = glm::cross(contactVectorA, impulse);
+
+					glm::vec3 pos2 = obbA.center + obbA.halfExtents;
+
+					float ixA = (1.0f / 12.0f) * a->physical->mass * (pos2.y + pos2.z);
+					float iyA = (1.0f / 12.0f) * a->physical->mass * (pos2.x + pos2.z);
+					float izA = (1.0f / 12.0f) * a->physical->mass * (pos2.x + pos2.y);
+
+					glm::mat3 inertiaTensorA = glm::mat3(
+						glm::vec3(ixA, 0.0f, 0.0f),
+						glm::vec3(0.0f, iyA, 0.0f),
+						glm::vec3(0.0f, 0.0f, izA)
+					);
+
+					glm::mat3 inertiaTensorWorldA = glm::inverse(inertiaTensorA);
+					glm::vec3 angularDeltaA = inertiaTensorWorldA * torqueA;
+
+					//Calculate angular velocity for obbB
+					glm::vec3 contactVectorB = info.contactPoint - obbB.center;
+					glm::vec3 torqueB = glm::cross(contactVectorB, impulse);
+
+					glm::vec3 pos2B = obbB.center + obbB.halfExtents;
+
+					float ixB = (1.0f / 12.0f) * b->physical->mass * (pos2B.y + pos2B.z);
+					float iyB = (1.0f / 12.0f) * b->physical->mass * (pos2B.x + pos2B.z);
+					float izB = (1.0f / 12.0f) * b->physical->mass * (pos2B.x + pos2B.y);
+
+					glm::mat3 inertiaTensorB = glm::mat3(
+						glm::vec3(ixB, 0.0f, 0.0f),
+						glm::vec3(0.0f, iyB, 0.0f),
+						glm::vec3(0.0f, 0.0f, izB)
+					);
+
+					glm::mat3 inertiaTensorWorldB = glm::inverse(inertiaTensorB);
+					glm::vec3 angularDeltaB = inertiaTensorWorldB * torqueB;
+
+					//Update angularVelocity
+					if (a->physical && a->physical->IsPhysical()) {
+						a->physical->angularVelocity += angularDeltaA;
+					}
+					if (b->physical && b->physical->IsPhysical()) {
+						b->physical->angularVelocity -= angularDeltaB;
+					}
 				}
 			}
 		}

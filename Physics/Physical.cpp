@@ -4,49 +4,38 @@
 /*
 PURPOSE: Calculates physics affects
 */
-void Physical::Update(float deltaTime)
+void Physical::Update(float deltaTime, glm::vec3& pos, glm::vec3& rot)
 {
+    //physicsEffects have to be true to update physics
     if (!physicsEffects || mass <= 0.0f)
         return;
 
-    // Velocity from impulse
-    velocity += impulse / mass;
-
-    // Acceleration
+    //force -> acceleration -> velocity -> position
     glm::vec3 acceleration = force / mass;
-    velocity += acceleration * deltaTime;
+    velocity += acceleration * deltaTime * 0.5f;
+    pos += velocity * deltaTime;
+    velocity += acceleration * deltaTime * 0.5f;
 
-    // Friction and damping
-    float normalForce = mass * 9.81f;
-    float frictionMagnitude = frictionCoefficient * normalForce;
+    //angularVelocity -> rotation
+    float angle = glm::length(angularVelocity);
 
-    //Temporary friction calculations
-    if (pow(glm::length(velocity), 2) > 1e-6f) {
-        glm::vec3 frictionDir = -glm::normalize(velocity);
-        glm::vec3 frictionForce = frictionDir * frictionMagnitude;
+    if (angle > 0.0001f) {
 
-        glm::vec3 velocityChange = (frictionForce / mass) * deltaTime;
+        glm::vec3 axis = glm::normalize(angularVelocity);
 
-        if (pow(glm::length(velocityChange), 2) > pow(glm::length(velocity), 2)) {
-            velocity = glm::vec3(0.0f);
-        }
-        else {
-            velocity += velocityChange;
-        }
+        glm::quat deltaRotation = glm::angleAxis(angle * deltaTime, axis);
 
-        // Damping
-        velocity *= pow(1.0f - linearDamping, deltaTime);
+        glm::quat currentRotationQuat = glm::quat(glm::radians(rot));
+
+        currentRotationQuat = glm::normalize(deltaRotation * currentRotationQuat);
+
+        glm::vec3 newEuler = glm::degrees(glm::eulerAngles(currentRotationQuat));
+
+        rot = newEuler;
     }
-
-    // Stabilize tiny velocities to zero
-    if (pow(glm::length(velocity), 2) < 1e-4f) {
-        velocity = glm::vec3(0.0f);
-    }
-
 
     // Reset forces
     force = glm::vec3(0.0f);
-    impulse = glm::vec3(0.0f);
 }
 
 /*
@@ -55,14 +44,6 @@ PURPOSE: Adds a new force
 void Physical::ApplyForce(glm::vec3 force)
 {
 	this->force += force;
-}
-
-/*
-PURPOSE: Adds a new impulse
-*/
-PHYSICS_API void Physical::ApplyImpulse(glm::vec3 force)
-{
-	this->impulse = force;
 }
 
 /*
@@ -103,14 +84,6 @@ PURPOSE: Resets variables
 PHYSICS_API void Physical::Reset()
 {
     velocity = glm::vec3(0.0f);
+    angularVelocity = glm::vec3(0.0f);
     force = glm::vec3(0.0f);
-    impulse = glm::vec3(0.0f);
-}
-
-PHYSICS_API void Physical::ApplyForceAtPoint(const glm::vec3& appliedForce, const glm::vec3& point, const glm::vec3& centerOfMass)
-{
-    if (!physicsEffects || mass <= 0.0f)
-        return;
-
-    force += appliedForce;
 }
