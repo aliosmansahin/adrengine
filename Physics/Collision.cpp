@@ -61,31 +61,36 @@ PHYSICS_API glm::vec3 Collision::ComputeQuatCentroid(const glm::vec3 v[4])
     return (v[0] + v[1] + v[2] + v[3]) * 0.25f;
 }
 
-PHYSICS_API std::vector<glm::vec3> Collision::ClipPolygonAgainsPlane(const std::vector<glm::vec3>& vertices, const glm::vec3& planeNormal, const glm::vec3& planePoint)
+std::vector<glm::vec3> Collision::ClipPolygonAgainsPlane(
+    const std::vector<glm::vec3>& vertices,
+    const glm::vec3& planeNormal,
+    const glm::vec3& planePoint)
 {
     std::vector<glm::vec3> result;
-    const float epsilon = 1e-5f;
 
-    for (size_t i = 0; i < vertices.size(); ++i) {
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
         const glm::vec3& curr = vertices[i];
         const glm::vec3& prev = vertices[(i + vertices.size() - 1) % vertices.size()];
 
         float distCurr = glm::dot(planeNormal, curr - planePoint);
         float distPrev = glm::dot(planeNormal, prev - planePoint);
 
-        bool currInside = distCurr >= -epsilon;
-        bool prevInside = distPrev >= -epsilon;
+        bool currInside = distCurr >= 0;
+        bool prevInside = distPrev >= 0;
 
-        if (currInside) {
-            if (!prevInside) {
+        if (currInside)
+        {
+            if (!prevInside)
+            {
                 float t = distPrev / (distPrev - distCurr);
                 glm::vec3 intersection = prev + t * (curr - prev);
-
                 result.push_back(intersection);
             }
             result.push_back(curr);
         }
-        else if (prevInside) {
+        else if (prevInside)
+        {
             float t = distPrev / (distPrev - distCurr);
             glm::vec3 intersection = prev + t * (curr - prev);
             result.push_back(intersection);
@@ -97,53 +102,25 @@ PHYSICS_API std::vector<glm::vec3> Collision::ClipPolygonAgainsPlane(const std::
 
 PHYSICS_API std::vector<glm::vec3> Collision::ComputeContactPolygon(const Face& faceA, const Face& faceB)
 {
-    float areaA = ComputeFaceArea(faceA);
-    float areaB = ComputeFaceArea(faceB);
+    std::vector<glm::vec3> polygon(faceA.vertices, faceA.vertices + 4);
 
-    const Face* bigFace = &faceA;
-    const Face* smallFace = &faceB;
+    // 1. Önce B'nin yüzey düzlemine göre clip et
+    polygon = ClipPolygonAgainsPlane(polygon, -faceB.normal, faceB.vertices[0]);
 
-    if (areaB > areaA) {
-        bigFace = &faceB;
-        smallFace = &faceA;
-    }
+    // 2. Sonra B yüzeyinin her kenarýna göre clip et
+    for (int i = 0; i < 4; ++i)
+    {
+        const glm::vec3& curr = faceB.vertices[i];
+        const glm::vec3& next = faceB.vertices[(i + 1) % 4];
 
-    std::vector<glm::vec3> polygon(bigFace->vertices, bigFace->vertices + 4);
+        glm::vec3 edge = next - curr;
+        glm::vec3 edgeNormal = glm::normalize(glm::cross(faceB.normal, edge));
 
-    // Küçük yüzeyin her kenarýna göre clip et
-    for (int i = 0; i < 4; ++i) {
-        glm::vec3 p0 = smallFace->vertices[i];
-        glm::vec3 p1 = smallFace->vertices[(i + 1) % 4];
-        glm::vec3 edgeDir = glm::normalize(p1 - p0);
+        polygon = ClipPolygonAgainsPlane(polygon, edgeNormal, curr);
 
-        //Normal yönü düzeltilmiþ
-        glm::vec3 edgeNormal = glm::normalize(glm::cross(smallFace->normal, edgeDir));
-
-        // Yüzeye dýþarý bakan düzlem yönünü korumak için kontrol
-        if (glm::dot(edgeNormal, bigFace->normal) < 0.0f)
-            edgeNormal = -edgeNormal;
-
-        polygon = ClipPolygonAgainsPlane(polygon, edgeNormal, p0);
+        // Eðer polygon tamamen kesildiyse, boþ dönebilir
         if (polygon.empty())
-            return {};
-    }
-
-    // Büyük yüzeyin kenarlarýna göre de clip et
-    for (int i = 0; i < 4; ++i) {
-        glm::vec3 p0 = bigFace->vertices[i];
-        glm::vec3 p1 = bigFace->vertices[(i + 1) % 4];
-        glm::vec3 edgeDir = glm::normalize(p1 - p0);
-
-        //Normal yönü düzeltilmiþ
-        glm::vec3 edgeNormal = glm::normalize(glm::cross(bigFace->normal, edgeDir));
-
-        // Dýþa bakacak þekilde kontrol
-        if (glm::dot(edgeNormal, smallFace->normal) < 0.0f)
-            edgeNormal = -edgeNormal;
-
-        polygon = ClipPolygonAgainsPlane(polygon, edgeNormal, p0);
-        if (polygon.empty())
-            return {};
+            break;
     }
 
     return polygon;
@@ -183,6 +160,21 @@ PHYSICS_API float Collision::ComputeFaceArea(const Face& face)
     float area2 = glm::length(glm::cross(v2 - v0, v3 - v0)) * 0.5f;
 
     return area1 + area2;
+}
+
+PHYSICS_API glm::vec3 Collision::ClosestPointOnOBBSurface(const glm::vec3& point, const OBB& obb)
+{
+    glm::vec3 result = obb.center;
+    glm::vec3 dir = point - obb.center;
+
+    for (int i = 0; i < 3; ++i) {
+        float distance = glm::dot(dir, obb.orientation[i]);
+        distance = glm::clamp(distance, -obb.halfExtents[i], obb.halfExtents[i]);
+
+        result += obb.orientation[i] * distance;
+    }
+
+    return result;
 }
 
 /*
@@ -274,34 +266,40 @@ bool Collision::TestOBBvsOBB(const OBB& a, const OBB& b, CollisionManifold& outM
     Face faceA = GetFaceInDirection(a, outManifold.normal);
     Face faceB = GetFaceInDirection(b, -outManifold.normal);
 
-    auto contactPolygon = ComputeContactPolygon(faceA, faceB);
-    for (int i = 0; i < contactPolygon.size(); ++i) {
-        std::cout << "contactPolygon[" << i << "] = " << glm::to_string(contactPolygon[i]) << std::endl;
-    }
-    if (!contactPolygon.empty()) {
-        glm::vec3 centroid = ComputePolygonCentroid(contactPolygon);
+    float dot = glm::dot(glm::normalize(faceA.normal), faceB.normal);
+    if (abs(dot) > 0.99f) {
+        auto contactPolygon = ComputeContactPolygon(faceA, faceB);
+        if (!contactPolygon.empty()) {
+            glm::vec3 centroid = ComputePolygonCentroid(contactPolygon);
 
-        if (fabs(ComputePolygonArea(contactPolygon) - ComputeFaceArea(faceA)) < 0.01f) {
-            outManifold.contactPointA = ComputeQuatCentroid(faceA.vertices);
-        }
-        else {
             glm::vec3 planeANormal = faceA.normal;
             glm::vec3 planeAPoint = faceA.vertices[0];
 
             float dA = glm::dot(planeANormal, centroid - planeAPoint);
             outManifold.contactPointA = centroid - dA * planeANormal;
-        }
-        std::cout << ComputePolygonArea(contactPolygon) << " " << ComputeFaceArea(faceA) << " " << ComputeFaceArea(faceB) << std::endl;
-        if (fabs(ComputePolygonArea(contactPolygon) - ComputeFaceArea(faceB)) < 0.01f) {
-            outManifold.contactPointB = ComputeQuatCentroid(faceB.vertices);
-        }
-        else {
+
             glm::vec3 planeBNormal = faceB.normal;
             glm::vec3 planeBPoint = faceB.vertices[0];
 
             float dB = glm::dot(planeBNormal, centroid - planeBPoint);
             outManifold.contactPointB = centroid - dB * planeBNormal;
         }
+    }
+    else {
+        std::cout << "not parallel" << std::endl;
+        outManifold.contactPointA = ClosestPointOnOBBSurface(b.center, a);
+        outManifold.contactPointB = ClosestPointOnOBBSurface(a.center, b);
+
+        glm::vec3 centerToPlaneA = a.center - faceA.vertices[0];
+        float distA = glm::dot(centerToPlaneA, faceA.normal);
+        glm::vec3 shortestVecA = -distA * faceA.normal;
+
+        glm::vec3 centerToPlaneB = b.center - faceB.vertices[0];
+        float distB = glm::dot(centerToPlaneB, faceB.normal);
+        glm::vec3 shortestVecB = -distB * faceB.normal;
+
+        outManifold.contactPointA -= shortestVecA;
+        outManifold.contactPointB -= shortestVecB;
     }
 
     outManifold.isColliding = true;

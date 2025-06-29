@@ -561,6 +561,11 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 					glm::vec3 contactVectorB = info.contactPointB - obbB.center;
 					glm::vec3 torqueB = glm::cross(contactVectorB, impulse);
 
+					std::cout << "rb: " << glm::to_string(contactVectorB)
+						<< " | -impulse: " << glm::to_string(impulse)
+						<< " | torqueB: " << glm::to_string(glm::cross(contactVectorB, impulse))
+						<< " | dot(rb, impulse): " << glm::dot(contactVectorB, impulse)
+						<< std::endl;
 					glm::vec3 pos2B = obbB.center + obbB.halfExtents;
 
 					float ixB = (1.0f / 12.0f) * b->physical->mass * (pos2B.y + pos2B.z);
