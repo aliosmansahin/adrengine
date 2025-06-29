@@ -177,6 +177,52 @@ PHYSICS_API glm::vec3 Collision::ClosestPointOnOBBSurface(const glm::vec3& point
     return result;
 }
 
+PHYSICS_API glm::vec3 Collision::ComputeContactPointOnOBB(const OBB& surfaceOBB, const glm::vec3& fromPoint, const glm::vec3& collisionNormal)
+{
+    // En uygun yüzey eksenini bul (normale en paralel olan)
+    int faceAxis = 0;
+    float maxDot = fabs(glm::dot(collisionNormal, surfaceOBB.orientation[0]));
+
+    for (int i = 1; i < 3; ++i) {
+        float d = fabs(glm::dot(collisionNormal, surfaceOBB.orientation[i]));
+        if (d > maxDot) {
+            maxDot = d;
+            faceAxis = i;
+        }
+    }
+
+    glm::vec3 faceNormal = surfaceOBB.orientation[faceAxis];
+    if (glm::dot(faceNormal, collisionNormal) > 0)
+        faceNormal = -faceNormal;
+
+    glm::vec3 faceCenter = surfaceOBB.center + faceNormal * surfaceOBB.halfExtents[faceAxis];
+
+    // U ve V eksenleri (yüzey düzlemindeki)
+    int uAxis = (faceAxis + 1) % 3;
+    int vAxis = (faceAxis + 2) % 3;
+    glm::vec3 u = surfaceOBB.orientation[uAxis];
+    glm::vec3 v = surfaceOBB.orientation[vAxis];
+
+    float halfU = surfaceOBB.halfExtents[uAxis];
+    float halfV = surfaceOBB.halfExtents[vAxis];
+
+    // 'fromPoint' noktasýný yüzeye projekte et
+    glm::vec3 toFace = fromPoint - faceCenter;
+    glm::vec3 projected = fromPoint - glm::dot(toFace, faceNormal) * faceNormal;
+
+    // U ve V eksenlerine göre local koordinatlara çevir
+    float uDist = glm::dot(projected - faceCenter, u);
+    float vDist = glm::dot(projected - faceCenter, v);
+
+    // Clamp iþlemi
+    uDist = glm::clamp(uDist, -halfU, halfU);
+    vDist = glm::clamp(vDist, -halfV, halfV);
+
+    // Son contact point
+    glm::vec3 contact = faceCenter + u * uDist + v * vDist;
+    return contact;
+}
+
 /*
 Returns axes of obb
 */
@@ -266,41 +312,53 @@ bool Collision::TestOBBvsOBB(const OBB& a, const OBB& b, CollisionManifold& outM
     Face faceA = GetFaceInDirection(a, outManifold.normal);
     Face faceB = GetFaceInDirection(b, -outManifold.normal);
 
-    float dot = glm::dot(glm::normalize(faceA.normal), faceB.normal);
-    if (abs(dot) > 0.99f) {
-        auto contactPolygon = ComputeContactPolygon(faceA, faceB);
-        if (!contactPolygon.empty()) {
-            glm::vec3 centroid = ComputePolygonCentroid(contactPolygon);
+    //BAÞTAN BAÞLAYCAM
 
-            glm::vec3 planeANormal = faceA.normal;
-            glm::vec3 planeAPoint = faceA.vertices[0];
 
-            float dA = glm::dot(planeANormal, centroid - planeAPoint);
-            outManifold.contactPointA = centroid - dA * planeANormal;
 
-            glm::vec3 planeBNormal = faceB.normal;
-            glm::vec3 planeBPoint = faceB.vertices[0];
 
-            float dB = glm::dot(planeBNormal, centroid - planeBPoint);
-            outManifold.contactPointB = centroid - dB * planeBNormal;
-        }
-    }
-    else {
-        std::cout << "not parallel" << std::endl;
-        outManifold.contactPointA = ClosestPointOnOBBSurface(b.center, a);
-        outManifold.contactPointB = ClosestPointOnOBBSurface(a.center, b);
 
-        glm::vec3 centerToPlaneA = a.center - faceA.vertices[0];
-        float distA = glm::dot(centerToPlaneA, faceA.normal);
-        glm::vec3 shortestVecA = -distA * faceA.normal;
+    ////////////////float dot = glm::dot(glm::normalize(faceA.normal), faceB.normal);
+    //////////////////if (abs(dot) > 0.99f) {
+    ////////////////    auto contactPolygon = ComputeContactPolygon(faceA, faceB);
+    ////////////////    if (!contactPolygon.empty()) {
+    ////////////////        glm::vec3 centroid = ComputePolygonCentroid(contactPolygon);
 
-        glm::vec3 centerToPlaneB = b.center - faceB.vertices[0];
-        float distB = glm::dot(centerToPlaneB, faceB.normal);
-        glm::vec3 shortestVecB = -distB * faceB.normal;
+    ////////////////        glm::vec3 planeANormal = faceA.normal;
+    ////////////////        glm::vec3 planeAPoint = faceA.vertices[0];
 
-        outManifold.contactPointA -= shortestVecA;
-        outManifold.contactPointB -= shortestVecB;
-    }
+    ////////////////        float dA = glm::dot(planeANormal, centroid - planeAPoint);
+    ////////////////        outManifold.contactPointA = centroid - dA * planeANormal;
+
+    ////////////////        glm::vec3 planeBNormal = faceB.normal;
+    ////////////////        glm::vec3 planeBPoint = faceB.vertices[0];
+
+    ////////////////        float dB = glm::dot(planeBNormal, centroid - planeBPoint);
+    ////////////////        outManifold.contactPointB = centroid - dB * planeBNormal;
+    ////////////////    }
+    //////////////////}
+    //////////////////else {
+
+    //////////////////    std::cout << "not parallel" << std::endl;
+
+    //////////////////    auto contactPolygon = ComputeContactPolygon(faceA, faceB);
+    //////////////////    glm::vec3 centroid = ComputePolygonCentroid(contactPolygon);
+
+    //////////////////    std::cout << glm::to_string(centroid - b.center) << std::endl;
+    //////////////////    /*outManifold.contactPointA = ClosestPointOnOBBSurface(b.center, a);
+    //////////////////    outManifold.contactPointB = ClosestPointOnOBBSurface(a.center, b);*/
+
+    //////////////////    outManifold.contactPointA = centroid;
+    //////////////////    outManifold.contactPointB = centroid;
+
+
+    //////////////////    //std::cout << glm::to_string(outManifold.contactPointA - a.center) << " " << glm::to_string(outManifold.contactPointB - b.center) << std::endl;
+    //////////////////}
+
+    //////////////////glm::vec3 torqueVecA = outManifold.contactPointA - tmpCPA;
+    //////////////////glm::vec3 torqueVecB = outManifold.contactPointB - tmpCPB;
+
+    //////////////////std::cout << glm::to_string(torqueVecA) << " " << glm::to_string(torqueVecB) << std::endl;
 
     outManifold.isColliding = true;
 

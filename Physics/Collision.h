@@ -36,6 +36,7 @@ private:
 	PHYSICS_API static float ComputePolygonArea(const std::vector<glm::vec3>& poly);
 	PHYSICS_API static float ComputeFaceArea(const Face& face);
 	PHYSICS_API static glm::vec3 ClosestPointOnOBBSurface(const glm::vec3& point, const OBB& obb);
+	PHYSICS_API static glm::vec3 ComputeContactPointOnOBB(const OBB& surfaceOBB, const glm::vec3& fromPoint, const glm::vec3& collisionNormal);
 public:
 	PHYSICS_API static std::array<glm::vec3, 3> GetAxes(const OBB& obb);
 	PHYSICS_API static void ProjectOBB(const OBB& obb, const glm::vec3& axis, float& minOut, float& maxOut);

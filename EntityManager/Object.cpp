@@ -40,7 +40,7 @@ void Object::Update()
 	if (physical) {
 		if (physical->IsPhysical()) {
 			//Gravity
-			physical->ApplyForce(glm::vec3(0.0f, -1.0f, 0.0f) * physical->mass * 9.81f);
+			//physical->ApplyForce(glm::vec3(0.0f, -1.0f, 0.0f) * physical->mass * 9.81f);
 
 			//Update position and rotation
 			glm::vec3 pos = params->GetPosition();
