@@ -16,12 +16,12 @@ void Physical::Update(float deltaTime, glm::vec3& pos, glm::vec3& rot)
 
     glm::vec3 frictionAccel = glm::vec3(0.0f);
 
-    if (glm::length(velocity) > 1e-4f) {
+    /*if (glm::length(velocity) > 1e-4f) {
         glm::vec3 frictionDir = -glm::normalize(velocity);
         float invMass = !IsPhysical() ? 0.0f : 1.0f / mass;
         glm::vec3 frictionForce = friction * force * frictionDir;
         frictionAccel = frictionForce * invMass;
-    }
+    }*/
 
     //force -> acceleration -> velocity -> position
     glm::vec3 acceleration = force / mass;

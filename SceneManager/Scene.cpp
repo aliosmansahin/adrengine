@@ -196,7 +196,7 @@ void Scene::UpdateScene(
 	//Update each entity via entity manager
 	if (entityManager) {
 		nlohmann::json sceneJson = ToJson();
-		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, selectedId, extraDeletingFunc, projectDir, sceneId, sceneJson, gameCamera);
+		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, isPlaying, selectedId, extraDeletingFunc, projectDir, sceneId, sceneJson, gameCamera);
 	}
 }
 

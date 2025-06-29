@@ -43,6 +43,7 @@ public:
 		bool windowSceneFocused,
 		bool windowSceneDeletePressed,
 		bool& pendingDelete,
+		bool isPlaying,
 		std::string selectedId,
 		std::function<void(std::string)> extraDeletingFunc,
 		std::string& projectDir,

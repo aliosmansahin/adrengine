@@ -326,6 +326,7 @@ void EntityManager::UpdateEntities(
 	bool windowSceneFocused,
 	bool windowSceneDeletePressed,
 	bool& pendingDelete,
+	bool isPlaying,
 	std::string selectedId,
 	std::function<void(std::string)> extraDeletingFunc,
 	std::string& projectDir,
@@ -374,17 +375,19 @@ void EntityManager::UpdateEntities(
 	}
 
 	//Update all entities
-	for (auto& entity : entities) {
-		entity.second->Update();
-		if (entity.second->GetEntityParams()->GetType() == "Camera") {
-			Camera* camera = dynamic_cast<Camera*>(entity.second.get());
-			if (camera) {
-				gameCamera = camera;
+	if (isPlaying) {
+		for (auto& entity : entities) {
+			entity.second->Update();
+			if (entity.second->GetEntityParams()->GetType() == "Camera") {
+				Camera* camera = dynamic_cast<Camera*>(entity.second.get());
+				if (camera) {
+					gameCamera = camera;
+				}
 			}
 		}
-	}
 
-	CheckCollisions();
+		CheckCollisions();
+	}
 }
 
 /*
@@ -532,7 +535,8 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 					}
 
 					//Calculate angular velocity for obbA
-					glm::vec3 contactVectorA = info.contactPoint - obbA.center;
+					glm::vec3 contactVectorA = info.contactPointA - obbA.center;
+					//std::cout << glm::to_string(info.contactPoint) << std::endl;
 					glm::vec3 torqueA = glm::cross(contactVectorA, impulse);
 
 					glm::vec3 pos2A = obbA.center + obbA.halfExtents;
@@ -550,8 +554,11 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 					glm::mat3 inertiaTensorWorldA = glm::inverse(inertiaTensorA);
 					glm::vec3 angularDeltaA = inertiaTensorWorldA * torqueA;
 
+					if (glm::length(contactVectorA) < 1e-3f)
+						angularDeltaA = glm::vec3(0.0f);
+
 					//Calculate angular velocity for obbB
-					glm::vec3 contactVectorB = info.contactPoint - obbB.center;
+					glm::vec3 contactVectorB = info.contactPointB - obbB.center;
 					glm::vec3 torqueB = glm::cross(contactVectorB, impulse);
 
 					glm::vec3 pos2B = obbB.center + obbB.halfExtents;
@@ -568,6 +575,9 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 
 					glm::mat3 inertiaTensorWorldB = glm::inverse(inertiaTensorB);
 					glm::vec3 angularDeltaB = inertiaTensorWorldB * torqueB;
+
+					if (glm::length(contactVectorB) < 1e-3f)
+						angularDeltaB = glm::vec3(0.0f);
 
 					//Update angularVelocity
 					if (a->physical && a->physical->IsPhysical()) {

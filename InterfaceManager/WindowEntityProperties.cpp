@@ -255,13 +255,13 @@ void WindowEntityProperties::DrawWindow(
                     glm::vec3& half = std::get<OBB>(object->collisionShape->shape).halfExtents;
                     ImGui::SeparatorText("Half Extents");
                     ImGui::SetNextItemWidth(itemWidth - padding);
-                    ImGui::DragFloat("X", &half.x, 0.1f);
+                    ImGui::DragFloat("X", &half.x, 0.1f, 0.0f, 10000.0f);
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(itemWidth - padding);
-                    ImGui::DragFloat("Y", &half.y, 0.1f);
+                    ImGui::DragFloat("Y", &half.y, 0.1f, 0.0f, 10000.0f);
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(itemWidth - padding);
-                    ImGui::DragFloat("Z", &half.z, 0.1f);
+                    ImGui::DragFloat("Z", &half.z, 0.1f, 0.0f, 10000.0f);
                 }
             }
         }
