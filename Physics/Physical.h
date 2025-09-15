@@ -16,26 +16,30 @@
 class Physical
 {
 public:
-	PHYSICS_API void Update(float deltaTime, glm::vec3& pos, glm::vec3& rot);
-	PHYSICS_API void ApplyForce(glm::vec3 force);
-	PHYSICS_API bool IsPhysical();
-	PHYSICS_API void SetPhysical(bool physical);
-	PHYSICS_API glm::vec3 GetVelocity();
-	PHYSICS_API void SetVelocity(glm::vec3 velo);
-	PHYSICS_API void Reset();
-public:
-	float mass = 1.0f;
-	glm::vec3 velocity = glm::vec3(0.0f);
-	bool enableGravity = false;
-	static float gravity;
+    float invMass = 1.0f;          // inverse mass (0 => immovable)
+    glm::vec3 invInertiaDiag = glm::vec3(1.0f); // inverse inertia diagonal (body-space approx)
+    glm::vec3 velocity;         // linear velocity
+    glm::vec3 angularVelocity;  // angular velocity
+    glm::vec3 accumulatedForce;
+    glm::vec3 accumulatedTorque;
+    float linearDamping = 0.6f;
+    float angularDamping = 0.6f;
+	static glm::vec3 gravity; // global gravity
 
-	glm::vec3 angularVelocity = glm::vec3(0.0f);
-	float linearDamping = 1.0f;
-	float angularDamping = 0.4f;
-	float friction = 0.3f;
-	float restitution = 1.0f;// 0 stick, 1 jump
-	bool physicsEffects = true;
-private:
-	glm::vec3 force = glm::vec3(0.0f);
+	bool isPhysical = true;
+	bool enableGravity = true;
+
+    PHYSICS_API bool IsPhysical() const { return isPhysical && invMass != 0.0f; }
+    PHYSICS_API float GetInvMass() { if (invMass < 1e-12 || !isPhysical) invMass = 0.0f; return invMass; }
+
+    PHYSICS_API void ApplyForce(const glm::vec3& f) { accumulatedForce += f; }
+    PHYSICS_API void ApplyTorque(const glm::vec3& t) { accumulatedTorque += t; }
+    PHYSICS_API void ClearForces() { accumulatedForce = glm::vec3(0); accumulatedTorque = glm::vec3(0); }
+    PHYSICS_API void Reset() {
+        velocity = glm::vec3(0.0);
+        angularVelocity = glm::vec3(0.0);
+        ClearForces();
+    }
+
+    PHYSICS_API void IntegrateForcesAndVelocities(float dt, glm::vec3& pos);
 };
-

@@ -22,7 +22,6 @@ struct OBB {
 	glm::vec3 halfExtents = glm::vec3(1.0f);
 	glm::vec3 center;
 	glm::mat3 orientation;
-	glm::vec3 velocity;
 };
 
 struct Sphere {

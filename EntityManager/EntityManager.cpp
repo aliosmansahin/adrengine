@@ -454,8 +454,37 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 		}
 	}
 
-	//TODO: Run collision test for each collidable entity
+	//Run collision test for each collidable entity
+	for (auto& colA : collidable) {
+		auto paramsA = colA->GetEntityParams();
+		auto objA = dynamic_cast<Object*>(colA.get());
+		if (!objA || !paramsA) continue;
 
+		for (auto& colB : collidable) {
+			if (colA == colB) continue;
+			auto paramsB = colB->GetEntityParams();
+			auto objB = dynamic_cast<Object*>(colB.get());
+			if (!objB || !paramsB) continue;
+
+			//Get OBBs for each object
+			OBB obbA = objA->collisionShape->type == CollisionType::OBB ? std::get<OBB>(objA->collisionShape->shape) : OBB();
+			OBB obbB = objB->collisionShape->type == CollisionType::OBB ? std::get<OBB>(objB->collisionShape->shape) : OBB();
+
+			obbA.center = colA->realPos;
+			obbA.orientation = glm::mat3(1.0f);
+			obbB.center = colB->realPos;
+			obbB.orientation = glm::mat3(1.0f);
+
+			//Test collision
+			CollisionData collisionData;
+			bool isColliding = Collision::TestOBBOBB(obbA, obbB, collisionData);
+			if(isColliding) {
+				//If colliding, resolve the collision
+				std::cout << "Collision detected between " << paramsA->id << " and " << paramsB->id << std::endl;
+				Collision::ResolveCollisionImpulse(objA->physical.get(), objB->physical.get(), collisionData, obbA, obbB, 0.5, 0.5);
+			}
+		}
+	}
 }
 
 /*

@@ -2,90 +2,38 @@
 #include "Physical.h"
 
 //INITIALIZE STATIC MEMBERS
-float Physical::gravity = 9.81f;
+glm::vec3 Physical::gravity = glm::vec3(0.0f, -9.81f, 0.0f);
 
-/*
-PURPOSE: Calculates physics effects
-*/
-void Physical::Update(float deltaTime, glm::vec3& pos, glm::vec3& rot)
+void Physical::IntegrateForcesAndVelocities(float dt, glm::vec3& pos)
 {
-	/* Update all physics here */
-	//TODO: DeltaTime effects on physics calculations like velocity
-	
-	
-	//Damping
-	//TODO: Add surface size to calculate damping more accurately
+    if (!IsPhysical()) return;
 
-    glm::vec3 frictionForce = this->friction * glm::vec3(
-        glm::pow(velocity.x, 2.0f),
-        glm::pow(velocity.y, 2.0f),
-        glm::pow(velocity.z, 2.0f)
+    // Linear acceleration
+    glm::vec3 accel = accumulatedForce * invMass;
+
+	if (enableGravity)
+        accel += gravity;
+
+    // Velocity update
+    velocity += accel * dt;
+
+    // Angular acceleration
+    glm::vec3 alpha = glm::vec3(
+        invInertiaDiag.x * accumulatedTorque.x,
+        invInertiaDiag.y * accumulatedTorque.y,
+        invInertiaDiag.z * accumulatedTorque.z
     );
-	if (glm::length(velocity) < 0.5f) velocity = glm::vec3(0.0f);
+    angularVelocity += alpha * dt;
 
-	force -= frictionForce;
+    // Damping
+    double ld = glm::clamp(1.0 - linearDamping * dt, 0.0, 1.0);
+    double ad = glm::clamp(1.0 - angularDamping * dt, 0.0, 1.0);
+    velocity *= ld;
+    angularVelocity *= ad;
 
-	//Add gravity force
-	if (enableGravity) {
-		force += glm::vec3(0.0f, -gravity * mass, 0.0f);
-	}
+    // Position update
+    pos += velocity * dt;
 
-	//Calculate acceleration
-	glm::vec3 acceleration = force / mass;
-	velocity += acceleration * deltaTime * 0.5f;
-	pos += velocity * deltaTime;
-	velocity += acceleration * deltaTime * 0.5f;
-
-	//Reset force
-	force = glm::vec3(0.0f);
-}
-
-/*
-PURPOSE: Adds a new force
-*/
-void Physical::ApplyForce(glm::vec3 force)
-{
-	this->force += force;
-}
-
-/*
-PURPOSE: Returns if this instance is physical
-*/
-bool Physical::IsPhysical()
-{
-	return physicsEffects;
-}
-
-/*
-PURPOSE: Sets physical state of this instance
-*/
-void Physical::SetPhysical(bool physical)
-{
-	physicsEffects = physical;
-}
-
-/*
-PURPOSE: Returns the velocity of this instance
-*/
-PHYSICS_API glm::vec3 Physical::GetVelocity()
-{
-	return velocity;
-}
-
-/*
-PURPOSE: Sets velocity
-*/
-PHYSICS_API void Physical::SetVelocity(glm::vec3 velo)
-{
-    velocity = velo;
-}
-
-/*
-PURPOSE: Resets variables
-*/
-PHYSICS_API void Physical::Reset()
-{
-    velocity = glm::vec3(0.0f);
-    angularVelocity = glm::vec3(0.0f);
-    force = glm::vec3(0.0f);
+    // Clear forces for next frame
+    ClearForces();
 }
