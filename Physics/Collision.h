@@ -30,8 +30,8 @@ public:
         double frictionCoeff
     );
     PHYSICS_API static bool TestOBBOBB(const OBB& obbA, const OBB& obbB, CollisionData& outData);
+
+    PHYSICS_API static void PositionalCorrection(Physical* A, Physical* B, glm::vec3& posA, glm::vec3& posB, const CollisionData& data, float percent = 0.2f, float slop = 0.01f);
 private:
-	static void ProjectOntoAxis(const OBB& box, const glm::vec3& axis, float& outMin, float& outMax);
-	static float OBBProjectedRadius(const OBB& box, const glm::vec3& axis);
-    static void PositionalCorrection(Physical* A, Physical* B, const CollisionData& data, float percent = 0.2f, float slop = 0.01f);
+
 };

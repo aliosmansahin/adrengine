@@ -4,12 +4,12 @@
 //INITIALIZE STATIC MEMBERS
 glm::vec3 Physical::gravity = glm::vec3(0.0f, -9.81f, 0.0f);
 
-void Physical::IntegrateForcesAndVelocities(float dt, glm::vec3& pos)
+void Physical::IntegrateForcesAndVelocities(float dt, glm::vec3& pos, glm::vec3& rot)
 {
     if (!IsPhysical()) return;
 
     // Linear acceleration
-    glm::vec3 accel = accumulatedForce * invMass;
+    glm::vec3 accel = accumulatedForce / mass;
 
 	if (enableGravity)
         accel += gravity;
@@ -17,22 +17,19 @@ void Physical::IntegrateForcesAndVelocities(float dt, glm::vec3& pos)
     // Velocity update
     velocity += accel * dt;
 
-    // Angular acceleration
-    glm::vec3 alpha = glm::vec3(
-        invInertiaDiag.x * accumulatedTorque.x,
-        invInertiaDiag.y * accumulatedTorque.y,
-        invInertiaDiag.z * accumulatedTorque.z
-    );
-    angularVelocity += alpha * dt;
-
     // Damping
-    double ld = glm::clamp(1.0 - linearDamping * dt, 0.0, 1.0);
-    double ad = glm::clamp(1.0 - angularDamping * dt, 0.0, 1.0);
+    float ld = glm::clamp(1.0f - linearDamping * dt, 0.0f, 1.0f);
+    float ad = glm::clamp(1.0f - angularDamping * dt, 0.0f, 1.0f);
     velocity *= ld;
     angularVelocity *= ad;
 
+	// Discard very small velocities
+	if (glm::length(velocity) < 0.001f) velocity = glm::vec3(0.0f);
+    if (glm::length(angularVelocity) < 0.001f) angularVelocity = glm::vec3(0.0f);
+
     // Position update
     pos += velocity * dt;
+    rot += angularVelocity * dt;
 
     // Clear forces for next frame
     ClearForces();

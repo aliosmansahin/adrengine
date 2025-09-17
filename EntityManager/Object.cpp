@@ -43,7 +43,7 @@ void Object::Update()
 			glm::vec3 pos = params->GetPosition();
 			glm::vec3 rot = params->GetRotation();
 
-			physical->IntegrateForcesAndVelocities(Timer::GetDeltaTime(), pos);
+			physical->IntegrateForcesAndVelocities(Timer::GetDeltaTime(), pos, rot);
 
 			params->SetRuntimePosition(pos);
 			params->SetRuntimeRotation(rot);

@@ -246,7 +246,7 @@ void WindowEntityProperties::DrawWindow(
                 ImGui::SeparatorText("Physics");
 
                 ImGui::Checkbox("Physics effects", &object->physical->isPhysical);
-                ImGui::DragFloat("Mass", &object->physical->invMass, 0.01f);
+                ImGui::DragFloat("Mass", &object->physical->mass, 0.01f);
                 //ImGui::DragFloat("Restitution", &object->physical->restitution, 0.01f);
                 ImGui::DragFloat("Linear Damping", &object->physical->linearDamping, 0.01f);
                 ImGui::DragFloat("Angular Damping", &object->physical->angularDamping, 0.01f);

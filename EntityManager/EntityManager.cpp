@@ -455,12 +455,16 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 	}
 
 	//Run collision test for each collidable entity
-	for (auto& colA : collidable) {
+	for (int i = 0; i < collidable.size(); ++i) {
+		auto& colA = collidable[i];
+
 		auto paramsA = colA->GetEntityParams();
 		auto objA = dynamic_cast<Object*>(colA.get());
 		if (!objA || !paramsA) continue;
 
-		for (auto& colB : collidable) {
+		for (int j = i; j < collidable.size(); ++j) {
+			auto& colB = collidable[j];
+
 			if (colA == colB) continue;
 			auto paramsB = colB->GetEntityParams();
 			auto objB = dynamic_cast<Object*>(colB.get());
@@ -470,18 +474,32 @@ ENTITYMANAGER_API void EntityManager::CheckCollisions()
 			OBB obbA = objA->collisionShape->type == CollisionType::OBB ? std::get<OBB>(objA->collisionShape->shape) : OBB();
 			OBB obbB = objB->collisionShape->type == CollisionType::OBB ? std::get<OBB>(objB->collisionShape->shape) : OBB();
 
+			//Pass real pos and rotation to OBBs
 			obbA.center = colA->realPos;
-			obbA.orientation = glm::mat3(1.0f);
 			obbB.center = colB->realPos;
-			obbB.orientation = glm::mat3(1.0f);
+
+			{
+				glm::vec3 eulerAngles = glm::radians(colA->realRot); // Radians!
+				glm::quat q = glm::quat(eulerAngles);
+				obbA.orientation = glm::toMat3(q);
+			}
+			{
+				glm::vec3 eulerAngles = glm::radians(colB->realRot); // Radians!
+				glm::quat q = glm::quat(eulerAngles);
+				obbB.orientation = glm::toMat3(q);
+			}
 
 			//Test collision
 			CollisionData collisionData;
 			bool isColliding = Collision::TestOBBOBB(obbA, obbB, collisionData);
 			if(isColliding) {
-				//If colliding, resolve the collision
+				// If colliding, Positional correction to avoid sinking
+				Collision::PositionalCorrection(objA->physical.get(), objB->physical.get(), objA->realPos, objB->realPos, collisionData);
+
+				// Resolve the collision
 				std::cout << "Collision detected between " << paramsA->id << " and " << paramsB->id << std::endl;
-				Collision::ResolveCollisionImpulse(objA->physical.get(), objB->physical.get(), collisionData, obbA, obbB, 0.5, 0.5);
+				Collision::ResolveCollisionImpulse(objA->physical.get(), objB->physical.get(), collisionData, obbA, obbB, 1.0, 0.5);
+
 			}
 		}
 	}
