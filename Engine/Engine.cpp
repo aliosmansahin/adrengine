@@ -42,6 +42,9 @@ bool Engine::InitEngine(GLFWwindow* window)
     //load existing project
     LoadProject();
 
+    //Update physics for once
+    SceneManager::GetInstance().openedScene->physics->EndEmulation();
+
     return true;
 }
 

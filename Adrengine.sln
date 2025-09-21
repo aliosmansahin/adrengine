@@ -93,6 +93,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GladWrapper", "GladWrapper\
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics", "Physics\Physics.vcxproj", "{14F0B956-64D6-447D-8C0C-20A015FFE666}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21} = {3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}
+		{4EC72CC5-0290-4C25-98AC-E1B62D848932} = {4EC72CC5-0290-4C25-98AC-E1B62D848932}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BulletStaticLib", "BulletStaticLib\BulletStaticLib.vcxproj", "{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -222,6 +228,14 @@ Global
 		{14F0B956-64D6-447D-8C0C-20A015FFE666}.Release|x64.Build.0 = Release|x64
 		{14F0B956-64D6-447D-8C0C-20A015FFE666}.Release|x86.ActiveCfg = Release|Win32
 		{14F0B956-64D6-447D-8C0C-20A015FFE666}.Release|x86.Build.0 = Release|Win32
+		{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}.Debug|x64.ActiveCfg = Debug|x64
+		{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}.Debug|x64.Build.0 = Debug|x64
+		{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}.Debug|x86.ActiveCfg = Debug|Win32
+		{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}.Debug|x86.Build.0 = Debug|Win32
+		{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}.Release|x64.ActiveCfg = Release|x64
+		{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}.Release|x64.Build.0 = Release|x64
+		{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}.Release|x86.ActiveCfg = Release|Win32
+		{3A45AB95-F5A0-4620-BDE7-D99DE1E1CD21}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

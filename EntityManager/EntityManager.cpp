@@ -332,7 +332,8 @@ void EntityManager::UpdateEntities(
 	std::string& projectDir,
 	std::string& sceneId,
 	nlohmann::json& currentSceneJson,
-	Camera*& gameCamera)
+	Camera*& gameCamera,
+	Physics* physics)
 {
 	//Perform deleting entity actions
 	if ((windowSceneFocused && windowSceneDeletePressed) || pendingDelete) {
@@ -352,7 +353,7 @@ void EntityManager::UpdateEntities(
 			scriptId = entityIter->second->GetEntityParams()->script->scriptId;
 
 		//Remove the entity
-		RemoveEntity(entityIter->second.get(), projectDir, sceneId, currentSceneJson);
+		RemoveEntity(entityIter->second.get(), projectDir, sceneId, currentSceneJson, physics);
 
 		//Erase it
 		entities.erase(entityIter);
@@ -385,8 +386,6 @@ void EntityManager::UpdateEntities(
 				}
 			}
 		}
-
-		CheckCollisions();
 	}
 }
 
@@ -435,73 +434,45 @@ ENTITYMANAGER_API void EntityManager::ResetEntitiesRuntimeValues()
 		entity.second->GetEntityParams()->ResetRuntimeValues();
 		if (entity.second->GetEntityParams()->GetType() == "Object") {
 			Object* object = dynamic_cast<Object*>(entity.second.get());
-			if (object)
+			if (object) {
 				object->ResetPhysics();
+			}
 		}
 	}
 }
 
 /*
-PURPOSE: Checks collisions for collidable entities
+PURPOSE: Updates rigidbody transfroms from objects
 */
-ENTITYMANAGER_API void EntityManager::CheckCollisions()
+ENTITYMANAGER_API void EntityManager::SetRigitbodiesFromEntities(Physics* physics)
 {
-	//Get collidable entities
-	std::vector<std::shared_ptr<Entity>> collidable;
 	for (auto& entity : entities) {
-		if (entity.second->GetEntityParams()->GetType() == "Object") {
-			collidable.push_back(entity.second);
-		}
+		if (dynamic_cast<Object*>(entity.second.get()) == nullptr)
+			continue;
+
+		glm::vec3 pos = entity.second->GetEntityParams()->GetPosition();
+		glm::vec3 rot = entity.second->GetEntityParams()->GetRotation();
+
+		physics->UpdateRigidbodyTransforms(entity.second->GetEntityParams()->id, pos, rot);
 	}
+}
 
-	//Run collision test for each collidable entity
-	for (int i = 0; i < collidable.size(); ++i) {
-		auto& colA = collidable[i];
+/*
+PURPOSE: Updates objects transfroms from rigidbodies
+*/
+ENTITYMANAGER_API void EntityManager::SetEntitiesFromRigidbodies(Physics* physics)
+{
+	for (auto& entity : entities) {
+		if (dynamic_cast<Object*>(entity.second.get()) == nullptr)
+			continue;
 
-		auto paramsA = colA->GetEntityParams();
-		auto objA = dynamic_cast<Object*>(colA.get());
-		if (!objA || !paramsA) continue;
+		glm::vec3 pos = glm::vec3(0.0f);
+		glm::vec3 rot = glm::vec3(0.0f);
 
-		for (int j = i; j < collidable.size(); ++j) {
-			auto& colB = collidable[j];
+		physics->UpdateEntityTransforms(entity.second->GetEntityParams()->id, pos, rot);
 
-			if (colA == colB) continue;
-			auto paramsB = colB->GetEntityParams();
-			auto objB = dynamic_cast<Object*>(colB.get());
-			if (!objB || !paramsB) continue;
-
-			//Get OBBs for each object
-			OBB obbA = objA->collisionShape->type == CollisionType::OBB ? std::get<OBB>(objA->collisionShape->shape) : OBB();
-			OBB obbB = objB->collisionShape->type == CollisionType::OBB ? std::get<OBB>(objB->collisionShape->shape) : OBB();
-
-			//Pass real pos and rotation to OBBs
-			obbA.center = colA->realPos;
-			obbB.center = colB->realPos;
-
-			{
-				glm::vec3 eulerAngles = glm::radians(colA->realRot); // Radians!
-				glm::quat q = glm::quat(eulerAngles);
-				obbA.orientation = glm::toMat3(q);
-			}
-			{
-				glm::vec3 eulerAngles = glm::radians(colB->realRot); // Radians!
-				glm::quat q = glm::quat(eulerAngles);
-				obbB.orientation = glm::toMat3(q);
-			}
-
-			//Test collision
-			CollisionData collisionData;
-			bool isColliding = Collision::TestOBBOBB(obbA, obbB, collisionData);
-			if(isColliding) {
-				// If colliding, Positional correction to avoid sinking
-				Collision::PositionalCorrection(objA->physical.get(), objB->physical.get(), objA->realPos, objB->realPos, collisionData);
-
-				// Resolve the collision
-				std::cout << "Collision detected between " << paramsA->id << " and " << paramsB->id << std::endl;
-				Collision::ResolveCollisionImpulse(objA->physical.get(), objB->physical.get(), collisionData, obbA, obbB, 1.0, 0.5);
-
-			}
-		}
+		entity.second->GetEntityParams()->SetRuntimePosition(pos);
+		entity.second->GetEntityParams()->SetRuntimeRotation(rot);
 	}
 }
 
@@ -540,7 +511,8 @@ std::string EntityManager::CreateEntity(
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 	std::string sceneId,
 	nlohmann::json& currentSceneJson,
-	std::shared_ptr<Entity>& parent)
+	std::shared_ptr<Entity>& parent,
+	Physics* physics)
 {
 	//std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
 
@@ -591,6 +563,12 @@ std::string EntityManager::CreateEntity(
 	if (!entity->CreateEntity(params))
 		return "";
 	
+	//Initialize a rigidbody for object
+	Object* object = dynamic_cast<Object*>(entity.get());
+	if (object != nullptr) { //Ensure this is an object
+		physics->AddRigidBody(object->GetEntityParams()->id);
+	}
+
 	//Add the entity into its parent's children
 	if (parent.get()) {
 		parent->GetEntityParams()->children.push_back(entity);
@@ -634,6 +612,7 @@ bool EntityManager::RemoveEntity(
 	std::string& projectDir,
 	std::string& sceneId,
 	nlohmann::json& currentSceneJson,
+	Physics* physics,
 	bool saveScene)
 {
 	//If the entity has a parent, remove it from the parent's children
@@ -645,10 +624,16 @@ bool EntityManager::RemoveEntity(
 			}), children.end());
 	}
 
+	//Remove rigidbody for object
+	Object* object = dynamic_cast<Object*>(entity);
+	if (object != nullptr) { //Ensure this is an object
+		physics->RemoveRigidBody(object->GetEntityParams()->id);
+	}
+
 	//Recursive removing function to delete all children of the entity
 	auto& children = entity->GetEntityParams()->children;
 	for (auto& child : children) {
-		RemoveEntity(child.get(), projectDir, sceneId, currentSceneJson, false);
+		RemoveEntity(child.get(), projectDir, sceneId, currentSceneJson, physics, false);
 	}
 
 	//Get script id

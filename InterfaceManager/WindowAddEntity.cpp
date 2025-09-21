@@ -76,7 +76,7 @@ void WindowAddEntity::DrawWindow(
 			//If the user selects a type
 			if (ImGui::Selectable(type.c_str())) {
 				nlohmann::json sceneJson = SceneManager::GetInstance().openedScene->ToJson();
-				std::string id = SceneManager::GetInstance().openedScene->GetEntityManager()->CreateEntity(type, projectDir, entityTypes, SceneManager::GetInstance().openedScene->sceneId, sceneJson, windowSceneAddParent);
+				std::string id = SceneManager::GetInstance().openedScene->GetEntityManager()->CreateEntity(type, projectDir, entityTypes, SceneManager::GetInstance().openedScene->sceneId, sceneJson, windowSceneAddParent, SceneManager::GetInstance().openedScene->physics);
 				auto iter = SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities().find(id);
 				if (id != "" && iter != SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities().end()) {
 					std::string findId = iter->second->GetEntityParams()->id;

@@ -38,13 +38,19 @@ public:
 	//properties
 	ENTITYMANAGER_API EntityParams* GetEntityParams() override;
 
+	ENTITYMANAGER_API glm::mat4 GetModelMatrix() {
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, realPos);
+		model = glm::rotate(model, glm::radians(realRot.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(realRot.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(realRot.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::scale(model, realSca);
+		return model;
+	}
+
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
-	std::shared_ptr<CollisionShape> collisionShape; //TODO: Add entity properties to control it, serialization
 	glm::vec3 lastPos = glm::vec3(0.0f);
-
-	//physics
-	std::shared_ptr<Physical> physical;
 private:
 
 	//properties

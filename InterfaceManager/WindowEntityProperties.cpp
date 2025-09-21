@@ -245,8 +245,14 @@ void WindowEntityProperties::DrawWindow(
                 ImGui::Separator();
                 ImGui::SeparatorText("Physics");
 
-                ImGui::Checkbox("Physics effects", &object->physical->isPhysical);
-                ImGui::DragFloat("Mass", &object->physical->mass, 0.01f);
+                //Get properties from the rigidbody
+                Physics* physics = SceneManager::GetInstance().openedScene->physics;
+                bool isKinematic = physics->GetIsKinematic(currentEntity->GetEntityParams()->id);
+
+                //Update properties
+                ImGui::Checkbox("Is Kinematic", &isKinematic);
+				//Ignored to use bullet for now
+                /*ImGui::DragFloat("Mass", &object->physical->mass, 0.01f);
                 //ImGui::DragFloat("Restitution", &object->physical->restitution, 0.01f);
                 ImGui::DragFloat("Linear Damping", &object->physical->linearDamping, 0.01f);
                 ImGui::DragFloat("Angular Damping", &object->physical->angularDamping, 0.01f);
@@ -262,7 +268,10 @@ void WindowEntityProperties::DrawWindow(
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(itemWidth - padding);
                     ImGui::DragFloat("Z", &half.z, 0.1f, 0.0f, 10000.0f);
-                }
+                }*/
+
+                //Set properties
+                physics->SetIsKinematic(currentEntity->GetEntityParams()->id, isKinematic);
             }
         }
         else if (currentEntity->GetEntityParams()->GetType() == "DirectionalLight") {
