@@ -247,14 +247,13 @@ void WindowEntityProperties::DrawWindow(
 
                 //Get properties from the rigidbody
                 Physics* physics = SceneManager::GetInstance().openedScene->physics;
-                bool isKinematic = physics->GetIsKinematic(currentEntity->GetEntityParams()->id);
+                RigidBodyProperties* props = physics->GetRigidBodyProperties(currentEntity->GetEntityParams()->id);
 
                 //Update properties
-                ImGui::Checkbox("Is Kinematic", &isKinematic);
-				//Ignored to use bullet for now
-                /*ImGui::DragFloat("Mass", &object->physical->mass, 0.01f);
+                ImGui::Checkbox("Is Kinematic", &props->isKinematic);
+                ImGui::DragFloat("Mass", &props->mass, 0.01f);
                 //ImGui::DragFloat("Restitution", &object->physical->restitution, 0.01f);
-                ImGui::DragFloat("Linear Damping", &object->physical->linearDamping, 0.01f);
+                /*ImGui::DragFloat("Linear Damping", &object->physical->linearDamping, 0.01f);
                 ImGui::DragFloat("Angular Damping", &object->physical->angularDamping, 0.01f);
 
                 if (std::holds_alternative<OBB>(object->collisionShape->shape)) {
@@ -270,8 +269,8 @@ void WindowEntityProperties::DrawWindow(
                     ImGui::DragFloat("Z", &half.z, 0.1f, 0.0f, 10000.0f);
                 }*/
 
-                //Set properties
-                physics->SetIsKinematic(currentEntity->GetEntityParams()->id, isKinematic);
+                //Set properties (as the props is pointer, we dont have to use it for now)
+                //physics->SetRigidBodyProperties(currentEntity->GetEntityParams()->id, props);
             }
         }
         else if (currentEntity->GetEntityParams()->GetType() == "DirectionalLight") {

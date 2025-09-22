@@ -156,7 +156,7 @@ PHYSICS_API void BulletPhysics::StartEmulation()
 {
 	for (auto& rb : rigidbodies)
 	{
-		if (rb.second->isKinematic)
+		if (rb.second->GetProps()->isKinematic)
 			continue;
 
 		btRigidBody* body = rb.second->Get();
@@ -186,19 +186,19 @@ PHYSICS_API void BulletPhysics::EndEmulation()
 	}
 }
 
-PHYSICS_API bool BulletPhysics::GetIsKinematic(std::string id)
+PHYSICS_API RigidBodyProperties* BulletPhysics::GetRigidBodyProperties(std::string id)
 {
 	//Find rigidbody from id
 	auto iter = rigidbodies.find(id);
 
 	if (iter == rigidbodies.end())
-		return false;
+		return nullptr;
 
 	//Return
-	return iter->second->isKinematic;
+	return iter->second->GetProps();
 }
 
-PHYSICS_API void BulletPhysics::SetIsKinematic(std::string id, bool isKinematic)
+PHYSICS_API void BulletPhysics::SetRigidBodyProperties(std::string id, RigidBodyProperties* props)
 {
 	//Find rigidbody from id
 	auto iter = rigidbodies.find(id);
@@ -206,6 +206,19 @@ PHYSICS_API void BulletPhysics::SetIsKinematic(std::string id, bool isKinematic)
 	if (iter == rigidbodies.end())
 		return;
 
-	//Set
-	iter->second->isKinematic = isKinematic;
+	RigidBody* rigidBody = iter->second.get();
+
+	//Set props
+	rigidBody->SetProps(props);
+
+	//Get rigidbody object of Bullet
+	btRigidBody* btRb = rigidBody->Get();
+
+	/* Apply changes */
+
+	//Mass and inertia
+	btVector3 inertia = btVector3(props->inertia.x, props->inertia.y, props->inertia.z);
+	//btRb->getCollisionShape()->calculateLocalInertia(props.mass, inertia);
+	btRb->setMassProps(props->mass, inertia);
+
 }

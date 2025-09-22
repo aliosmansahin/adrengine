@@ -19,6 +19,8 @@
 #define PHYSICS_API __declspec(dllimport)
 #endif
 
+struct RigidBodyProperties; //Forward declaration
+
 class Physics {
 public:
 	//General
@@ -38,7 +40,7 @@ public:
 	PHYSICS_API virtual void EndEmulation() = 0;
 
 	//Kinematic
-	PHYSICS_API virtual bool GetIsKinematic(std::string id) = 0;
-	PHYSICS_API virtual void SetIsKinematic(std::string id, bool isKinematic) = 0;
+	PHYSICS_API virtual RigidBodyProperties* GetRigidBodyProperties(std::string id) = 0; //Can be pointer
+	PHYSICS_API virtual void SetRigidBodyProperties(std::string id, RigidBodyProperties* rigidBodyProperies) = 0; //Can be pointer
 private:
 };

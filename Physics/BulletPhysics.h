@@ -33,8 +33,8 @@ public:
 	PHYSICS_API void EndEmulation() override;
 
 	//Kinematic
-	PHYSICS_API bool GetIsKinematic(std::string id) override;
-	PHYSICS_API void SetIsKinematic(std::string id, bool isKinematic) override;
+	PHYSICS_API RigidBodyProperties* GetRigidBodyProperties(std::string id) override; //Can be pointer
+	PHYSICS_API void SetRigidBodyProperties(std::string id, RigidBodyProperties* rigidBodyProperies) override; //Can be pointer
 private:
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	btDefaultCollisionConfiguration* collisionConfig;

@@ -7,9 +7,12 @@ btRigidBody* RigidBody::Create()
 
 	motionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 50, 0)));
 
-	shape->calculateLocalInertia(mass, inertia);
+	props = new RigidBodyProperties();
 
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, motionState, shape.get(), inertia);
+	btVector3 inertia = btVector3(props->inertia.x, props->inertia.y, props->inertia.z);
+	shape->calculateLocalInertia(props->mass, inertia);
+
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(props->mass, motionState, shape.get(), inertia);
 
 	rigidBody = std::make_shared<btRigidBody>(fallRigidBodyCI);
 
@@ -20,4 +23,6 @@ void RigidBody::Delete()
 {
 	if (motionState)
 		delete motionState;
+	if (props)
+		delete props;
 }
