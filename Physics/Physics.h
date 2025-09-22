@@ -19,7 +19,9 @@
 #define PHYSICS_API __declspec(dllimport)
 #endif
 
-struct RigidBodyProperties; //Forward declaration
+//Forward declarations
+struct RigidBodyProperties;
+class RigidBody;
 
 class Physics {
 public:
@@ -30,17 +32,16 @@ public:
 	PHYSICS_API virtual void Shutdown() = 0;
 
 	//Rigid Body
-	PHYSICS_API virtual void AddRigidBody(std::string id) = 0;
-	PHYSICS_API virtual void RemoveRigidBody(std::string id) = 0;
-	PHYSICS_API virtual void UpdateEntityTransforms(std::string id, glm::vec3& pos, glm::vec3& rot) = 0;
-	PHYSICS_API virtual void UpdateRigidbodyTransforms(std::string id, glm::vec3& pos, glm::vec3& rot) = 0;
+	PHYSICS_API virtual void AddRigidBody(RigidBody*& rigidBody) = 0;
+	PHYSICS_API virtual void RemoveRigidBody(RigidBody*& rigidBody) = 0;
+	PHYSICS_API virtual void UpdateEntityTransforms(RigidBody* rigidBody, glm::vec3& pos, glm::vec3& rot) = 0;
+	PHYSICS_API virtual void UpdateRigidbodyTransforms(RigidBody* rigidBody, glm::vec3& pos, glm::vec3& rot) = 0;
 
 	//Scene
-	PHYSICS_API virtual void StartEmulation() = 0;
-	PHYSICS_API virtual void EndEmulation() = 0;
+	PHYSICS_API virtual void StartEmulationForRigidBody(RigidBody* rigidBody) = 0;
+	PHYSICS_API virtual void EndEmulationForRigidBody(RigidBody* rigidBody) = 0;
 
-	//Kinematic
-	PHYSICS_API virtual RigidBodyProperties* GetRigidBodyProperties(std::string id) = 0; //Can be pointer
-	PHYSICS_API virtual void SetRigidBodyProperties(std::string id, RigidBodyProperties* rigidBodyProperies) = 0; //Can be pointer
+	//Apply props
+	PHYSICS_API virtual void ApplyPropsForRigidBody(RigidBody* rigidBody) = 0;
 private:
 };

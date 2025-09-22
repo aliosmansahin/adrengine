@@ -219,16 +219,16 @@ PURPOSE: Releases scene objects
 */
 void Scene::ReleaseScene()
 {
+	//Release entity manager
+	if (entityManager) {
+		entityManager->ReleaseEntityManager(physics);
+		delete entityManager;
+	}
+
 	//Release physics
 	if (physics) {
 		physics->Shutdown();
 		delete physics;
-	}
-
-	//Release entity manager
-	if (entityManager) {
-		entityManager->ReleaseEntityManager();
-		delete entityManager;
 	}
 }
 
@@ -349,7 +349,7 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 			//Initialize a rigidbody for object
 			Object* object = dynamic_cast<Object*>(entity.get());
 			if (object != nullptr) { //Ensure this is an object
-				physics->AddRigidBody(object->GetEntityParams()->id);
+				physics->AddRigidBody(object->rigidBody);
 			}
 		}
 	}

@@ -45,7 +45,14 @@ void WindowGameViewport::DrawWindow(
         if (ImGui::Selectable("Stop", false, ImGuiSelectableFlags_None, ImVec2(100, (float)toolbarHeight))) {
             //Reset runtime values
             SceneManager::GetInstance().openedScene->GetEntityManager()->ResetEntitiesRuntimeValues();
-            SceneManager::GetInstance().openedScene->physics->EndEmulation();
+
+            //End physics simulation for each rigidbody of objects
+            for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
+                Object* object = dynamic_cast<Object*>(entity.second.get());
+                if (object != nullptr) {
+                    SceneManager::GetInstance().openedScene->physics->EndEmulationForRigidBody(object->rigidBody);
+                }
+            }
             isPlaying = false;
         }
     }
@@ -53,7 +60,14 @@ void WindowGameViewport::DrawWindow(
         if (ImGui::Selectable("Play", false, ImGuiSelectableFlags_None, ImVec2(100, (float)toolbarHeight))) {
             //When user plays the scene, run the scripts
             SceneManager::GetInstance().openedScene->GetEntityManager()->RunEntitiesScriptBegin();
-            SceneManager::GetInstance().openedScene->physics->StartEmulation();
+
+            //Start physics simulation for each rigidbody of objects
+            for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
+                Object* object = dynamic_cast<Object*>(entity.second.get());
+                if (object != nullptr) {
+                    SceneManager::GetInstance().openedScene->physics->StartEmulationForRigidBody(object->rigidBody);
+                }
+            }
             isPlaying = true;
         }
     }

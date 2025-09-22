@@ -53,14 +53,6 @@ void BulletPhysics::Update(float dt)
 
 void BulletPhysics::Shutdown()
 {
-	//Remove rigidbodies
-	for (auto iter = rigidbodies.begin(); iter != rigidbodies.end();++iter) {
-		dynamicsWorld->removeRigidBody(iter->second->Get());
-		iter->second->Delete();
-	}
-
-	rigidbodies.clear();
-
 	//delete groundRigidBody->getMotionState();
 	//delete groundRigidBody;
 	//delete groundShape;
@@ -72,42 +64,26 @@ void BulletPhysics::Shutdown()
 	delete collisionConfig;
 }
 
-PHYSICS_API void BulletPhysics::AddRigidBody(std::string id)
+PHYSICS_API void BulletPhysics::AddRigidBody(RigidBody*& rigidBody)
 {
 	//Create a rigidbody object from RigidBody class and add it to Bullet physics
-	RigidBody* rigidBody = new RigidBody();
+	rigidBody = new RigidBody();
 
 	dynamicsWorld->addRigidBody(rigidBody->Create());
-
-	rigidbodies.insert({ id, std::unique_ptr<RigidBody>(rigidBody)});
 }
 
-PHYSICS_API void BulletPhysics::RemoveRigidBody(std::string id)
+PHYSICS_API void BulletPhysics::RemoveRigidBody(RigidBody*& rigidBody)
 {
-	auto rigidBodyIter = rigidbodies.find(id);
-	if (rigidBodyIter == rigidbodies.end())
-		return;
-
-	RigidBody* rigidBody = rigidBodyIter->second.get();
-
 	dynamicsWorld->removeRigidBody(rigidBody->Get());
 
 	rigidBody->Delete();
 
 	delete rigidBody;
-
-	rigidbodies.erase(rigidBodyIter);
 }
 
-PHYSICS_API void BulletPhysics::UpdateEntityTransforms(std::string id, glm::vec3& pos, glm::vec3& rot)
+PHYSICS_API void BulletPhysics::UpdateEntityTransforms(RigidBody* rigidBody, glm::vec3& pos, glm::vec3& rot)
 {
-	//Find rigidbody from id
-	auto iter = rigidbodies.find(id);
-
-	if (iter == rigidbodies.end())
-		return;
-
-	btRigidBody* rb = iter->second->Get();
+	btRigidBody* rb = rigidBody->Get();
 
 	//Get transfrom from rigidbody
 	btTransform trans;
@@ -124,15 +100,9 @@ PHYSICS_API void BulletPhysics::UpdateEntityTransforms(std::string id, glm::vec3
 	rot = glm::degrees(glm::vec3(roll, pitch, yaw));
 }
 
-PHYSICS_API void BulletPhysics::UpdateRigidbodyTransforms(std::string id, glm::vec3& pos, glm::vec3& rot)
+PHYSICS_API void BulletPhysics::UpdateRigidbodyTransforms(RigidBody* rigidBody, glm::vec3& pos, glm::vec3& rot)
 {
-	//Find rigidbody from id
-	auto iter = rigidbodies.find(id);
-
-	if (iter == rigidbodies.end())
-		return;
-
-	btRigidBody* rb = iter->second->Get();
+	btRigidBody* rb = rigidBody->Get();
 
 	//Setup transform
 	btTransform trans;
@@ -152,64 +122,38 @@ PHYSICS_API void BulletPhysics::UpdateRigidbodyTransforms(std::string id, glm::v
 	rb->getMotionState()->setWorldTransform(trans);
 }
 
-PHYSICS_API void BulletPhysics::StartEmulation()
+PHYSICS_API void BulletPhysics::StartEmulationForRigidBody(RigidBody* rigidBody)
 {
-	for (auto& rb : rigidbodies)
-	{
-		if (rb.second->GetProps()->isKinematic)
-			continue;
-
-		btRigidBody* body = rb.second->Get();
-
-		// Clear kinematic flag
-		int flags = body->getCollisionFlags();
-		flags &= ~btCollisionObject::CF_KINEMATIC_OBJECT;
-		body->setCollisionFlags(flags);
-
-		// Wake
-		body->setActivationState(ACTIVE_TAG);
-		body->activate(true);
-	}
-}
-
-PHYSICS_API void BulletPhysics::EndEmulation()
-{
-	for (auto& rb : rigidbodies)
-	{
-		btRigidBody* body = rb.second->Get();
-
-		int flags = body->getCollisionFlags();
-		flags |= btCollisionObject::CF_KINEMATIC_OBJECT;
-		body->setCollisionFlags(flags);
-
-		body->setActivationState(DISABLE_DEACTIVATION);
-	}
-}
-
-PHYSICS_API RigidBodyProperties* BulletPhysics::GetRigidBodyProperties(std::string id)
-{
-	//Find rigidbody from id
-	auto iter = rigidbodies.find(id);
-
-	if (iter == rigidbodies.end())
-		return nullptr;
-
-	//Return
-	return iter->second->GetProps();
-}
-
-PHYSICS_API void BulletPhysics::SetRigidBodyProperties(std::string id, RigidBodyProperties* props)
-{
-	//Find rigidbody from id
-	auto iter = rigidbodies.find(id);
-
-	if (iter == rigidbodies.end())
+	if (rigidBody->GetProps()->isKinematic)
 		return;
 
-	RigidBody* rigidBody = iter->second.get();
+	btRigidBody* body = rigidBody->Get();
 
-	//Set props
-	rigidBody->SetProps(props);
+	// Clear kinematic flag
+	int flags = body->getCollisionFlags();
+	flags &= ~btCollisionObject::CF_KINEMATIC_OBJECT;
+	body->setCollisionFlags(flags);
+
+	// Wake
+	body->setActivationState(ACTIVE_TAG);
+	body->activate(true);
+}
+
+PHYSICS_API void BulletPhysics::EndEmulationForRigidBody(RigidBody* rigidBody)
+{
+	btRigidBody* body = rigidBody->Get();
+
+	int flags = body->getCollisionFlags();
+	flags |= btCollisionObject::CF_KINEMATIC_OBJECT;
+	body->setCollisionFlags(flags);
+
+	body->setActivationState(DISABLE_DEACTIVATION);
+}
+
+PHYSICS_API void BulletPhysics::ApplyPropsForRigidBody(RigidBody* rigidBody)
+{
+	//Get props
+	RigidBodyProperties* props = rigidBody->GetProps();
 
 	//Get rigidbody object of Bullet
 	btRigidBody* btRb = rigidBody->Get();
@@ -220,5 +164,4 @@ PHYSICS_API void BulletPhysics::SetRigidBodyProperties(std::string id, RigidBody
 	btVector3 inertia = btVector3(props->inertia.x, props->inertia.y, props->inertia.z);
 	//btRb->getCollisionShape()->calculateLocalInertia(props.mass, inertia);
 	btRb->setMassProps(props->mass, inertia);
-
 }

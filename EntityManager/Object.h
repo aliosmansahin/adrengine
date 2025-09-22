@@ -8,6 +8,8 @@
 #include "Collision.h"
 #include "Timer.h"
 
+#include "RigidBody.h"
+
 #include "interfaces/IEntity/IObject/IObject.h"
 
 #ifdef ENTITYMANAGER_EXPORTS
@@ -51,10 +53,12 @@ public:
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
 	glm::vec3 lastPos = glm::vec3(0.0f);
+
+	//physics
+	RigidBody* rigidBody = nullptr;
 private:
 
 	//properties
 	std::shared_ptr<ObjectParams> params;
-
 };
 

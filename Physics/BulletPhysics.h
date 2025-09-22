@@ -23,26 +23,22 @@ public:
 	PHYSICS_API void Shutdown() override;
 
 	//Rigid body
-	PHYSICS_API void AddRigidBody(std::string id) override;
-	PHYSICS_API void RemoveRigidBody(std::string id) override;
-	PHYSICS_API void UpdateEntityTransforms(std::string id, glm::vec3& pos, glm::vec3& rot) override;
-	PHYSICS_API void UpdateRigidbodyTransforms(std::string id, glm::vec3& pos, glm::vec3& rot) override;
+	PHYSICS_API void AddRigidBody(RigidBody*& rigidBody) override;
+	PHYSICS_API void RemoveRigidBody(RigidBody*& rigidBody) override;
+	PHYSICS_API void UpdateEntityTransforms(RigidBody* rigidBody, glm::vec3& pos, glm::vec3& rot) override;
+	PHYSICS_API void UpdateRigidbodyTransforms(RigidBody* rigidBody, glm::vec3& pos, glm::vec3& rot) override;
 
 	//Scene
-	PHYSICS_API void StartEmulation() override;
-	PHYSICS_API void EndEmulation() override;
+	PHYSICS_API void StartEmulationForRigidBody(RigidBody* rigidBody) override;
+	PHYSICS_API void EndEmulationForRigidBody(RigidBody* rigidBody) override;
 
-	//Kinematic
-	PHYSICS_API RigidBodyProperties* GetRigidBodyProperties(std::string id) override; //Can be pointer
-	PHYSICS_API void SetRigidBodyProperties(std::string id, RigidBodyProperties* rigidBodyProperies) override; //Can be pointer
+	//Apply props
+	PHYSICS_API void ApplyPropsForRigidBody(RigidBody* rigidBody) override;
 private:
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	btDefaultCollisionConfiguration* collisionConfig;
 	btCollisionDispatcher* dispatcher;
 	btDbvtBroadphase* broadphase;
 	btSequentialImpulseConstraintSolver* solver;
-
-private:
-	std::unordered_map<std::string, std::unique_ptr<RigidBody>> rigidbodies;
 };
 

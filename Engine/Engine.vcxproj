@@ -144,7 +144,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\Physics;..\GladWrapper;..\Common;..\Localization;..\Asset;..\Graphics;..\Logger;..\SceneManager;..\EntityManager;..\InterfaceManager;..\VisualScriptManager;..\InputManager;..\Timer</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Physics;..\BulletStaticLib;..\GladWrapper;..\Common;..\Localization;..\Asset;..\Graphics;..\Logger;..\SceneManager;..\EntityManager;..\InterfaceManager;..\VisualScriptManager;..\InputManager;..\Timer</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -153,7 +153,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib;Physics.lib;GladWrapper.lib;Timer.lib;InputManager.lib;EntityManager.lib;Asset.lib;InterfaceManager.lib;Graphics.lib;SceneManager.lib;VisualScriptManager.lib;Logger.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3dll.lib;Physics.lib;BulletStaticLib.lib;GladWrapper.lib;Timer.lib;InputManager.lib;EntityManager.lib;Asset.lib;InterfaceManager.lib;Graphics.lib;SceneManager.lib;VisualScriptManager.lib;Logger.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

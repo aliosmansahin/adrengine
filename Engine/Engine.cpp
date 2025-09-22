@@ -43,7 +43,12 @@ bool Engine::InitEngine(GLFWwindow* window)
     LoadProject();
 
     //Update physics for once
-    SceneManager::GetInstance().openedScene->physics->EndEmulation();
+    for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
+        Object* object = dynamic_cast<Object*>(entity.second.get());
+        if (object != nullptr) {
+            SceneManager::GetInstance().openedScene->physics->EndEmulationForRigidBody(object->rigidBody);
+        }
+    }
 
     return true;
 }

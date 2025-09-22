@@ -141,7 +141,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\Physics;..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Physics;..\BulletStaticLib;..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,7 +149,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Physics.lib;GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Physics.lib;BulletStaticLib.lib;GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>

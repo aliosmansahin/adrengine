@@ -447,13 +447,14 @@ PURPOSE: Updates rigidbody transfroms from objects
 ENTITYMANAGER_API void EntityManager::SetRigitbodiesFromEntities(Physics* physics)
 {
 	for (auto& entity : entities) {
-		if (dynamic_cast<Object*>(entity.second.get()) == nullptr)
+		Object* object = dynamic_cast<Object*>(entity.second.get());
+		if (object == nullptr)
 			continue;
 
 		glm::vec3 pos = entity.second->GetEntityParams()->GetPosition();
 		glm::vec3 rot = entity.second->GetEntityParams()->GetRotation();
 
-		physics->UpdateRigidbodyTransforms(entity.second->GetEntityParams()->id, pos, rot);
+		physics->UpdateRigidbodyTransforms(object->rigidBody, pos, rot);
 	}
 }
 
@@ -463,13 +464,14 @@ PURPOSE: Updates objects transfroms from rigidbodies
 ENTITYMANAGER_API void EntityManager::SetEntitiesFromRigidbodies(Physics* physics)
 {
 	for (auto& entity : entities) {
-		if (dynamic_cast<Object*>(entity.second.get()) == nullptr)
+		Object* object = dynamic_cast<Object*>(entity.second.get());
+		if (object == nullptr)
 			continue;
 
 		glm::vec3 pos = glm::vec3(0.0f);
 		glm::vec3 rot = glm::vec3(0.0f);
 
-		physics->UpdateEntityTransforms(entity.second->GetEntityParams()->id, pos, rot);
+		physics->UpdateEntityTransforms(object->rigidBody, pos, rot);
 
 		entity.second->GetEntityParams()->SetRuntimePosition(pos);
 		entity.second->GetEntityParams()->SetRuntimeRotation(rot);
@@ -491,11 +493,15 @@ ENTITYMANAGER_API Entity* EntityManager::GetEntityById(std::string id)
 /*
 PURPOSE: Releases all manager stuff
 */
-void EntityManager::ReleaseEntityManager()
+void EntityManager::ReleaseEntityManager(Physics* physics)
 {
 	//Release entities
-	for (auto& entity : entities)
+	for (auto& entity : entities) {
+		Object* object = dynamic_cast<Object*>(entity.second.get());
+		if (object != nullptr)
+			physics->RemoveRigidBody(object->rigidBody);
 		entity.second->DeleteEntity();
+	}
 	entities.clear();
 
 	//Logger
@@ -566,7 +572,7 @@ std::string EntityManager::CreateEntity(
 	//Initialize a rigidbody for object
 	Object* object = dynamic_cast<Object*>(entity.get());
 	if (object != nullptr) { //Ensure this is an object
-		physics->AddRigidBody(object->GetEntityParams()->id);
+		physics->AddRigidBody(object->rigidBody);
 	}
 
 	//Add the entity into its parent's children
@@ -627,7 +633,7 @@ bool EntityManager::RemoveEntity(
 	//Remove rigidbody for object
 	Object* object = dynamic_cast<Object*>(entity);
 	if (object != nullptr) { //Ensure this is an object
-		physics->RemoveRigidBody(object->GetEntityParams()->id);
+		physics->RemoveRigidBody(object->rigidBody);
 	}
 
 	//Recursive removing function to delete all children of the entity

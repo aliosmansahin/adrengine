@@ -56,7 +56,7 @@ public:
 		Camera*& gameCamera,
 		Physics* physics
 		);
-	ENTITYMANAGER_API void ReleaseEntityManager();
+	ENTITYMANAGER_API void ReleaseEntityManager(Physics* physics);
 
 	//management for entities
 	ENTITYMANAGER_API std::string CreateEntity(

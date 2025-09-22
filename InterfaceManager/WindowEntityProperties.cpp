@@ -247,7 +247,7 @@ void WindowEntityProperties::DrawWindow(
 
                 //Get properties from the rigidbody
                 Physics* physics = SceneManager::GetInstance().openedScene->physics;
-                RigidBodyProperties* props = physics->GetRigidBodyProperties(currentEntity->GetEntityParams()->id);
+                RigidBodyProperties* props = object->rigidBody->GetProps();
 
                 //Update properties
                 ImGui::Checkbox("Is Kinematic", &props->isKinematic);
@@ -269,8 +269,9 @@ void WindowEntityProperties::DrawWindow(
                     ImGui::DragFloat("Z", &half.z, 0.1f, 0.0f, 10000.0f);
                 }*/
 
-                //Set properties (as the props is pointer, we dont have to use it for now)
+                //Set properties ()
                 //physics->SetRigidBodyProperties(currentEntity->GetEntityParams()->id, props);
+                physics->ApplyPropsForRigidBody(object->rigidBody);
             }
         }
         else if (currentEntity->GetEntityParams()->GetType() == "DirectionalLight") {
