@@ -23,6 +23,10 @@
 
 #include "glad_wrapper.h"
 
+#include "Physics.h"
+
+#include <glm/gtx/euler_angles.hpp>
+
 #include "interfaces/IEntityManager/IEntityManager.h"
 
 #ifdef ENTITYMANAGER_EXPORTS
@@ -49,9 +53,10 @@ public:
 		std::string& projectDir,
 		std::string& sceneId,
 		nlohmann::json& currentSceneJson,
-		Camera*& gameCamera
+		Camera*& gameCamera,
+		Physics* physics
 		);
-	ENTITYMANAGER_API void ReleaseEntityManager();
+	ENTITYMANAGER_API void ReleaseEntityManager(Physics* physics);
 
 	//management for entities
 	ENTITYMANAGER_API std::string CreateEntity(
@@ -60,20 +65,24 @@ public:
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 		std::string sceneId,
 		nlohmann::json& currentSceneJson,
-		std::shared_ptr<Entity>& parent
+		std::shared_ptr<Entity>& parent,
+		Physics* physics
 	);
 	ENTITYMANAGER_API bool		  RemoveEntity(
 		Entity* entity,
 		std::string& projectDir,
 		std::string& sceneId,
 		nlohmann::json& currentSceneJson,
+		Physics* physics,
 		bool saveScene = true);
 
 	ENTITYMANAGER_API void		  SetEntityRealStats(Entity* entity);
 
 	ENTITYMANAGER_API void		  RunEntitiesScriptBegin();
 	ENTITYMANAGER_API void		  ResetEntitiesRuntimeValues();
-	ENTITYMANAGER_API void		  CheckCollisions();
+	ENTITYMANAGER_API void        SetRigitbodiesFromEntities(Physics* physics);
+	ENTITYMANAGER_API void        SetEntitiesFromRigidbodies(Physics* physics);
+
 
 	//status
 	ENTITYMANAGER_API size_t										  GetEntityCount() { return entities.size(); }

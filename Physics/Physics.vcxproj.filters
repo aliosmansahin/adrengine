@@ -8,11 +8,23 @@
     <Filter Include="Collision">
       <UniqueIdentifier>{90632513-2196-4241-90f8-1fa723100211}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Physical">
-      <UniqueIdentifier>{a979f675-4091-4e65-88b2-1d0398da3ac1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Collision\CollisionShape">
       <UniqueIdentifier>{b195110b-afbf-485c-82fc-775ee6bd5580}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{a979f675-4091-4e65-88b2-1d0398da3ac1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\AdrPhysics">
+      <UniqueIdentifier>{1a96ffb3-a2c5-4e55-bd1f-2d365448d7d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\BulletPhysics">
+      <UniqueIdentifier>{a7339547-b2b3-4e9e-bc94-4fb565745d74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\AdrPhysics\Physical">
+      <UniqueIdentifier>{1320831b-7161-4661-b300-f523ad232189}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\BulletPhysics\RigidBody">
+      <UniqueIdentifier>{04e31531-95b9-41b6-ae30-36218a43340a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -25,11 +37,23 @@
     <ClInclude Include="Collision.h">
       <Filter>Collision</Filter>
     </ClInclude>
-    <ClInclude Include="Physical.h">
-      <Filter>Physical</Filter>
+    <ClInclude Include="Physics.h">
+      <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="CollisionShape.h">
       <Filter>Collision\CollisionShape</Filter>
+    </ClInclude>
+    <ClInclude Include="AdrPhysics.h">
+      <Filter>Physics\AdrPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletPhysics.h">
+      <Filter>Physics\BulletPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physical.h">
+      <Filter>Physics\AdrPhysics\Physical</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Physics\BulletPhysics\RigidBody</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -42,11 +66,23 @@
     <ClCompile Include="Collision.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
-    <ClCompile Include="Physical.cpp">
-      <Filter>Physical</Filter>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
     <ClCompile Include="CollisionShape.cpp">
       <Filter>Collision\CollisionShape</Filter>
+    </ClCompile>
+    <ClCompile Include="AdrPhysics.cpp">
+      <Filter>Physics\AdrPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletPhysics.cpp">
+      <Filter>Physics\BulletPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="Physical.cpp">
+      <Filter>Physics\AdrPhysics\Physical</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Physics\BulletPhysics\RigidBody</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

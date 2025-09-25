@@ -17,6 +17,8 @@
 #include "Timer.h"
 #include "InputManager.h"
 
+#include "BulletPhysics.h"
+
 #include "interfaces/IScene/IScene.h"
 
 class Scene : public IScene
@@ -67,6 +69,9 @@ public:
 
 	//This is the script of the scene
 	std::shared_ptr<VisualScript> sceneScript;
+
+	//physics
+	Physics* physics = nullptr;
 private:
 	//entity manager
 	EntityManager* entityManager = nullptr;

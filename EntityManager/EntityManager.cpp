@@ -332,7 +332,8 @@ void EntityManager::UpdateEntities(
 	std::string& projectDir,
 	std::string& sceneId,
 	nlohmann::json& currentSceneJson,
-	Camera*& gameCamera)
+	Camera*& gameCamera,
+	Physics* physics)
 {
 	//Perform deleting entity actions
 	if ((windowSceneFocused && windowSceneDeletePressed) || pendingDelete) {
@@ -352,7 +353,7 @@ void EntityManager::UpdateEntities(
 			scriptId = entityIter->second->GetEntityParams()->script->scriptId;
 
 		//Remove the entity
-		RemoveEntity(entityIter->second.get(), projectDir, sceneId, currentSceneJson);
+		RemoveEntity(entityIter->second.get(), projectDir, sceneId, currentSceneJson, physics);
 
 		//Erase it
 		entities.erase(entityIter);
@@ -385,8 +386,6 @@ void EntityManager::UpdateEntities(
 				}
 			}
 		}
-
-		CheckCollisions();
 	}
 }
 
@@ -435,27 +434,48 @@ ENTITYMANAGER_API void EntityManager::ResetEntitiesRuntimeValues()
 		entity.second->GetEntityParams()->ResetRuntimeValues();
 		if (entity.second->GetEntityParams()->GetType() == "Object") {
 			Object* object = dynamic_cast<Object*>(entity.second.get());
-			if (object)
+			if (object) {
 				object->ResetPhysics();
+			}
 		}
 	}
 }
 
 /*
-PURPOSE: Checks collisions for collidable entities
+PURPOSE: Updates rigidbody transfroms from objects
 */
-ENTITYMANAGER_API void EntityManager::CheckCollisions()
+ENTITYMANAGER_API void EntityManager::SetRigitbodiesFromEntities(Physics* physics)
 {
-	//Get collidable entities
-	std::vector<std::shared_ptr<Entity>> collidable;
 	for (auto& entity : entities) {
-		if (entity.second->GetEntityParams()->GetType() == "Object") {
-			collidable.push_back(entity.second);
-		}
+		Object* object = dynamic_cast<Object*>(entity.second.get());
+		if (object == nullptr)
+			continue;
+
+		glm::vec3 pos = entity.second->GetEntityParams()->GetPosition();
+		glm::vec3 rot = entity.second->GetEntityParams()->GetRotation();
+
+		physics->UpdateRigidbodyTransforms(object->rigidBody, pos, rot);
 	}
+}
 
-	//TODO: Run collision test for each collidable entity
+/*
+PURPOSE: Updates objects transfroms from rigidbodies
+*/
+ENTITYMANAGER_API void EntityManager::SetEntitiesFromRigidbodies(Physics* physics)
+{
+	for (auto& entity : entities) {
+		Object* object = dynamic_cast<Object*>(entity.second.get());
+		if (object == nullptr)
+			continue;
 
+		glm::vec3 pos = glm::vec3(0.0f);
+		glm::vec3 rot = glm::vec3(0.0f);
+
+		physics->UpdateEntityTransforms(object->rigidBody, pos, rot);
+
+		entity.second->GetEntityParams()->SetRuntimePosition(pos);
+		entity.second->GetEntityParams()->SetRuntimeRotation(rot);
+	}
 }
 
 /*
@@ -473,11 +493,15 @@ ENTITYMANAGER_API Entity* EntityManager::GetEntityById(std::string id)
 /*
 PURPOSE: Releases all manager stuff
 */
-void EntityManager::ReleaseEntityManager()
+void EntityManager::ReleaseEntityManager(Physics* physics)
 {
 	//Release entities
-	for (auto& entity : entities)
+	for (auto& entity : entities) {
+		Object* object = dynamic_cast<Object*>(entity.second.get());
+		if (object != nullptr)
+			physics->RemoveRigidBody(object->rigidBody);
 		entity.second->DeleteEntity();
+	}
 	entities.clear();
 
 	//Logger
@@ -493,7 +517,8 @@ std::string EntityManager::CreateEntity(
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 	std::string sceneId,
 	nlohmann::json& currentSceneJson,
-	std::shared_ptr<Entity>& parent)
+	std::shared_ptr<Entity>& parent,
+	Physics* physics)
 {
 	//std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
 
@@ -544,6 +569,12 @@ std::string EntityManager::CreateEntity(
 	if (!entity->CreateEntity(params))
 		return "";
 	
+	//Initialize a rigidbody for object
+	Object* object = dynamic_cast<Object*>(entity.get());
+	if (object != nullptr) { //Ensure this is an object
+		physics->AddRigidBody(object->rigidBody);
+	}
+
 	//Add the entity into its parent's children
 	if (parent.get()) {
 		parent->GetEntityParams()->children.push_back(entity);
@@ -587,6 +618,7 @@ bool EntityManager::RemoveEntity(
 	std::string& projectDir,
 	std::string& sceneId,
 	nlohmann::json& currentSceneJson,
+	Physics* physics,
 	bool saveScene)
 {
 	//If the entity has a parent, remove it from the parent's children
@@ -598,10 +630,16 @@ bool EntityManager::RemoveEntity(
 			}), children.end());
 	}
 
+	//Remove rigidbody for object
+	Object* object = dynamic_cast<Object*>(entity);
+	if (object != nullptr) { //Ensure this is an object
+		physics->RemoveRigidBody(object->rigidBody);
+	}
+
 	//Recursive removing function to delete all children of the entity
 	auto& children = entity->GetEntityParams()->children;
 	for (auto& child : children) {
-		RemoveEntity(child.get(), projectDir, sceneId, currentSceneJson, false);
+		RemoveEntity(child.get(), projectDir, sceneId, currentSceneJson, physics, false);
 	}
 
 	//Get script id

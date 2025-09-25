@@ -245,14 +245,19 @@ void WindowEntityProperties::DrawWindow(
                 ImGui::Separator();
                 ImGui::SeparatorText("Physics");
 
-                ImGui::Checkbox("Physics effects", &object->physical->physicsEffects);
-                ImGui::DragFloat("Mass", &object->physical->mass, 0.01f);
-                ImGui::DragFloat("Restitution", &object->physical->restitution, 0.01f);
-                ImGui::DragFloat("Linear Damping", &object->physical->linearDamping, 0.01f);
-                ImGui::DragFloat("Angular Damping", &object->physical->angularDamping, 0.01f);
+                //Get properties from the rigidbody
+                Physics* physics = SceneManager::GetInstance().openedScene->physics;
+                RigidBodyProperties* props = object->rigidBody->GetProps();
 
-                if (std::holds_alternative<OBB>(object->collisionShape->shape)) {
-                    glm::vec3& half = std::get<OBB>(object->collisionShape->shape).halfExtents;
+                //Update properties
+                ImGui::Checkbox("Is Kinematic", &props->isKinematic);
+                ImGui::DragFloat("Mass", &props->mass, 0.01f);
+                ImGui::DragFloat("Restitution", &props->restitution, 0.01f);
+                ImGui::DragFloat("Linear Damping", &props->linearDamping, 0.01f);
+                ImGui::DragFloat("Angular Damping", &props->angularDamping, 0.01f);
+
+                if (object->rigidBody->GetShape() == RigidBodyShape::Box) {
+                    glm::vec3& half = object->rigidBody->GetProps()->shapeProps.halfExtentsForBox;
                     ImGui::SeparatorText("Half Extents");
                     ImGui::SetNextItemWidth(itemWidth - padding);
                     ImGui::DragFloat("X", &half.x, 0.1f, 0.0f, 10000.0f);

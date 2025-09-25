@@ -14,10 +14,6 @@ bool Object::CreateEntity(std::shared_ptr<EntityParams> params)
 	}
 	this->params = casted;
 
-	physical = std::make_shared<Physical>();
-	collisionShape = std::make_shared<CollisionShape>();
-
-
 	return true;
 }
 
@@ -37,20 +33,18 @@ void Object::Update()
 	lastPos = realPos;
 
 	//Update physics and transform
-	/*if (physical) {
-		if (physical->IsPhysical()) {
-			//Gravity
-			physical->ApplyForce(glm::vec3(0.0f, -1.0f, 0.0f) * physical->mass * 9.81f);
+	//if (physical) {
+	//	if (physical->IsPhysical()) {
+	//		//Update position and rotation
+	//		glm::vec3 pos = params->GetPosition();
+	//		glm::vec3 rot = params->GetRotation();
 
-			//Update position and rotation
-			glm::vec3 pos = params->GetPosition();
-			glm::vec3 rot = params->GetRotation();
-			physical->Update(Timer::GetDeltaTime(), pos, rot);
+	//		physical->IntegrateForcesAndVelocities(Timer::GetDeltaTime(), pos, rot);
 
-			params->SetRuntimePosition(pos);
-			params->SetRuntimeRotation(rot);
-		}
-	}*/
+	//		params->SetRuntimePosition(pos);
+	//		params->SetRuntimeRotation(rot);
+	//	}
+	//}
 }
 
 /*
@@ -60,12 +54,7 @@ PURPOSE: Draws the entity from the position of the camera.
 void Object::Draw(glm::vec3 currentSceneCameraPos)
 {
 	//Some calculations for transformation
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, realPos);
-	model = glm::rotate(model, glm::radians(realRot.x), glm::vec3(1.0, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(realRot.y), glm::vec3(0.0, 1.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(realRot.z), glm::vec3(0.0, 0.0f, 1.0f));
-	model = glm::scale(model, realSca);
+	glm::mat4 model = GetModelMatrix();
 
 	//Send matrices to the shader
 	if (ShaderManager::GetInstance().GetCurrentType() == Utils::DEPTH) {
@@ -151,7 +140,7 @@ ENTITYMANAGER_API void Object::AddImpulse(glm::vec3 impulse)
 {
 	//physical->ApplyImpulse(impulse);
 
-	physical->ApplyForce(impulse);
+	//physical->ApplyForce(impulse);
 }
 
 /*
@@ -159,7 +148,7 @@ PURPOSE: Resets variables of the physics
 */
 ENTITYMANAGER_API void Object::ResetPhysics()
 {
-	physical->Reset();
+	//physical->Reset();
 }
 
 /*

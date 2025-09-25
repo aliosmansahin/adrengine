@@ -31,6 +31,9 @@ bool Scene::CreateScene(std::string sceneId, Utils::SceneType sceneType)
 	editorCamera->CreateEntity(std::shared_ptr<CameraParams>(cameraParams));
 	currentCamera = editorCamera;
 
+	physics = new BulletPhysics();
+	physics->Init();
+
 	return true;
 }
 
@@ -193,10 +196,21 @@ void Scene::UpdateScene(
 			currentCamera->GetEntityParams()->GetPosition().x, currentCamera->GetEntityParams()->GetPosition().y, currentCamera->GetEntityParams()->GetPosition().z,
 			currentCamera->GetFOV());
 
+	if (entityManager) {
+		entityManager->SetRigitbodiesFromEntities(physics);
+	}
+
+	//Update physics
+	physics->Update(Timer::GetDeltaTime());
+
 	//Update each entity via entity manager
 	if (entityManager) {
 		nlohmann::json sceneJson = ToJson();
-		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, isPlaying, selectedId, extraDeletingFunc, projectDir, sceneId, sceneJson, gameCamera);
+		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, isPlaying, selectedId, extraDeletingFunc, projectDir, sceneId, sceneJson, gameCamera, physics);
+	}
+
+	if (entityManager) {
+		entityManager->SetEntitiesFromRigidbodies(physics);
 	}
 }
 
@@ -207,8 +221,14 @@ void Scene::ReleaseScene()
 {
 	//Release entity manager
 	if (entityManager) {
-		entityManager->ReleaseEntityManager();
+		entityManager->ReleaseEntityManager(physics);
 		delete entityManager;
+	}
+
+	//Release physics
+	if (physics) {
+		physics->Shutdown();
+		delete physics;
 	}
 }
 
@@ -276,6 +296,9 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 	entityManager = new EntityManager();
 	entityManager->InitEntityManager();
 
+	physics = new BulletPhysics();
+	physics->Init();
+
 	//Load each entity
 	if (json.contains("entities")) {
 		for (auto& entity : json["entities"]) {
@@ -315,12 +338,19 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 					}
 				}
 			}
+			
 			//Add the entity to entity manager
 			if(entity.get())
 				entityManager->GetEntities().insert(std::pair<std::string, std::shared_ptr<Entity>>(entityJson.value("id", ""), entity));
 
 			if(params.get())
 				params->FromJson(entityJson, projectDir, this);
+
+			//Initialize a rigidbody for object
+			Object* object = dynamic_cast<Object*>(entity.get());
+			if (object != nullptr) { //Ensure this is an object
+				physics->AddRigidBody(object->rigidBody);
+			}
 		}
 	}
 
