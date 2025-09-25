@@ -20,19 +20,33 @@
 struct RigidBodyProperties {
 	bool isKinematic = false;
 	float mass = 1;
-	glm::vec3 inertia = glm::vec3(3, 0, 0);
+	glm::vec3 inertia = glm::vec3(0, 0, 0);
+	float restitution = 0.5f;
+	float linearDamping = 0.0f;
+	float angularDamping = 0.0f;
+
+	union ShapeProps {
+		glm::vec3 halfExtentsForBox = glm::vec3(1.0f);
+	} shapeProps;
+};
+
+enum class RigidBodyShape {
+	Box, //Will be added more shapes
+	None,
 };
 
 class RigidBody
 {
 public:
-	btRigidBody* Create();
-	void         Delete();
-	btRigidBody* Get() { return rigidBody.get(); }
+	PHYSICS_API btRigidBody* Create();
+	PHYSICS_API void         Delete();
+	PHYSICS_API btRigidBody* Get() { return rigidBody.get(); }
+	PHYSICS_API RigidBodyShape GetShape();
+	PHYSICS_API void           UpdateShapeHalfExtents(RigidBodyShape rbShape);
 
 public:
-	RigidBodyProperties* GetProps() { return props; };
-	void				 SetProps(RigidBodyProperties* props) { this->props = props; } //Dont have to use it for now
+	PHYSICS_API RigidBodyProperties* GetProps() { return props; };
+	PHYSICS_API void				 SetProps(RigidBodyProperties* props) { this->props = props; } //Dont have to use it for now
 
 private:
 	std::shared_ptr<btRigidBody> rigidBody;

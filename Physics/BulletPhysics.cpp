@@ -1,6 +1,11 @@
 #include "pch.h"
 #include "BulletPhysics.h"
 
+/*
+
+PURPOSE: Initializes Bullet Physics: Sets config, dynamicWorld etc...
+
+*/
 void BulletPhysics::Init()
 {
 	// 1. Collision configuration
@@ -40,17 +45,22 @@ void BulletPhysics::Init()
 	
 }
 
+/*
+
+PURPOSE: Updates physics
+
+*/
 void BulletPhysics::Update(float dt)
 {
 	dynamicsWorld->stepSimulation(dt, 10);
-
-	/*
-	btTransform trans;
-	fallRigidBody->getMotionState()->getWorldTransform(trans);
-
-	printf("Box height: %f\n", trans.getOrigin().getY());*/
 }
 
+
+/*
+
+PURPOSE: Clears physics
+
+*/
 void BulletPhysics::Shutdown()
 {
 	//delete groundRigidBody->getMotionState();
@@ -64,6 +74,11 @@ void BulletPhysics::Shutdown()
 	delete collisionConfig;
 }
 
+/*
+
+PURPOSE: Creates a new rigidbody into out parameter and pass it into dynamicsWorld (physics)
+
+*/
 PHYSICS_API void BulletPhysics::AddRigidBody(RigidBody*& rigidBody)
 {
 	//Create a rigidbody object from RigidBody class and add it to Bullet physics
@@ -72,6 +87,11 @@ PHYSICS_API void BulletPhysics::AddRigidBody(RigidBody*& rigidBody)
 	dynamicsWorld->addRigidBody(rigidBody->Create());
 }
 
+/*
+
+PURPPOSE: Removes the rigidbody that passed from the parameter from the dynamicsWorld then deletes it
+
+*/
 PHYSICS_API void BulletPhysics::RemoveRigidBody(RigidBody*& rigidBody)
 {
 	dynamicsWorld->removeRigidBody(rigidBody->Get());
@@ -81,6 +101,11 @@ PHYSICS_API void BulletPhysics::RemoveRigidBody(RigidBody*& rigidBody)
 	delete rigidBody;
 }
 
+/*
+
+PURPOSE: Updates transform of an entity(object) from its rigidbody
+
+*/
 PHYSICS_API void BulletPhysics::UpdateEntityTransforms(RigidBody* rigidBody, glm::vec3& pos, glm::vec3& rot)
 {
 	btRigidBody* rb = rigidBody->Get();
@@ -100,6 +125,12 @@ PHYSICS_API void BulletPhysics::UpdateEntityTransforms(RigidBody* rigidBody, glm
 	rot = glm::degrees(glm::vec3(roll, pitch, yaw));
 }
 
+
+/*
+
+PURPOSE: Updates transform of a rigidbody from its entity(object)
+
+*/
 PHYSICS_API void BulletPhysics::UpdateRigidbodyTransforms(RigidBody* rigidBody, glm::vec3& pos, glm::vec3& rot)
 {
 	btRigidBody* rb = rigidBody->Get();
@@ -122,23 +153,35 @@ PHYSICS_API void BulletPhysics::UpdateRigidbodyTransforms(RigidBody* rigidBody, 
 	rb->getMotionState()->setWorldTransform(trans);
 }
 
+/*
+
+PURPOSE: Makes rigidbody ready to simulate physics
+
+*/
 PHYSICS_API void BulletPhysics::StartEmulationForRigidBody(RigidBody* rigidBody)
 {
-	if (rigidBody->GetProps()->isKinematic)
-		return;
 
 	btRigidBody* body = rigidBody->Get();
 
-	// Clear kinematic flag
-	int flags = body->getCollisionFlags();
-	flags &= ~btCollisionObject::CF_KINEMATIC_OBJECT;
-	body->setCollisionFlags(flags);
+	if (!rigidBody->GetProps()->isKinematic) {
+		// Clear kinematic flag
+		int flags = body->getCollisionFlags();
+		flags &= ~btCollisionObject::CF_KINEMATIC_OBJECT;
+		body->setCollisionFlags(flags);
+	}
+
+	// Apply Props
+	ApplyPropsForRigidBody(rigidBody);
 
 	// Wake
-	body->setActivationState(ACTIVE_TAG);
 	body->activate(true);
 }
 
+/*
+
+PURPOSE: Makes rigidbody deactivate to simulate physics
+
+*/
 PHYSICS_API void BulletPhysics::EndEmulationForRigidBody(RigidBody* rigidBody)
 {
 	btRigidBody* body = rigidBody->Get();
@@ -146,10 +189,13 @@ PHYSICS_API void BulletPhysics::EndEmulationForRigidBody(RigidBody* rigidBody)
 	int flags = body->getCollisionFlags();
 	flags |= btCollisionObject::CF_KINEMATIC_OBJECT;
 	body->setCollisionFlags(flags);
-
-	body->setActivationState(DISABLE_DEACTIVATION);
 }
 
+/*
+
+PURPOSE: Applies all properties of rigidbody
+
+*/
 PHYSICS_API void BulletPhysics::ApplyPropsForRigidBody(RigidBody* rigidBody)
 {
 	//Get props
@@ -158,10 +204,29 @@ PHYSICS_API void BulletPhysics::ApplyPropsForRigidBody(RigidBody* rigidBody)
 	//Get rigidbody object of Bullet
 	btRigidBody* btRb = rigidBody->Get();
 
+	/* Remove rigidbody to update */
+	dynamicsWorld->removeRigidBody(btRb);
+
 	/* Apply changes */
 
 	//Mass and inertia
 	btVector3 inertia = btVector3(props->inertia.x, props->inertia.y, props->inertia.z);
-	//btRb->getCollisionShape()->calculateLocalInertia(props.mass, inertia);
 	btRb->setMassProps(props->mass, inertia);
+
+	RigidBodyShape rbShape = rigidBody->GetShape();
+	
+	//Extents
+	rigidBody->UpdateShapeHalfExtents(rbShape);
+
+	//Restitution
+	btRb->setRestitution(props->restitution);
+
+	//Damping
+	btRb->setDamping(props->linearDamping, props->angularDamping);
+
+	/* Readd rigidbody */
+	dynamicsWorld->addRigidBody(btRb);
+	dynamicsWorld->updateSingleAabb(btRb);
+
+	btRb->activate(true);
 }
