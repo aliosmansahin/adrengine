@@ -46,7 +46,10 @@ public:
 	PROJECT_API void LoadLatestProjects();
 	PROJECT_API void AddProjectToLatestProjects(std::string& projectFilepath);
 	PROJECT_API void RemoveProjectFromLatestProjects(std::string& projectFilepath);
+	PROJECT_API void RemoveProjectFromLatestProjectsByIndex(int& index);
+	PROJECT_API void MoveProjectToBegin(std::string& projectFilepath);
 	PROJECT_API void SaveLatestProjects();
+	PROJECT_API std::vector<std::string>& GetLatestProjects();
 private:
 	//project specifications
 	std::string projectName = "";

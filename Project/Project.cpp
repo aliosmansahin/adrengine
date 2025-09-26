@@ -146,7 +146,8 @@ void Project::LoadLatestProjects()
     //Load latest project file paths by reading line by line
     std::string projectFilePath;
     while (std::getline(file, projectFilePath)) {
-        latestProjects.push_back(projectFilePath);
+        //Add the project
+        AddProjectToLatestProjects(projectFilePath);
     }
 
     //Close the file
@@ -160,6 +161,15 @@ PURPOSE: Adds a project path to latest projects
 */
 PROJECT_API void Project::AddProjectToLatestProjects(std::string& projectFilepath)
 {
+    //Check if the project was added before
+    for (int i = 0; i < latestProjects.size(); ++i) {
+        if (latestProjects[i] == projectFilepath) {
+            //This project was added before, so we don't have to add it again
+            MoveProjectToBegin(projectFilepath); 
+            return;
+        }
+    }
+
     latestProjects.push_back(projectFilepath);
 }
 
@@ -173,10 +183,38 @@ PROJECT_API void Project::RemoveProjectFromLatestProjects(std::string& projectFi
     //Basic vector erasing
     for (int i = 0; i < latestProjects.size(); ++i) {
         if (latestProjects[i] == projectFilepath) {
-            latestProjects.erase(latestProjects.begin() + i);
+            RemoveProjectFromLatestProjectsByIndex(i);
             break;
         }
     }
+}
+
+/*
+
+PURPOSE: Removes a project path from latest projects by index
+
+*/
+PROJECT_API void Project::RemoveProjectFromLatestProjectsByIndex(int& index)
+{
+    if(latestProjects.size() > index)
+        latestProjects.erase(latestProjects.begin() + index);
+}
+
+/*
+
+PURPOSE: Moves project path to begin of latest projects
+
+*/
+PROJECT_API void Project::MoveProjectToBegin(std::string& projectFilepath)
+{
+    for (int i = 0; i < latestProjects.size(); ++i) {
+        if (latestProjects[i] == projectFilepath) {
+            RemoveProjectFromLatestProjectsByIndex(i); //Remove it by index
+        }
+    }
+
+    //Add it to begin
+    latestProjects.insert(latestProjects.begin(), projectFilepath);
 }
 
 /*
@@ -202,6 +240,16 @@ PROJECT_API void Project::SaveLatestProjects()
 
     //Close the file
     file.close();
+}
+
+/*
+
+PURPOSE: Returns latest projects
+
+*/
+PROJECT_API std::vector<std::string>& Project::GetLatestProjects()
+{
+    return latestProjects;
 }
 
 /*

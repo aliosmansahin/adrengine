@@ -186,7 +186,7 @@ void Engine::Draw()
 
     InterfaceManager::GetInstance().StartFrame();
 
-    InterfaceManager::GetInstance().DrawInterface(Project::Get().GetProjectDir(), Project::Get().GetProjectFileLocation(), [this]() { Project::Get().SaveProject(); }, entityTypes, FPS, ms, screenWidth, screenHeight, projectOpened);
+    InterfaceManager::GetInstance().DrawInterface(Project::Get().GetProjectDir(), Project::Get().GetProjectFileLocation(), [this]() { Project::Get().SaveProject(); }, entityTypes, Project::Get().GetLatestProjects(), FPS, ms, screenWidth, screenHeight, projectOpened);
 
     InterfaceManager::GetInstance().EndFrame();
 

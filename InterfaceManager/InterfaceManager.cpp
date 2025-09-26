@@ -89,6 +89,7 @@ void InterfaceManager::DrawInterface(
 	std::string& projectFilePath,
 	std::function<void()> saveFunc,
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
+	std::vector<std::string> latestProjects,
 	float engineFPS,
 	float engineMS,
 	int screenWidth,
@@ -223,7 +224,7 @@ void InterfaceManager::DrawInterface(
 	}
 	else {
 		if (WindowProjectDialog::GetInstance().showWindow)
-			WindowProjectDialog::GetInstance().DrawWindow();
+			WindowProjectDialog::GetInstance().DrawWindow(latestProjects);
 	}
 
 	if (WindowEditorSettings::GetInstance().showWindow)

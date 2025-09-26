@@ -20,7 +20,7 @@ class WindowProjectDialog
 {
 public:
 	//functions
-	INTERFACEMANAGER_API void			DrawWindow();
+	INTERFACEMANAGER_API void						 DrawWindow(std::vector<std::string>& latestProjects);
 	INTERFACEMANAGER_API static WindowProjectDialog& GetInstance();
 private:
 	//singleton

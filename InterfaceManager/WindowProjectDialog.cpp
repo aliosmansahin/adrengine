@@ -4,7 +4,7 @@
 /*
 PURPOSE: Draws the window
 */
-void WindowProjectDialog::DrawWindow() {
+void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
     //Begin the window
     ImGui::Begin("Create or Open a Project", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
     ImGui::SetWindowFontScale(1.5f);
@@ -78,6 +78,37 @@ void WindowProjectDialog::DrawWindow() {
             memset(openPathBuf, 0, sizeof(openPathBuf));
 
             isOpeningProject = true;
+        }
+    }
+
+    /* Latest projects */
+
+    ImGui::SeparatorText("Latest Projects");
+    if (latestProjects.empty()) {
+        ImGui::TextColored(ImVec4(0, 255, 0, 255), "There is no project");
+    }
+    else {
+        for (auto& project : latestProjects) {
+            //Split the path
+            std::filesystem::path parentPath = std::filesystem::path(project).parent_path();
+
+            std::string projectPath = parentPath.parent_path().string() + "\\";
+            std::string projectName = parentPath.filename().string();
+
+            //Project button
+            bool selected = false;
+
+            //Selectable for the project
+            ImGui::Selectable(projectName.c_str(), &selected, ImGuiSelectableFlags_None, ImVec2(100, 100));
+
+            //When user double-clicks, open the project
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+                openPath = projectPath;
+                openProjectName = projectName;
+
+                isOpeningProject = true;
+            }
+            ImGui::SameLine();
         }
     }
 

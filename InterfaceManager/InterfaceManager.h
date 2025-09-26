@@ -34,6 +34,7 @@ public:
 		std::string& projectFilePath,
 		std::function<void()> saveFunc,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
+		std::vector<std::string> latestProjects,
 		float engineFPS,
 		float engineMS,
 		int screenWidth,
