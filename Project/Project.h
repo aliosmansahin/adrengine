@@ -30,19 +30,31 @@ public:
 	PROJECT_API static Project& Get();
 
 public:
+	//main
 	PROJECT_API bool CreateProject(std::string projectPath, std::string projectName,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes);
 	PROJECT_API bool OpenProject(std::string& projectPath, std::string& projectName,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes);
 	PROJECT_API bool CloseProject();
 	PROJECT_API bool SaveProject();
+
+	//getters
 	PROJECT_API std::string& GetProjectFileLocation();
 	PROJECT_API std::string& GetProjectDir();
+
+	//latest projects
+	PROJECT_API void LoadLatestProjects();
+	PROJECT_API void AddProjectToLatestProjects(std::string& projectFilepath);
+	PROJECT_API void RemoveProjectFromLatestProjects(std::string& projectFilepath);
+	PROJECT_API void SaveLatestProjects();
 private:
 	//project specifications
 	std::string projectName = "";
 	std::string projectPath = "";
 	std::string projectDir = "";
 	std::string projectFileLocation = "";
+
+	//Stores latest projects file paths
+	std::vector<std::string> latestProjects;
 };
 

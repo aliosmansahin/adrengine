@@ -129,6 +129,83 @@ bool Project::CloseProject() {
 
 /*
 
+PURPOSE: Loads latest project file paths
+
+*/
+void Project::LoadLatestProjects()
+{
+    //Open the latest project file
+    std::ifstream file("latestprojects.adrengineprojects");
+
+    //Check if the file exists
+    if (!file.is_open()) {
+        Logger::Log("E", "Unable to open file for loading latest projects");
+        return;
+    }
+
+    //Load latest project file paths by reading line by line
+    std::string projectFilePath;
+    while (std::getline(file, projectFilePath)) {
+        latestProjects.push_back(projectFilePath);
+    }
+
+    //Close the file
+    file.close();
+}
+
+/*
+
+PURPOSE: Adds a project path to latest projects
+
+*/
+PROJECT_API void Project::AddProjectToLatestProjects(std::string& projectFilepath)
+{
+    latestProjects.push_back(projectFilepath);
+}
+
+/*
+
+PURPOSE: Remove a project path from latest projects
+
+*/
+PROJECT_API void Project::RemoveProjectFromLatestProjects(std::string& projectFilepath)
+{
+    //Basic vector erasing
+    for (int i = 0; i < latestProjects.size(); ++i) {
+        if (latestProjects[i] == projectFilepath) {
+            latestProjects.erase(latestProjects.begin() + i);
+            break;
+        }
+    }
+}
+
+/*
+
+PURPOSE: Saves latest projects file paths
+
+*/
+PROJECT_API void Project::SaveLatestProjects()
+{
+    //Open the latest project file
+    std::ofstream file("latestprojects.adrengineprojects");
+
+    //Check if the file exists
+    if (!file.is_open()) {
+        Logger::Log("E", "Unable to open file for saving latest projects");
+        return;
+    }
+
+    //Save latest project file paths line by line
+    for (auto& project : latestProjects) {
+        file << project << std::endl;
+    }
+
+    //Close the file
+    file.close();
+}
+
+/*
+
 PURPOSE: Gets the instance of the class
 
 */

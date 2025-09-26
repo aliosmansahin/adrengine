@@ -40,6 +40,9 @@ bool Engine::InitEngine(GLFWwindow* window)
     if (!VisualScriptManager::GetInstance().InitManager(context, nodesContext))
         return false;
 
+    //Load latest projects
+    Project::Get().LoadLatestProjects();
+
     //load existing project
     //TODO: Project Dialog
     //For test
@@ -136,6 +139,7 @@ void Engine::Update()
     }
     else {
         //TODO: Move to a function
+        //Check for creating or opening a project
         if (WindowProjectDialog::GetInstance().isCreatingProject || WindowProjectDialog::GetInstance().isOpeningProject) {
             if (WindowProjectDialog::GetInstance().isCreatingProject) {
                 WindowProjectDialog::GetInstance().isCreatingProject = false;
@@ -150,9 +154,15 @@ void Engine::Update()
                     return; //TODO: Add Loading error dialog window
             }
 
+            //Close project dialog window and set project opened state true
             WindowProjectDialog::GetInstance().showWindow = false;
-
             projectOpened = true;
+
+            //Add the project to latest projects
+            Project::Get().AddProjectToLatestProjects(Project::Get().GetProjectFileLocation());
+
+            //Save latest projects
+            Project::Get().SaveLatestProjects();
 
             //Update physics for once
             if (SceneManager::GetInstance().openedScene && SceneManager::GetInstance().openedScene->GetEntityManager()) {

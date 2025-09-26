@@ -61,5 +61,6 @@ public:
 
 	//Is a project opened
 	bool projectOpened = false;
+
 };
 
