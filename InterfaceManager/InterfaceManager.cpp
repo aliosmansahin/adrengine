@@ -86,134 +86,149 @@ PURPOSE: Draws every imgui window, also draws gameviewport as a image from frame
 */
 void InterfaceManager::DrawInterface(
 	std::string& projectDir,
+	std::string& projectFilePath,
 	std::function<void()> saveFunc,
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 	float engineFPS,
 	float engineMS,
 	int screenWidth,
-	int screenHeight)
+	int screenHeight,
+	bool projectOpened)
 {
 	//Draws menu bar
-	MenuBar::GetInstance().DrawMenuBar(saveFunc);
+	MenuBar::GetInstance().DrawMenuBar(saveFunc, projectOpened);
 
-	//Some variables
-	int windowHeight = (int)ImGui::GetWindowHeight();
-	int tabWidth = (int)ImGui::GetContentRegionAvail().x;
-	int titleHeight = (int)ImGui::GetContentRegionAvail().y;
+	if (projectOpened)
+		tabHeight = 40;
+	else
+		tabHeight = 0;
 
-	//Begins tabbar
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-	const ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->WorkPos);
-	ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, (float)tabHeight));
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	ImGui::Begin("Tabs", nullptr, window_flags);
-	ImGui::SetWindowFontScale(1.5f);
-	ImGui::PopStyleVar(3);
+	if (projectOpened) {
+		//Some variables
+		int windowHeight = (int)ImGui::GetWindowHeight();
+		int tabWidth = (int)ImGui::GetContentRegionAvail().x;
+		int titleHeight = (int)ImGui::GetContentRegionAvail().y;
 
-	//Draw each tab
-	for (auto& tabIter : InterfaceManager::GetInstance().tabs) {
-		//Get if the drawing tab is selected
-		bool selected = false;
-		auto tab = tabIter.second.get();
-		if (openedTab) {
-			selected = tab->id == openedTab->id;
-		}
-		if (tab && tab->id.c_str()) {
-			if (ImGui::Selectable(tab->id.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(100, (float)tabHeight))) {
-				VisualScriptManager::GetInstance().currentScript = nullptr;
-				//If the tabType is scene, set the currentScene
-				if (tab->tabType == Utils::SceneEditor) {
-					openedTab = tab;
-				}
-				//If the tabType is script, set the currentScript
-				else if (tab->tabType == Utils::VisualScriptEditor) {
-					auto openedScript = VisualScriptManager::GetInstance().openedScripts.find(tab->id);
-					if (openedScript != VisualScriptManager::GetInstance().openedScripts.end()) {
-						VisualScriptManager::GetInstance().currentScript = openedScript->second;
+		//Begins tabbar
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->WorkPos);
+		ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, (float)tabHeight));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+		ImGui::Begin("Tabs", nullptr, window_flags);
+		ImGui::SetWindowFontScale(1.5f);
+		ImGui::PopStyleVar(3);
+
+		//Draw each tab
+		for (auto& tabIter : InterfaceManager::GetInstance().tabs) {
+			//Get if the drawing tab is selected
+			bool selected = false;
+			auto tab = tabIter.second.get();
+			if (openedTab) {
+				selected = tab->id == openedTab->id;
+			}
+			if (tab && tab->id.c_str()) {
+				if (ImGui::Selectable(tab->id.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(100, (float)tabHeight))) {
+					VisualScriptManager::GetInstance().currentScript = nullptr;
+					//If the tabType is scene, set the currentScene
+					if (tab->tabType == Utils::SceneEditor) {
 						openedTab = tab;
 					}
+					//If the tabType is script, set the currentScript
+					else if (tab->tabType == Utils::VisualScriptEditor) {
+						auto openedScript = VisualScriptManager::GetInstance().openedScripts.find(tab->id);
+						if (openedScript != VisualScriptManager::GetInstance().openedScripts.end()) {
+							VisualScriptManager::GetInstance().currentScript = openedScript->second;
+							openedTab = tab;
+						}
+					}
+				}
+
+				//Deleting tab
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+					deleteTabId = tab->id;
+					pendingTabDelete = true;
 				}
 			}
-
-			//Deleting tab
-			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
-				deleteTabId = tab->id;
-				pendingTabDelete = true;
-			}
+			ImGui::SameLine();
 		}
-		ImGui::SameLine();
-	}
 
-	ImGui::End();
+		ImGui::End();
+	}
 
 	//Draws dock space
 	DrawDockSpace();
 
-	//Draws windows
-	if (openedTab) {
-		if (openedTab->tabType == Utils::SceneEditor) {
-			//If openedTabType is scene, draw scene windows
-			if (SceneManager::GetInstance().openedScene && SceneManager::GetInstance().openedScene->GetEntityManager()) {
-				if (WindowScene::GetInstance().showWindow)
-					WindowScene::GetInstance().DrawWindow();
+	if (projectOpened) {
+		//Draws windows
+		if (openedTab) {
+			if (openedTab->tabType == Utils::SceneEditor) {
+				//If openedTabType is scene, draw scene windows
+				if (SceneManager::GetInstance().openedScene && SceneManager::GetInstance().openedScene->GetEntityManager()) {
+					if (WindowScene::GetInstance().showWindow)
+						WindowScene::GetInstance().DrawWindow();
 
-				if (WindowGameViewport::GetInstance().showWindow)
-					WindowGameViewport::GetInstance().DrawWindow(engineFPS, engineMS);
+					if (WindowGameViewport::GetInstance().showWindow)
+						WindowGameViewport::GetInstance().DrawWindow(engineFPS, engineMS);
 
-				if (WindowEntityProperties::GetInstance().showWindow)
-					WindowEntityProperties::GetInstance().DrawWindow(projectDir, tabs, openedTab, selectedTabId);
+					if (WindowEntityProperties::GetInstance().showWindow)
+						WindowEntityProperties::GetInstance().DrawWindow(projectDir, tabs, openedTab, selectedTabId);
 
-				if (WindowAssetExplorer::GetInstance().showWindow)
-					WindowAssetExplorer::GetInstance().DrawWindow();
+					if (WindowAssetExplorer::GetInstance().showWindow)
+						WindowAssetExplorer::GetInstance().DrawWindow();
 
-				if (WindowAddEntity::GetInstance().showWindow)
-					WindowAddEntity::GetInstance().DrawWindow(entityTypes, projectDir, WindowScene::GetInstance().addParent);
+					if (WindowAddEntity::GetInstance().showWindow)
+						WindowAddEntity::GetInstance().DrawWindow(entityTypes, projectDir, WindowScene::GetInstance().addParent);
 
-				if (WindowAddAsset::GetInstance().showWindow)
-					WindowAddAsset::GetInstance().DrawWindow(projectDir, WindowAssetExplorer::GetInstance().currentSelection);
+					if (WindowAddAsset::GetInstance().showWindow)
+						WindowAddAsset::GetInstance().DrawWindow(projectDir, WindowAssetExplorer::GetInstance().currentSelection);
 
-				//TileMap windows
-				if (WindowTileMapEdit::GetInstance().showWindow)
-					WindowTileMapEdit::GetInstance().DrawWindow();
+					//TileMap windows
+					if (WindowTileMapEdit::GetInstance().showWindow)
+						WindowTileMapEdit::GetInstance().DrawWindow();
 
-				if (WindowTileMapBrush::GetInstance().showWindow)
-					WindowTileMapBrush::GetInstance().DrawWindow();
+					if (WindowTileMapBrush::GetInstance().showWindow)
+						WindowTileMapBrush::GetInstance().DrawWindow();
 
-				if (WindowTileMapViewer::GetInstance().showWindow)
-					WindowTileMapViewer::GetInstance().DrawWindow(screenWidth, screenHeight);
+					if (WindowTileMapViewer::GetInstance().showWindow)
+						WindowTileMapViewer::GetInstance().DrawWindow(screenWidth, screenHeight);
 
-				//FlipBook windows
-				if (WindowFlipBookEdit::GetInstance().showWindow)
-					WindowFlipBookEdit::GetInstance().DrawWindow();
+					//FlipBook windows
+					if (WindowFlipBookEdit::GetInstance().showWindow)
+						WindowFlipBookEdit::GetInstance().DrawWindow();
+				}
 			}
-		}
-		else if (openedTab->tabType == Utils::VisualScriptEditor) {
-			//If openedTabType is script, draw script windows
-			if (VisualScriptManager::GetInstance().currentScript) {
-				if (WindowVisualScript::GetInstance().showWindow) {
-					WindowVisualScript::GetInstance().DrawWindow(tabHeight, projectDir, openedTab, tabs);
+			else if (openedTab->tabType == Utils::VisualScriptEditor) {
+				//If openedTabType is script, draw script windows
+				if (VisualScriptManager::GetInstance().currentScript) {
+					if (WindowVisualScript::GetInstance().showWindow) {
+						WindowVisualScript::GetInstance().DrawWindow(tabHeight, projectDir, openedTab, tabs);
+					}
 				}
 			}
 		}
-	}
 
-	if (WindowAllScenes::GetInstance().showWindow)
-		WindowAllScenes::GetInstance().DrawWindow(projectDir, entityTypes, WindowAddScene::GetInstance().showWindow, WindowEntityProperties::GetInstance().currentEntity, WindowScene::GetInstance().selectedId, tabs, selectedTabId, openedTab);
+		if (WindowAllScenes::GetInstance().showWindow)
+			WindowAllScenes::GetInstance().DrawWindow(projectDir, entityTypes, WindowAddScene::GetInstance().showWindow, WindowEntityProperties::GetInstance().currentEntity, WindowScene::GetInstance().selectedId, tabs, selectedTabId, openedTab);
+
+		if (WindowAddScene::GetInstance().showWindow)
+			WindowAddScene::GetInstance().DrawWindow(projectDir, projectFilePath, tabs, openedTab, selectedTabId);
+
+		if (WindowProjectSettings::GetInstance().showWindow)
+			WindowProjectSettings::GetInstance().DrawWindow();
+	}
+	else {
+		if (WindowProjectDialog::GetInstance().showWindow)
+			WindowProjectDialog::GetInstance().DrawWindow();
+	}
 
 	if (WindowEditorSettings::GetInstance().showWindow)
 		WindowEditorSettings::GetInstance().DrawWindow(&darkTheme, [this]() { SetDarkTheme(); });
-		//std::bind(&InterfaceManager::SetDarkTheme, &InterfaceManager::GetInstance()) //TODO: I MIGHT USE THIS
-
-	if (WindowAddScene::GetInstance().showWindow)
-		WindowAddScene::GetInstance().DrawWindow(projectDir, tabs, openedTab, selectedTabId);
-
-	if (WindowProjectSettings::GetInstance().showWindow)
-		WindowProjectSettings::GetInstance().DrawWindow();
+	//std::bind(&InterfaceManager::SetDarkTheme, &InterfaceManager::GetInstance()) //TODO: I MIGHT USE THIS
 }
 
 /*

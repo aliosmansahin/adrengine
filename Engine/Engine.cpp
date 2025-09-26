@@ -43,18 +43,18 @@ bool Engine::InitEngine(GLFWwindow* window)
     //load existing project
     //TODO: Project Dialog
     //For test
-    std::string projectName = "project";
-    std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\"; //This is for mine
-    if (!Project::Get().OpenProject(projectName, projectPath, entityTypes))
-        return false;
+    //std::string projectName = "project";
+    //std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\"; //This is for mine
+    //if (!Project::Get().OpenProject(projectName, projectPath, entityTypes))
+    //    return false;
 
-    //Update physics for once
-    for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
-        Object* object = dynamic_cast<Object*>(entity.second.get());
-        if (object != nullptr) {
-            SceneManager::GetInstance().openedScene->physics->EndEmulationForRigidBody(object->rigidBody);
-        }
-    }
+    ////Update physics for once
+    //for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
+    //    Object* object = dynamic_cast<Object*>(entity.second.get());
+    //    if (object != nullptr) {
+    //        SceneManager::GetInstance().openedScene->physics->EndEmulationForRigidBody(object->rigidBody);
+    //    }
+    //}
 
     return true;
 }
@@ -107,31 +107,64 @@ PURPOSE: Update engines and other stuff
 */
 void Engine::Update()
 {
-    //Update timer to calc delta time
-    Timer::Update();
+    if (projectOpened) {
+        //Update timer to calc delta time
+        Timer::Update();
 
-    /*
-        Update inputs,
-        Keys, mouse buttons and mouse position are updating via Update function
-    */
-    GLFWwindow* window = InterfaceManager::GetInstance().GetFocusedViewport();
-    if (window) {
-        InputManager::GetInstance().Update(window);
+        /*
+            Update inputs,
+            Keys, mouse buttons and mouse position are updating via Update function
+        */
+        GLFWwindow* window = InterfaceManager::GetInstance().GetFocusedViewport();
+        if (window) {
+            InputManager::GetInstance().Update(window);
+        }
+
+        //Calculate ms and fps
+        CalcFPSandMS();
+
+        //Get screen width
+        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        screenWidth = mode->width;
+        screenHeight = mode->height;
+
+        //Update scenes
+        UpdateCurrentScene();
+
+        //Perform tab and scene delete actions
+        PerformDeleteActions();
     }
+    else {
+        //TODO: Move to a function
+        if (WindowProjectDialog::GetInstance().isCreatingProject || WindowProjectDialog::GetInstance().isOpeningProject) {
+            if (WindowProjectDialog::GetInstance().isCreatingProject) {
+                WindowProjectDialog::GetInstance().isCreatingProject = false;
 
-    //Calculate ms and fps
-    CalcFPSandMS();
+                if (!Project::Get().CreateProject(WindowProjectDialog::GetInstance().createPath, WindowProjectDialog::GetInstance().createProjectName, entityTypes))
+                    return; //TODO: Add Loading error dialog window
+            }
+            if (WindowProjectDialog::GetInstance().isOpeningProject) {
+                WindowProjectDialog::GetInstance().isOpeningProject = false;
 
-    //Get screen width
-    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    screenWidth = mode->width;
-    screenHeight = mode->height;
+                if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openPath, WindowProjectDialog::GetInstance().openProjectName, entityTypes))
+                    return; //TODO: Add Loading error dialog window
+            }
 
-    //Update scenes
-    UpdateCurrentScene();
+            WindowProjectDialog::GetInstance().showWindow = false;
 
-    //Perform tab and scene delete actions
-    PerformDeleteActions();
+            projectOpened = true;
+
+            //Update physics for once
+            if (SceneManager::GetInstance().openedScene && SceneManager::GetInstance().openedScene->GetEntityManager()) {
+                for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
+                    Object* object = dynamic_cast<Object*>(entity.second.get());
+                    if (object != nullptr) {
+                        SceneManager::GetInstance().openedScene->physics->EndEmulationForRigidBody(object->rigidBody);
+                    }
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -140,11 +173,11 @@ PURPOSE: To draw main frame
 void Engine::Draw()
 {
     Graphics::GetInstance().Clear();
-    
+
     InterfaceManager::GetInstance().StartFrame();
 
-    InterfaceManager::GetInstance().DrawInterface(Project::Get().GetProjectDir(), [this]() { Project::Get().SaveProject(); }, entityTypes, FPS, ms, screenWidth, screenHeight);
-    
+    InterfaceManager::GetInstance().DrawInterface(Project::Get().GetProjectDir(), Project::Get().GetProjectFileLocation(), [this]() { Project::Get().SaveProject(); }, entityTypes, FPS, ms, screenWidth, screenHeight, projectOpened);
+
     InterfaceManager::GetInstance().EndFrame();
 
     InterfaceManager::GetInstance().UpdateViewportContext();
@@ -233,6 +266,7 @@ ENGINE_API void Engine::PerformDeleteActions()
 {
     //perform deleting scene
     std::string projectDir = Project::Get().GetProjectDir();
+    std::string projectFile = Project::Get().GetProjectFileLocation();
 
     if (WindowAllScenes::GetInstance().pendingDelete) {
         SceneManager::GetInstance().DeleteScene(WindowAllScenes::GetInstance().selectedSceneId, projectDir);
@@ -242,8 +276,6 @@ ENGINE_API void Engine::PerformDeleteActions()
         InterfaceManager::GetInstance().openedTab = nullptr;
 
         //Save project
-        std::string projectFile = projectDir + "project.adrengineproject";
-
         std::string openedSceneId = "";
         if (SceneManager::GetInstance().openedScene)
             openedSceneId = SceneManager::GetInstance().openedScene->sceneId;
@@ -268,8 +300,6 @@ ENGINE_API void Engine::PerformDeleteActions()
                 InterfaceManager::GetInstance().openedTab = nullptr;
 
                 //Save project
-                std::string projectFile = projectDir + "project.adrengineproject";
-
                 std::string openedSceneId = "";
                 if (SceneManager::GetInstance().openedScene)
                     openedSceneId = SceneManager::GetInstance().openedScene->sceneId;

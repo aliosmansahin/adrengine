@@ -21,6 +21,7 @@ public:
 	//main functions
 	INTERFACEMANAGER_API void DrawWindow(
 		std::string& projectDir,
+		std::string& projectFilePath,
 		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
 		Utils::Tab*& openedTab,
 		std::string& selectedTabId

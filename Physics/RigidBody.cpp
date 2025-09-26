@@ -28,6 +28,10 @@ btRigidBody* RigidBody::Create()
 	
 	rigidBody->setActivationState(DISABLE_DEACTIVATION);
 
+	int flags = rigidBody->getCollisionFlags();
+	flags |= btCollisionObject::CF_KINEMATIC_OBJECT;
+	rigidBody->setCollisionFlags(flags);
+
 	return rigidBody.get();
 }
 

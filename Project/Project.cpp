@@ -4,13 +4,13 @@
 /*
 PURPOSE: To load existing project
 */
-PROJECT_API bool Project::OpenProject(std::string& projectName, std::string& projectFolder,
+PROJECT_API bool Project::OpenProject(std::string& projectPath, std::string& projectName,
     std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
 {
     //Setup project specifications
     this->projectName = projectName;
-    projectPath = projectFolder;
-    projectDir = projectPath + projectName + "/";
+    this->projectPath = projectPath;
+    projectDir = projectPath + projectName + "\\";
     projectFileLocation = projectDir + projectName + ".adrengineproject";
     std::string projectFile = GetProjectFileLocation();
 
@@ -99,20 +99,24 @@ bool Project::SaveProject() {
 PURPOSE: Creates a folder for the project
 
 */
-bool Project::CreateProject(std::string projectPath, std::string projectName) {
+bool Project::CreateProject(std::string projectPath, std::string projectName,
+    std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes) {
     this->projectName = projectName;
     this->projectPath = projectPath;
-    projectDir = projectPath + projectName + "/";
+    projectDir = projectPath + projectName + "\\";
+    projectFileLocation = projectDir + projectName + ".adrengineproject";
 
     if (!std::filesystem::create_directory(projectDir))
         return false;
 
-    if (SaveProject())
+    if (!SaveProject())
+        return false;
+
+    if (!OpenProject(projectPath, projectName, entityTypes))
         return false;
 
     return true;
 }
-
 
 /*
 

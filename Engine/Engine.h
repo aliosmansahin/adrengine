@@ -58,5 +58,8 @@ public:
 
 	//store all of entity types to use it when user add them to the scene
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>> entityTypes;
+
+	//Is a project opened
+	bool projectOpened = false;
 };
 

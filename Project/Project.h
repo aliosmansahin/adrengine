@@ -30,8 +30,9 @@ public:
 	PROJECT_API static Project& Get();
 
 public:
-	PROJECT_API bool CreateProject(std::string projectPath, std::string projectName);
-	PROJECT_API bool OpenProject(std::string& projectName, std::string& projectFolder,
+	PROJECT_API bool CreateProject(std::string projectPath, std::string projectName,
+		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes);
+	PROJECT_API bool OpenProject(std::string& projectPath, std::string& projectName,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes);
 	PROJECT_API bool CloseProject();
 	PROJECT_API bool SaveProject();

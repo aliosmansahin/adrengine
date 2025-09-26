@@ -27,13 +27,14 @@
 #include "WindowTileMapBrush.h"
 #include "WindowTileMapViewer.h"
 #include "WindowFlipBookEdit.h"
+#include "WindowProjectDialog.h"
 #include "AssetSaver.h"
 
 class INTERFACEMANAGER_API MenuBar
 {
 public:
 	//functions
-	void			DrawMenuBar(std::function<void()>& saveFunc);
+	void			DrawMenuBar(std::function<void()>& saveFunc, bool openedProject);
 	static MenuBar& GetInstance();
 private:
 	//singleton
