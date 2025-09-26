@@ -4,13 +4,17 @@
 /*
 PURPOSE: Draws menu bar
 */
-void MenuBar::DrawMenuBar(std::function<void()>& saveFunc, bool openedProject)
+void MenuBar::DrawMenuBar(std::function<void()>& saveFunc, std::function<void()>& closeFunc, bool openedProject)
 {
 	if (ImGui::BeginMainMenuBar()) {
 		if (openedProject) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("Save Project")) {
 					saveFunc();
+				}
+				ImGui::Separator();
+				if (ImGui::MenuItem("Close Project")) {
+					closeFunc();
 				}
 				ImGui::EndMenu();
 			}

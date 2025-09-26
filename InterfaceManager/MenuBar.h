@@ -34,7 +34,7 @@ class INTERFACEMANAGER_API MenuBar
 {
 public:
 	//functions
-	void			DrawMenuBar(std::function<void()>& saveFunc, bool openedProject);
+	void			DrawMenuBar(std::function<void()>& saveFunc, std::function<void()>& closeFunc, bool openedProject);
 	static MenuBar& GetInstance();
 private:
 	//singleton

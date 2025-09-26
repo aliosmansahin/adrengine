@@ -26,6 +26,7 @@ public:
 	//main funcs
 	INTERFACEMANAGER_API bool InitInterface(GLFWwindow* window, ImGuiContext*& context, ImNodesContext*& nodesContext);
 	INTERFACEMANAGER_API void CloseInterface();
+	INTERFACEMANAGER_API void ResetInterface();
 	//drawing
 	INTERFACEMANAGER_API void StartFrame();
 	INTERFACEMANAGER_API void EndFrame();
@@ -33,6 +34,7 @@ public:
 		std::string& projectDir,
 		std::string& projectFilePath,
 		std::function<void()> saveFunc,
+		std::function<void()> closeFunc,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 		std::vector<std::string> latestProjects,
 		float engineFPS,

@@ -50,16 +50,23 @@ PURPOSE: Closes interface manager and releases other things
 void InterfaceManager::CloseInterface()
 {
 	//releases tabs
-	openedTab = nullptr;
-	tabs.clear();
+	ResetInterface();
+
 	//releases imgui
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImNodes::DestroyContext();
 	ImGui::DestroyContext();
 	glfwTerminate();
+
 	//logger
 	Logger::Log("P", "Released interface manager");
+}
+
+INTERFACEMANAGER_API void InterfaceManager::ResetInterface()
+{
+	openedTab = nullptr;
+	tabs.clear();
 }
 
 /*
@@ -88,6 +95,7 @@ void InterfaceManager::DrawInterface(
 	std::string& projectDir,
 	std::string& projectFilePath,
 	std::function<void()> saveFunc,
+	std::function<void()> closeFunc,
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
 	std::vector<std::string> latestProjects,
 	float engineFPS,
@@ -97,7 +105,7 @@ void InterfaceManager::DrawInterface(
 	bool projectOpened)
 {
 	//Draws menu bar
-	MenuBar::GetInstance().DrawMenuBar(saveFunc, projectOpened);
+	MenuBar::GetInstance().DrawMenuBar(saveFunc, closeFunc, projectOpened);
 
 	if (projectOpened)
 		tabHeight = 40;

@@ -32,8 +32,10 @@ public:
 public:
 	//main
 	PROJECT_API bool CreateProject(std::string projectPath, std::string projectName,
+		GLFWwindow* window, ImGuiContext* context, ImNodesContext* nodesContext,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes);
 	PROJECT_API bool OpenProject(std::string& projectPath, std::string& projectName,
+		GLFWwindow* window, ImGuiContext* context, ImNodesContext* nodesContext,
 		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes);
 	PROJECT_API bool CloseProject();
 	PROJECT_API bool SaveProject();
@@ -50,6 +52,11 @@ public:
 	PROJECT_API void MoveProjectToBegin(std::string& projectFilepath);
 	PROJECT_API void SaveLatestProjects();
 	PROJECT_API std::vector<std::string>& GetLatestProjects();
+
+public:
+	//Is a project opened
+	bool projectOpened = false;
+
 private:
 	//project specifications
 	std::string projectName = "";

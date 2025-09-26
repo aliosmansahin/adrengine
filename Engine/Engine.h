@@ -47,6 +47,10 @@ private:
 private:
 	//glfw
 	GLFWwindow* window = nullptr;
+
+	//imgui and imnodes
+	ImGuiContext* context = nullptr;
+	ImNodesContext* nodesContext = nullptr;
 public:
 	//store screen width and height
 	int screenWidth = 0;
@@ -58,9 +62,5 @@ public:
 
 	//store all of entity types to use it when user add them to the scene
 	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>> entityTypes;
-
-	//Is a project opened
-	bool projectOpened = false;
-
 };
 

@@ -23,21 +23,7 @@ bool Engine::InitEngine(GLFWwindow* window)
         return false;
 
     //interface manager
-    ImGuiContext* context = nullptr;
-    ImNodesContext* nodesContext = nullptr;
     if (!InterfaceManager::GetInstance().InitInterface(window, context, nodesContext))
-        return false;
-
-    //input manager
-    if (!InputManager::GetInstance().InitEngine(window, context))
-        return false;
-
-    //scene manager
-    if (!SceneManager::GetInstance().InitializeManager())
-        return false;
-
-    //visual script manager
-    if (!VisualScriptManager::GetInstance().InitManager(context, nodesContext))
         return false;
 
     //Load latest projects
@@ -110,7 +96,7 @@ PURPOSE: Update engines and other stuff
 */
 void Engine::Update()
 {
-    if (projectOpened) {
+    if (Project::Get().projectOpened) {
         //Update timer to calc delta time
         Timer::Update();
 
@@ -144,24 +130,15 @@ void Engine::Update()
             if (WindowProjectDialog::GetInstance().isCreatingProject) {
                 WindowProjectDialog::GetInstance().isCreatingProject = false;
 
-                if (!Project::Get().CreateProject(WindowProjectDialog::GetInstance().createPath, WindowProjectDialog::GetInstance().createProjectName, entityTypes))
+                if (!Project::Get().CreateProject(WindowProjectDialog::GetInstance().createPath, WindowProjectDialog::GetInstance().createProjectName, window, context, nodesContext, entityTypes))
                     return; //TODO: Add Loading error dialog window
             }
             if (WindowProjectDialog::GetInstance().isOpeningProject) {
                 WindowProjectDialog::GetInstance().isOpeningProject = false;
 
-                if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openPath, WindowProjectDialog::GetInstance().openProjectName, entityTypes))
+                if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openPath, WindowProjectDialog::GetInstance().openProjectName, window, context, nodesContext, entityTypes))
                     return; //TODO: Add Loading error dialog window
             }
-
-            //Close project dialog window and set project opened state true
-            projectOpened = true;
-
-            //Add the project to latest projects
-            Project::Get().AddProjectToLatestProjects(Project::Get().GetProjectFileLocation());
-
-            //Save latest projects
-            Project::Get().SaveLatestProjects();
 
             //Update physics for once
             if (SceneManager::GetInstance().openedScene && SceneManager::GetInstance().openedScene->GetEntityManager()) {
@@ -185,7 +162,7 @@ void Engine::Draw()
 
     InterfaceManager::GetInstance().StartFrame();
 
-    InterfaceManager::GetInstance().DrawInterface(Project::Get().GetProjectDir(), Project::Get().GetProjectFileLocation(), [this]() { Project::Get().SaveProject(); }, entityTypes, Project::Get().GetLatestProjects(), FPS, ms, screenWidth, screenHeight, projectOpened);
+    InterfaceManager::GetInstance().DrawInterface(Project::Get().GetProjectDir(), Project::Get().GetProjectFileLocation(), [this]() { Project::Get().SaveProject(); }, [this]() { Project::Get().CloseProject(); }, entityTypes, Project::Get().GetLatestProjects(), FPS, ms, screenWidth, screenHeight, Project::Get().projectOpened);
 
     InterfaceManager::GetInstance().EndFrame();
 
@@ -197,12 +174,11 @@ PURPOSE: Close all engines include this one
 */
 void Engine::CloseEngine()
 {
-    InputManager::GetInstance().ReleaseEngine();
+    if(Project::Get().projectOpened)
+        Project::Get().CloseProject();
+
     InterfaceManager::GetInstance().CloseInterface();
-    SceneManager::GetInstance().ClearManager();
-    VisualScriptManager::GetInstance().ReleaseManager();
     Graphics::GetInstance().ReleaseGraphics();
-    Project::Get().CloseProject();
     entityTypes.clear();
     Logger::Log("P", "Cleared engine");
 }

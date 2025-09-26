@@ -5,6 +5,7 @@
 PURPOSE: To load existing project
 */
 PROJECT_API bool Project::OpenProject(std::string& projectPath, std::string& projectName,
+    GLFWwindow* window, ImGuiContext* context, ImNodesContext* nodesContext,
     std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
 {
     //Setup project specifications
@@ -29,6 +30,20 @@ PROJECT_API bool Project::OpenProject(std::string& projectPath, std::string& pro
     //loads asset database
     AssetDatabase::GetInstance().LoadDatabase(projectDir + "asset_database.adrenginedatabase");
 
+    /* Start engines */
+
+    //input manager
+    if (!InputManager::GetInstance().InitEngine(window, context))
+        return false;
+
+    //scene manager
+    if (!SceneManager::GetInstance().InitializeManager())
+        return false;
+
+    //visual script manager
+    if (!VisualScriptManager::GetInstance().InitManager(context, nodesContext))
+        return false;
+
     //loads all scenes and scripts that belong to the project
     for (auto& scene : projectJson["scenes"]) {
         SceneManager::GetInstance().scenes.insert(std::pair<std::string, std::string>(scene, scene));
@@ -49,6 +64,15 @@ PROJECT_API bool Project::OpenProject(std::string& projectPath, std::string& pro
         InterfaceManager::GetInstance().openedTab = tab.get();
         InterfaceManager::GetInstance().selectedTabId = tab->id;
     }
+
+    //Close project dialog window and set project opened state true
+    projectOpened = true;
+
+    //Add the project to latest projects
+    AddProjectToLatestProjects(GetProjectFileLocation());
+
+    //Save latest projects
+    SaveLatestProjects();
 
     return true;
 }
@@ -100,6 +124,7 @@ PURPOSE: Creates a folder for the project
 
 */
 bool Project::CreateProject(std::string projectPath, std::string projectName,
+    GLFWwindow* window, ImGuiContext* context, ImNodesContext* nodesContext,
     std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes) {
     this->projectName = projectName;
     this->projectPath = projectPath;
@@ -112,7 +137,7 @@ bool Project::CreateProject(std::string projectPath, std::string projectName,
     if (!SaveProject())
         return false;
 
-    if (!OpenProject(projectPath, projectName, entityTypes))
+    if (!OpenProject(projectPath, projectName, window, context, nodesContext, entityTypes))
         return false;
 
     return true;
@@ -124,6 +149,12 @@ PURPOSE: Closes the project
 
 */
 bool Project::CloseProject() {
+    InterfaceManager::GetInstance().ResetInterface();
+    InputManager::GetInstance().ReleaseEngine();
+    SceneManager::GetInstance().ClearManager();
+    VisualScriptManager::GetInstance().ReleaseManager();
+
+    projectOpened = false;
     return true;
 }
 

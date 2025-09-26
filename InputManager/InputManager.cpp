@@ -31,7 +31,12 @@ PURPOSE: Release input engine
 */
 void InputManager::ReleaseEngine()
 {
-    //glfwSetMouseButtonCallback(window, nullptr);
+    //Clear maps
+    currentKeys.clear();
+    previousKeys.clear();
+    currentMouseButtons.clear();
+    previousMouseButtons.clear();
+
     Logger::Log("P", "Closed input manager");
 }
 
