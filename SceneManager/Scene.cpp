@@ -350,6 +350,13 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 			Object* object = dynamic_cast<Object*>(entity.get());
 			if (object != nullptr) { //Ensure this is an object
 				physics->AddRigidBody(object->rigidBody);
+				//Load RigidBody from json
+				if (entityJson.contains("rigid-body")) {
+					nlohmann::json rbJson = entityJson["rigid-body"];
+					object->rigidBody->FromJson(rbJson);
+				}
+				//Apply props
+				physics->ApplyPropsForRigidBody(object->rigidBody);
 			}
 		}
 	}

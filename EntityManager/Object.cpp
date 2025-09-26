@@ -170,5 +170,10 @@ nlohmann::json Object::ToJson()
 	if (params) {
 		j = params->ToJson();
 	}
+
+	if (rigidBody) {
+		nlohmann::json rigidBodyJson = rigidBody->ToJson();
+		j["rigid-body"] = rigidBodyJson;
+	}
 	return j;
 }

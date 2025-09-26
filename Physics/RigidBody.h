@@ -15,6 +15,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include <nlohmann_json/json.hpp>
 
 //Stores properties for rigidbody
 struct RigidBodyProperties {
@@ -47,6 +48,11 @@ public:
 public:
 	PHYSICS_API RigidBodyProperties* GetProps() { return props; };
 	PHYSICS_API void				 SetProps(RigidBodyProperties* props) { this->props = props; } //Dont have to use it for now
+
+public:
+	//Serialization
+	PHYSICS_API nlohmann::json ToJson();
+	PHYSICS_API void FromJson(nlohmann::json& json);
 
 private:
 	std::shared_ptr<btRigidBody> rigidBody;
