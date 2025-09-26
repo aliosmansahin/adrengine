@@ -155,7 +155,6 @@ void Engine::Update()
             }
 
             //Close project dialog window and set project opened state true
-            WindowProjectDialog::GetInstance().showWindow = false;
             projectOpened = true;
 
             //Add the project to latest projects

@@ -223,8 +223,7 @@ void InterfaceManager::DrawInterface(
 			WindowProjectSettings::GetInstance().DrawWindow();
 	}
 	else {
-		if (WindowProjectDialog::GetInstance().showWindow)
-			WindowProjectDialog::GetInstance().DrawWindow(latestProjects);
+		WindowProjectDialog::GetInstance().DrawWindow(latestProjects);
 	}
 
 	if (WindowEditorSettings::GetInstance().showWindow)

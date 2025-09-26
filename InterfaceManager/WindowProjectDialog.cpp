@@ -6,7 +6,7 @@ PURPOSE: Draws the window
 */
 void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
     //Begin the window
-    ImGui::Begin("Create or Open a Project", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin("Create or Open a Project", (bool*)false, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
     ImGui::SetWindowFontScale(1.5f);
 
     /* Create a project */

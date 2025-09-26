@@ -29,9 +29,6 @@ private:
 	WindowProjectDialog(const WindowProjectDialog&) = delete;
 	WindowProjectDialog& operator=(const WindowProjectDialog&) = delete;
 public:
-	//window
-	bool showWindow = true;
-
 	//turns true when creating or opening a project
 	bool isCreatingProject = false;
 	bool isOpeningProject = false;
