@@ -16,6 +16,7 @@
 #include "Timer.h"
 #include "AssetDatabase.h"
 #include "AssetSaver.h"
+#include "Project.h"
 
 //TODO: ADD SCRIPT SAVING / LOADING
 
@@ -28,8 +29,6 @@ public:
 	ENGINE_API void Update();
 	ENGINE_API void Draw();
 	ENGINE_API void CloseEngine();
-	ENGINE_API void LoadProject();
-	ENGINE_API void SaveProject();
 	ENGINE_API void CalcFPSandMS();
 	ENGINE_API void UpdateCurrentScene();
 	ENGINE_API void PerformDeleteActions();
@@ -49,12 +48,6 @@ private:
 	//glfw
 	GLFWwindow* window = nullptr;
 public:
-	//project specifications
-	std::string projectName = "project";
-	std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\"; //This is for mine
-	//std::string projectPath = "";//TODO: Change it to yours
-	std::string projectDir = projectPath + projectName + "/";
-
 	//store screen width and height
 	int screenWidth = 0;
 	int screenHeight = 0;
