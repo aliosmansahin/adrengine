@@ -10,6 +10,11 @@
 
 #include "Logger.h"
 
+/*
+This class creates a framebuffer
+Created framebuffer will be storing in the instance of the FramebufferProvider class
+*/
+
 class FramebufferProvider
 {
 public:
@@ -25,9 +30,15 @@ public:
 
 	//Getter
 	GRAPHICS_API unsigned int GetFrameBufferTex() { return frameBufferTex; }
+
+private:
+	//helpers
+	void UpdateFrameBufferTexture(int width, int height);
+	void UpdateRenderBuffer(int width, int height);
+
 private:
 	//framebuffer
-	unsigned int FBO;
-	unsigned int RBO;
-	unsigned int frameBufferTex;
+	unsigned int FBO; //Frame buffer object
+	unsigned int RBO; //Render buffer object
+	unsigned int frameBufferTex; //Texture for render result on the framebuffer, will be used as drawing a texture
 };

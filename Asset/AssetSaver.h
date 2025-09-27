@@ -28,4 +28,9 @@ public:
     //script functions
     static void           SaveScriptToFile(nlohmann::json scriptJson, const std::string& projectDir, const std::string& scriptId);
     static nlohmann::json LoadScriptFromFile(const std::string& projectDir, const std::string& scriptId);
+
+private:
+    //helpers
+    static std::string    CreateTargetDirectories(const std::string& projectDir, const std::string& id, const std::string& folderName, const std::string& fileSuffix);
+    static std::string    GetTargetFilePath(const std::string& projectDir, const std::string& id, const std::string& folderName, const std::string& fileSuffix);
 };

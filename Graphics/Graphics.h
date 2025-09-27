@@ -13,8 +13,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 #include "Logger.h"
+
+//Forward declaration for tinyobj::material_t
+namespace tinyobj {
+	struct material_t;
+}
 
 //Store each material
 struct Material {
@@ -57,6 +61,8 @@ struct ObjectMtl {
 	unsigned int VAO;
 };
 
+
+
 class Graphics
 {
 public:
@@ -67,19 +73,30 @@ public:
 	GRAPHICS_API void			UnloadTexture(unsigned int texture);
 	GRAPHICS_API void			UnloadMesh(std::vector<std::shared_ptr<ObjectMtl>>& objects);
 	GRAPHICS_API bool			LoadMesh(const char* id, const char* path, std::vector<std::shared_ptr<ObjectMtl>>& out_objectMtls);
+
 private:
-	GRAPHICS_API bool			LoadMaterial(const char* path, std::unordered_map<std::string, Material>& materials);
+	//helpers
+	bool		LoadMaterial(const char* path, std::unordered_map<std::string, Material>& materials);
+	std::string ExtractDirectoryFromPath(const std::string& path);
+	Material    LoadMaterialFromTinyObj(int mat_id, const std::vector<tinyobj::material_t>& materials);
+
 public:
 	//getter for the instance
 	GRAPHICS_API static Graphics& GetInstance();
+
 private:
 	//singleton
 	Graphics() = default;
 	~Graphics() = default;
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
+
 public:
-	//callback funcs
+	/*
+		Callback funcs
+		This callback will be used in the window class
+		StaticWindowSizeCallback function will be used with glfwSetWindowSizeCallback
+	*/
 	GRAPHICS_API void WindowSizeCallback(GLFWwindow* window, int width, int height);
 	GRAPHICS_API static void StaticWindowSizeCallback(GLFWwindow* window, int width, int height) {
 		Graphics* self = static_cast<Graphics*>(glfwGetWindowUserPointer(window));
@@ -87,13 +104,16 @@ public:
 			self->WindowSizeCallback(window, width, height);
 		}
 	}
+
 public:
 	//context
 	GRAPHICS_API void Clear();
+
 public:
 	//getters
 	GRAPHICS_API GLFWwindow*  GetWindow() { return window; }
 	GRAPHICS_API FramebufferProvider* GetMainFramebuffer() { return frameBuffer; }
+
 private:
 	//glfw
 	GLFWwindow* window = nullptr;

@@ -12,7 +12,7 @@
 
 #include "Logger.h"
 
-using namespace adr;
+using namespace adr; //Namespace for glad_wrapper
 
 class Shader
 {
@@ -20,11 +20,14 @@ public:
 	//functions
 	GRAPHICS_API bool		  CreateShader(const char* vertexShaderPath, const char* fragmentShaderPath, const char* geometryShaderPath = "");
 	GRAPHICS_API void		  ReleaseShader();
+
+	//getters
 	GRAPHICS_API unsigned int GetVertexShader()   { return vertexShader; }
 	GRAPHICS_API unsigned int GetFragmentShader() { return fragmentShader; }
 	GRAPHICS_API unsigned int GetGeometryShader() { return geometryShader; }
 
 private:
+	//helpers
 	GRAPHICS_API bool		  LoadShader(unsigned int shaderTypeAsOpenGL, const char* shaderPath, unsigned int& shader);
 
 private:

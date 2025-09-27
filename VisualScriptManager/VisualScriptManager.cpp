@@ -6,25 +6,13 @@ PURPOSE: Initializes the manager
 */
 bool VisualScriptManager::InitManager(ImGuiContext* imguiContext, ImNodesContext* nodesContext)
 {
-    //Set imgui context
+    //Set imgui and imnodes contexts
     ImGui::SetCurrentContext(imguiContext);
     ImNodes::SetCurrentContext(nodesContext);
 
     //Create all node types
-    types = { {
-        {"Begin", std::make_shared<Begin>()},
-        {"Print", std::make_shared<Print>()},
-        {"ConstString", std::make_shared<ConstString>()},
-        {"GetThisEntity", std::make_shared<GetThisEntity>()},
-        {"GetPositionVector", std::make_shared<GetPositionVector>()},
-        {"SeparateVector3", std::make_shared<SeparateVector3>()},
-        {"ToString", std::make_shared<ToString>()},
-        {"SetPositionVector", std::make_shared<SetPositionVector>()},
-        {"MakeVector3", std::make_shared<MakeVector3>()},
-        {"ConstFloat", std::make_shared<ConstFloat>()},
-        {"AddImpulse", std::make_shared<AddImpulse>()},
-        {"CastToObject", std::make_shared<CastToObject>()},
-    } };
+    InitializeNodeTypes();
+
 	return true;
 }
 
@@ -235,4 +223,26 @@ VisualScriptManager& VisualScriptManager::GetInstance()
 {
 	static VisualScriptManager manager;
 	return manager;
+}
+
+/*
+PURPOSE: Initializes all node types
+    They will be copied to the node that will be added
+*/
+void VisualScriptManager::InitializeNodeTypes()
+{
+    types = { {
+        {"Begin", std::make_shared<Begin>()},
+        {"Print", std::make_shared<Print>()},
+        {"ConstString", std::make_shared<ConstString>()},
+        {"GetThisEntity", std::make_shared<GetThisEntity>()},
+        {"GetPositionVector", std::make_shared<GetPositionVector>()},
+        {"SeparateVector3", std::make_shared<SeparateVector3>()},
+        {"ToString", std::make_shared<ToString>()},
+        {"SetPositionVector", std::make_shared<SetPositionVector>()},
+        {"MakeVector3", std::make_shared<MakeVector3>()},
+        {"ConstFloat", std::make_shared<ConstFloat>()},
+        {"AddImpulse", std::make_shared<AddImpulse>()},
+        {"CastToObject", std::make_shared<CastToObject>()},
+    } };
 }

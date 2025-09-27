@@ -47,7 +47,25 @@ public:
 
 	//json functions
 	SCENEMANAGER_API nlohmann::json ToJson();
-	SCENEMANAGER_API void			FromJson(const nlohmann::json& json, std::string projectDir, std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes);
+	SCENEMANAGER_API void			FromJson(
+		const nlohmann::json& json,
+		std::string projectDir,
+		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes
+	);
+
+private:
+	//helpers
+	void UpdateEditorCamera(
+		int currentMouseX,
+		int currentMouseY,
+		int window_width,
+		int window_height,
+		int screenWidth,
+		int screenHeight,
+		bool windowGameViewportIsFocused,
+		bool isPlaying);
+	void UpdateTransformMatrixForTheCamera(int window_width, int window_height);
+
 public:
 	//scene variables
 	std::string sceneId;
@@ -72,6 +90,7 @@ public:
 
 	//physics
 	Physics* physics = nullptr;
+
 private:
 	//entity manager
 	EntityManager* entityManager = nullptr;

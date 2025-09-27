@@ -7,34 +7,11 @@ PURPOSE: Creates a texture asset from a path and insert it to the textures map
 bool AssetDatabase::CreateTexture(std::string path, std::string name)
 {
 	//Set the texture id
-	int index = 0;
-	std::string textureId;
-	while (true) {
-		textureId = "texture" + std::to_string(index);
-		if (textures.find(textureId) == textures.end())
-			break;
-		++index;
-	}
+	std::string textureId = CreateID("texture", textures);
 
-	//Load the texture
-	int texW, texH;
-	unsigned int texture = Graphics::GetInstance().LoadTexture(textureId.c_str(), path.c_str(), texW, texH);
-	if (texture == -1)
+	//Load and add a new texture object
+	if (!LoadTexture(textureId, path, name))
 		return false;
-
-	//Create a texture asset and insert it to the map
-	std::shared_ptr<Texture> texturePtr = std::make_shared<Texture>();
-	texturePtr->id = textureId;
-	if(name == "")
-		texturePtr->name = textureId;
-	else
-		texturePtr->name = name;
-	texturePtr->path = path;
-	texturePtr->texture = texture;
-	texturePtr->width = texW;
-	texturePtr->height = texH;
-
-	textures.insert({ textureId, texturePtr });
 
 	return true;
 }
@@ -53,7 +30,10 @@ bool AssetDatabase::LoadTexture(std::string id, std::string path, std::string na
 	//Create a texture asset and insert it to the map
 	std::shared_ptr<Texture> texturePtr = std::make_shared<Texture>();
 	texturePtr->id = id;
-	texturePtr->name = name;
+	if (name == "")
+		texturePtr->name = id;
+	else
+		texturePtr->name = name;
 	texturePtr->path = path;
 	texturePtr->texture = texture;
 	texturePtr->width = texW;
@@ -158,23 +138,24 @@ PURPOSE: Deletes a texture asset which is given id from all textures
 bool AssetDatabase::DeleteTexture(std::string id)
 {
 	//Check if the texture exists
-	auto iter = textures.find(id);
-	if (iter == textures.end()) {
-		std::string str = "There is not any texture has id \"";
-		str += id;
-		str += " \"";
-
-		Logger::Log("E", str.c_str());
+	auto textureIter = textures.end();
+	if (!CheckAssetExists(id, textures, textureIter))
 		return false;
-	}
 
-	auto& texture = iter->second;
+	//Check for the outIter
+	if (textureIter == textures.end())
+		return false;
+
+	//Get texture pointer
+	auto& texture = textureIter->second;
+
+	//Check nullptr
 	if (!texture.get())
 		return false;
 
 	//Delete texture from graphics and the database
 	Graphics::GetInstance().UnloadTexture(texture->texture);
-	textures.erase(iter);
+	textures.erase(textureIter);
 
 	return true;
 }
@@ -184,12 +165,7 @@ PURPOSE: Returns a texture asset from an id which is given
 */
 std::shared_ptr<Texture> AssetDatabase::GetTexture(std::string id)
 {
-	auto textureIter = textures.find(id);
-	if (textureIter == textures.end())
-		return nullptr;
-	if (!textureIter->second)
-		return nullptr;
-	return textureIter->second;
+	return GetAsset(id, textures);
 }
 
 /*
@@ -198,30 +174,12 @@ PURPOSE: Creates a mesh asset from a path and insert it to the meshes map
 ASSET_API bool AssetDatabase::CreateMesh(std::string path, std::string name)
 {
 	//Set the mesh id
-	int index = 0;
-	std::string meshId;
-	while (true) {
-		meshId = "mesh" + std::to_string(index);
-		if (meshes.find(meshId) == meshes.end())
-			break;
-		++index;
-	}
+	std::string meshId = CreateID("mesh", meshes);
 
-	//Create a mesh asset and insert it to the map
-	std::shared_ptr<Mesh> meshPtr = std::make_shared<Mesh>();
-	meshPtr->id = meshId;
-	if (name == "")
-		meshPtr->name = meshId;
-	else
-		meshPtr->name = name;
-	meshPtr->path = path;
-
-	//Load objectMtls
-	bool result = Graphics::GetInstance().LoadMesh(meshId.c_str(), path.c_str(), meshPtr->objects);
-	if (!result || meshPtr->objects.empty())
+	//Load and add a new mesh object
+	if (!LoadMesh(meshId, path, name))
 		return false;
 
-	meshes.insert({ meshId, meshPtr });
 	return true;
 }
 
@@ -230,11 +188,13 @@ PURPOSE: Loads a mesh asset from a path, and insert it to the map
 */
 ASSET_API bool AssetDatabase::LoadMesh(std::string id, std::string path, std::string name)
 {
-
 	//Create a mesh asset and insert it to the map
 	std::shared_ptr<Mesh> meshPtr = std::make_shared<Mesh>();
 	meshPtr->id = id;
-	meshPtr->name = name;
+	if (name == "")
+		meshPtr->name = id;
+	else
+		meshPtr->name = name;
 	meshPtr->path = path;
 
 	//Load the mesh
@@ -243,6 +203,7 @@ ASSET_API bool AssetDatabase::LoadMesh(std::string id, std::string path, std::st
 		return false;
 
 	meshes.insert({ id, meshPtr });
+
 	return true;
 }
 
@@ -252,23 +213,24 @@ PURPOSE: Deletes a mesh asset which is given id from all meshes
 ASSET_API bool AssetDatabase::DeleteMesh(std::string id)
 {
 	//Check if the mesh exists
-	auto iter = meshes.find(id);
-	if (iter == meshes.end()) {
-		std::string str = "There is not any mesh has id \"";
-		str += id;
-		str += " \"";
-
-		Logger::Log("E", str.c_str());
+	auto meshIter = meshes.end();
+	if (!CheckAssetExists(id, meshes, meshIter))
 		return false;
-	}
 
-	auto& mesh = iter->second;
+	//Check for the outIter
+	if (meshIter == meshes.end())
+		return false;
+
+	//Get mesh pointer
+	auto& mesh = meshIter->second;
+	
+	//Check nullptr
 	if (!mesh.get())
 		return false;
 
 	//Delete mesh from the database
 	Graphics::GetInstance().UnloadMesh(mesh->objects);
-	meshes.erase(iter);
+	meshes.erase(meshIter);
 
 	return true;
 }
@@ -278,12 +240,7 @@ PURPOSE: Returns a mesh asset from an id which is given
 */
 ASSET_API std::shared_ptr<Mesh> AssetDatabase::GetMesh(std::string id)
 {
-	auto meshIter = meshes.find(id);
-	if (meshIter == meshes.end())
-		return nullptr;
-	if (!meshIter->second)
-		return nullptr;
-	return meshIter->second;
+	return GetAsset(id, meshes);
 }
 
 /*
@@ -293,4 +250,61 @@ AssetDatabase& AssetDatabase::GetInstance()
 {
 	static AssetDatabase db;
 	return db;
+}
+
+/*
+PURPOSE: Creates an id with a prefix
+	Ensures created id doesn't exist in the given map
+*/
+template <typename mapT>
+std::string AssetDatabase::CreateID(std::string prefix, std::map<std::string, std::shared_ptr<mapT>>& mapForIdCheck)
+{
+	int index = 0;
+	std::string id;
+
+	while (true) {
+		id = prefix + std::to_string(index);
+		if (mapForIdCheck.find(id) == mapForIdCheck.end())
+			break;
+		++index;
+	}
+
+	return id;
+}
+
+/*
+PURPOSE: Checks if there is an asset which has given id exists
+	outIter will be set to checking asset
+*/
+template<typename mapT>
+bool AssetDatabase::CheckAssetExists(
+	std::string id,
+	std::map<std::string, std::shared_ptr<mapT>>& mapForCheck,
+	typename std::map<std::string, std::shared_ptr<mapT>>::iterator& outIter)
+{
+	outIter = mapForCheck.find(id);
+	if (outIter == mapForCheck.end()) {
+		std::string str = "There is not any asset has id \"";
+		str += id;
+		str += " \"";
+
+		Logger::Log("E", str.c_str());
+		return false;
+	}
+
+	return true;
+}
+
+/*
+PURPOSE: Gets asset from given map with id
+*/
+template<typename mapT>
+std::shared_ptr<mapT> AssetDatabase::GetAsset(std::string id, std::map<std::string, std::shared_ptr<mapT>>& mapToSearch)
+{
+	auto iter = mapToSearch.find(id);
+	if (iter == mapToSearch.end())
+		return nullptr;
+	if (!iter->second)
+		return nullptr;
+	return iter->second;
 }

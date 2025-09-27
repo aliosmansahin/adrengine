@@ -2,6 +2,7 @@
 #include "InputManager.h"
 #include "Engine.h"
 
+//STB_IMAGE
 #define STB_IMAGE_IMPLEMENTATION
 #include "stbi/stb_image.h"
 
@@ -14,55 +15,19 @@ bool Window::CreateWindow(int width, int height, const char* title)
     Logger::Log("P", Localization::GetString("creating_window_text"));
 
     //Initializes glfw
-    if (!glfwInit()) {
-        Logger::Log("E", "GLFW Initialization failed in glfwInit");
+    if (!InitializeGLFW())
         return false;
-    }
 
-    isGLFWInited = true;
+    //Setup the window
+    SetupWindow(width, height, title);
 
-    //GLFW and OpenGL settings
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_MAXIMIZED, true);
-    
-    //Create a window and pass it to a pointer
-    window = glfwCreateWindow(width, height, title, NULL, NULL);
-    
     //Load window icon and set it to the window
-    int imageWidth, imageHeight, channels;
-    unsigned char* image = stbi_load("icon.png", &imageWidth, &imageHeight, &channels, 4); // RGBA
+    SetIconOfWindow();
 
-    if (image) {
-        GLFWimage glfwImage;
-        glfwImage.width = imageWidth;
-        glfwImage.height = imageHeight;
-        glfwImage.pixels = image;
-
-        glfwSetWindowIcon(window, 1, &glfwImage); // set the icon
-        stbi_image_free(image); // free the memory
-    }
-    else {
-        Logger::Log("E", "Could not load icon of program, using default");
-    }
-
-    //make the window's context current and check if it's corrent
-    glfwMakeContextCurrent(window);
-    
-    //Check for the context
-    if (!glfwGetCurrentContext()) {
-        Logger::Log("E", "No current OpenGL context");
+    //Setup OpenGL for the window
+    if (!SetupOpenGLContext())
         return false;
-    }
 
-    //load opengl functions
-    int version = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    if (version == 0) {
-        Logger::Log("E", "Starting engine failed in gladLoadGL");
-        return false;
-    }
-    
     /*
         INFO: Glad functions that are loaded in exe don't work corrently in DLLs because of some access violation error,
         So we are loading them in exe, after that the funcion pointers will be passed to GladWrapper in order to use it in other DLLs
@@ -144,14 +109,95 @@ void Window::LoadGLFunctions()
     adr::adr_glDepthFunc = glad_glDepthFunc;
 }
 
-//PURPOSE: To get the instance of window singleton class
+/*
+PURPOSE: Loads icon of the and sets it
+*/
+void Window::SetIconOfWindow()
+{
+    int imageWidth, imageHeight, channels;
+    unsigned char* image = stbi_load("icon.png", &imageWidth, &imageHeight, &channels, 4); // RGBA
+
+    if (image) {
+        GLFWimage glfwImage;
+        glfwImage.width = imageWidth;
+        glfwImage.height = imageHeight;
+        glfwImage.pixels = image;
+
+        glfwSetWindowIcon(window, 1, &glfwImage); // set the icon
+        stbi_image_free(image); // free the memory
+    }
+    else {
+        Logger::Log("E", "Could not load icon of program, using default");
+    }
+}
+
+/*
+PURPOSE: Initializes GLFW
+*/
+bool Window::InitializeGLFW()
+{
+    if (!glfwInit()) {
+        Logger::Log("E", "GLFW Initialization failed in glfwInit");
+        return false;
+    }
+
+    isGLFWInited = true;
+    return true;
+}
+
+/*
+PURPOSE: Sets hints for the glfw window
+    After that creates a glfw window
+*/
+void Window::SetupWindow(int width, int height, const char* title)
+{
+    //GLFW and OpenGL settings
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_MAXIMIZED, true);
+
+    //Create a window and pass it to a pointer
+    window = glfwCreateWindow(width, height, title, NULL, NULL);
+}
+
+/*
+PURPOSE: Makes Current opengl context for the window
+    After that, loads Glad Loader
+*/
+bool Window::SetupOpenGLContext()
+{
+    //make the window's context current and check if it's corrent
+    glfwMakeContextCurrent(window);
+
+    //Check for the context
+    if (!glfwGetCurrentContext()) {
+        Logger::Log("E", "No current OpenGL context");
+        return false;
+    }
+
+    //load opengl functions
+    int version = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    if (version == 0) {
+        Logger::Log("E", "Starting engine failed in gladLoadGL");
+        return false;
+    }
+
+    return true;
+}
+
+/*
+PURPOSE: Returns instance of window singleton class
+*/
 Window& Window::GetInstance()
 {
     static Window window;
     return window;
 }
 
-//To release window and close it
+/*
+PURPOSE: Releases window and closes it
+*/
 void Window::CloseWindow()
 {
     //Window size callback

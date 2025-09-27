@@ -4,11 +4,19 @@
 /*
 PURPOSE: To load existing project
 */
-PROJECT_API bool Project::OpenProject(std::string& projectPath, std::string& projectName,
-    GLFWwindow* window, ImGuiContext* context, ImNodesContext* nodesContext,
+PROJECT_API bool Project::OpenProject(
+    std::string& projectPath,
+    std::string& projectName,
+    GLFWwindow* window,
+    ImGuiContext* context,
+    ImNodesContext* nodesContext,
     std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
 {
-    //Setup project specifications
+    /*
+        Setup project specifications.
+        This process was applying again in CreateProject function.
+        Two functions can be used separately. So we are doing this process.
+    */
     this->projectName = projectName;
     this->projectPath = projectPath;
     projectDir = projectPath + projectName + "\\";
@@ -123,20 +131,29 @@ bool Project::SaveProject() {
 PURPOSE: Creates a folder for the project
 
 */
-bool Project::CreateProject(std::string projectPath, std::string projectName,
-    GLFWwindow* window, ImGuiContext* context, ImNodesContext* nodesContext,
-    std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes) {
+bool Project::CreateProject(
+    std::string projectPath,
+    std::string projectName,
+    GLFWwindow* window,
+    ImGuiContext* context,
+    ImNodesContext* nodesContext,
+    std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
+{
+    //Setup some variables
     this->projectName = projectName;
     this->projectPath = projectPath;
     projectDir = projectPath + projectName + "\\";
     projectFileLocation = projectDir + projectName + ".adrengineproject";
 
+    //Create a folder for the project
     if (!std::filesystem::create_directory(projectDir))
         return false;
 
+    //Call this to create first files
     if (!SaveProject())
         return false;
 
+    //Open the project
     if (!OpenProject(projectPath, projectName, window, context, nodesContext, entityTypes))
         return false;
 
@@ -196,7 +213,7 @@ PROJECT_API void Project::AddProjectToLatestProjects(std::string& projectFilepat
     for (int i = 0; i < latestProjects.size(); ++i) {
         if (latestProjects[i] == projectFilepath) {
             //This project was added before, so we don't have to add it again
-            MoveProjectToBegin(projectFilepath); 
+            MoveProjectToBeginByIndex(i, projectFilepath); 
             return;
         }
     }
@@ -246,6 +263,19 @@ PROJECT_API void Project::MoveProjectToBegin(std::string& projectFilepath)
 
     //Add it to begin
     latestProjects.insert(latestProjects.begin(), projectFilepath);
+}
+
+/*
+
+PURPOSE: Moves project path that has given index to begin of latest projects
+
+*/
+PROJECT_API void Project::MoveProjectToBeginByIndex(int& index, std::string& projectFilepathWillBeAdded)
+{
+    RemoveProjectFromLatestProjectsByIndex(index); //Remove it by index
+
+    //Add it to begin
+    latestProjects.insert(latestProjects.begin(), projectFilepathWillBeAdded);
 }
 
 /*

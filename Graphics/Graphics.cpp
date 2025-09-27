@@ -7,7 +7,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stbi/stb_image.h"
 
-
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
@@ -126,6 +125,7 @@ GRAPHICS_API void Graphics::UnloadTexture(unsigned int texture)
 
 /*
 PURPOSE: Release mesh
+    Releases all objects
 */
 GRAPHICS_API void Graphics::UnloadMesh(std::vector<std::shared_ptr<ObjectMtl>>& objects)
 {
@@ -141,7 +141,7 @@ GRAPHICS_API void Graphics::UnloadMesh(std::vector<std::shared_ptr<ObjectMtl>>& 
 /*
 PURPOSE: Loads materials from file and pass it into the materials map
 */
-GRAPHICS_API bool Graphics::LoadMaterial(const char* path, std::unordered_map<std::string, Material>& materials)
+bool Graphics::LoadMaterial(const char* path, std::unordered_map<std::string, Material>& materials)
 {
     std::ifstream file(path);
 
@@ -194,7 +194,7 @@ GRAPHICS_API bool Graphics::LoadMaterial(const char* path, std::unordered_map<st
 /*
 PURPOSE: Returns the directorty of the file path
 */
-std::string ExtractDirectoryFromPath(const std::string& path) {
+std::string Graphics::ExtractDirectoryFromPath(const std::string& path) {
     size_t found = path.find_last_of("/\\");
     if (found != std::string::npos)
         return path.substr(0, found + 1);
@@ -204,7 +204,7 @@ std::string ExtractDirectoryFromPath(const std::string& path) {
 /*
 PURPOSE: Creates a Material struct from TinyObj material_t object and returns it
 */
-Material LoadMaterialFromTinyObj(int mat_id, const std::vector<tinyobj::material_t>& materials) {
+Material Graphics::LoadMaterialFromTinyObj(int mat_id, const std::vector<tinyobj::material_t>& materials) {
     Material m;
     if (mat_id >= 0 && mat_id < materials.size()) {
         const auto& mat = materials[mat_id];

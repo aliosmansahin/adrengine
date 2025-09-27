@@ -7,6 +7,15 @@
 #define ENGINE_GLAD_API __declspec(dllimport)
 #endif
 
+/*
+    This is for sharing glad functions between all DLLs.
+    Window class loads all functions, after that, adr_* variables will be set to functions.
+    This is needed because loaded functions in Adrengine.exe cannot be used directly in other DLLs
+    There is some pointer errors.
+    In order to fix this problem, we are doing a some kind of sharing process.
+    This function pointers can be accessed in other DLLs by including this file.
+*/
+
 namespace adr {
     extern ENGINE_GLAD_API PFNGLCLEARPROC adr_glClear;
     extern ENGINE_GLAD_API PFNGLCLEARCOLORPROC adr_glClearColor;
