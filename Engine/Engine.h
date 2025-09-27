@@ -25,25 +25,39 @@ class Engine
 public:
 	//main funcs
 	ENGINE_API bool InitEngine(GLFWwindow* window);
-	ENGINE_API void InitEntityTypes();
 	ENGINE_API void Update();
 	ENGINE_API void Draw();
 	ENGINE_API void CloseEngine();
-	ENGINE_API void CalcFPSandMS();
-	ENGINE_API void UpdateCurrentScene();
-	ENGINE_API void PerformDeleteActions();
+
+private:
+	//helpers
+	void InitEntityTypes();
+	void CalcFPSandMS();
+	void UpdateCurrentScene();
+	void PerformDeleteActions();
+	void UpdateEngineWhenProjectIsNotOpened();
+	void UpdateEngineWhenProjectIsOpened();
+	void PerformSceneDeletion(std::string& projectDir, std::string& projectFile);
+	void PerformTabDeletion(std::string& projectDir, std::string& projectFile);
+	void HandleProjectOpeningOrCreation();
+	bool HandleProjectCreation();
+	bool HandleProjectOpeningWithPath();
+	bool HandleProjectOpeningWithLatestProjects();
 public:
 	//getters
 	ENGINE_API GLFWwindow* GetWindow() { return window; }
+
 public:
 	//getter for the instance
 	ENGINE_API static Engine& GetInstance();
+
 private:
 	//singleton
 	Engine() = default;
 	~Engine() = default;
 	Engine(const Engine&) = delete;
 	Engine& operator=(const Engine&) = delete;
+
 private:
 	//glfw
 	GLFWwindow* window = nullptr;
@@ -51,6 +65,7 @@ private:
 	//imgui and imnodes
 	ImGuiContext* context = nullptr;
 	ImNodesContext* nodesContext = nullptr;
+
 public:
 	//store screen width and height
 	int screenWidth = 0;
