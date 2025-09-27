@@ -42,19 +42,36 @@ public:
 		int screenWidth,
 		int screenHeight,
 		bool projectOpened);
-	INTERFACEMANAGER_API void DrawDockSpace();
 	INTERFACEMANAGER_API void UpdateViewportContext();
 	INTERFACEMANAGER_API void SetDarkTheme();
 	INTERFACEMANAGER_API GLFWwindow* GetFocusedViewport();
+
+private:
+	void DrawDockSpace();
+	void DrawTabbar();
+	void DrawWindows(
+		bool projectOpened,
+		float engineFPS,
+		float engineMS,
+		std::string& projectDir,
+		std::string& projectFilePath,
+		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
+		std::vector<std::string> latestProjects,
+		int screenWidth,
+		int screenHeight
+	);
+
 public:
 	//getter for the instance
 	INTERFACEMANAGER_API static InterfaceManager& GetInstance();
+
 private:
 	//singleton
 	InterfaceManager() = default;
 	~InterfaceManager() = default;
 	InterfaceManager(const InterfaceManager&) = delete;
 	InterfaceManager& operator=(const InterfaceManager&) = delete;
+
 public:
 	GLFWwindow* window = nullptr;
 	bool darkTheme = true;

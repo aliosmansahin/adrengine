@@ -107,71 +107,130 @@ void InterfaceManager::DrawInterface(
 	//Draws menu bar
 	MenuBar::GetInstance().DrawMenuBar(saveFunc, closeFunc, projectOpened);
 
+	//Update tabHeight
 	if (projectOpened)
 		tabHeight = 40;
 	else
 		tabHeight = 0;
-
+	
+	//Draw tabbar if a project is opened
 	if (projectOpened) {
-		//Some variables
-		int windowHeight = (int)ImGui::GetWindowHeight();
-		int tabWidth = (int)ImGui::GetContentRegionAvail().x;
-		int titleHeight = (int)ImGui::GetContentRegionAvail().y;
-
-		//Begins tabbar
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-		const ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(viewport->WorkPos);
-		ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, (float)tabHeight));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		ImGui::Begin("Tabs", nullptr, window_flags);
-		ImGui::SetWindowFontScale(1.5f);
-		ImGui::PopStyleVar(3);
-
-		//Draw each tab
-		for (auto& tabIter : InterfaceManager::GetInstance().tabs) {
-			//Get if the drawing tab is selected
-			bool selected = false;
-			auto tab = tabIter.second.get();
-			if (openedTab) {
-				selected = tab->id == openedTab->id;
-			}
-			if (tab && tab->id.c_str()) {
-				if (ImGui::Selectable(tab->id.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(100, (float)tabHeight))) {
-					VisualScriptManager::GetInstance().currentScript = nullptr;
-					//If the tabType is scene, set the currentScene
-					if (tab->tabType == Utils::SceneEditor) {
-						openedTab = tab;
-					}
-					//If the tabType is script, set the currentScript
-					else if (tab->tabType == Utils::VisualScriptEditor) {
-						auto openedScript = VisualScriptManager::GetInstance().openedScripts.find(tab->id);
-						if (openedScript != VisualScriptManager::GetInstance().openedScripts.end()) {
-							VisualScriptManager::GetInstance().currentScript = openedScript->second;
-							openedTab = tab;
-						}
-					}
-				}
-
-				//Deleting tab
-				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
-					deleteTabId = tab->id;
-					pendingTabDelete = true;
-				}
-			}
-			ImGui::SameLine();
-		}
-
-		ImGui::End();
+		DrawTabbar();
 	}
 
 	//Draws dock space
 	DrawDockSpace();
 
+	//Draw all windows
+	DrawWindows(
+		projectOpened,
+		engineFPS,
+		engineMS,
+		projectDir,
+		projectFilePath,
+		entityTypes,
+		latestProjects,
+		screenWidth,
+		screenHeight
+	);
+}
+
+/*
+PURPOSE: Sets the parameters and draws dock space
+*/
+void InterfaceManager::DrawDockSpace()
+{
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y + tabHeight));
+	ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, viewport->WorkSize.y - tabHeight));
+	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	ImGui::Begin("Main", nullptr, window_flags);
+	ImGui::PopStyleVar(3);
+	ImGui::DockSpace(ImGui::GetID("DockSpace"), ImVec2(0, 0));
+	ImGui::End();
+}
+
+/*
+PURPOSE: Draws the tabbar that will be used to handle scene and visual script pages
+*/
+void InterfaceManager::DrawTabbar()
+{
+	//Some variables
+	int windowHeight = (int)ImGui::GetWindowHeight();
+	int tabWidth = (int)ImGui::GetContentRegionAvail().x;
+	int titleHeight = (int)ImGui::GetContentRegionAvail().y;
+
+	//Begins tabbar
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+	ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, (float)tabHeight));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	ImGui::Begin("Tabs", nullptr, window_flags);
+	ImGui::SetWindowFontScale(1.5f);
+	ImGui::PopStyleVar(3);
+
+	//Draw each tab
+	for (auto& tabIter : InterfaceManager::GetInstance().tabs) {
+		//Get if the drawing tab is selected
+		bool selected = false;
+		auto tab = tabIter.second.get();
+		if (openedTab) {
+			selected = tab->id == openedTab->id;
+		}
+		if (tab && tab->id.c_str()) {
+			if (ImGui::Selectable(tab->id.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(100, (float)tabHeight))) {
+				VisualScriptManager::GetInstance().currentScript = nullptr;
+				//If the tabType is scene, set the currentScene
+				if (tab->tabType == Utils::SceneEditor) {
+					openedTab = tab;
+				}
+				//If the tabType is script, set the currentScript
+				else if (tab->tabType == Utils::VisualScriptEditor) {
+					auto openedScript = VisualScriptManager::GetInstance().openedScripts.find(tab->id);
+					if (openedScript != VisualScriptManager::GetInstance().openedScripts.end()) {
+						VisualScriptManager::GetInstance().currentScript = openedScript->second;
+						openedTab = tab;
+					}
+				}
+			}
+
+			//Deleting tab
+			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+				deleteTabId = tab->id;
+				pendingTabDelete = true;
+			}
+		}
+		ImGui::SameLine();
+	}
+
+	ImGui::End();
+}
+
+/*
+PURPOSE: Draws all imgui windows
+*/
+void InterfaceManager::DrawWindows(
+	bool projectOpened,
+	float engineFPS,
+	float engineMS,
+	std::string& projectDir,
+	std::string& projectFilePath,
+	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
+	std::vector<std::string> latestProjects,
+	int screenWidth,
+	int screenHeight)
+{
 	if (projectOpened) {
 		//Draws windows
 		if (openedTab) {
@@ -244,27 +303,6 @@ void InterfaceManager::DrawInterface(
 	WindowModalDialog::GetInstance().OpenModalIfNeeded();
 
 	WindowModalDialog::GetInstance().DrawWindow();
-}
-
-/*
-PURPOSE: Sets the parameters and draws dock space
-*/
-void InterfaceManager::DrawDockSpace()
-{
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-	const ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y + tabHeight));
-	ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, viewport->WorkSize.y - tabHeight));
-	ImGui::SetNextWindowViewport(viewport->ID);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	ImGui::Begin("Main", nullptr, window_flags);
-	ImGui::PopStyleVar(3);
-	ImGui::DockSpace(ImGui::GetID("DockSpace"), ImVec2(0, 0));
-	ImGui::End();
 }
 
 /*
