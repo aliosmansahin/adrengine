@@ -15,21 +15,21 @@
 
 #include "nlohmann_json/json.hpp"
 
-//Texture asset
+//Texture Asset
 struct Texture {
-	std::string id;
-	std::string name;
-	std::string path;
-	unsigned int texture;
-	int width, height;
+	std::string id; //Unique id
+	std::string name; //Name to display
+	std::string path; //Texture path
+	unsigned int texture; //GL texture
+	int width, height; //Texture size
 };
 
 //Mesh asset
 struct Mesh {
-	std::string id;
-	std::string name;
-	std::string path;
-	std::vector<std::shared_ptr<ObjectMtl>> objects;
+	std::string id; //Unique id
+	std::string name; //Name to display
+	std::string path; //Texture path
+	std::vector<std::shared_ptr<ObjectMtl>> objects; //Objects with materials, all of them makes the mesh
 };
 
 class AssetDatabase
@@ -59,12 +59,27 @@ public:
 
 	//instance getter
 	ASSET_API static AssetDatabase&							   GetInstance();
+
+private:
+	//helpers
+	template <typename mapT>
+	std::string CreateID(std::string prefix, std::map<std::string, std::shared_ptr<mapT>>& mapForIdCheck);
+
+	template <typename mapT>
+	bool CheckAssetExists(
+		std::string id,
+		std::map<std::string, std::shared_ptr<mapT>>& mapForCheck,
+		typename std::map<std::string, std::shared_ptr<mapT>>::iterator& outIter);
+
+	template <typename mapT>
+	std::shared_ptr<mapT> GetAsset(std::string id, std::map<std::string, std::shared_ptr<mapT>>& mapToSearch);
 private:
 	//singleton
 	AssetDatabase() = default;
 	~AssetDatabase() = default;
 	AssetDatabase(const AssetDatabase&) = delete;
 	AssetDatabase& operator=(const AssetDatabase&) = delete;
+
 private:
 	//database variables
 	std::map<std::string, std::shared_ptr<Texture>> textures;
