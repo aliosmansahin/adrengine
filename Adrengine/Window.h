@@ -28,8 +28,11 @@ public:
 
 private:
 	//private function which will be used by Window class
-	void		   LoadGLFunctions();
-	void		   SetIconOfWindow();
+	void LoadGLFunctions();
+	void SetIconOfWindow();
+	bool InitializeGLFW();
+	void SetupWindow(int width, int height, const char* title);
+	bool SetupOpenGLContext();
 private:
 	//singleton
 	Window() = default;
