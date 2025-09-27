@@ -54,6 +54,12 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="WindowProjectDialog">
+      <UniqueIdentifier>{cf9dbff6-a8dc-4a40-a6fa-b1991097824c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowModalDialog">
+      <UniqueIdentifier>{a4e699cd-a0d3-4025-a197-ebef1f4086a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -111,6 +117,12 @@
     <ClInclude Include="WindowVisualScript.h">
       <Filter>WindowVisualScript</Filter>
     </ClInclude>
+    <ClInclude Include="WindowProjectDialog.h">
+      <Filter>WindowProjectDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowModalDialog.h">
+      <Filter>WindowModalDialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowVisualScript.cpp">
@@ -167,6 +179,12 @@
     </ClCompile>
     <ClCompile Include="WindowTileMapViewer.cpp">
       <Filter>WindowTileMapViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowProjectDialog.cpp">
+      <Filter>WindowProjectDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowModalDialog.cpp">
+      <Filter>WindowModalDialog</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

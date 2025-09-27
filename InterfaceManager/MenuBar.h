@@ -12,6 +12,9 @@
 
 #include "Logger.h"
 
+/*
+	All window classes will be included here
+*/
 #include "WindowProjectSettings.h"
 #include "WindowEditorSettings.h"
 #include "WindowScene.h"
@@ -27,13 +30,15 @@
 #include "WindowTileMapBrush.h"
 #include "WindowTileMapViewer.h"
 #include "WindowFlipBookEdit.h"
+#include "WindowProjectDialog.h"
+#include "WindowModalDialog.h"
 #include "AssetSaver.h"
 
 class INTERFACEMANAGER_API MenuBar
 {
 public:
 	//functions
-	void			DrawMenuBar(std::function<void()>& saveFunc);
+	void			DrawMenuBar(std::function<void()>& saveFunc, std::function<void()>& closeFunc, bool openedProject);
 	static MenuBar& GetInstance();
 private:
 	//singleton

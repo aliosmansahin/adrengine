@@ -47,7 +47,8 @@ namespace Utils {
         nlohmann::json projectJson;
 
         //Opened scene
-        projectJson["opened-scene"] = openedSceneId;
+        if(!openedSceneId.empty())
+            projectJson["opened-scene"] = openedSceneId;
 
         //All scenes
         for (auto& sceneIter : scenes) {

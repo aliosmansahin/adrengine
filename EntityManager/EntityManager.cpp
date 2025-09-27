@@ -573,6 +573,8 @@ std::string EntityManager::CreateEntity(
 	Object* object = dynamic_cast<Object*>(entity.get());
 	if (object != nullptr) { //Ensure this is an object
 		physics->AddRigidBody(object->rigidBody);
+
+		physics->ApplyPropsForRigidBody(object->rigidBody);
 	}
 
 	//Add the entity into its parent's children

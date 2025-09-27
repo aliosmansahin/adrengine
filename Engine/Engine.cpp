@@ -1,3 +1,4 @@
+#include "Project.h"
 #include "pch.h"
 #include "Engine.h"
 
@@ -22,33 +23,27 @@ bool Engine::InitEngine(GLFWwindow* window)
         return false;
 
     //interface manager
-    ImGuiContext* context = nullptr;
-    ImNodesContext* nodesContext = nullptr;
     if (!InterfaceManager::GetInstance().InitInterface(window, context, nodesContext))
         return false;
 
-    //input manager
-    if (!InputManager::GetInstance().InitEngine(window, context))
-        return false;
-
-    //scene manager
-    if (!SceneManager::GetInstance().InitializeManager())
-        return false;
-
-    //visual script manager
-    if (!VisualScriptManager::GetInstance().InitManager(context, nodesContext))
-        return false;
+    //Load latest projects
+    Project::Get().LoadLatestProjects();
 
     //load existing project
-    LoadProject();
+    //TODO: Project Dialog
+    //For test
+    //std::string projectName = "project";
+    //std::string projectPath = "C:\\Users\\osman\\OneDrive\\Desktop\\"; //This is for mine
+    //if (!Project::Get().OpenProject(projectName, projectPath, entityTypes))
+    //    return false;
 
-    //Update physics for once
-    for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
-        Object* object = dynamic_cast<Object*>(entity.second.get());
-        if (object != nullptr) {
-            SceneManager::GetInstance().openedScene->physics->EndEmulationForRigidBody(object->rigidBody);
-        }
-    }
+    ////Update physics for once
+    //for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
+    //    Object* object = dynamic_cast<Object*>(entity.second.get());
+    //    if (object != nullptr) {
+    //        SceneManager::GetInstance().openedScene->physics->EndEmulationForRigidBody(object->rigidBody);
+    //    }
+    //}
 
     return true;
 }
@@ -101,31 +96,83 @@ PURPOSE: Update engines and other stuff
 */
 void Engine::Update()
 {
-    //Update timer to calc delta time
-    Timer::Update();
+    if (Project::Get().projectOpened) {
+        //Update timer to calc delta time
+        Timer::Update();
 
-    /*
-        Update inputs,
-        Keys, mouse buttons and mouse position are updating via Update function
-    */
-    GLFWwindow* window = InterfaceManager::GetInstance().GetFocusedViewport();
-    if (window) {
-        InputManager::GetInstance().Update(window);
+        /*
+            Update inputs,
+            Keys, mouse buttons and mouse position are updating via Update function
+        */
+        GLFWwindow* window = InterfaceManager::GetInstance().GetFocusedViewport();
+        if (window) {
+            InputManager::GetInstance().Update(window);
+        }
+
+        //Calculate ms and fps
+        CalcFPSandMS();
+
+        //Get screen width
+        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        screenWidth = mode->width;
+        screenHeight = mode->height;
+
+        //Update scenes
+        UpdateCurrentScene();
+
+        //Perform tab and scene delete actions
+        PerformDeleteActions();
     }
+    else {
+        //TODO: Move to a function
+        //Check for creating or opening a project
+        if (WindowProjectDialog::GetInstance().isCreatingProject || 
+            WindowProjectDialog::GetInstance().isOpeningProject || 
+            WindowProjectDialog::GetInstance().isOpeningFromLatestProjects) {
 
-    //Calculate ms and fps
-    CalcFPSandMS();
+            if (WindowProjectDialog::GetInstance().isCreatingProject) {
+                WindowProjectDialog::GetInstance().isCreatingProject = false;
 
-    //Get screen width
-    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    screenWidth = mode->width;
-    screenHeight = mode->height;
+                if (!Project::Get().CreateProject(WindowProjectDialog::GetInstance().createPath, WindowProjectDialog::GetInstance().createProjectName, window, context, nodesContext, entityTypes)) {
+                    WindowModalDialog::GetInstance().ShowModalAlert("Creating Project Error", "Couln't create this project!");
+                    return;
+                }
+            }
+            if (WindowProjectDialog::GetInstance().isOpeningProject) {
+                WindowProjectDialog::GetInstance().isOpeningProject = false;
 
-    //Update scenes
-    UpdateCurrentScene();
+                if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openPath, WindowProjectDialog::GetInstance().openProjectName, window, context, nodesContext, entityTypes)) {
+                    WindowModalDialog::GetInstance().ShowModalAlert("Loading Project Error", "Couln't load this project!");
+                    return;
+                }
+            }
+            if (WindowProjectDialog::GetInstance().isOpeningFromLatestProjects) {
+                WindowProjectDialog::GetInstance().isOpeningFromLatestProjects = false;
 
-    //Perform tab and scene delete actions
-    PerformDeleteActions();
+                if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openLatestPath, WindowProjectDialog::GetInstance().openLatestProjectName, window, context, nodesContext, entityTypes)) {
+                    WindowModalDialog::GetInstance().ShowModalQuestion(
+                        "Loading Project Error",
+                        "Couln't load this project! Would you like to delete it from latest projects?",
+                        []() {
+                            Project::Get().RemoveProjectFromLatestProjects(Project::Get().GetProjectFileLocation());
+                            Project::Get().SaveLatestProjects();
+                        }
+                    );
+                    return;
+                }
+            }
+
+            //Update physics for once
+            if (SceneManager::GetInstance().openedScene && SceneManager::GetInstance().openedScene->GetEntityManager()) {
+                for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
+                    Object* object = dynamic_cast<Object*>(entity.second.get());
+                    if (object != nullptr) {
+                        SceneManager::GetInstance().openedScene->physics->EndEmulationForRigidBody(object->rigidBody);
+                    }
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -134,11 +181,11 @@ PURPOSE: To draw main frame
 void Engine::Draw()
 {
     Graphics::GetInstance().Clear();
-    
+
     InterfaceManager::GetInstance().StartFrame();
 
-    InterfaceManager::GetInstance().DrawInterface(projectDir, [this]() { SaveProject(); }, entityTypes, FPS, ms, screenWidth, screenHeight);
-    
+    InterfaceManager::GetInstance().DrawInterface(Project::Get().GetProjectDir(), Project::Get().GetProjectFileLocation(), [this]() { Project::Get().SaveProject(); }, [this]() { Project::Get().CloseProject(); WindowProjectDialog::GetInstance().ResetInputs(); }, entityTypes, Project::Get().GetLatestProjects(), FPS, ms, screenWidth, screenHeight, Project::Get().projectOpened);
+
     InterfaceManager::GetInstance().EndFrame();
 
     InterfaceManager::GetInstance().UpdateViewportContext();
@@ -149,93 +196,13 @@ PURPOSE: Close all engines include this one
 */
 void Engine::CloseEngine()
 {
-    InputManager::GetInstance().ReleaseEngine();
+    if(Project::Get().projectOpened)
+        Project::Get().CloseProject();
+
     InterfaceManager::GetInstance().CloseInterface();
-    SceneManager::GetInstance().ClearManager();
-    VisualScriptManager::GetInstance().ReleaseManager();
     Graphics::GetInstance().ReleaseGraphics();
     entityTypes.clear();
     Logger::Log("P", "Cleared engine");
-}
-
-/*
-PURPOSE: To load existing project
-*/
-void Engine::LoadProject()
-{
-    //set up the project file and load it
-    std::string projectFile = projectDir + projectName + ".adrengineproject";
-    std::ifstream file(projectFile);
-
-    if (!file.is_open()) {
-        Logger::Log("E", "Unable to open file for loading project asset.");
-        return;
-    }
-    
-    nlohmann::json projectJson;
-    file >> projectJson;
-    file.close();
-
-    //loads asset database
-    AssetDatabase::GetInstance().LoadDatabase(projectDir + "asset_database.adrenginedatabase");
-
-    //loads all scenes and scripts that belong to the project
-    for (auto& scene : projectJson["scenes"]) {
-        SceneManager::GetInstance().scenes.insert(std::pair<std::string, std::string>(scene, scene));
-    }
-
-    if (projectJson.contains("opened-scene")) {
-        //it is a scene so load the scene
-        Scene* scene = SceneManager::GetInstance().LoadScene(projectJson["opened-scene"], projectDir, entityTypes);
-        if (!scene)
-            return;
-
-        //Create a tab and insert it to tabs
-        std::shared_ptr<Utils::Tab> tab = std::make_shared<Utils::Tab>();
-        tab->id = scene->sceneId;
-        tab->tabType = Utils::SceneEditor;
-        InterfaceManager::GetInstance().tabs.insert(std::pair<std::string, std::shared_ptr<Utils::Tab>>(tab->id, tab));
-
-        InterfaceManager::GetInstance().openedTab = tab.get();
-        InterfaceManager::GetInstance().selectedTabId = tab->id;
-    }
-}
-
-/*
-PURPOSE: To save the project
-*/
-void Engine::SaveProject()
-{
-    //get scene id
-    std::string sceneId = "";
-    if (SceneManager::GetInstance().openedScene.get())
-        sceneId = SceneManager::GetInstance().openedScene->sceneId;
-
-    //saves the project to the project file
-    std::string projectFile = projectDir + projectName + ".adrengineproject";
-    nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, sceneId);
-    AssetSaver::SaveProjectToFile(projectFile, projectJson);
-
-    //save assets
-    AssetDatabase::GetInstance().SaveDatabase(projectDir + "asset_database.adrenginedatabase");
-
-    //saves each opened-scenes and each entity that belong to the scene
-    Scene* scene = SceneManager::GetInstance().openedScene.get();
-    if (scene) {
-        AssetSaver::SaveSceneToFile(scene->ToJson(), projectDir, sceneId);
-
-        if (scene->GetEntityManager()) {
-            for (auto& entity : scene->GetEntityManager()->GetEntities()) {
-                AssetSaver::SaveEntityToFile(entity.second->ToJson(), projectDir, entity.second->GetEntityParams()->id);
-            }
-        }
-    }
-
-    //saves each opened-scripts
-    for (auto& scriptIter : VisualScriptManager::GetInstance().openedScripts) {
-        auto script = scriptIter.second.get();
-        AssetSaver::SaveScriptToFile(script->ToJson(), projectDir, script->scriptId);
-    }
 }
 
 /*
@@ -295,7 +262,7 @@ ENGINE_API void Engine::UpdateCurrentScene()
                 //Select nothing
                 WindowEntityProperties::GetInstance().SelectEntity(nullptr);
             },
-            projectDir);
+            Project::Get().GetProjectDir());
     }
 }
 
@@ -305,6 +272,9 @@ PURPOSE: To perform delete actions like deleting scene
 ENGINE_API void Engine::PerformDeleteActions()
 {
     //perform deleting scene
+    std::string projectDir = Project::Get().GetProjectDir();
+    std::string projectFile = Project::Get().GetProjectFileLocation();
+
     if (WindowAllScenes::GetInstance().pendingDelete) {
         SceneManager::GetInstance().DeleteScene(WindowAllScenes::GetInstance().selectedSceneId, projectDir);
 
@@ -313,8 +283,6 @@ ENGINE_API void Engine::PerformDeleteActions()
         InterfaceManager::GetInstance().openedTab = nullptr;
 
         //Save project
-        std::string projectFile = projectDir + "project.adrengineproject";
-
         std::string openedSceneId = "";
         if (SceneManager::GetInstance().openedScene)
             openedSceneId = SceneManager::GetInstance().openedScene->sceneId;
@@ -339,8 +307,6 @@ ENGINE_API void Engine::PerformDeleteActions()
                 InterfaceManager::GetInstance().openedTab = nullptr;
 
                 //Save project
-                std::string projectFile = projectDir + "project.adrengineproject";
-
                 std::string openedSceneId = "";
                 if (SceneManager::GetInstance().openedScene)
                     openedSceneId = SceneManager::GetInstance().openedScene->sceneId;

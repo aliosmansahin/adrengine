@@ -7,6 +7,7 @@ PURPOSE: Draws the window
 */
 void WindowAddScene::DrawWindow(
     std::string& projectDir,
+    std::string& projectFilePath,
     std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
     Utils::Tab*& openedTab,
     std::string& selectedTabId)
@@ -43,11 +44,9 @@ void WindowAddScene::DrawWindow(
         selectedTabId = tab->id;
 
         //Save the project
-        std::string projectFile = projectDir + "project.adrengineproject";
-
         nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, SceneManager::GetInstance().openedScene->sceneId);
 
-        AssetSaver::SaveProjectToFile(projectFile, projectJson);
+        AssetSaver::SaveProjectToFile(projectFilePath, projectJson);
 
         WindowEntityProperties::GetInstance().currentEntity = nullptr;
         WindowScene::GetInstance().selectedId = "";
