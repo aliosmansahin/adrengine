@@ -335,37 +335,18 @@ void EntityManager::UpdateEntities(
 	Camera*& gameCamera,
 	Physics* physics)
 {
-	//Perform deleting entity actions
-	if ((windowSceneFocused && windowSceneDeletePressed) || pendingDelete) {
-		//Check if the entity exists
-		auto entityIter = entities.find(selectedId);
-
-		if (entityIter == entities.end()) {
-			std::string str = "There is not any entity which has given id \"";
-			str += selectedId;
-			str += "\"";
-			Logger::Log("E", str.c_str());
-		}
-
-		//Get script id of the entity
-		std::string scriptId = "";
-		if (entityIter->second->GetEntityParams()->script)
-			scriptId = entityIter->second->GetEntityParams()->script->scriptId;
-
-		//Remove the entity
-		RemoveEntity(entityIter->second.get(), projectDir, sceneId, currentSceneJson, physics);
-
-		//Erase it
-		entities.erase(entityIter);
-
-		//Callback function for deleting tab and select entity to nothing
-		extraDeletingFunc(scriptId);
-
-		//Pending delete
-		if (pendingDelete) {
-			pendingDelete = false;
-		}
-	}
+	//Perform entity deletion actions
+	PerformEntityDeletions(
+		windowSceneFocused,
+		windowSceneDeletePressed,
+		pendingDelete,
+		selectedId,
+		projectDir,
+		sceneId,
+		currentSceneJson,
+		physics,
+		extraDeletingFunc
+	);
 
 	/*
 		Make entitites to follow their parents.
@@ -393,7 +374,7 @@ void EntityManager::UpdateEntities(
 PURPOSE: Sets the real pos, rot, sca of the entity depends on its parent,
 	for example, if the parent x=10, the child x=5, the entity will be shown at x=15 in the space
 */
-ENTITYMANAGER_API void EntityManager::SetEntityRealStats(Entity* entity)
+void EntityManager::SetEntityRealStats(Entity* entity)
 {
 	//Set real stats
 	auto params = entity->GetEntityParams();
@@ -491,6 +472,52 @@ ENTITYMANAGER_API Entity* EntityManager::GetEntityById(std::string id)
 }
 
 /*
+PURPOSE: Performs entity deletions if needed
+*/
+void EntityManager::PerformEntityDeletions(
+	bool windowSceneFocused,
+	bool windowSceneDeletePressed,
+	bool& pendingDelete,
+	std::string selectedId,
+	std::string& projectDir,
+	std::string& sceneId,
+	nlohmann::json& currentSceneJson,
+	Physics* physics,
+	std::function<void(std::string)> extraDeletingFunc)
+{
+	if ((windowSceneFocused && windowSceneDeletePressed) || pendingDelete) {
+		//Check if the entity exists
+		auto entityIter = entities.find(selectedId);
+
+		if (entityIter == entities.end()) {
+			std::string str = "There is not any entity which has given id \"";
+			str += selectedId;
+			str += "\"";
+			Logger::Log("E", str.c_str());
+		}
+
+		//Get script id of the entity
+		std::string scriptId = "";
+		if (entityIter->second->GetEntityParams()->script)
+			scriptId = entityIter->second->GetEntityParams()->script->scriptId;
+
+		//Remove the entity
+		RemoveEntity(entityIter->second.get(), projectDir, sceneId, currentSceneJson, physics);
+
+		//Erase it
+		entities.erase(entityIter);
+
+		//Callback function for deleting tab and select entity to nothing
+		extraDeletingFunc(scriptId);
+
+		//Pending delete
+		if (pendingDelete) {
+			pendingDelete = false;
+		}
+	}
+}
+
+/*
 PURPOSE: Releases all manager stuff
 */
 void EntityManager::ReleaseEntityManager(Physics* physics)
@@ -520,8 +547,6 @@ std::string EntityManager::CreateEntity(
 	std::shared_ptr<Entity>& parent,
 	Physics* physics)
 {
-	//std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
-
 	//Set the id
 	int index = 0;
 	std::string entityId = "";
