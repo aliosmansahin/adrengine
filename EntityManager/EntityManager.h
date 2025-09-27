@@ -33,8 +33,9 @@
 //GLM
 #include <glm/gtx/euler_angles.hpp>
 
-//Include for interface
+//Includes for interfacec
 #include "interfaces/IEntityManager/IEntityManager.h"
+#include "interfaces/IScene/IScene.h"
 
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
@@ -83,6 +84,14 @@ public:
 		Physics* physics,
 		bool saveScene = true);
 
+	ENTITYMANAGER_API void		  LoadEntitiesFromJson(
+		const nlohmann::json& json,
+		std::string& projectDir,
+		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
+		IScene* scene,
+		Physics* physics);
+
+	ENTITYMANAGER_API void		  BuildEntityHierarchy();
 
 	ENTITYMANAGER_API void		  RunEntitiesScriptBegin();
 	ENTITYMANAGER_API void		  ResetEntitiesRuntimeValues();

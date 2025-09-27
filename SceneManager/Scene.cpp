@@ -19,7 +19,7 @@ bool Scene::CreateScene(std::string sceneId, Utils::SceneType sceneType)
 	firstMouseX = InputManager::GetInstance().GetMouseX();
 	firstMouseY = InputManager::GetInstance().GetMouseY();
 
-	editorCamera = new Camera();
+	//Create parameters for the camera of the editor
 	CameraParams* cameraParams = new CameraParams();
 
 	//Set type of projection
@@ -28,9 +28,12 @@ bool Scene::CreateScene(std::string sceneId, Utils::SceneType sceneType)
 	if (sceneType == Utils::SCENE_3D)
 		cameraParams->projectionType = CameraProjection::PERPECTIVE;
 
+	//Create camera entity of the editor
+	editorCamera = new Camera();
 	editorCamera->CreateEntity(std::shared_ptr<CameraParams>(cameraParams));
 	currentCamera = editorCamera;
 
+	//Initialize physics
 	physics = new BulletPhysics();
 	physics->Init();
 
@@ -79,123 +82,31 @@ void Scene::UpdateScene(
 		*/
 	}
 	else {
-		//Use editor camera
-		currentCamera = editorCamera;
-
-		/*
-			If user doesn't play the scene,
-				give all controls to the scene,
-				these controls come build-in
-		*/
-
-		//If user right-clicks the scene, enable dragging the scene
-		if (InputManager::GetInstance().IsMouseButtonJustPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-			isDragging = true;
-			skipThisFrame = true;
-			InputManager::GetInstance().SetMouseVisibility(false);
-		}
-
-		//If user releases right-click, disable dragging the scene
-		if (InputManager::GetInstance().IsMouseButtonJustReleased(GLFW_MOUSE_BUTTON_RIGHT)) {
-			isDragging = false;
-			InputManager::GetInstance().SetMouseVisibility(true);
-		}
-
-		//Get if mouse left is clicked
-		leftPressed = InputManager::GetInstance().IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
-
-		//Get if delete key is pressed
-		deletePressed = InputManager::GetInstance().IsKeyPressed(GLFW_KEY_DELETE);
-
-		//Reset delta mouse position
-		deltaX = 0.0f;
-		deltaY = 0.0f;
-
-		if (isDragging) {
-			if (skipThisFrame) {
-				//Reset the mouse position for the first frame
-				firstMouseX = currentMouseX;
-				firstMouseY = currentMouseY;
-				skipThisFrame = false;
-			}
-
-			//Get delta mouse position
-			int deltaMouseX = currentMouseX - firstMouseX;
-			int deltaMouseY = currentMouseY - firstMouseY;
-
-			//Store window size
-			int windowWidth = window_width;
-			int windowHeight = window_height;
-
-			//Mouse movement effects the scene depends on the window size
-			float resX = (float)deltaMouseX * (float)windowWidth / (float)screenWidth;
-			float resY = (float)deltaMouseY * (float)windowHeight / (float)screenHeight;
-
-			//Save delta mouse position to use it from another window
-			deltaX = resX;
-			deltaY = resY;
-
-			if (windowGameViewportIsFocused) {
-				//If the type of the scene is 2d
-				if (sceneType == Utils::SCENE_2D) {
-					//Move the camera
-					currentCamera->AddPosition(glm::vec3(-resX, -resY, 0.0f), isPlaying);
-				}
-				//If the type of the scene is 3d
-				else if (sceneType == Utils::SCENE_3D) {
-					//Change the camera position
-					currentCamera->AddRotation(resX * 0.5f, -resY * 0.5f, isPlaying);
-
-					//Set the speed of the camera
-					float speed = 20.0f * Timer::GetDeltaTime();
-
-					glm::vec3 forwardVector = currentCamera->GetEntityParams()->GetRotation();
-
-					//Movement controls
-					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
-						currentCamera->AddPosition(forwardVector * speed, isPlaying);
-					}
-					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_S)) {
-						currentCamera->AddPosition(forwardVector * -speed, isPlaying);
-					}
-					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_D)) {
-						glm::vec3 right = glm::normalize(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
-
-						currentCamera->AddPosition(right * speed, isPlaying);
-					}
-					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_A)) {
-						glm::vec3 right = glm::normalize(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
-
-						currentCamera->AddPosition(right * -speed, isPlaying);
-					}
-					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_SPACE)) {
-						glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-						currentCamera->AddPosition(up * speed, isPlaying);
-					}
-					if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
-						glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-						currentCamera->AddPosition(up * -speed, isPlaying);
-					}
-				}
-			}
-
-			//Set last mouse to current mouse
-			firstMouseX = currentMouseX;
-			firstMouseY = currentMouseY;
-		}
+		//Use editor camera and update it
+		UpdateEditorCamera(
+			currentMouseX,
+			currentMouseY,
+			window_width,
+			window_height,
+			screenWidth,
+			screenHeight,
+			windowGameViewportIsFocused,
+			isPlaying
+		);
 	}
 
 	//Update the transform matrix depends on the scene type
-	if (currentCamera->GetProjectionType() == CameraProjection::ORTHOGRAPHIC)
-		ShaderManager::GetInstance().UpdateTransformMatrix2D((int)window_width, (int)window_height, (int)currentCamera->GetEntityParams()->GetPosition().x, (int)currentCamera->GetEntityParams()->GetPosition().y);
-	if (currentCamera->GetProjectionType() == CameraProjection::PERPECTIVE)
-		ShaderManager::GetInstance().UpdateTransformMatrix3D(currentCamera->GetEntityParams()->GetRotation(),
-			(int)window_width, (int)window_height,
-			currentCamera->GetEntityParams()->GetPosition().x, currentCamera->GetEntityParams()->GetPosition().y, currentCamera->GetEntityParams()->GetPosition().z,
-			currentCamera->GetFOV());
+	UpdateTransformMatrixForTheCamera(window_width, window_height);
 
+	/*
+		Sync rigidbodies and entities here
+		 * Entities -> Rigidbodies
+		 * Update Physics
+		 * Update Entities
+		 * Rigidbodies -> Entities
+	*/
+
+	//Update rigidbodies from entities
 	if (entityManager) {
 		entityManager->SetRigitbodiesFromEntities(physics);
 	}
@@ -209,6 +120,7 @@ void Scene::UpdateScene(
 		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, isPlaying, selectedId, extraDeletingFunc, projectDir, sceneId, sceneJson, gameCamera, physics);
 	}
 
+	//Update entities from rigidbodies
 	if (entityManager) {
 		entityManager->SetEntitiesFromRigidbodies(physics);
 	}
@@ -260,9 +172,12 @@ nlohmann::json Scene::ToJson()
 /*
 PURPOSE: Creates a scene from its json content
 */
-void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
+void Scene::FromJson(
+	const nlohmann::json& json,
+	std::string projectDir,
+	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
 {
-	//Some loads
+	//Scene properties
 	sceneId = json.value("id", "");
 	sceneName = json.value("name", "");
 	sceneType = (Utils::SceneType)json.value("type", Utils::SCENE_2D);
@@ -277,6 +192,7 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 	if (sceneType == Utils::SCENE_3D)
 		cameraParams->projectionType = CameraProjection::PERPECTIVE;
 
+	//Setup the editor camera
 	editorCamera->CreateEntity(std::shared_ptr<CameraParams>(cameraParams));
 
 	glm::vec3 cameraPos = glm::vec3(0.0f);
@@ -296,79 +212,161 @@ void Scene::FromJson(const nlohmann::json& json, std::string projectDir, std::un
 	entityManager = new EntityManager();
 	entityManager->InitEntityManager();
 
+	//Initialize physics
 	physics = new BulletPhysics();
 	physics->Init();
 
 	//Load each entity
-	if (json.contains("entities")) {
-		for (auto& entity : json["entities"]) {
-			//Load entity
-			nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(projectDir, std::string(entity));
-
-			std::shared_ptr<Entity> entity;
-			std::shared_ptr<EntityParams> params;
-			if (!entityJson.is_null()) {
-				std::string type = entityJson.value("type", "");
-				if (type.empty())
-					continue;
-				auto& types = entityTypes;
-				auto typeIter = types.find(type);
-				if (typeIter == types.end())
-					continue;
-
-				//Create an entity clone object from entity type
-				entity = typeIter->second.first->clone();
-
-				//Create parameter object for the entity
-				params = typeIter->second.second->clone();
-				entity->CreateEntity(params);
-				
-				//TileMap has own fromjson function
-				if (type == "TileMap") {
-					auto tileMap = std::dynamic_pointer_cast<TileMap>(entity);
-					if (tileMap.get()) {
-						tileMap->FromJson(entityJson);
-					}
-				}
-				//FlipBook has own fromjson function
-				else if (type == "FlipBook") {
-					auto flipBook = std::dynamic_pointer_cast<FlipBook>(entity);
-					if (flipBook.get()) {
-						flipBook->FromJson(entityJson);
-					}
-				}
-			}
-			
-			//Add the entity to entity manager
-			if(entity.get())
-				entityManager->GetEntities().insert(std::pair<std::string, std::shared_ptr<Entity>>(entityJson.value("id", ""), entity));
-
-			if(params.get())
-				params->FromJson(entityJson, projectDir, this);
-
-			//Initialize a rigidbody for object
-			Object* object = dynamic_cast<Object*>(entity.get());
-			if (object != nullptr) { //Ensure this is an object
-				physics->AddRigidBody(object->rigidBody);
-				//Load RigidBody from json
-				if (entityJson.contains("rigid-body")) {
-					nlohmann::json rbJson = entityJson["rigid-body"];
-					object->rigidBody->FromJson(rbJson);
-				}
-				//Apply props
-				physics->ApplyPropsForRigidBody(object->rigidBody);
-			}
-		}
-	}
+	entityManager->LoadEntitiesFromJson(json, projectDir, entityTypes, this, physics);
 
 	//Setup parent child relationships
-	for (auto& entity : GetEntityManager()->GetEntities()) {
-		for (auto& child : GetEntityManager()->GetEntities()) {
-			if (entity.second->GetEntityParams()->id == child.second->GetEntityParams()->parentId) {
-				child.second->GetEntityParams()->parent = entity.second;
+	entityManager->BuildEntityHierarchy();
+}
 
-				entity.second->GetEntityParams()->children.push_back(child.second);
+/*
+PURPOSE: Updates editor camera, handles inputs
+*/
+void Scene::UpdateEditorCamera(
+	int currentMouseX,
+	int currentMouseY,
+	int window_width,
+	int window_height,
+	int screenWidth,
+	int screenHeight,
+	bool windowGameViewportIsFocused,
+	bool isPlaying)
+{
+	//Use editor camera
+	currentCamera = editorCamera;
+
+	/*
+		If user doesn't play the scene,
+			give all controls to the scene,
+			these controls come build-in
+	*/
+
+	//If user right-clicks the scene, enable dragging the scene
+	if (InputManager::GetInstance().IsMouseButtonJustPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+		isDragging = true;
+		skipThisFrame = true;
+		InputManager::GetInstance().SetMouseVisibility(false);
+	}
+
+	//If user releases right-click, disable dragging the scene
+	if (InputManager::GetInstance().IsMouseButtonJustReleased(GLFW_MOUSE_BUTTON_RIGHT)) {
+		isDragging = false;
+		InputManager::GetInstance().SetMouseVisibility(true);
+	}
+
+	//Get if mouse left is clicked
+	leftPressed = InputManager::GetInstance().IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
+
+	//Get if delete key is pressed
+	deletePressed = InputManager::GetInstance().IsKeyPressed(GLFW_KEY_DELETE);
+
+	//Reset delta mouse position
+	deltaX = 0.0f;
+	deltaY = 0.0f;
+
+	if (isDragging) {
+		if (skipThisFrame) {
+			//Reset the mouse position for the first frame
+			firstMouseX = currentMouseX;
+			firstMouseY = currentMouseY;
+			skipThisFrame = false;
+		}
+
+		//Get delta mouse position
+		int deltaMouseX = currentMouseX - firstMouseX;
+		int deltaMouseY = currentMouseY - firstMouseY;
+
+		//Store window size
+		int windowWidth = window_width;
+		int windowHeight = window_height;
+
+		//Mouse movement effects the scene depends on the window size
+		float resX = (float)deltaMouseX * (float)windowWidth / (float)screenWidth;
+		float resY = (float)deltaMouseY * (float)windowHeight / (float)screenHeight;
+
+		//Save delta mouse position to use it from another window
+		deltaX = resX;
+		deltaY = resY;
+
+		if (windowGameViewportIsFocused) {
+			//If the type of the scene is 2d
+			if (sceneType == Utils::SCENE_2D) {
+				//Move the camera
+				currentCamera->AddPosition(glm::vec3(-resX, -resY, 0.0f), isPlaying);
+			}
+			//If the type of the scene is 3d
+			else if (sceneType == Utils::SCENE_3D) {
+				//Change the camera position
+				currentCamera->AddRotation(resX * 0.5f, -resY * 0.5f, isPlaying);
+
+				//Set the speed of the camera
+				float speed = 20.0f * Timer::GetDeltaTime();
+
+				glm::vec3 forwardVector = currentCamera->GetEntityParams()->GetRotation();
+
+				//Movement controls
+				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_W)) {
+					currentCamera->AddPosition(forwardVector * speed, isPlaying);
+				}
+				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_S)) {
+					currentCamera->AddPosition(forwardVector * -speed, isPlaying);
+				}
+				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_D)) {
+					glm::vec3 right = glm::normalize(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
+
+					currentCamera->AddPosition(right * speed, isPlaying);
+				}
+				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_A)) {
+					glm::vec3 right = glm::normalize(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
+
+					currentCamera->AddPosition(right * -speed, isPlaying);
+				}
+				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_SPACE)) {
+					glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+					currentCamera->AddPosition(up * speed, isPlaying);
+				}
+				if (InputManager::GetInstance().IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
+					glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+					currentCamera->AddPosition(up * -speed, isPlaying);
+				}
 			}
 		}
+
+		//Set last mouse to current mouse
+		firstMouseX = currentMouseX;
+		firstMouseY = currentMouseY;
 	}
+}
+
+
+/*
+PURPOSE: Updates transformation matrices of the camera.
+	Updates 2d when the camera type is orthographic.
+	Updates 3d when the camera type is perpective.
+*/
+void Scene::UpdateTransformMatrixForTheCamera(int window_width, int window_height)
+{
+	if (currentCamera->GetProjectionType() == CameraProjection::ORTHOGRAPHIC)
+		ShaderManager::GetInstance().UpdateTransformMatrix2D(
+			window_width,
+			window_height,
+			(int)currentCamera->GetEntityParams()->GetPosition().x,
+			(int)currentCamera->GetEntityParams()->GetPosition().y
+		);
+	if (currentCamera->GetProjectionType() == CameraProjection::PERPECTIVE)
+		ShaderManager::GetInstance().UpdateTransformMatrix3D(
+			currentCamera->GetEntityParams()->GetRotation(),
+			window_width,
+			window_height,
+			currentCamera->GetEntityParams()->GetPosition().x,
+			currentCamera->GetEntityParams()->GetPosition().y,
+			currentCamera->GetEntityParams()->GetPosition().z,
+			currentCamera->GetFOV()
+		);
 }

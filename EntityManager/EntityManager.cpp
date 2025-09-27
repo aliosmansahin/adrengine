@@ -711,3 +711,91 @@ bool EntityManager::RemoveEntity(
 	Logger::Log("P", str.c_str());
 	return true;
 }
+
+ENTITYMANAGER_API void EntityManager::LoadEntitiesFromJson(
+	const nlohmann::json& json,
+	std::string& projectDir,
+	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
+	IScene* scene,
+	Physics* physics)
+{
+	if (json.contains("entities")) {
+		for (auto& entityName : json["entities"]) {
+			/* Load Entity */
+
+			//Entity pointers
+			std::shared_ptr<Entity> entity;
+			std::shared_ptr<EntityParams> params;
+
+			//Load entity json
+			nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(projectDir, std::string(entityName));
+			if (entityJson.is_null())
+				continue;
+
+			//Checks for the type
+			std::string type = entityJson.value("type", "");
+			if (type.empty())
+				continue;
+
+			auto& types = entityTypes;
+			auto typeIter = types.find(type);
+			if (typeIter == types.end())
+				continue;
+
+			//Create an entity clone object from entity type
+			entity = typeIter->second.first->clone();
+
+			//Create parameter object for the entity
+			params = typeIter->second.second->clone();
+			entity->CreateEntity(params);
+
+			//TileMap has own fromjson function
+			auto tileMap = std::dynamic_pointer_cast<TileMap>(entity);
+			if (tileMap.get()) {
+				tileMap->FromJson(entityJson);
+			}
+			//FlipBook has own fromjson function
+			auto flipBook = std::dynamic_pointer_cast<FlipBook>(entity);
+			if (flipBook.get()) {
+				flipBook->FromJson(entityJson);
+			}
+
+			//Add the entity to entity manager
+			if (entity.get())
+				entities.insert(std::pair<std::string, std::shared_ptr<Entity>>(entityJson.value("id", ""), entity));
+
+			if (params.get())
+				params->FromJson(entityJson, projectDir, scene);
+
+			//Initialize a rigidbody for object
+			Object* object = dynamic_cast<Object*>(entity.get());
+			if (object != nullptr) { //Ensure this is an object
+				physics->AddRigidBody(object->rigidBody);
+				//Load RigidBody from json
+				if (entityJson.contains("rigid-body")) {
+					nlohmann::json rbJson = entityJson["rigid-body"];
+					object->rigidBody->FromJson(rbJson);
+				}
+				//Apply props
+				physics->ApplyPropsForRigidBody(object->rigidBody);
+			}
+		}
+	}
+}
+
+/*
+PURPOSE: Builds an hierarchy for all entities in the scene
+	Uses parent-child relationships
+*/
+ENTITYMANAGER_API void EntityManager::BuildEntityHierarchy()
+{
+	for (auto& entity : entities) {
+		for (auto& child : entities) {
+			if (entity.second->GetEntityParams()->id == child.second->GetEntityParams()->parentId) {
+				child.second->GetEntityParams()->parent = entity.second;
+
+				entity.second->GetEntityParams()->children.push_back(child.second);
+			}
+		}
+	}
+}
