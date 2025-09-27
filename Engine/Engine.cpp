@@ -126,18 +126,40 @@ void Engine::Update()
     else {
         //TODO: Move to a function
         //Check for creating or opening a project
-        if (WindowProjectDialog::GetInstance().isCreatingProject || WindowProjectDialog::GetInstance().isOpeningProject) {
+        if (WindowProjectDialog::GetInstance().isCreatingProject || 
+            WindowProjectDialog::GetInstance().isOpeningProject || 
+            WindowProjectDialog::GetInstance().isOpeningFromLatestProjects) {
+
             if (WindowProjectDialog::GetInstance().isCreatingProject) {
                 WindowProjectDialog::GetInstance().isCreatingProject = false;
 
-                if (!Project::Get().CreateProject(WindowProjectDialog::GetInstance().createPath, WindowProjectDialog::GetInstance().createProjectName, window, context, nodesContext, entityTypes))
-                    return; //TODO: Add Loading error dialog window
+                if (!Project::Get().CreateProject(WindowProjectDialog::GetInstance().createPath, WindowProjectDialog::GetInstance().createProjectName, window, context, nodesContext, entityTypes)) {
+                    WindowModalDialog::GetInstance().ShowModalAlert("Creating Project Error", "Couln't create this project!");
+                    return;
+                }
             }
             if (WindowProjectDialog::GetInstance().isOpeningProject) {
                 WindowProjectDialog::GetInstance().isOpeningProject = false;
 
-                if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openPath, WindowProjectDialog::GetInstance().openProjectName, window, context, nodesContext, entityTypes))
-                    return; //TODO: Add Loading error dialog window
+                if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openPath, WindowProjectDialog::GetInstance().openProjectName, window, context, nodesContext, entityTypes)) {
+                    WindowModalDialog::GetInstance().ShowModalAlert("Loading Project Error", "Couln't load this project!");
+                    return;
+                }
+            }
+            if (WindowProjectDialog::GetInstance().isOpeningFromLatestProjects) {
+                WindowProjectDialog::GetInstance().isOpeningFromLatestProjects = false;
+
+                if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openLatestPath, WindowProjectDialog::GetInstance().openLatestProjectName, window, context, nodesContext, entityTypes)) {
+                    WindowModalDialog::GetInstance().ShowModalQuestion(
+                        "Loading Project Error",
+                        "Couln't load this project! Would you like to delete it from latest projects?",
+                        []() {
+                            Project::Get().RemoveProjectFromLatestProjects(Project::Get().GetProjectFileLocation());
+                            Project::Get().SaveLatestProjects();
+                        }
+                    );
+                    return;
+                }
             }
 
             //Update physics for once
@@ -162,7 +184,7 @@ void Engine::Draw()
 
     InterfaceManager::GetInstance().StartFrame();
 
-    InterfaceManager::GetInstance().DrawInterface(Project::Get().GetProjectDir(), Project::Get().GetProjectFileLocation(), [this]() { Project::Get().SaveProject(); }, [this]() { Project::Get().CloseProject(); }, entityTypes, Project::Get().GetLatestProjects(), FPS, ms, screenWidth, screenHeight, Project::Get().projectOpened);
+    InterfaceManager::GetInstance().DrawInterface(Project::Get().GetProjectDir(), Project::Get().GetProjectFileLocation(), [this]() { Project::Get().SaveProject(); }, [this]() { Project::Get().CloseProject(); WindowProjectDialog::GetInstance().ResetInputs(); }, entityTypes, Project::Get().GetLatestProjects(), FPS, ms, screenWidth, screenHeight, Project::Get().projectOpened);
 
     InterfaceManager::GetInstance().EndFrame();
 

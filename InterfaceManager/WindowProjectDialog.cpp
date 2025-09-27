@@ -14,7 +14,6 @@ void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
     //Inputbox of path of asset
     ImGui::SeparatorText("Create a Project");
     ImGui::SetNextItemWidth(500.0f);
-    static char createPathBuf[256];
     ImGui::InputTextWithHint("Create Project Path", "Path", createPathBuf, sizeof(createPathBuf));
     if (ImGui::IsItemEdited()) {
         createPathBuf[sizeof(createPathBuf) - 1] = '\0';
@@ -31,7 +30,6 @@ void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
     }
 
     //Inputbox of project name
-    static char nameBuf[32] = { 0 };
     ImGui::SetNextItemWidth(200.0f);
     ImGui::InputTextWithHint("Create Project Name", "Name", nameBuf, sizeof(nameBuf));
     if (ImGui::IsItemEdited()) {
@@ -42,9 +40,6 @@ void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
     //Create project button
     if (!createPath.empty() && !createProjectName.empty()) {
         if (ImGui::Button("Create Project")) {
-            memset(createPathBuf, 0, sizeof(createPathBuf));
-            memset(nameBuf, 0, sizeof(nameBuf));
-
             isCreatingProject = true;
         }
     }
@@ -53,7 +48,6 @@ void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
 
     ImGui::SeparatorText("Open a Project");
     ImGui::SetNextItemWidth(500.0f);
-    static char openPathBuf[256];
     ImGui::InputTextWithHint("Open Project Path", "Path", openPathBuf, sizeof(openPathBuf));
     if (ImGui::IsItemEdited()) {
         openPathBuf[sizeof(openPathBuf) - 1] = '\0';
@@ -75,8 +69,6 @@ void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
     //Open project button
     if (!openPath.empty()) {
         if (ImGui::Button("Open Project")) {
-            memset(openPathBuf, 0, sizeof(openPathBuf));
-
             isOpeningProject = true;
         }
     }
@@ -103,10 +95,10 @@ void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
 
             //When user double-clicks, open the project
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-                openPath = projectPath;
-                openProjectName = projectName;
+                openLatestPath = projectPath;
+                openLatestProjectName = projectName;
 
-                isOpeningProject = true;
+                isOpeningFromLatestProjects = true;
             }
             ImGui::SameLine();
         }
@@ -145,6 +137,26 @@ void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
 
         ImGuiFileDialog::Instance()->Close();
     }
+}
+
+/*
+PURPOSE: Resets all buffers and variables
+*/
+INTERFACEMANAGER_API void WindowProjectDialog::ResetInputs()
+{
+    createPath = "";
+    createProjectName = "";
+
+    openPath = "";
+    openProjectName = "";
+
+    openLatestPath = "";
+    openLatestProjectName = "";
+
+    memset(createPathBuf, 0, sizeof(createPathBuf));
+    memset(nameBuf, 0, sizeof(nameBuf));
+
+    memset(openPathBuf, 0, sizeof(openPathBuf));
 }
 
 /*

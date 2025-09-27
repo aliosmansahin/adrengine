@@ -237,6 +237,13 @@ void InterfaceManager::DrawInterface(
 	if (WindowEditorSettings::GetInstance().showWindow)
 		WindowEditorSettings::GetInstance().DrawWindow(&darkTheme, [this]() { SetDarkTheme(); });
 	//std::bind(&InterfaceManager::SetDarkTheme, &InterfaceManager::GetInstance()) //TODO: I MIGHT USE THIS
+
+
+	/* Modal Window */
+
+	WindowModalDialog::GetInstance().OpenModalIfNeeded();
+
+	WindowModalDialog::GetInstance().DrawWindow();
 }
 
 /*
