@@ -36,17 +36,20 @@ public:
 		Utils::Tab*& openedTab, std::string& projectDir);
 	VISUALSCRIPTMANAGER_API bool														   SaveScript(std::shared_ptr<VisualScript> script, std::string& projectDir);
 
-	//compilation
-	VISUALSCRIPTMANAGER_API void														   RunScriptsBegin();
-
 	//getter for the instance
 	VISUALSCRIPTMANAGER_API static VisualScriptManager&                                    GetInstance();
+
+private:
+	//helper
+	void InitializeNodeTypes();
+
 private:
 	//singleton
 	VisualScriptManager() = default;
 	~VisualScriptManager() = default;
 	VisualScriptManager(const VisualScriptManager&) = delete;
 	VisualScriptManager& operator=(const VisualScriptManager&) = delete;
+
 public:
 	//scripts
 	std::unordered_map<std::string, std::shared_ptr<VisualScript>> openedScripts;
