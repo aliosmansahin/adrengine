@@ -14,22 +14,29 @@ public:
 	//main funcs
 	bool		   CreateWindow(int width, int height, const char* title);
 	void		   CloseWindow();
+
 public:			   
-	//getters	   
+	//getters and helpers
 	bool		   ShouldClose() { return glfwWindowShouldClose(window); }
 	void		   SwapBuffers() { return glfwSwapBuffers(window); }
 	void		   PollEvents() { return glfwPollEvents(); }
-	void		   LoadGLFunctions();
 	GLFWwindow*	   GetWindow() { return window; }
+
 public:
 	//getter for the instance
 	static Window& GetInstance();
+
+private:
+	//private function which will be used by Window class
+	void		   LoadGLFunctions();
+	void		   SetIconOfWindow();
 private:
 	//singleton
 	Window() = default;
 	~Window() = default;
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
+
 private:
 	//glfw
 	GLFWwindow* window = nullptr;

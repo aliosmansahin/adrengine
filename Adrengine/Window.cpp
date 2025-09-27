@@ -2,6 +2,7 @@
 #include "InputManager.h"
 #include "Engine.h"
 
+//STB_IMAGE
 #define STB_IMAGE_IMPLEMENTATION
 #include "stbi/stb_image.h"
 
@@ -31,21 +32,7 @@ bool Window::CreateWindow(int width, int height, const char* title)
     window = glfwCreateWindow(width, height, title, NULL, NULL);
     
     //Load window icon and set it to the window
-    int imageWidth, imageHeight, channels;
-    unsigned char* image = stbi_load("icon.png", &imageWidth, &imageHeight, &channels, 4); // RGBA
-
-    if (image) {
-        GLFWimage glfwImage;
-        glfwImage.width = imageWidth;
-        glfwImage.height = imageHeight;
-        glfwImage.pixels = image;
-
-        glfwSetWindowIcon(window, 1, &glfwImage); // set the icon
-        stbi_image_free(image); // free the memory
-    }
-    else {
-        Logger::Log("E", "Could not load icon of program, using default");
-    }
+    SetIconOfWindow();
 
     //make the window's context current and check if it's corrent
     glfwMakeContextCurrent(window);
@@ -144,14 +131,40 @@ void Window::LoadGLFunctions()
     adr::adr_glDepthFunc = glad_glDepthFunc;
 }
 
-//PURPOSE: To get the instance of window singleton class
+/*
+PURPOSE: Loads icon of the and sets it
+*/
+void Window::SetIconOfWindow()
+{
+    int imageWidth, imageHeight, channels;
+    unsigned char* image = stbi_load("icon.png", &imageWidth, &imageHeight, &channels, 4); // RGBA
+
+    if (image) {
+        GLFWimage glfwImage;
+        glfwImage.width = imageWidth;
+        glfwImage.height = imageHeight;
+        glfwImage.pixels = image;
+
+        glfwSetWindowIcon(window, 1, &glfwImage); // set the icon
+        stbi_image_free(image); // free the memory
+    }
+    else {
+        Logger::Log("E", "Could not load icon of program, using default");
+    }
+}
+
+/*
+PURPOSE: Returns instance of window singleton class
+*/
 Window& Window::GetInstance()
 {
     static Window window;
     return window;
 }
 
-//To release window and close it
+/*
+PURPOSE: Releases window and closes it
+*/
 void Window::CloseWindow()
 {
     //Window size callback
