@@ -1,11 +1,16 @@
 #include "pch.h"
 #include "Localization.h"
 
+//Statics
 std::string Localization::current = "english";
 std::unordered_map<std::string, std::string> Localization::language;
 
 /*
 PURPOSE: Initialize current language
+	Loads language by key-value
+	Keys will be used by get value text depends on current language
+
+	This function have to be called before all using texts
 */
 bool Localization::LoadLanguage()
 {
@@ -25,7 +30,6 @@ bool Localization::LoadLanguage()
 			we will use english for default
 		*/
 		Logger::Log("E", "Current language file couldn't be loaded, english will be loaded");
-		current = "english";
 	}
 
 	//clear the language map
@@ -47,7 +51,7 @@ bool Localization::LoadLanguage()
 		//Remove the first character which is a space
 		std::getline(file, value);
 		value.erase(value.begin());
-		language.insert(std::pair<const char*, const char*>(key.c_str(), value.c_str()));
+		language.insert({ key, value });
 	}
 
 	//close file
@@ -56,7 +60,8 @@ bool Localization::LoadLanguage()
 }
 
 /*
-PURPOSE: To get value of key that was requested
+PURPOSE: Gets value text in active language from a key
+	if the key doesn't exist in localization, returns the key
 */
 const char* Localization::GetString(std::string key)
 {
