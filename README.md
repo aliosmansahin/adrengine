@@ -41,11 +41,7 @@ A game engine
 git clone https://github.com/aliosmansahin/adrengine.git
 ```
 2- Open the solution with VS 2022 <br><br>
-3- Edit the lines [Project Path Line][project-path-line-url] and [Project Folder Line][project-folder-line-url] which define project folder and project path (1) <br><br>
-4- Create a folder named [Project Folder Line][project-folder-line-url] (1) <br><br>
-5- Build and run the solution with "Local Windows Debugger" <br><br>
-
-(1) - (This line will be removed when the project system was added)
+3- Build and run the solution with "Local Windows Debugger" <br><br>
 
 ## How to Use
 ### Scenes
