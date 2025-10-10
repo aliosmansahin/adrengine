@@ -4,10 +4,10 @@
 /*
 PURPOSE: Initializes the entity
 */
-bool DirectionalLight::CreateEntity(std::shared_ptr<EntityParams> params)
+bool DirectionalLight::CreateEntity(std::shared_ptr<IEntityParams> params)
 {
 	//Cast EntityParams to DirectionalLightParams to use its properties
-	auto casted = std::dynamic_pointer_cast<DirectionalLightParams>(params);
+	auto casted = std::dynamic_pointer_cast<IDirectionalLightParams>(params);
 	if (!casted) {
 		Logger::Log("E", "Casting failed at dynamic_cast<DirectionalLightParams*>(params)");
 		return false;
@@ -57,7 +57,7 @@ void DirectionalLight::Update()
 	float near_plane = 1.0f, far_plane = 1000.0f;
 
 	//Calculate light martix
-	glm::vec3 lightDir = glm::normalize(params->direction);
+	glm::vec3 lightDir = glm::normalize(params->GetDirection());
 	glm::mat4 lightProjection = glm::ortho(-width, width, -width, width, near_plane, far_plane);
 	//lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
 	glm::mat4 lightView = glm::lookAt(-lightDir * 100.0f, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -75,9 +75,9 @@ void DirectionalLight::Draw(glm::vec3 currentSceneCameraPos)
 /*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
-EntityParams* DirectionalLight::GetEntityParams()
+std::shared_ptr<IEntityParams> DirectionalLight::GetEntityParams()
 {
-    return params.get();
+	return params;
 }
 
 /*
@@ -92,4 +92,12 @@ nlohmann::json DirectionalLight::ToJson()
 		j = params->ToJson();
 	}
 	return j;
+}
+
+/*
+PURPOSE: Getters for lightSpaceMatrix
+*/
+ENTITYMANAGER_API glm::mat4 DirectionalLight::GetLightSpaceMatrix()
+{
+	return lightSpaceMatrix;
 }

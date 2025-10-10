@@ -6,22 +6,25 @@
 #define INTERFACEMANAGER_API __declspec(dllimport)
 #endif
 
+#include "Graphics.h"
+
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
-#include "WindowTileMapBrush.h"
-
 #include "Localization.h"
 #include "InputManager.h"
 #include "Logger.h"
-#include "TileMap.h"
-#include "SceneManager.h"
+
+#include "interfaces/IEntity/ISprite2D/ITileMap/ITileMap.h"
+#include "interfaces/ISceneManager/ISceneManager.h"
+
+#include "ServiceLocator.h"
 
 class WindowTileMapViewer
 {
 public:
-	INTERFACEMANAGER_API void DrawWindow(int screenWidth, int screenHeight);
+	INTERFACEMANAGER_API void DrawWindow();
 
 	//singleton
 	INTERFACEMANAGER_API static WindowTileMapViewer& GetInstance();
@@ -32,7 +35,7 @@ private:
 	WindowTileMapViewer operator=(const WindowTileMapViewer&) = delete;
 public:
 	bool showWindow = false;
-	TileMap* edittingTileMap = nullptr;
+	std::shared_ptr<ITileMap> edittingTileMap = nullptr;
 	int window_width = 0;
 	int window_height = 0;
 

@@ -11,12 +11,22 @@
 
 #include <Logger.h>
 #include <AssetDatabase.h>
-#include <SceneManager.h>
-#include <InterfaceManager.h>
+#include <AssetSaver.h>
+#include <InputManager.h>
 
 #include <nlohmann_json/json.hpp>
 
-class Project
+#include "interfaces/ISceneManager/ISceneManager.h"
+
+#include "interfaces/IEntity/IEntity.h"
+
+#include "interfaces/IVisualScriptManager/IVisualScriptManager.h"
+
+#include "interfaces/IProject/IProject.h"
+
+#include "ServiceLocator.h"
+
+class Project : public IProject
 {
 private:
 	//Singleton
@@ -26,8 +36,10 @@ private:
 	Project& operator=(const Project&) = delete;
 
 public:
-	//getter for the instance
-	PROJECT_API static Project& Get();
+	static Project& GetInstance() {
+		static Project instance;
+		return instance;
+	}
 
 public:
 	//main
@@ -36,35 +48,34 @@ public:
 		std::string projectName,
 		GLFWwindow* window,
 		ImGuiContext* context,
-		ImNodesContext* nodesContext,
-		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes
-	);
+		ImNodesContext* nodesContext
+	) override;
 	PROJECT_API bool OpenProject(
 		std::string& projectPath,
 		std::string& projectName,
 		GLFWwindow* window,
 		ImGuiContext* context,
-		ImNodesContext* nodesContext,
-		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes
-	);
-	PROJECT_API bool CloseProject();
-	PROJECT_API bool SaveProject();
+		ImNodesContext* nodesContext
+	) override;
+	PROJECT_API bool CloseProject() override;
+	PROJECT_API bool SaveProject() override;
 
 	//getters
-	PROJECT_API std::string& GetProjectFileLocation();
-	PROJECT_API std::string& GetProjectDir();
+	PROJECT_API std::string& GetProjectFileLocation() override;
+	PROJECT_API std::string& GetProjectDir() override;
 
 	//latest projects
-	PROJECT_API void LoadLatestProjects();
-	PROJECT_API void AddProjectToLatestProjects(std::string& projectFilepath);
-	PROJECT_API void RemoveProjectFromLatestProjects(std::string& projectFilepath);
-	PROJECT_API void RemoveProjectFromLatestProjectsByIndex(int& index);
-	PROJECT_API void MoveProjectToBegin(std::string& projectFilepath);
-	PROJECT_API void MoveProjectToBeginByIndex(int& index, std::string& projectFilepathWillBeAdded);
-	PROJECT_API void SaveLatestProjects();
-	PROJECT_API std::vector<std::string>& GetLatestProjects();
+	PROJECT_API void LoadLatestProjects() override;
+	PROJECT_API void AddProjectToLatestProjects(std::string& projectFilepath) override;
+	PROJECT_API void RemoveProjectFromLatestProjects(std::string& projectFilepath) override;
+	PROJECT_API void RemoveProjectFromLatestProjectsByIndex(int& index) override;
+	PROJECT_API void MoveProjectToBegin(std::string& projectFilepath) override;
+	PROJECT_API void MoveProjectToBeginByIndex(int& index, std::string& projectFilepathWillBeAdded) override;
+	PROJECT_API void SaveLatestProjects() override;
+	PROJECT_API std::vector<std::string>& GetLatestProjects() override;
+	PROJECT_API bool GetProjectOpened() override;
 
-public:
+private:
 	//Is a project opened
 	bool projectOpened = false;
 
@@ -78,4 +89,3 @@ private:
 	//Stores latest projects file paths
 	std::vector<std::string> latestProjects;
 };
-

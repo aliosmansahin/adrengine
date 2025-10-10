@@ -15,51 +15,32 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <nlohmann_json/json.hpp>
+#include "interfaces/IRigidBody/IRigidBody.h"
 
-//Stores properties for rigidbody
-struct RigidBodyProperties {
-	bool isKinematic = false;
-	float mass = 1;
-	glm::vec3 inertia = glm::vec3(0, 0, 0);
-	float restitution = 0.5f;
-	float linearDamping = 0.0f;
-	float angularDamping = 0.0f;
-
-	union ShapeProps {
-		glm::vec3 halfExtentsForBox = glm::vec3(1.0f);
-	} shapeProps;
-};
-
-enum class RigidBodyShape {
-	Box, //Will be added more shapes
-	None,
-};
-
-class RigidBody
+class RigidBody : public IRigidBody
 {
 public:
-	PHYSICS_API btRigidBody* Create();
-	PHYSICS_API void         Delete();
-	PHYSICS_API btRigidBody* Get() { return rigidBody.get(); }
-	PHYSICS_API RigidBodyShape GetShape();
-	PHYSICS_API void           UpdateShapeHalfExtents(RigidBodyShape rbShape);
+	PHYSICS_API std::shared_ptr<btRigidBody> Create() override;
+	PHYSICS_API void						 Delete() override;
+	PHYSICS_API std::shared_ptr<btRigidBody> Get() override { return rigidBody; }
+	PHYSICS_API RigidBodyShape GetShape() override;
+	PHYSICS_API void           UpdateShapeHalfExtents(RigidBodyShape rbShape) override;
 
 public:
-	PHYSICS_API RigidBodyProperties* GetProps() { return props; };
-	PHYSICS_API void				 SetProps(RigidBodyProperties* props) { this->props = props; } //Dont have to use it for now
+	PHYSICS_API std::shared_ptr<RigidBodyProperties> GetProps() override { return props; };
+	PHYSICS_API void				 SetProps(std::shared_ptr<RigidBodyProperties> props) override { this->props = props; } //Dont have to use it for now
 
 public:
 	//Serialization
-	PHYSICS_API nlohmann::json ToJson();
-	PHYSICS_API void FromJson(nlohmann::json& json);
+	PHYSICS_API nlohmann::json ToJson() override;
+	PHYSICS_API void FromJson(nlohmann::json& json) override;
 
 private:
 	std::shared_ptr<btRigidBody> rigidBody;
 	std::shared_ptr<btCollisionShape> shape;
-	btDefaultMotionState* motionState;
+	std::shared_ptr<btDefaultMotionState> motionState;
 
 private:
-	RigidBodyProperties* props = nullptr;
+	std::shared_ptr<RigidBodyProperties> props = nullptr;
 };
 

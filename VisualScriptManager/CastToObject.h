@@ -12,7 +12,7 @@ class CastToObject : public Node
 {
 public:
 	//execution
-	VISUALSCRIPTMANAGER_API Value				  Evaluate(Pin* pin) override;
+	VISUALSCRIPTMANAGER_API Value				  Evaluate(std::shared_ptr<IPin> pin) override;
 
 	//getters and setters
 	VISUALSCRIPTMANAGER_API void				  SetPins() override;
@@ -21,7 +21,7 @@ public:
 	}
 
 	//clone
-	VISUALSCRIPTMANAGER_API std::shared_ptr<Node> clone() override {
+	VISUALSCRIPTMANAGER_API std::shared_ptr<INode> clone() override {
 		return std::make_shared<CastToObject>(*this);
 	}
 };

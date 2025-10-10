@@ -3,6 +3,14 @@
 #include "Engine.h"
 
 /*
+This is for including all window classes,
+because MenuBar includes all window classes,
+so we don't need to include them one by one for now
+This will be changed later
+*/
+#include "MenuBar.h"
+
+/*
 PURPOSE: Initialize engine
 */
 bool Engine::InitEngine(GLFWwindow* window)
@@ -26,8 +34,13 @@ bool Engine::InitEngine(GLFWwindow* window)
     if (!InterfaceManager::GetInstance().InitInterface(window, context, nodesContext))
         return false;
 
+    //Initialize managers
+    ServiceLocator::Register<IProject>(&Project::GetInstance());
+	ServiceLocator::Register<ISceneManager>(&SceneManager::GetInstance());
+	ServiceLocator::Register<IVisualScriptManager>(&VisualScriptManager::GetInstance());
+
     //Load latest projects
-    Project::Get().LoadLatestProjects();
+    ServiceLocator::Get<IProject>()->LoadLatestProjects();
 
     //TODO: Add Open With option to project files
 
@@ -85,7 +98,7 @@ PURPOSE: Main Update Function of engine
 */
 void Engine::Update()
 {
-    if (Project::Get().projectOpened) {
+    if (ServiceLocator::Get<IProject>()->GetProjectOpened()) {
         UpdateEngineWhenProjectIsOpened();
     }
     else {
@@ -102,24 +115,7 @@ void Engine::Draw()
 
     InterfaceManager::GetInstance().StartFrame();
 
-    InterfaceManager::GetInstance().DrawInterface(
-        Project::Get().GetProjectDir(),
-        Project::Get().GetProjectFileLocation(),
-        [this]() {
-            Project::Get().SaveProject();
-        },
-        [this]() {
-            Project::Get().CloseProject();
-            WindowProjectDialog::GetInstance().ResetInputs();
-        }, 
-        entityTypes,
-        Project::Get().GetLatestProjects(),
-        FPS,
-        ms,
-        screenWidth,
-        screenHeight,
-        Project::Get().projectOpened
-    );
+    InterfaceManager::GetInstance().DrawInterface();
 
     InterfaceManager::GetInstance().EndFrame();
 
@@ -132,8 +128,10 @@ PURPOSE: Close all engines include this one
 void Engine::CloseEngine()
 {
     //Close Project if it is opened
-    if(Project::Get().projectOpened)
-        Project::Get().CloseProject();
+    if (ServiceLocator::Get<IProject>()->GetProjectOpened()) {
+        InterfaceManager::GetInstance().ResetInterface();
+        ServiceLocator::Get<IProject>()->CloseProject();
+    }
 
     //Release other engines
     InterfaceManager::GetInstance().CloseInterface();
@@ -144,6 +142,89 @@ void Engine::CloseEngine()
 
     //Log
     Logger::Log("P", "Cleared engine");
+}
+
+/*
+PURPOSE: Creates a new entitymanager for a scene
+*/
+ENGINE_API std::shared_ptr<IEntityManager> Engine::CreateEntityManager()
+{
+    return std::make_shared<EntityManager>();
+}
+
+/*
+PURPOSE: Creates a new entity from its type
+*/
+ENGINE_API std::shared_ptr<IEntity> Engine::CreateEntity(std::string entityType)
+{
+    //Checks for the type
+    auto& types = entityTypes;
+    auto typeIter = types.find(entityType);
+    if (typeIter == types.end())
+        return nullptr;
+
+    //Create an entity clone object from entity type
+    auto entity = typeIter->second.first->clone();
+
+    //Create parameter object for the entity
+    auto params = typeIter->second.second->clone();
+    if (!entity->CreateEntity(params))
+        return nullptr;
+
+    return entity;
+}
+
+/*
+PURPOSE: Creates a new scene and returns it as a smart pointer
+*/
+ENGINE_API std::shared_ptr<IScene> Engine::CreateScene()
+{
+    std::shared_ptr<IScene> scene = std::make_shared<Scene>();
+    return scene;
+}
+
+/*
+PURPOSE: Creates a physics object and returns it as a smart pointer
+*/
+ENGINE_API std::shared_ptr<IPhysics> Engine::CreatePhysics()
+{
+    return std::make_shared<BulletPhysics>();
+}
+
+/*
+PURPOSE: Creates a rigidbody object and returns it as a smart pointer
+*/
+ENGINE_API std::shared_ptr<IRigidBody> Engine::CreateRigidBody()
+{
+    return std::make_shared<RigidBody>();
+}
+
+/*
+PURPOSE: Returns all types of entities as an unordered_map
+*/
+ENGINE_API std::unordered_map<std::string, std::pair<std::shared_ptr<IEntity>, std::shared_ptr<IEntityParams>>>& Engine::GetEntityTypes()
+{
+    return entityTypes;
+}
+
+/*
+PURPOSE: Returns screen width and height as a std::pair
+    first -> width
+    second -> height
+*/
+ENGINE_API std::pair<int, int> Engine::GetScreenSize()
+{
+    return { screenWidth, screenHeight };
+}
+
+/*
+PURPOSE: Returns fps and ms as a std::pair
+    first -> fps
+    second -> ms
+*/
+ENGINE_API std::pair<float, float> Engine::GetFPSandMS()
+{
+    return { FPS, ms };
 }
 
 /*
@@ -171,16 +252,14 @@ PURPOSE: Updates current scene
 */
 void Engine::UpdateCurrentScene()
 {
-    if (SceneManager::GetInstance().openedScene) {
+    if (SceneManager::GetInstance().GetOpenedScene()) {
         //We will use tileMapBrush when "start drawing" button clicked
-        TileMap* edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
+        std::shared_ptr<ITileMap> edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
 
-        SceneManager::GetInstance().openedScene->UpdateScene(
+        SceneManager::GetInstance().GetOpenedScene()->UpdateScene(
             WindowGameViewport::GetInstance().isPlaying,
             WindowGameViewport::GetInstance().isHovered,
             WindowGameViewport::GetInstance().isFocused,
-            screenWidth,
-            screenHeight,
             (int)WindowGameViewport::GetInstance().window_width,
             (int)WindowGameViewport::GetInstance().window_height,
             WindowScene::GetInstance().focused,
@@ -189,21 +268,17 @@ void Engine::UpdateCurrentScene()
             WindowScene::GetInstance().selectedId,
             [](std::string scriptId) {
                 //Delete tab
-                auto iter = InterfaceManager::GetInstance().tabs.find(scriptId);
-                if (iter != InterfaceManager::GetInstance().tabs.end()) {
-                    InterfaceManager::GetInstance().tabs.erase(iter);
-                }
+                InterfaceManager::GetInstance().RemoveTab(scriptId);
 
                 //Delete opened script
-                auto script = VisualScriptManager::GetInstance().openedScripts.find(scriptId);
-                if (script != VisualScriptManager::GetInstance().openedScripts.end()) {
-                    VisualScriptManager::GetInstance().openedScripts.erase(script);
+                auto script = VisualScriptManager::GetInstance().GetOpenedScripts().find(scriptId);
+                if (script != VisualScriptManager::GetInstance().GetOpenedScripts().end()) {
+                    VisualScriptManager::GetInstance().GetOpenedScripts().erase(script);
                 }
 
                 //Select nothing
                 WindowEntityProperties::GetInstance().SelectEntity(nullptr);
-            },
-            Project::Get().GetProjectDir());
+            });
     }
 }
 
@@ -212,14 +287,11 @@ PURPOSE: Performs delete actions like deleting scene
 */
 void Engine::PerformDeleteActions()
 {
-    std::string projectDir = Project::Get().GetProjectDir();
-    std::string projectFile = Project::Get().GetProjectFileLocation();
-
     //perform deleting scene
-    PerformSceneDeletion(projectDir, projectFile);
+    PerformSceneDeletion();
 
     //perform deleting tab
-    PerformTabDeletion(projectDir, projectFile);
+    PerformTabDeletion();
 }
 
 /*
@@ -269,22 +341,21 @@ void Engine::UpdateEngineWhenProjectIsOpened()
 PURPOSE: Performs delete actions for scenes
     This function is called by PerformDeleteActions
 */
-void Engine::PerformSceneDeletion(std::string& projectDir, std::string& projectFile)
+void Engine::PerformSceneDeletion()
 {
     if (WindowAllScenes::GetInstance().pendingDelete) {
-        SceneManager::GetInstance().DeleteScene(WindowAllScenes::GetInstance().selectedSceneId, projectDir);
+        SceneManager::GetInstance().DeleteScene(WindowAllScenes::GetInstance().selectedSceneId);
 
         //Clear all tabs
-        InterfaceManager::GetInstance().tabs.clear();
-        InterfaceManager::GetInstance().openedTab = nullptr;
+		InterfaceManager::GetInstance().RemoveAllTabs();
 
         //Save project
         std::string openedSceneId = "";
-        if (SceneManager::GetInstance().openedScene)
-            openedSceneId = SceneManager::GetInstance().openedScene->sceneId;
+        if (SceneManager::GetInstance().GetOpenedScene())
+            openedSceneId = SceneManager::GetInstance().GetOpenedScene()->GetSceneId();
 
-        nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, openedSceneId);
-        AssetSaver::SaveProjectToFile(projectFile, projectJson);
+        nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().GetScenes(), openedSceneId);
+        AssetSaver::SaveProjectToFile(ServiceLocator::Get<IProject>()->GetProjectDir(), projectJson);
 
         WindowAllScenes::GetInstance().pendingDelete = false;
     } 
@@ -294,42 +365,48 @@ void Engine::PerformSceneDeletion(std::string& projectDir, std::string& projectF
 PURPOSE: Performs delete actions for tabs
     This function is called by PerformDeleteActions
 */
-void Engine::PerformTabDeletion(std::string& projectDir, std::string& projectFile)
+void Engine::PerformTabDeletion()
 {
-    if (InterfaceManager::GetInstance().pendingTabDelete) {
-        auto tabIter = InterfaceManager::GetInstance().tabs.find(InterfaceManager::GetInstance().deleteTabId);
-        if (tabIter != InterfaceManager::GetInstance().tabs.end()) {
-            auto tab = tabIter->second.get();
+    if (InterfaceManager::GetInstance().GetPendingTabDelete()) {
+		auto tab = InterfaceManager::GetInstance().GetDeletingTab();
+
+        if (tab) {
             //if tabType is scene
             if (tab->tabType == Utils::SceneEditor) {
-                SceneManager::GetInstance().CloseScene(tab->id, projectDir);
+                SceneManager::GetInstance().CloseScene(tab->id);
 
                 //Remove the tab from tabs
-                InterfaceManager::GetInstance().tabs.clear();
-                InterfaceManager::GetInstance().openedTab = nullptr;
+                InterfaceManager::GetInstance().RemoveAllTabs();
 
                 //Save project
                 std::string openedSceneId = "";
-                if (SceneManager::GetInstance().openedScene)
-                    openedSceneId = SceneManager::GetInstance().openedScene->sceneId;
+                if (SceneManager::GetInstance().GetOpenedScene())
+                    openedSceneId = SceneManager::GetInstance().GetOpenedScene()->GetSceneId();
 
-                nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, openedSceneId);
-                AssetSaver::SaveProjectToFile(projectFile, projectJson);
+                nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().GetScenes(), openedSceneId);
+                AssetSaver::SaveProjectToFile(ServiceLocator::Get<IProject>()->GetProjectFileLocation(), projectJson);
             }
             //if tabType is visualscript
             else if (tab->tabType == Utils::VisualScriptEditor) {
                 std::string openedScriptId = tab->id;
                 std::string oldScriptId = "";
-                if (VisualScriptManager::GetInstance().currentScript)
-                    oldScriptId = VisualScriptManager::GetInstance().currentScript->scriptId;
-                if (VisualScriptManager::GetInstance().currentScript && oldScriptId == openedScriptId) {
-                    VisualScriptManager::GetInstance().currentScript = nullptr;
-                    InterfaceManager::GetInstance().openedTab = nullptr;
+
+                if (VisualScriptManager::GetInstance().GetCurrentScript())
+                    oldScriptId = VisualScriptManager::GetInstance().GetCurrentScript()->GetScriptId();
+
+                if (VisualScriptManager::GetInstance().GetCurrentScript() && oldScriptId == openedScriptId) {
+                    VisualScriptManager::GetInstance().SetCurrentScript(nullptr);
+
+					InterfaceManager::GetInstance().ActivateTab("");
                 }
-                VisualScriptManager::GetInstance().CloseScript(openedScriptId, projectDir, InterfaceManager::GetInstance().tabs);
+
+                VisualScriptManager::GetInstance().CloseScript(openedScriptId);
+
+				//Remove the tab from tabs
+				InterfaceManager::GetInstance().RemoveTab(openedScriptId);
             }
         }
-        InterfaceManager::GetInstance().pendingTabDelete = false;
+		InterfaceManager::GetInstance().SetPendingTabDelete(false);
     }
 }
 
@@ -353,6 +430,12 @@ void Engine::HandleProjectOpeningOrCreation()
         //Project opening with latest projects
         if (!HandleProjectOpeningWithLatestProjects())
             return;
+
+        //Add a new sceneeditortab
+        if (ServiceLocator::Get<ISceneManager>()->GetOpenedScene()) {
+            InterfaceManager::GetInstance().AddTab(ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetSceneId(), Utils::SceneEditor);
+            InterfaceManager::GetInstance().ActivateTab(ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetSceneId());
+        }
     }
 }
 
@@ -365,7 +448,7 @@ bool Engine::HandleProjectCreation()
     if (WindowProjectDialog::GetInstance().isCreatingProject) {
         WindowProjectDialog::GetInstance().isCreatingProject = false;
 
-        if (!Project::Get().CreateProject(WindowProjectDialog::GetInstance().createPath, WindowProjectDialog::GetInstance().createProjectName, window, context, nodesContext, entityTypes)) {
+        if (!ServiceLocator::Get<IProject>()->CreateProject(WindowProjectDialog::GetInstance().createPath, WindowProjectDialog::GetInstance().createProjectName, window, context, nodesContext)) {
             WindowModalDialog::GetInstance().ShowModalAlert("Creating Project Error", "Couln't create this project!");
             return false;
         }
@@ -383,7 +466,7 @@ bool Engine::HandleProjectOpeningWithPath()
     if (WindowProjectDialog::GetInstance().isOpeningProject) {
         WindowProjectDialog::GetInstance().isOpeningProject = false;
 
-        if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openPath, WindowProjectDialog::GetInstance().openProjectName, window, context, nodesContext, entityTypes)) {
+        if (!ServiceLocator::Get<IProject>()->OpenProject(WindowProjectDialog::GetInstance().openPath, WindowProjectDialog::GetInstance().openProjectName, window, context, nodesContext)) {
             WindowModalDialog::GetInstance().ShowModalAlert("Loading Project Error", "Couln't load this project!");
             return false;
         }
@@ -401,13 +484,13 @@ bool Engine::HandleProjectOpeningWithLatestProjects()
     if (WindowProjectDialog::GetInstance().isOpeningFromLatestProjects) {
         WindowProjectDialog::GetInstance().isOpeningFromLatestProjects = false;
 
-        if (!Project::Get().OpenProject(WindowProjectDialog::GetInstance().openLatestPath, WindowProjectDialog::GetInstance().openLatestProjectName, window, context, nodesContext, entityTypes)) {
+        if (!ServiceLocator::Get<IProject>()->OpenProject(WindowProjectDialog::GetInstance().openLatestPath, WindowProjectDialog::GetInstance().openLatestProjectName, window, context, nodesContext)) {
             WindowModalDialog::GetInstance().ShowModalQuestion(
                 "Loading Project Error",
                 "Couln't load this project! Would you like to delete it from latest projects?",
                 []() {
-                    Project::Get().RemoveProjectFromLatestProjects(Project::Get().GetProjectFileLocation());
-                    Project::Get().SaveLatestProjects();
+                    ServiceLocator::Get<IProject>()->RemoveProjectFromLatestProjects(ServiceLocator::Get<IProject>()->GetProjectFileLocation());
+                    ServiceLocator::Get<IProject>()->SaveLatestProjects();
                 }
             );
             return false;
@@ -415,13 +498,4 @@ bool Engine::HandleProjectOpeningWithLatestProjects()
     }
 
     return true;
-}
-
-/*
-PURPOSE: To get the instance of the engine
-*/
-Engine& Engine::GetInstance()
-{
-    static Engine engine;
-    return engine;
 }

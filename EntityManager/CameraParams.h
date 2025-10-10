@@ -2,18 +2,15 @@
 
 #include "EntityParams.h"
 
+#include "interfaces/IEntity/ICamera/ICameraParams.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-enum CameraProjection {
-	PERPECTIVE,
-	ORTHOGRAPHIC
-};
-
-class CameraParams : public EntityParams
+class CameraParams : public virtual EntityParams, public virtual ICameraParams
 {
 public:
 	/*
@@ -26,7 +23,7 @@ public:
 	/*
 	PURPOSE: Clones the current entity and returns it
 	*/
-	ENTITYMANAGER_API std::shared_ptr<EntityParams> clone() const override {
+	ENTITYMANAGER_API std::shared_ptr<IEntityParams> clone() const override {
 		return std::make_shared<CameraParams>(*this);
 	}
 
@@ -52,8 +49,26 @@ public:
 	};
 
 	//json
-	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) override;
+	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, std::shared_ptr<IScene> scene) override;
 
+	//projectionType
+	ENTITYMANAGER_API CameraProjection GetProjectionType() override {
+		return projectionType;
+	};
+	ENTITYMANAGER_API void SetProjectionType(CameraProjection newProjectionType) override {
+		projectionType = newProjectionType;
+	}
+
+	//Getter for fov
+	ENTITYMANAGER_API float GetFOV() override {
+		return fov;
+	};
+	//Setter for fov
+	ENTITYMANAGER_API void SetFOV(float fov) override {
+		this->fov = fov;
+	};
+
+private:
 	//Variables for the Camera
 	CameraProjection projectionType = CameraProjection::PERPECTIVE;
 	float fov = 70.0f;

@@ -4,10 +4,10 @@
 /*
 PURPOSE: Initializes the entity
 */
-ENTITYMANAGER_API bool Camera::CreateEntity(std::shared_ptr<EntityParams> params)
+ENTITYMANAGER_API bool Camera::CreateEntity(std::shared_ptr<IEntityParams> params)
 {
 	//Cast EntityParams to CameraParams to use its properties
-	auto casted = std::dynamic_pointer_cast<CameraParams>(params);
+	auto casted = std::dynamic_pointer_cast<ICameraParams>(params);
 	if (!casted) {
 		Logger::Log("E", "Casting failed at dynamic_cast<CameraParams*>(params)");
 		return false;
@@ -42,9 +42,9 @@ ENTITYMANAGER_API void Camera::Draw(glm::vec3 currentSceneCameraPos)
 /*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
-ENTITYMANAGER_API EntityParams* Camera::GetEntityParams()
+ENTITYMANAGER_API std::shared_ptr<IEntityParams> Camera::GetEntityParams()
 {
-	return params.get();
+	return params;
 }
 
 /*

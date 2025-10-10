@@ -1,17 +1,21 @@
 #include "pch.h"
 #include "WindowTileMapViewer.h"
 
+#include "WindowTileMapBrush.h"
+
+#include "ShaderManager.h"
+
 /*
 PURPOSE: Draws the window
 */
-INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow(int screenWidth, int screenHeight)
+INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow()
 {
 	//Check for a tile is editting
     if (!edittingTileMap) {
         showWindow = false;
         return;
     }
-	TileMapParams* params = dynamic_cast<TileMapParams*>(edittingTileMap->GetEntityParams());
+	std::shared_ptr<ITileMapParams> params = std::dynamic_pointer_cast<ITileMapParams>(edittingTileMap->GetEntityParams());
     if (!params) {
         showWindow = false;
         return;
@@ -95,7 +99,7 @@ INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow(int screenWidth, int s
     float ndcY = 1.0f - (localMousePos.y / window_height) * 2.0f;
 
     //Inverting y-axis of viewer. See calling UpdateTransformMatrix2D below!
-    if (SceneManager::GetInstance().openedScene->sceneType == Utils::SCENE_3D)
+    if (ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetSceneType() == Utils::SCENE_3D)
         ndcY = -ndcY;
 
     //Clip scene vector from NDC
@@ -114,13 +118,13 @@ INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow(int screenWidth, int s
 
     if (isFocused) {
         //Update the camera for tilemapviewer
-        cameraX -= SceneManager::GetInstance().openedScene->deltaX;
+        cameraX -= ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetDeltaXY().first;
 
         //Inverting y-axis of the camera. See calling UpdateTransformMatrix2D below!
-        if (SceneManager::GetInstance().openedScene->sceneType == Utils::SCENE_3D)
-            cameraY += SceneManager::GetInstance().openedScene->deltaY;
+        if (ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetSceneType() == Utils::SCENE_3D)
+            cameraY += ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetDeltaXY().second;
         else
-            cameraY -= SceneManager::GetInstance().openedScene->deltaY;
+            cameraY -= ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetDeltaXY().second;
     }
 
     if (isHovered) {
@@ -147,16 +151,16 @@ INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow(int screenWidth, int s
     ShaderManager::GetInstance().UpdateTransformMatrix2D(
         (int)window_width, (int)window_height,
         (int)cameraX, (int)cameraY,
-        (SceneManager::GetInstance().openedScene->sceneType == Utils::SCENE_3D));
+        (ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetSceneType() == Utils::SCENE_3D));
 
     //Set the drawing mode of the tilemap
-    edittingTileMap->drawingViewer = true;
+    edittingTileMap->SetDrawingViewer(true);
 
     //Render the tilemap to edit
     edittingTileMap->Draw(currentSceneCameraPos);
 
     //Disable the drawing mode of the tilemap
-    edittingTileMap->drawingViewer = false;
+    edittingTileMap->SetDrawingViewer(false);
 
     //Disable the frame buffer to draw ImGui image
     framebuffer->UnbindFramebuffer();
@@ -167,11 +171,11 @@ INTERFACEMANAGER_API void WindowTileMapViewer::DrawWindow(int screenWidth, int s
         ImVec2((float)window_width, (float)window_height), ImVec2(0, 1), ImVec2(1, 0));
 
     if (isFocused && isHovered) {
-        if (SceneManager::GetInstance().openedScene->leftPressed) {
+        if (ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetLeftPressed()) {
             //TileMap will add a tile to its own tiles
             edittingTileMap->AddTileToMap(mouseX, mouseY, cameraX, cameraY, WindowTileMapBrush::GetInstance().selectedTile);
         }
-        if (SceneManager::GetInstance().openedScene->deletePressed) {
+        if (ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetDeletePressed()) {
             //TileMap will remove the tile from its own tiles
             edittingTileMap->RemoveTileFromMap(mouseX, mouseY, cameraX, cameraY);
         }

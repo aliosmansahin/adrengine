@@ -5,10 +5,10 @@
 /*
 PURPOSE: Initializes the entity
 */
-bool Sprite2D::CreateEntity(std::shared_ptr<EntityParams> params)
+bool Sprite2D::CreateEntity(std::shared_ptr<IEntityParams> params)
 {
 	//Cast EntityParams to Sprite2DParams to use its properties
-	auto casted = std::dynamic_pointer_cast<Sprite2DParams>(params);
+	auto casted = std::dynamic_pointer_cast<ISprite2DParams>(params);
 	if (!casted) {
 		Logger::Log("E", "Casting failed at dynamic_cast<Sprite2DParams*>(params)");
 		return false;
@@ -100,7 +100,7 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 
 	//Set the texture
 	adr_glActiveTexture(GL_TEXTURE0);
-	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
+	adr_glBindTexture(GL_TEXTURE_2D, params->GetTexture());
 	if(ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
 		ShaderManager::GetInstance().ApplyTexture("texture1");
 	else if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_3D) {
@@ -122,9 +122,9 @@ void Sprite2D::Draw(glm::vec3 currentSceneCameraPos)
 /*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
-EntityParams* Sprite2D::GetEntityParams()
+std::shared_ptr<IEntityParams> Sprite2D::GetEntityParams()
 {
-	return params.get();
+	return params;
 }
 
 /*

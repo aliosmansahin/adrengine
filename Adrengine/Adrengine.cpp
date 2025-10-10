@@ -2,6 +2,8 @@
 #include "Window.h"
 #include "Localization.h"
 
+#include "ServiceLocator.h"
+
 int main(void)
 {
     //initialize localization
@@ -12,8 +14,9 @@ int main(void)
     if (!Window::GetInstance().CreateWindow(1280, 720, "Adrengine"))
         return -1;
 
-    //initialize engine 
-    if (!Engine::GetInstance().InitEngine(Window::GetInstance().GetWindow()))
+    //initialize engine
+	ServiceLocator::Register<IEngine>(&Engine::GetInstance());
+    if (!ServiceLocator::Get<IEngine>()->InitEngine(Window::GetInstance().GetWindow()))
         return -1;
 
     //main loop, exits when the window closes
@@ -23,8 +26,8 @@ int main(void)
         glfwSwapInterval(0);
 
         //calling engine funcs
-        Engine::GetInstance().Update();
-        Engine::GetInstance().Draw();
+        ServiceLocator::Get<IEngine>()->Update();
+        ServiceLocator::Get<IEngine>()->Draw();
 
         //window msgs and swapping buffers
         Window::GetInstance().SwapBuffers();
@@ -32,7 +35,7 @@ int main(void)
     }
 
     //closing all engines and window
-    Engine::GetInstance().CloseEngine();
+    ServiceLocator::Get<IEngine>()->CloseEngine();
     Window::GetInstance().CloseWindow();
     return 0;
 }

@@ -11,7 +11,9 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
-#include "FlipBook.h"
+#include "interfaces/IEntity/ISprite2D/IFlipBook/IFlipBook.h"
+
+#include "AssetDatabase.h"
 
 class WindowFlipBookEdit
 {
@@ -29,5 +31,5 @@ private:
 	WindowFlipBookEdit& operator=(const WindowFlipBookEdit&) = delete;
 public:
 	bool showWindow = false;
-	FlipBook* edittingFlipBook = nullptr;
+	std::shared_ptr<IFlipBook> edittingFlipBook = nullptr;
 };

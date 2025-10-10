@@ -12,10 +12,10 @@ class ConstFloat : public Node
 {
 public:
 	//drawing
-	VISUALSCRIPTMANAGER_API void				  Draw(NodeVisual* nodeVisual) override;
+	VISUALSCRIPTMANAGER_API void				  Draw(std::shared_ptr<NodeVisual> nodeVisual) override;
 
 	//execution
-	VISUALSCRIPTMANAGER_API Value				  Evaluate(Pin* pin) override;
+	VISUALSCRIPTMANAGER_API Value				  Evaluate(std::shared_ptr<IPin> pin) override;
 
 	//getters and setters
 	VISUALSCRIPTMANAGER_API void				  SetPins() override;
@@ -24,7 +24,7 @@ public:
 	}
 
 	//clone
-	VISUALSCRIPTMANAGER_API std::shared_ptr<Node> clone() override {
+	VISUALSCRIPTMANAGER_API std::shared_ptr<INode> clone() override {
 		return std::make_shared<ConstFloat>(*this);
 	}
 

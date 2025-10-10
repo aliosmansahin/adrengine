@@ -5,7 +5,7 @@
 /*
 PURPOSE: Sets properties of the entity from its json
 */
-void ObjectParams::FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene)
+void ObjectParams::FromJson(const nlohmann::json& j, std::string& projectDir, std::shared_ptr<IScene> scene)
 {
 	/*
 		Its kind of "super" function.
@@ -16,10 +16,7 @@ void ObjectParams::FromJson(const nlohmann::json& j, std::string& projectDir, IS
 
 	//Set some properties
 	objId = j.value("obj-id", "");
-	
+
 	//Set the mesh of the entity from its id
-	auto mesh = AssetDatabase::GetInstance().GetMesh(objId).get();
-	if (mesh) {
-		this->mesh = mesh;
-	}
+	this->mesh = AssetDatabase::GetInstance().GetMesh(objId);
 }

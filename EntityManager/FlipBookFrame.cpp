@@ -136,3 +136,43 @@ ENTITYMANAGER_API nlohmann::json FlipBookFrame::ToJson()
 	j["tex-h"] = textureHeight;
 	return j;
 }
+
+/*
+PURPOSE: Returns frame x and y as a std::pair
+	first -> x
+	second -> y
+*/
+ENTITYMANAGER_API std::pair<int, int> FlipBookFrame::GetXY()
+{
+	return { x, y };
+}
+
+/*
+PURPOSE: Returns frame width and height as a std::pair
+	first -> width
+	second -> height
+*/
+ENTITYMANAGER_API std::pair<int, int> FlipBookFrame::GetSize()
+{
+	return { width, height };
+}
+
+/*
+PURPOSE: Returns frame u and v as a std::pair
+	first -> u
+	second -> v
+*/
+ENTITYMANAGER_API std::pair<float, float> FlipBookFrame::GetUV()
+{
+	return { u, v };
+}
+
+/*
+PURPOSE: Returns frame texture width and height as a std::pair
+	first -> texture width
+	second -> texture height
+*/
+ENTITYMANAGER_API std::pair<float, float> FlipBookFrame::GetTextureSize()
+{
+	return { textureWidth, textureHeight };
+}

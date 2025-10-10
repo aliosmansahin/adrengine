@@ -26,47 +26,48 @@
 #include "nlohmann_json/json.hpp"
 
 #include "Pin.h"
+#include "interfaces/IVisualScript/INode/INode.h"
 
-struct NodeVisual {
-	std::shared_ptr<Node> logicNode;
-	int id;
-	std::vector<int> inputIds;
-	std::vector<int> outputIds;
-};
-
-class Node
+class Node : public INode, public std::enable_shared_from_this<Node>
 {
 public:
 	VISUALSCRIPTMANAGER_API virtual ~Node()	= default;
 
 	//Drawing
-	VISUALSCRIPTMANAGER_API void			BeginDraw(NodeVisual* nodeVisual);
-	VISUALSCRIPTMANAGER_API virtual void	Draw(NodeVisual* nodeVisual);
-	VISUALSCRIPTMANAGER_API void			EndDraw();
+	VISUALSCRIPTMANAGER_API void			BeginDraw(std::shared_ptr<NodeVisual> nodeVisual) override;
+	VISUALSCRIPTMANAGER_API virtual void	Draw(std::shared_ptr<NodeVisual> nodeVisual) override;
+	VISUALSCRIPTMANAGER_API void			EndDraw() override;
 
 	//Setters
-	VISUALSCRIPTMANAGER_API void			SetPos(int x, int y);
+	VISUALSCRIPTMANAGER_API void			SetPos(int x, int y) override;
 	VISUALSCRIPTMANAGER_API virtual void	SetPins() = 0;
 
 	//Execution
-	VISUALSCRIPTMANAGER_API virtual void	Execute();
-	VISUALSCRIPTMANAGER_API virtual Value	Evaluate(Pin* pin);
-	VISUALSCRIPTMANAGER_API Value			EvaluateInput(Pin* pin);
-	VISUALSCRIPTMANAGER_API Node*			GetNextExecNode(Pin* execOutputPin);
+	VISUALSCRIPTMANAGER_API virtual void	Execute() override;
+	VISUALSCRIPTMANAGER_API virtual Value	Evaluate(std::shared_ptr<IPin> pin);
+	VISUALSCRIPTMANAGER_API Value			EvaluateInput(std::shared_ptr<IPin> pin);
+	VISUALSCRIPTMANAGER_API std::shared_ptr<INode> GetNextExecNode(std::shared_ptr<IPin> execOutputPin);
 
 	//Getters
 	VISUALSCRIPTMANAGER_API virtual std::string	GetType() = 0;
+	VISUALSCRIPTMANAGER_API std::vector<std::shared_ptr<IPin>>& GetInputPins() override {
+		return inputPins;
+	};
+	VISUALSCRIPTMANAGER_API std::vector<std::shared_ptr<IPin>>& GetOutputPins() override {
+		return outputPins;
+	};
 
 	//Clone
-	VISUALSCRIPTMANAGER_API virtual std::shared_ptr<Node> clone() = 0;
+	VISUALSCRIPTMANAGER_API virtual std::shared_ptr<INode> clone() = 0;
 
 	//Json
-	VISUALSCRIPTMANAGER_API virtual nlohmann::json	ToJson();
-	VISUALSCRIPTMANAGER_API virtual bool			FromJson(nlohmann::json json);
-public:
+	VISUALSCRIPTMANAGER_API virtual nlohmann::json	ToJson() override;
+	VISUALSCRIPTMANAGER_API virtual bool			FromJson(nlohmann::json json) override;
+
+protected:
 	//pins
-	std::vector<std::shared_ptr<Pin>> inputPins;
-	std::vector<std::shared_ptr<Pin>> outputPins;
+	std::vector<std::shared_ptr<IPin>> inputPins;
+	std::vector<std::shared_ptr<IPin>> outputPins;
 protected:
 	//variables
 	int x = 0, y = 0;

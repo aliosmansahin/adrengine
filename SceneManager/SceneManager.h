@@ -8,34 +8,48 @@
 
 #include "Scene.h"
 
-class VisualScript; //We will use only the pointer 
+#include "interfaces/IVisualScriptManager/IVisualScriptManager.h"
+#include "interfaces/ISceneManager/ISceneManager.h"
+#include "interfaces/IProject/IProject.h"
 
-class SceneManager
+#include "ServiceLocator.h"
+
+class SceneManager : public ISceneManager
 {
 public:
 	//manager functions
-	SCENEMANAGER_API bool				  InitializeManager();
-	SCENEMANAGER_API void				  ClearManager();
+	SCENEMANAGER_API bool				  InitializeManager() override;
+	SCENEMANAGER_API void				  ClearManager() override;
 
 	//scene functions
-	SCENEMANAGER_API bool				  CreateScene(Utils::SceneType sceneType, std::string& projectDir);
-	SCENEMANAGER_API Scene*				  LoadScene(std::string sceneId, std::string& projectDir,
-		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes
-		);
-	SCENEMANAGER_API bool				  CloseScene(std::string sceneId, std::string& projectDir);
-	SCENEMANAGER_API bool				  DeleteScene(std::string sceneId, std::string& projectDir);
+	SCENEMANAGER_API std::shared_ptr<IScene> CreateScene(Utils::SceneType sceneType) override;
 
-	//getter for instance
-	SCENEMANAGER_API static SceneManager& GetInstance();
-private:
+	SCENEMANAGER_API std::shared_ptr<IScene> LoadScene(std::string sceneId) override;
+
+	SCENEMANAGER_API bool				  CloseScene(std::string sceneId) override;
+	SCENEMANAGER_API bool				  DeleteScene(std::string sceneId) override;
+
+	//Getters
+	SCENEMANAGER_API std::map<std::string, std::string>& GetScenes() override;
+	SCENEMANAGER_API std::shared_ptr<IScene> GetOpenedScene() override;
+
+public:
+	//Singleton
+	static SceneManager& GetInstance() {
+		static SceneManager instance;
+		return instance;
+	}
+
+public:
 	//singleton
 	SceneManager() = default;
 	~SceneManager() = default;
 	SceneManager(const SceneManager&) = delete;
 	SceneManager& operator=(const SceneManager&) = delete;
-public:
+
+private:
 	//variables
 	std::map<std::string, std::string> scenes;
-	std::shared_ptr<Scene> openedScene;
+	std::shared_ptr<IScene> openedScene;
 };
 

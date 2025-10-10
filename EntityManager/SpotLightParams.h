@@ -2,13 +2,15 @@
 
 #include "LightParams.h"
 
+#include "interfaces/IEntity/ILight/ISpotLight/ISpotLightParams.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class SpotLightParams : public LightParams
+class SpotLightParams : public virtual LightParams , public virtual ISpotLightParams
 {
 public:
 	/*
@@ -21,7 +23,7 @@ public:
 	/*
 	PURPOSE: Clones the current entity and returns it
 	*/
-	ENTITYMANAGER_API std::shared_ptr<EntityParams> clone() const override {
+	ENTITYMANAGER_API std::shared_ptr<IEntityParams> clone() const override {
 		return std::make_shared<SpotLightParams>(*this);
 	}
 
@@ -51,9 +53,53 @@ public:
 	};
 
 	//json
-	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) override;
+	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, std::shared_ptr<IScene> scene) override;
 
-	//Variables for the SpotLight
+	//Getters for parameters
+	ENTITYMANAGER_API glm::vec3 GetDirection() override {
+		return direction;
+	}
+	ENTITYMANAGER_API float GetOuterCutOff() override {
+		return outerCutOff;
+	}
+	ENTITYMANAGER_API float GetCutOff() override {
+		return cutOff;
+	}
+	ENTITYMANAGER_API float	GetConstant() override {
+		return constant;
+	};
+	ENTITYMANAGER_API float	GetLinear() override {
+		return linear;
+	};
+	ENTITYMANAGER_API float	GetQuadratic() override {
+		return quadratic;
+	};
+
+	//Setters for parameters
+	ENTITYMANAGER_API void SetDirection(glm::vec3 direction) override {
+		this->direction = direction;
+	}
+	ENTITYMANAGER_API void SetOuterCutOff(float outerCutOff) override {
+		this->outerCutOff = outerCutOff;
+	}
+	ENTITYMANAGER_API void SetCutOff(float cutOff) override {
+		this->cutOff = cutOff;
+	}
+	ENTITYMANAGER_API void SetConstant(float constant) override {
+		this->constant = constant;
+	}
+	ENTITYMANAGER_API void SetLinear(float linear) override {
+		this->linear = linear;
+	}
+	ENTITYMANAGER_API void SetQuadratic(float quadratic) override {
+		this->quadratic = quadratic;
+	}
+
+private:
+	/*
+		Variables for the lights
+		Lights will use them as they need
+	*/
 	glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
 
 	float cutOff = glm::cos(glm::radians(12.5f));

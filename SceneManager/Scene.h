@@ -11,48 +11,55 @@
 #include <map>
 #include <memory>
 
+#include "ShaderManager.h"
+
 #include "utils/Utils.h"
 
-#include "EntityManager.h"
+#include "interfaces/IEntityManager/IEntityManager.h"
 #include "Timer.h"
 #include "InputManager.h"
 
-#include "BulletPhysics.h"
-
 #include "interfaces/IScene/IScene.h"
+#include "interfaces/IEntity/ICamera/ICamera.h"
+#include "interfaces/IEngine/IEngine.h"
+#include "interfaces/IProject/IProject.h"
 
-class Scene : public IScene
+class Scene : public IScene, public std::enable_shared_from_this<Scene>
 {
 public:
 	//main functions
-	SCENEMANAGER_API bool			CreateScene(std::string sceneId, Utils::SceneType sceneType);
-	SCENEMANAGER_API void			DrawScene(int window_width, int window_height);
+	SCENEMANAGER_API bool			CreateScene(std::string sceneId, Utils::SceneType sceneType) override;
+	SCENEMANAGER_API void			DrawScene(int window_width, int window_height) override;
 	SCENEMANAGER_API void			UpdateScene(
 		bool isPlaying,
 		bool windowGameViewportIsHovered,
 		bool windowGameViewportIsFocused,
-		int screenWidth,
-		int screenHeight,
 		int window_width,
 		int window_height,
 		bool windowSceneFocused,
 		bool windowSceneDeletePressed,
 		bool& pendingDelete,
 		std::string selectedId,
-		std::function<void(std::string)> extraDeletingFunc,
-		std::string& projectDir
-	);
-	SCENEMANAGER_API void			ReleaseScene();
-	SCENEMANAGER_API EntityManager* GetEntityManager() override { return entityManager; }
+		std::function<void(std::string)> extraDeletingFunc
+	) override;
+	SCENEMANAGER_API void			ReleaseScene() override;
+	SCENEMANAGER_API std::shared_ptr<IEntityManager> GetEntityManager() override { return entityManager; }
 
 	//json functions
-	SCENEMANAGER_API nlohmann::json ToJson();
-	SCENEMANAGER_API void			FromJson(
-		const nlohmann::json& json,
-		std::string projectDir,
-		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes
-	);
+	SCENEMANAGER_API nlohmann::json ToJson() override;
+	SCENEMANAGER_API void			FromJson(const nlohmann::json& json) override;
 
+	//Getters
+	SCENEMANAGER_API std::string GetSceneId() override;
+	SCENEMANAGER_API std::string GetSceneName() override;
+	SCENEMANAGER_API Utils::SceneType GetSceneType() override;
+	SCENEMANAGER_API std::shared_ptr<ICamera> GetCurrentCamera() override;
+	SCENEMANAGER_API std::shared_ptr<IPhysics> GetPhysics() override;
+
+	SCENEMANAGER_API std::pair<float, float> GetDeltaXY() override;
+
+	SCENEMANAGER_API bool GetLeftPressed() override;
+	SCENEMANAGER_API bool GetDeletePressed() override;
 private:
 	//helpers
 	void UpdateEditorCamera(
@@ -60,22 +67,20 @@ private:
 		int currentMouseY,
 		int window_width,
 		int window_height,
-		int screenWidth,
-		int screenHeight,
 		bool windowGameViewportIsFocused,
 		bool isPlaying);
 	void UpdateTransformMatrixForTheCamera(int window_width, int window_height);
 
-public:
+private:
 	//scene variables
 	std::string sceneId;
 	std::string sceneName;
 	Utils::SceneType sceneType;
 
 	//camera
-	Camera* editorCamera = nullptr;
-	Camera* gameCamera = nullptr;
-	Camera* currentCamera = nullptr;
+	std::shared_ptr<ICamera> editorCamera = nullptr;
+	std::shared_ptr<ICamera> gameCamera = nullptr;
+	std::shared_ptr<ICamera> currentCamera = nullptr;
 
 	//Delta mouse position
 	float deltaX;
@@ -86,14 +91,14 @@ public:
 	bool deletePressed = false;
 
 	//This is the script of the scene
-	std::shared_ptr<VisualScript> sceneScript;
+	std::shared_ptr<IVisualScript> sceneScript; //TODO: Add a getter
 
 	//physics
-	Physics* physics = nullptr;
+	std::shared_ptr<IPhysics> physics = nullptr;
 
 private:
 	//entity manager
-	EntityManager* entityManager = nullptr;
+	std::shared_ptr<IEntityManager> entityManager = nullptr;
 	
 	//dragging
 	bool isDragging = false;

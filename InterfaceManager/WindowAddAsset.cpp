@@ -1,12 +1,11 @@
 #include "pch.h"
 #include "WindowAddAsset.h"
-#include "SceneManager.h"
 #include "AssetDatabase.h"
 
 /*
 PURPOSE: Draws window
 */
-void WindowAddAsset::DrawWindow(std::string& projectDir, std::string& assetExplorerType)
+void WindowAddAsset::DrawWindow(std::string& assetExplorerType)
 {
     //Begin the window
     ImGui::Begin("Add New Asset", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
@@ -64,7 +63,7 @@ void WindowAddAsset::DrawWindow(std::string& projectDir, std::string& assetExplo
 
             //after that save all database and close the window
             //std::string projectDir = Engine::GetInstance().projectPath + Engine::GetInstance().projectName + "/";
-            AssetDatabase::GetInstance().SaveDatabase(projectDir + "asset_database.adrenginedatabase");
+            AssetDatabase::GetInstance().SaveDatabase(ServiceLocator::Get<IProject>()->GetProjectDir() + "asset_database.adrenginedatabase");
             memset(buf, 0, sizeof(buf));
             memset(nameBuf, 0, sizeof(nameBuf));
             showWindow = false;

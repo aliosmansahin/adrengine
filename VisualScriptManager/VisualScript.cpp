@@ -41,7 +41,7 @@ void VisualScript::ExecuteBeginScript()
 		Logger::Log("W", "Begin Node not found!");
 		return;
 	}
-	beginNode->second.logicNode->Execute();
+	beginNode->second->logicNode->Execute();
 }
 
 /*
@@ -58,8 +58,8 @@ nlohmann::json VisualScript::ToJson()
 
 	//All nodes
 	for (auto& node : nodes) {
-		nlohmann::json nodeJson = node.second.logicNode->ToJson();
-		nodeJson["id"] = node.second.id;
+		nlohmann::json nodeJson = node.second->logicNode->ToJson();
+		nodeJson["id"] = node.second->id;
 		j["nodes"].push_back(nodeJson);
 	}
 
@@ -80,7 +80,7 @@ nlohmann::json VisualScript::ToJson()
 /*
 PURPOSE: Sets the visual script from its json
 */
-void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types, IScene* scene)
+void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<INode>>& types, std::shared_ptr<IScene> scene)
 {
 	//Script properties
 	scriptId = json.value("id", "");
@@ -104,35 +104,35 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 		type->FromJson(nodeJson);
 
 		if (nodeType == "GetThisEntity") {
-			GetThisEntity* entityNode = dynamic_cast<GetThisEntity*>(type.get());
+			std::shared_ptr<GetThisEntity> entityNode = std::dynamic_pointer_cast<GetThisEntity>(type);
 
 			if (entityNode) {
 				if (scene) {
-					entityNode->entity = scene->GetEntityManager()->GetEntityById(belongsEntity);
+					entityNode->SetEntity(scene->GetEntityManager()->GetEntityById(belongsEntity));
 				}
 			}
 		}
 
 		//Add a new node
-		NodeVisual nodeVisual;
-		nodeVisual.logicNode = type;
+		std::shared_ptr<NodeVisual> nodeVisual = std::make_shared<NodeVisual>();
+		nodeVisual->logicNode = type;
 
-		nodeVisual.id = nodeId++;
+		nodeVisual->id = nodeId++;
 
 		//Set pin ids
-		for (auto& pin : type->inputPins) {
-			pin->id = nodeId++;
+		for (auto& pin : type->GetInputPins()) {
+			pin->SetId(nodeId++);
 
-			nodeVisual.inputIds.push_back(pin->id);
+			nodeVisual->inputIds.push_back(pin->GetId());
 		}
 
-		for (auto& pin : type->outputPins) {
-			pin->id = nodeId++;
+		for (auto& pin : type->GetOutputPins()) {
+			pin->SetId(nodeId++);
 
-			nodeVisual.outputIds.push_back(pin->id);
+			nodeVisual->outputIds.push_back(pin->GetId());
 		}
 
-		nodes.insert({ nodeVisual.id, nodeVisual });
+		nodes.insert({nodeVisual->id, nodeVisual});
 	}
 
 	//Load each link, insert it to "links" and set pins
@@ -141,13 +141,13 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 		int second = link.value("second", -1);
 		int id = link.value("id", -1);
 		if (first != -1 && second != -1 && id != -1) {
-			Pin* from = FindPinById(first);
-			Pin* to = FindPinById(second);
+			std::shared_ptr<IPin> from = FindPinById(first);
+			std::shared_ptr<IPin> to = FindPinById(second);
 
-			if (from && to && (from->type == to->type || from->type == PinType::Any || to->type == PinType::Any)) {
-				to->connectedTo = from;
-				from->connectedTo = to;
-				links.insert({ nextId++, {from->id, to->id} });
+			if (from && to && (from->GetType() == to->GetType() || from->GetType() == PinType::Any || to->GetType() == PinType::Any)) {
+				to->SetConnectedPin(from);
+				from->SetConnectedPin(to);
+				links.insert({ nextId++, {from->GetId(), to->GetId()}});
 			}
 		}
 	}
@@ -156,22 +156,70 @@ void VisualScript::FromJson(nlohmann::json json, std::unordered_map<std::string,
 /*
 PURPOSE: Gets pin from id
 */
-Pin* VisualScript::FindPinById(int id)
+std::shared_ptr<IPin> VisualScript::FindPinById(int id)
 {
 	for (const auto& iter : nodes) {
-		const NodeVisual* vis = &iter.second;
+		const std::shared_ptr<NodeVisual> vis = iter.second;
 
 		//Check for input pins
-		for (auto& pin : vis->logicNode->inputPins) {
-			if (pin->id == id)
-				return pin.get();
+		for (auto& pin : vis->logicNode->GetInputPins()) {
+			if (pin->GetId() == id)
+				return pin;
 		}
 
 		//Check for output pins
-		for (auto& pin : vis->logicNode->outputPins) {
-			if (pin->id == id)
-				return pin.get();
+		for (auto& pin : vis->logicNode->GetOutputPins()) {
+			if (pin->GetId() == id)
+				return pin;
 		}
 	}
 	return nullptr;
+}
+
+/*
+PURPOSE: Returns script id
+*/
+VISUALSCRIPTMANAGER_API std::string VisualScript::GetScriptId()
+{
+	return scriptId;
+}
+
+/*
+PURPOSE: Returns belongs entity
+*/
+VISUALSCRIPTMANAGER_API std::string VisualScript::GetBelongsEntity()
+{
+	return belongsEntity;
+}
+
+/*
+PURPOSE: Returns next id
+*/
+VISUALSCRIPTMANAGER_API int VisualScript::GetNextId()
+{
+	return nextId;
+}
+
+/*
+PURPOSE: Returns all nodes
+*/
+VISUALSCRIPTMANAGER_API std::unordered_map<int, std::shared_ptr<NodeVisual>>& VisualScript::GetNodes()
+{
+	return nodes;
+}
+
+/*
+PURPOSE: Returns all links
+*/
+VISUALSCRIPTMANAGER_API std::unordered_map<int, std::pair<int, int>>& VisualScript::GetLinks()
+{
+	return links;
+}
+
+/*
+PURPOSE: Sets the next id
+*/
+VISUALSCRIPTMANAGER_API void VisualScript::SetNextId(int nextId)
+{
+	this->nextId = nextId;
 }

@@ -1,10 +1,13 @@
 #include "pch.h"
 #include "Object.h"
 
+#include "ServiceLocator.h"
+#include "interfaces/IEngine/IEngine.h"
+
 /*
 PURPOSE: Initializes the entity
 */
-bool Object::CreateEntity(std::shared_ptr<EntityParams> params)
+bool Object::CreateEntity(std::shared_ptr<IEntityParams> params)
 {
 	//Cast EntityParams to ObjectParams to use its properties
 	auto casted = std::dynamic_pointer_cast<ObjectParams>(params);
@@ -13,6 +16,8 @@ bool Object::CreateEntity(std::shared_ptr<EntityParams> params)
 		return false;
 	}
 	this->params = casted;
+
+	rigidBody = ServiceLocator::Get<IEngine>()->CreateRigidBody();
 
 	return true;
 }
@@ -68,8 +73,8 @@ void Object::Draw(glm::vec3 currentSceneCameraPos)
 	}
 
 	//Draw the mesh
-	if (params->mesh) {
-		auto& objects = params->mesh->objects;
+	if (params->GetMesh()) {
+		auto& objects = params->GetMesh()->objects;
 
 		//Each ObjectMtl
 		for (auto& object : objects) {
@@ -154,9 +159,25 @@ ENTITYMANAGER_API void Object::ResetPhysics()
 /*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
-EntityParams* Object::GetEntityParams()
+std::shared_ptr<IEntityParams> Object::GetEntityParams()
 {
-	return params.get();
+	return params;
+}
+
+/*
+PURPOSE: Returns rigidBody
+*/
+ENTITYMANAGER_API std::shared_ptr<IRigidBody>& Object::GetRigidBody()
+{
+	return rigidBody;
+}
+
+/*
+PURPOSE: Sets rigidbody
+*/
+ENTITYMANAGER_API void Object::SetRigidBody(std::shared_ptr<IRigidBody> rigidBody)
+{
+	this->rigidBody = rigidBody;
 }
 
 /*

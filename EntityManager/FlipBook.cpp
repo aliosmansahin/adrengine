@@ -4,10 +4,10 @@
 /*
 PURPOSE: Initializes the entity
 */
-ENTITYMANAGER_API bool FlipBook::CreateEntity(std::shared_ptr<EntityParams> params)
+ENTITYMANAGER_API bool FlipBook::CreateEntity(std::shared_ptr<IEntityParams> params)
 {
     //Cast EntityParams to FlipBookParams to use its properties
-    auto casted = std::dynamic_pointer_cast<FlipBookParams>(params);
+    auto casted = std::dynamic_pointer_cast<IFlipBookParams>(params);
     if (!casted) {
         Logger::Log("E", "Casting failed at dynamic_cast<FlipBookParams*>(params)");
         return false;
@@ -41,12 +41,12 @@ ENTITYMANAGER_API void FlipBook::Update()
 		float deltaTime = currentTime - lastTime;
 
 		//Update current index
-		if (deltaTime > params->frameWait && currentIndex != frames.size()) {
+		if (deltaTime > params->GetFrameWait() && currentIndex != frames.size()) {
 			currentIndex++;
 
 			//Current index will continue from beginning of frames
 			if (currentIndex == frames.size()) {
-				if (params->loop)
+				if (params->GetLoop())
 					currentIndex = 0;
 				else
 					ended = true;
@@ -71,7 +71,7 @@ ENTITYMANAGER_API void FlipBook::Draw(glm::vec3 currentSceneCameraPos)
 	if (!frames.empty() && currentIndex < frames.size() && currentIndex >= 0) {
 		//Set the texture
 		adr_glActiveTexture(GL_TEXTURE0);
-		adr_glBindTexture(GL_TEXTURE_2D, params->texture);
+		adr_glBindTexture(GL_TEXTURE_2D, params->GetTexture());
 
 		//Shader uniforms
 		if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
@@ -306,7 +306,7 @@ ENTITYMANAGER_API void FlipBook::DrawInspect(int width, int height, int frameW, 
 
 	//Set the texture
 	adr_glActiveTexture(GL_TEXTURE0);
-	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
+	adr_glBindTexture(GL_TEXTURE_2D, params->GetTexture());
 	ShaderManager::GetInstance().ApplyTexture("texture1");
 
 	//Draw the texture
@@ -333,7 +333,7 @@ ENTITYMANAGER_API unsigned int FlipBook::GetInspectTexture()
 /*
 PURPOSE: Returns created frames
 */
-ENTITYMANAGER_API std::vector<std::pair<bool, std::shared_ptr<FlipBookFrame>>>& FlipBook::GetCreatedFrames()
+ENTITYMANAGER_API std::vector<std::pair<bool, std::shared_ptr<IFlipBookFrame>>>& FlipBook::GetCreatedFrames()
 {
 	return createdFrames;
 }
@@ -341,7 +341,7 @@ ENTITYMANAGER_API std::vector<std::pair<bool, std::shared_ptr<FlipBookFrame>>>& 
 /*
 PURPOSE: Returns frames
 */
-ENTITYMANAGER_API std::vector<std::shared_ptr<FlipBookFrame>>& FlipBook::GetFrames()
+ENTITYMANAGER_API std::vector<std::shared_ptr<IFlipBookFrame>>& FlipBook::GetFrames()
 {
 	return frames;
 }
@@ -349,7 +349,7 @@ ENTITYMANAGER_API std::vector<std::shared_ptr<FlipBookFrame>>& FlipBook::GetFram
 /*
 PURPOSE: Returns current frame as a pure pointer
 */
-ENTITYMANAGER_API FlipBookFrame* FlipBook::GetCurrentFrame()
+ENTITYMANAGER_API IFlipBookFrame* FlipBook::GetCurrentFrame()
 {
 	return frames[currentIndex].get();
 }
@@ -379,9 +379,9 @@ ENTITYMANAGER_API void FlipBook::RestartFlipBook()
 /*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
-ENTITYMANAGER_API EntityParams* FlipBook::GetEntityParams()
+ENTITYMANAGER_API std::shared_ptr<IEntityParams> FlipBook::GetEntityParams()
 {
-    return params.get();
+    return params;
 }
 
 /*

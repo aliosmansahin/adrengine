@@ -7,55 +7,71 @@
 #endif
 
 #include "VisualScript.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui_internal.h"
+
+#include "imnodes/imnodes.h"
+
 #include "AssetSaver.h"
 #include "Logger.h"
 
 #include "utils/Utils.h"
 
-class VisualScriptManager
+#include "interfaces/IVisualScriptManager/IVisualScriptManager.h"
+#include "interfaces/IEngine/IEngine.h"
+#include "interfaces/IProject/IProject.h"
+
+#include "ServiceLocator.h"
+
+class VisualScriptManager : public IVisualScriptManager
 {
 public:
 	//main functions
-	VISUALSCRIPTMANAGER_API bool														   InitManager(ImGuiContext* imguiContext, ImNodesContext* nodesContext);
-	VISUALSCRIPTMANAGER_API void														   ReleaseManager();
+	VISUALSCRIPTMANAGER_API bool InitManager(ImGuiContext* imguiContext, ImNodesContext* nodesContext) override;
+	VISUALSCRIPTMANAGER_API void ReleaseManager() override;
 
 	//script functions
-	VISUALSCRIPTMANAGER_API std::pair<std::shared_ptr<VisualScript>, std::shared_ptr<Utils::Tab>> OpenScript(std::shared_ptr<VisualScript> source, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs);
-	VISUALSCRIPTMANAGER_API std::shared_ptr<VisualScript>								   LoadScript(std::string scriptId, std::string& projectDir, IScene* scene);
-	VISUALSCRIPTMANAGER_API bool														   CloseScript(
-		std::string scriptId,
-		std::string& projectDir,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs
-	);
-	VISUALSCRIPTMANAGER_API std::shared_ptr<VisualScript>								   CreateScript(Utils::ScriptBelongsTo sbt, std::string& projectDir, std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-		Utils::Tab*& openedTab, std::string& selectedTabId, std::map<std::string, std::string>& scenes);
-	VISUALSCRIPTMANAGER_API bool														   DeleteScript(
-		VisualScript* script,
-		std::unordered_map<std::string,
-		std::shared_ptr<Utils::Tab>>&tabs,
-		Utils::Tab*& openedTab, std::string& projectDir);
-	VISUALSCRIPTMANAGER_API bool														   SaveScript(std::shared_ptr<VisualScript> script, std::string& projectDir);
+	VISUALSCRIPTMANAGER_API std::shared_ptr<IVisualScript> OpenScript(std::shared_ptr<IVisualScript> source) override;
+	VISUALSCRIPTMANAGER_API std::shared_ptr<IVisualScript> LoadScript(std::string scriptId, std::shared_ptr<IScene> scene) override;
+	VISUALSCRIPTMANAGER_API bool						   CloseScript(std::string scriptId) override;
+	VISUALSCRIPTMANAGER_API std::shared_ptr<IVisualScript> CreateScript(Utils::ScriptBelongsTo sbt) override;
+	VISUALSCRIPTMANAGER_API bool						   DeleteScript(std::shared_ptr<IVisualScript> script) override;
+	VISUALSCRIPTMANAGER_API bool					       SaveScript(std::shared_ptr<IVisualScript> script) override;
 
-	//getter for the instance
-	VISUALSCRIPTMANAGER_API static VisualScriptManager&                                    GetInstance();
+	//Getters
+	VISUALSCRIPTMANAGER_API std::unordered_map<std::string, std::shared_ptr<IVisualScript>>& GetOpenedScripts() override;
+	VISUALSCRIPTMANAGER_API std::shared_ptr<IVisualScript> GetCurrentScript() override;
+	VISUALSCRIPTMANAGER_API std::unordered_map<std::string, std::shared_ptr<INode>>& GetTypes() override;
+
+	//Setters
+	VISUALSCRIPTMANAGER_API void SetCurrentScript(std::shared_ptr<IVisualScript> script) override;
+
+public:
+	//Singleton
+	static VisualScriptManager& GetInstance() {
+		static VisualScriptManager instance;
+		return instance;
+	}
 
 private:
 	//helper
 	void InitializeNodeTypes();
 
-private:
+public:
 	//singleton
 	VisualScriptManager() = default;
 	~VisualScriptManager() = default;
 	VisualScriptManager(const VisualScriptManager&) = delete;
 	VisualScriptManager& operator=(const VisualScriptManager&) = delete;
 
-public:
+private:
 	//scripts
-	std::unordered_map<std::string, std::shared_ptr<VisualScript>> openedScripts;
-	std::shared_ptr<VisualScript> currentScript = nullptr;
+	std::unordered_map<std::string, std::shared_ptr<IVisualScript>> openedScripts;
+	std::shared_ptr<IVisualScript> currentScript = nullptr;
 
 	//node types
-	std::unordered_map<std::string, std::shared_ptr<Node>> types;
+	std::unordered_map<std::string, std::shared_ptr<INode>> types;
 };
 

@@ -1,18 +1,16 @@
 #include "pch.h"
 #include "WindowAllScenes.h"
 
+#include "WindowAddScene.h"
+#include "WindowEntityProperties.h"
+#include "WindowScene.h"
+
+#include "InterfaceManager.h"
+
 /*
 PURPOSE: Draws the window
 */
-void WindowAllScenes::DrawWindow(
-	std::string& projectDir,
-	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
-	bool& windowAddSceneShowWindow,
-	Entity*& windowEntityPropertiesCurrentEntity,
-	std::string& windowSceneSelectedId,
-	std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-	std::string& selectedTabId,
-	Utils::Tab*& openedTab)
+void WindowAllScenes::DrawWindow()
 {
 	//Begin the window
 	ImGui::Begin("All Scenes", &showWindow);
@@ -28,12 +26,12 @@ void WindowAllScenes::DrawWindow(
 
 	//Add a new scene button
 	if (ImGui::Button("Add", ImVec2((float)buttonWidth, 0.0f))) {
-		windowAddSceneShowWindow = true;
+		WindowAddScene::GetInstance().showWindow = true;
 	}
 	ImGui::Separator();
 
 	//For each scene, draw a selectable and handle when user selects one of them
-	for (auto& sceneIter : SceneManager::GetInstance().scenes) {
+	for (auto& sceneIter : ServiceLocator::Get<ISceneManager>()->GetScenes()) {
 		auto& scene = sceneIter.second;
 		bool selected = scene == selectedSceneId;
 		ImGui::Selectable(scene.c_str(), selected);
@@ -58,24 +56,20 @@ void WindowAllScenes::DrawWindow(
 				selectedSceneId = scene;
 
 				//Clear the previous scene editting stuff
-				windowEntityPropertiesCurrentEntity = nullptr;
-				windowSceneSelectedId = "";
+				WindowEntityProperties::GetInstance().currentEntity = nullptr;
+				WindowScene::GetInstance().selectedId = "";
 
 				//Load the scene
-				Scene* scenePtr = SceneManager::GetInstance().LoadScene(scene, projectDir, entityTypes);
+				std::shared_ptr<IScene> scenePtr = ServiceLocator::Get<ISceneManager>()->LoadScene(scene);
 				if (scenePtr) {
-					tabs.clear();
+					//Remove all previous tabs
+					InterfaceManager::GetInstance().RemoveAllTabs();
 
 					//Create a new tab
-					Utils::Tab* tab = new Utils::Tab();
-					tab->id = scene;
-					tab->tabType = Utils::SceneEditor;
+					InterfaceManager::GetInstance().AddTab(scene, Utils::SceneEditor);
 
-					openedTab = tab;
-					selectedTabId = tab->id;
-
-					//Insert the tab to tabs map
-					tabs.insert(std::pair<std::string, std::unique_ptr<Utils::Tab>>(tab->id, std::unique_ptr<Utils::Tab>(tab)));
+					//Activate the tab
+					InterfaceManager::GetInstance().ActivateTab(scene);
 				}
 			}
 		}

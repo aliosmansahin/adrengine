@@ -1,13 +1,15 @@
 #include "pch.h"
 #include "WindowTileMapBrush.h"
 
+#include "WindowTileMapViewer.h"
+
 void WindowTileMapBrush::DrawWindow()
 {
     if (!editingTileMap) {
         showWindow = false;
         return;
     }
-    TileMapParams* params = dynamic_cast<TileMapParams*>(editingTileMap->GetEntityParams());
+    std::shared_ptr<ITileMapParams> params = std::dynamic_pointer_cast<ITileMapParams>(editingTileMap->GetEntityParams());
     if (!params) {
         showWindow = false;
         return;
@@ -47,14 +49,14 @@ void WindowTileMapBrush::DrawWindow()
 
         for (auto& tile : tiles) {
             //Pass the coordinates
-            int tileX = tile.second->x;
-            int tileY = tile.second->y;
-            int currentTileWidth = tile.second->width;
-            int currentTileHeight = tile.second->height;
-            float u = tile.second->u;
-            float v = tile.second->v;
-            float tw = tile.second->textureWidth;
-            float th = tile.second->textureHeight;
+            int tileX = tile.second->GetXY().first;
+            int tileY = tile.second->GetXY().second;
+            int currentTileWidth = tile.second->GetSize().first;
+            int currentTileHeight = tile.second->GetSize().second;
+            float u = tile.second->GetUV().first;
+            float v = tile.second->GetUV().second;
+            float tw = tile.second->GetTextureSize().first;
+            float th = tile.second->GetTextureSize().second;
 
             //Image Button spec
             ImVec2 imageSize = ImVec2((float)editingTileMap->GetTileSize().first, (float)editingTileMap->GetTileSize().second);
@@ -69,7 +71,7 @@ void WindowTileMapBrush::DrawWindow()
 
                 //Draw the tile
                 ImGui::GetWindowDrawList()->AddImage(
-                    (ImTextureID)(intptr_t)params->texture,
+                    (ImTextureID)(intptr_t)params->GetTexture(),
                     ImVec2(pos.x, pos.y),
                     ImVec2(pos.x + currentTileWidth, pos.y + currentTileHeight),
                     ImVec2(u, v),
@@ -102,7 +104,7 @@ void WindowTileMapBrush::DrawWindow()
                 //Draw the tile
                 if (ImGui::ImageButton(
                     imageButtonId.c_str(),
-                    (ImTextureID)(intptr_t)params->texture,
+                    (ImTextureID)(intptr_t)params->GetTexture(),
                     imageSize,
                     ImVec2(u, v),
                     ImVec2(u + tw, v + th)

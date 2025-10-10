@@ -11,22 +11,18 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
-#include "SceneManager.h"
+
+#include <unordered_map>
+
+#include "utils/Utils.h"
+
+#include "interfaces/ISceneManager/ISceneManager.h"
 
 class WindowAllScenes
 {
 public:
 	//main functions
-	INTERFACEMANAGER_API void DrawWindow(
-		std::string& projectDir,
-		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
-		bool& windowAddSceneShowWindow,
-		Entity*& windowEntityPropertiesCurrentEntity,
-		std::string& windowSceneSelectedId,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-		std::string& selectedTabId,
-		Utils::Tab*& openedTab
-	);
+	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API static WindowAllScenes& GetInstance();
 private:
 	//singleton

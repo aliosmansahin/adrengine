@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "WindowAssetExplorer.h"
 
+#include "WindowAddAsset.h"
+
 /*
 PURPOSE: Draws the window
 */

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "InterfaceManager.h"
 
-#include "SceneManager.h"
+#include "MenuBar.h"
 
 /*
 PURPOSE: Initialize interface manager
@@ -65,6 +65,11 @@ void InterfaceManager::CloseInterface()
 
 INTERFACEMANAGER_API void InterfaceManager::ResetInterface()
 {
+	WindowEntityProperties::GetInstance().SelectEntity(nullptr);
+	WindowScene::GetInstance().selectedId = "";
+	WindowScene::GetInstance().addParent = nullptr;
+
+
 	openedTab = nullptr;
 	tabs.clear();
 }
@@ -91,30 +96,22 @@ void InterfaceManager::EndFrame()
 /*
 PURPOSE: Draws every imgui window, also draws gameviewport as a image from framebuffertexture
 */
-void InterfaceManager::DrawInterface(
-	std::string& projectDir,
-	std::string& projectFilePath,
-	std::function<void()> saveFunc,
-	std::function<void()> closeFunc,
-	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
-	std::vector<std::string> latestProjects,
-	float engineFPS,
-	float engineMS,
-	int screenWidth,
-	int screenHeight,
-	bool projectOpened)
+void InterfaceManager::DrawInterface()
 {
 	//Draws menu bar
-	MenuBar::GetInstance().DrawMenuBar(saveFunc, closeFunc, projectOpened);
+	MenuBar::GetInstance().DrawMenuBar();
+
+	//Project instance from service locator
+	auto projectInterface = ServiceLocator::Get<IProject>();
 
 	//Update tabHeight
-	if (projectOpened)
+	if (projectInterface->GetProjectOpened())
 		tabHeight = 40;
 	else
 		tabHeight = 0;
 	
 	//Draw tabbar if a project is opened
-	if (projectOpened) {
+	if (projectInterface->GetProjectOpened()) {
 		DrawTabbar();
 	}
 
@@ -122,17 +119,98 @@ void InterfaceManager::DrawInterface(
 	DrawDockSpace();
 
 	//Draw all windows
-	DrawWindows(
-		projectOpened,
-		engineFPS,
-		engineMS,
-		projectDir,
-		projectFilePath,
-		entityTypes,
-		latestProjects,
-		screenWidth,
-		screenHeight
-	);
+	DrawWindows();
+}
+
+/*
+PURPOSE: Add a new tab to the tabs bar, and activates it
+*/
+INTERFACEMANAGER_API void InterfaceManager::AddTab(std::string tabId, Utils::TabType tabType)
+{
+	//Create a tab and insert it to tabs
+	std::shared_ptr<Utils::Tab> tab = std::make_shared<Utils::Tab>();
+	tab->id = tabId;
+	tab->tabType = tabType;
+	tabs.insert(std::pair<std::string, std::shared_ptr<Utils::Tab>>(tab->id, tab));
+}
+
+/*
+PURPOSE: Activates a tab by its id
+*/
+INTERFACEMANAGER_API void InterfaceManager::ActivateTab(std::string tabId)
+{
+	//Find the tab
+	auto tab = GetTabById(tabId);
+
+	//Set the openedTab and selectedTabId
+	if (tab) {
+		//If a tab found, set it as openedTab
+		openedTab = tab;
+		selectedTabId = tab->id;
+	}
+	else {
+		//If no tab found, set openedTab to nullptr
+		openedTab = nullptr;
+		selectedTabId = "";
+	}
+}
+
+/*
+PURPOSE: Removes a tab by its id
+*/
+INTERFACEMANAGER_API void InterfaceManager::RemoveTab(std::string tabId)
+{
+	//Find the tab
+	auto tabIter = tabs.find(tabId);
+	if (tabIter == tabs.end())
+		return;
+
+	//Delete tab
+	tabs.erase(tabIter);
+
+	//If the removed tab is the openedTab, set openedTab to nullptr
+	if (openedTab && openedTab->id == tabId) {
+		openedTab = nullptr;
+		selectedTabId = "";
+	}
+}
+
+/*
+PURPOSE: Removes all tabs
+*/
+INTERFACEMANAGER_API void InterfaceManager::RemoveAllTabs()
+{
+	openedTab = nullptr;
+	selectedTabId = "";
+	tabs.clear();
+}
+
+/*
+PURPOSE: Returns a tab by its id
+*/
+INTERFACEMANAGER_API std::shared_ptr<Utils::Tab> InterfaceManager::GetTabById(std::string tabId)
+{
+	//Find the tab
+	auto tabIter = tabs.find(tabId);
+	if (tabIter == tabs.end())
+		return nullptr;
+
+	//Return the tab
+	return tabIter->second;
+}
+
+/*
+PURPOSE: Returns the tab that is going to be deleted
+*/
+INTERFACEMANAGER_API std::shared_ptr<Utils::Tab> InterfaceManager::GetDeletingTab()
+{
+	//Find the tab
+	auto tab = GetTabById(deleteTabId);
+	if (!tab)
+		return nullptr;
+
+	//Return the tab
+	return tab;
 }
 
 /*
@@ -184,22 +262,22 @@ void InterfaceManager::DrawTabbar()
 	for (auto& tabIter : InterfaceManager::GetInstance().tabs) {
 		//Get if the drawing tab is selected
 		bool selected = false;
-		auto tab = tabIter.second.get();
+		auto tab = tabIter.second;
 		if (openedTab) {
 			selected = tab->id == openedTab->id;
 		}
 		if (tab && tab->id.c_str()) {
 			if (ImGui::Selectable(tab->id.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(100, (float)tabHeight))) {
-				VisualScriptManager::GetInstance().currentScript = nullptr;
+				ServiceLocator::Get<IVisualScriptManager>()->SetCurrentScript(nullptr);
 				//If the tabType is scene, set the currentScene
 				if (tab->tabType == Utils::SceneEditor) {
 					openedTab = tab;
 				}
 				//If the tabType is script, set the currentScript
 				else if (tab->tabType == Utils::VisualScriptEditor) {
-					auto openedScript = VisualScriptManager::GetInstance().openedScripts.find(tab->id);
-					if (openedScript != VisualScriptManager::GetInstance().openedScripts.end()) {
-						VisualScriptManager::GetInstance().currentScript = openedScript->second;
+					auto openedScript = ServiceLocator::Get<IVisualScriptManager>()->GetOpenedScripts().find(tab->id);
+					if (openedScript != ServiceLocator::Get<IVisualScriptManager>()->GetOpenedScripts().end()) {
+						ServiceLocator::Get<IVisualScriptManager>()->SetCurrentScript(openedScript->second);
 						openedTab = tab;
 					}
 				}
@@ -220,40 +298,31 @@ void InterfaceManager::DrawTabbar()
 /*
 PURPOSE: Draws all imgui windows
 */
-void InterfaceManager::DrawWindows(
-	bool projectOpened,
-	float engineFPS,
-	float engineMS,
-	std::string& projectDir,
-	std::string& projectFilePath,
-	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
-	std::vector<std::string> latestProjects,
-	int screenWidth,
-	int screenHeight)
+void InterfaceManager::DrawWindows()
 {
-	if (projectOpened) {
+	if (ServiceLocator::Get<IProject>()->GetProjectOpened()) {
 		//Draws windows
 		if (openedTab) {
 			if (openedTab->tabType == Utils::SceneEditor) {
 				//If openedTabType is scene, draw scene windows
-				if (SceneManager::GetInstance().openedScene && SceneManager::GetInstance().openedScene->GetEntityManager()) {
+				if (ServiceLocator::Get<ISceneManager>()->GetOpenedScene() && ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetEntityManager()) {
 					if (WindowScene::GetInstance().showWindow)
 						WindowScene::GetInstance().DrawWindow();
 
 					if (WindowGameViewport::GetInstance().showWindow)
-						WindowGameViewport::GetInstance().DrawWindow(engineFPS, engineMS);
+						WindowGameViewport::GetInstance().DrawWindow();
 
 					if (WindowEntityProperties::GetInstance().showWindow)
-						WindowEntityProperties::GetInstance().DrawWindow(projectDir, tabs, openedTab, selectedTabId);
+						WindowEntityProperties::GetInstance().DrawWindow();
 
 					if (WindowAssetExplorer::GetInstance().showWindow)
 						WindowAssetExplorer::GetInstance().DrawWindow();
 
 					if (WindowAddEntity::GetInstance().showWindow)
-						WindowAddEntity::GetInstance().DrawWindow(entityTypes, projectDir, WindowScene::GetInstance().addParent);
+						WindowAddEntity::GetInstance().DrawWindow();
 
 					if (WindowAddAsset::GetInstance().showWindow)
-						WindowAddAsset::GetInstance().DrawWindow(projectDir, WindowAssetExplorer::GetInstance().currentSelection);
+						WindowAddAsset::GetInstance().DrawWindow(WindowAssetExplorer::GetInstance().currentSelection);
 
 					//TileMap windows
 					if (WindowTileMapEdit::GetInstance().showWindow)
@@ -263,7 +332,7 @@ void InterfaceManager::DrawWindows(
 						WindowTileMapBrush::GetInstance().DrawWindow();
 
 					if (WindowTileMapViewer::GetInstance().showWindow)
-						WindowTileMapViewer::GetInstance().DrawWindow(screenWidth, screenHeight);
+						WindowTileMapViewer::GetInstance().DrawWindow();
 
 					//FlipBook windows
 					if (WindowFlipBookEdit::GetInstance().showWindow)
@@ -272,25 +341,25 @@ void InterfaceManager::DrawWindows(
 			}
 			else if (openedTab->tabType == Utils::VisualScriptEditor) {
 				//If openedTabType is script, draw script windows
-				if (VisualScriptManager::GetInstance().currentScript) {
+				if (ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()) {
 					if (WindowVisualScript::GetInstance().showWindow) {
-						WindowVisualScript::GetInstance().DrawWindow(tabHeight, projectDir, openedTab, tabs);
+						WindowVisualScript::GetInstance().DrawWindow();
 					}
 				}
 			}
 		}
 
 		if (WindowAllScenes::GetInstance().showWindow)
-			WindowAllScenes::GetInstance().DrawWindow(projectDir, entityTypes, WindowAddScene::GetInstance().showWindow, WindowEntityProperties::GetInstance().currentEntity, WindowScene::GetInstance().selectedId, tabs, selectedTabId, openedTab);
+			WindowAllScenes::GetInstance().DrawWindow();
 
 		if (WindowAddScene::GetInstance().showWindow)
-			WindowAddScene::GetInstance().DrawWindow(projectDir, projectFilePath, tabs, openedTab, selectedTabId);
+			WindowAddScene::GetInstance().DrawWindow();
 
 		if (WindowProjectSettings::GetInstance().showWindow)
 			WindowProjectSettings::GetInstance().DrawWindow();
 	}
 	else {
-		WindowProjectDialog::GetInstance().DrawWindow(latestProjects);
+		WindowProjectDialog::GetInstance().DrawWindow();
 	}
 
 	if (WindowEditorSettings::GetInstance().showWindow)

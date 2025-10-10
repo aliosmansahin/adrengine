@@ -116,12 +116,12 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\Project;..\Physics;..\BulletStaticLib;..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Project;..\ServiceLocator;..\Physics;..\BulletStaticLib;..\GladWrapper;..\Timer;..\VisualScriptManager;..\InterfaceManager;..\Engine;..\Common;..\InputManager;..\Asset;..\EntityManager;..\Logger;..\Localization;..\Graphics;..\SceneManager</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Project.lib;Physics.lib;BulletStaticLib.lib;GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Project.lib;ServiceLocator.lib;Physics.lib;BulletStaticLib.lib;GladWrapper.lib;Graphics.lib;InputManager.lib;Common.lib;glfw3dll.lib;opengl32.lib;Logger.lib;Localization.lib;Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT
  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir)</AdditionalLibraryDirectories>

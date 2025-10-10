@@ -4,10 +4,10 @@
 /*
 PURPOSE: Initializes the entity
 */
-bool SpotLight::CreateEntity(std::shared_ptr<EntityParams> params)
+bool SpotLight::CreateEntity(std::shared_ptr<IEntityParams> params)
 {
 	//Cast EntityParams to SpotLightParams to use its properties
-	auto casted = std::dynamic_pointer_cast<SpotLightParams>(params);
+	auto casted = std::dynamic_pointer_cast<ISpotLightParams>(params);
 	if (!casted) {
 		Logger::Log("E", "Casting failed at dynamic_cast<SpotLightParams*>(params)");
 		return false;
@@ -59,9 +59,9 @@ void SpotLight::Update()
 
 	//Calculate light martix
 	glm::vec3 spotPos = realPos;
-	glm::vec3 spotDir = glm::normalize(params->direction);
+	glm::vec3 spotDir = glm::normalize(params->GetDirection());
 
-	float fov = glm::degrees(2 * acos(glm::clamp(params->outerCutOff, -1.0f, 1.0f)));
+	float fov = glm::degrees(2 * acos(glm::clamp(params->GetOuterCutOff(), -1.0f, 1.0f)));
 	glm::mat4 lightProjection = glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
 	glm::mat4 lightView = glm::lookAt(spotPos, spotPos + spotDir, glm::vec3(0.0f, 1.0f, 0.0f));
 	lightSpaceMatrix = lightProjection * lightView;
@@ -78,9 +78,9 @@ void SpotLight::Draw(glm::vec3 currentSceneCameraPos)
 /*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
-EntityParams* SpotLight::GetEntityParams()
+std::shared_ptr<IEntityParams> SpotLight::GetEntityParams()
 {
-	return params.get();
+	return params;
 }
 
 /*
@@ -95,4 +95,12 @@ nlohmann::json SpotLight::ToJson()
 		j = params->ToJson();
 	}
 	return j;
+}
+
+/*
+PURPOSE: Getters for lightSpaceMatrix
+*/
+ENTITYMANAGER_API glm::mat4 SpotLight::GetLightSpaceMatrix()
+{
+	return lightSpaceMatrix;
 }

@@ -16,9 +16,15 @@
 #include "imnodes/imnodes.h"
 
 #include "Logger.h"
-#include "MenuBar.h"
 
 #include <thread>
+
+#include "interfaces/IVisualScriptManager/IVisualScriptManager.h"
+#include "interfaces/ISceneManager/ISceneManager.h"
+#include "interfaces/IEntity/IEntity.h"
+#include "interfaces/IProject/IProject.h"
+
+#include "ServiceLocator.h"
 
 class InterfaceManager
 {
@@ -30,36 +36,31 @@ public:
 	//drawing
 	INTERFACEMANAGER_API void StartFrame();
 	INTERFACEMANAGER_API void EndFrame();
-	INTERFACEMANAGER_API void DrawInterface(
-		std::string& projectDir,
-		std::string& projectFilePath,
-		std::function<void()> saveFunc,
-		std::function<void()> closeFunc,
-		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
-		std::vector<std::string> latestProjects,
-		float engineFPS,
-		float engineMS,
-		int screenWidth,
-		int screenHeight,
-		bool projectOpened);
+	INTERFACEMANAGER_API void DrawInterface();
 	INTERFACEMANAGER_API void UpdateViewportContext();
 	INTERFACEMANAGER_API void SetDarkTheme();
 	INTERFACEMANAGER_API GLFWwindow* GetFocusedViewport();
 
+	//Tabs
+	INTERFACEMANAGER_API void AddTab(std::string tabId, Utils::TabType tabType);
+	INTERFACEMANAGER_API void ActivateTab(std::string tabId);
+	INTERFACEMANAGER_API void RemoveTab(std::string tabId);
+	INTERFACEMANAGER_API void RemoveAllTabs();
+
+	//Getters for tabs
+	INTERFACEMANAGER_API std::shared_ptr<Utils::Tab> GetTabById(std::string tabId);
+	INTERFACEMANAGER_API std::shared_ptr<Utils::Tab> GetDeletingTab();
+	INTERFACEMANAGER_API std::shared_ptr<Utils::Tab> GetOpenedTab() { return openedTab; }
+	INTERFACEMANAGER_API std::string GetSelectedTabId() { return selectedTabId; }
+	INTERFACEMANAGER_API std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& GetTabs() { return tabs; }
+
+	//Pending tab delete
+	INTERFACEMANAGER_API bool GetPendingTabDelete() { return pendingTabDelete; }
+	INTERFACEMANAGER_API void SetPendingTabDelete(bool pending) { pendingTabDelete = pending; }
 private:
 	void DrawDockSpace();
 	void DrawTabbar();
-	void DrawWindows(
-		bool projectOpened,
-		float engineFPS,
-		float engineMS,
-		std::string& projectDir,
-		std::string& projectFilePath,
-		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
-		std::vector<std::string> latestProjects,
-		int screenWidth,
-		int screenHeight
-	);
+	void DrawWindows();
 
 public:
 	//getter for the instance
@@ -72,13 +73,13 @@ private:
 	InterfaceManager(const InterfaceManager&) = delete;
 	InterfaceManager& operator=(const InterfaceManager&) = delete;
 
-public:
+private:
 	GLFWwindow* window = nullptr;
 	bool darkTheme = true;
 	bool pendingTabDelete = false;
 	std::string deleteTabId = "";
 	std::string selectedTabId = "";
-	Utils::Tab* openedTab = nullptr;
+	std::shared_ptr<Utils::Tab> openedTab = nullptr;
 	std::unordered_map<std::string, std::shared_ptr<Utils::Tab>> tabs;
 	int tabHeight = 40;
 };

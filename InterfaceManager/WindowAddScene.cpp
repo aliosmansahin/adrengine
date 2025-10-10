@@ -1,16 +1,19 @@
 #include "pch.h"
 #include "WindowAddScene.h"
-#include "VisualScriptManager.h"
+
+#include "WindowEntityProperties.h"
+#include "WindowScene.h"
+
+#include "AssetSaver.h"
+
+#include "interfaces/IProject/IProject.h"
+
+#include "InterfaceManager.h"
 
 /*
 PURPOSE: Draws the window
 */
-void WindowAddScene::DrawWindow(
-    std::string& projectDir,
-    std::string& projectFilePath,
-    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-    Utils::Tab*& openedTab,
-    std::string& selectedTabId)
+void WindowAddScene::DrawWindow()
 {
     //Begin the window
     ImGui::Begin("Add Scene", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
@@ -28,25 +31,21 @@ void WindowAddScene::DrawWindow(
 
     //When the user selects the add button
     if(ImGui::Button("Add")) {
-        SceneManager::GetInstance().CreateScene(activeSceneType, projectDir);
+        auto scene = ServiceLocator::Get<ISceneManager>()->CreateScene(activeSceneType);
 
-        tabs.clear();
+		//Remove all previous tabs
+        InterfaceManager::GetInstance().RemoveAllTabs();
 
         //Create a new tab and insert it to all tabs
-        Utils::Tab* tab = new Utils::Tab();
-        tab->id = SceneManager::GetInstance().openedScene->sceneId;
-        tab->tabType = Utils::SceneEditor;
-
-        tabs.insert(std::pair<std::string, std::unique_ptr<Utils::Tab>>(tab->id, std::unique_ptr<Utils::Tab>(tab)));
+		InterfaceManager::GetInstance().AddTab(scene->GetSceneId(), Utils::SceneEditor);
 
         //Set the current scene and tab to the new scene and tab
-        openedTab = tab;
-        selectedTabId = tab->id;
+		InterfaceManager::GetInstance().ActivateTab(scene->GetSceneId());
 
         //Save the project
-        nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, SceneManager::GetInstance().openedScene->sceneId);
+        nlohmann::json projectJson = Utils::CreateProjectJson(ServiceLocator::Get<ISceneManager>()->GetScenes(), scene->GetSceneId());
 
-        AssetSaver::SaveProjectToFile(projectFilePath, projectJson);
+        AssetSaver::SaveProjectToFile(ServiceLocator::Get<IProject>()->GetProjectFileLocation(), projectJson);
 
         WindowEntityProperties::GetInstance().currentEntity = nullptr;
         WindowScene::GetInstance().selectedId = "";

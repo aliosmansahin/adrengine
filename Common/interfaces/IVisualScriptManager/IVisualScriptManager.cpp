@@ -1,0 +1,1 @@
+#include "IVisualScriptManager.h"

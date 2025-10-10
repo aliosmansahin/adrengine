@@ -4,14 +4,14 @@
 /*
 PURPOSE: Draws begin node
 */
-VISUALSCRIPTMANAGER_API void ConstFloat::Draw(NodeVisual* nodeVisual)
+VISUALSCRIPTMANAGER_API void ConstFloat::Draw(std::shared_ptr<NodeVisual> nodeVisual)
 {
     ImGui::SetNextItemWidth(100);
     ImGui::InputFloat("Value", &buf, 1.0f, 5.0f);
 
     for (size_t i = 0; i < outputPins.size(); ++i) {
-        ImNodes::BeginOutputAttribute(nodeVisual->outputIds[i], outputPins[i]->type == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
-        ImGui::Text(outputPins[i]->name.c_str());
+        ImNodes::BeginOutputAttribute(nodeVisual->outputIds[i], outputPins[i]->GetType() == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
+        ImGui::Text(outputPins[i]->GetName().c_str());
         ImNodes::EndOutputAttribute();
     }
 }
@@ -19,7 +19,7 @@ VISUALSCRIPTMANAGER_API void ConstFloat::Draw(NodeVisual* nodeVisual)
 /*
 PURPOSE: Returns result of this node, other nodes can access it with this function
 */
-VISUALSCRIPTMANAGER_API Value ConstFloat::Evaluate(Pin* pin)
+VISUALSCRIPTMANAGER_API Value ConstFloat::Evaluate(std::shared_ptr<IPin> pin)
 {
     return buf;
 }
@@ -29,8 +29,10 @@ PURPOSE: Sets pins for this node
 */
 VISUALSCRIPTMANAGER_API void ConstFloat::SetPins()
 {
+	std::shared_ptr<INode> thisNode = shared_from_this();
+
     outputPins = {
-        std::make_shared<Pin>("Value", PinType::Float, PinDirection::Output, this),
+        std::make_shared<Pin>("Value", PinType::Float, PinDirection::Output, thisNode),
     };
 }
 

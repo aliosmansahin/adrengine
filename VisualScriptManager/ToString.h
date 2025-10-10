@@ -15,7 +15,7 @@ class ToString : public Node
 {
 public:
 	//execution
-	VISUALSCRIPTMANAGER_API virtual Value		  Evaluate(Pin* pin);
+	VISUALSCRIPTMANAGER_API virtual Value		  Evaluate(std::shared_ptr<IPin> pin);
 
 	//getters and setters
 	VISUALSCRIPTMANAGER_API void				  SetPins() override;
@@ -24,7 +24,7 @@ public:
 	}
 
 	//clone
-	VISUALSCRIPTMANAGER_API std::shared_ptr<Node> clone() override {
+	VISUALSCRIPTMANAGER_API std::shared_ptr<INode> clone() override {
 		return std::make_shared<ToString>(*this);
 	}
 private:

@@ -4,11 +4,11 @@
 /*
 PURPOSE: Returns result of this node, other nodes can access it with this function
 */
-VISUALSCRIPTMANAGER_API Value MakeVector3::Evaluate(Pin* pin)
+VISUALSCRIPTMANAGER_API Value MakeVector3::Evaluate(std::shared_ptr<IPin> pin)
 {
-    Value xValue = EvaluateInput(inputPins[0].get());
-    Value yValue = EvaluateInput(inputPins[1].get());
-    Value zValue = EvaluateInput(inputPins[2].get());
+    Value xValue = EvaluateInput(inputPins[0]);
+    Value yValue = EvaluateInput(inputPins[1]);
+    Value zValue = EvaluateInput(inputPins[2]);
 
     if (!std::holds_alternative<float>(xValue)) {
         return std::monostate{};
@@ -34,12 +34,14 @@ PURPOSE: Sets pins for this node
 */
 VISUALSCRIPTMANAGER_API void MakeVector3::SetPins()
 {
+	std::shared_ptr<INode> thisNode = shared_from_this();
+
     inputPins = {
-        std::make_shared<Pin>("X", PinType::Float, PinDirection::Input, this),
-        std::make_shared<Pin>("Y", PinType::Float, PinDirection::Input, this),
-        std::make_shared<Pin>("Z", PinType::Float, PinDirection::Input, this),
+        std::make_shared<Pin>("X", PinType::Float, PinDirection::Input, thisNode),
+        std::make_shared<Pin>("Y", PinType::Float, PinDirection::Input, thisNode),
+        std::make_shared<Pin>("Z", PinType::Float, PinDirection::Input, thisNode),
     };
     outputPins = {
-        std::make_shared<Pin>("Vector3", PinType::Vector3, PinDirection::Output, this),
+        std::make_shared<Pin>("Vector3", PinType::Vector3, PinDirection::Output, thisNode),
     };
 }

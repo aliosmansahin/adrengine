@@ -15,18 +15,17 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
-#include "SceneManager.h"
-#include "EntityManager.h"
+
+#include "interfaces/IEngine/IEngine.h"
+#include "interfaces/ISceneManager/ISceneManager.h"
+
+#include "ServiceLocator.h"
 
 class WindowAddEntity
 {
 public:
 	//main funcions
-	INTERFACEMANAGER_API void DrawWindow(
-		std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
-		std::string& projectDir,
-		std::shared_ptr<Entity>& windowSceneAddParent
-	);
+	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API static WindowAddEntity& GetInstance();
 private:
 	//singleton

@@ -2,17 +2,19 @@
 
 #include "Node.h"
 
+#include "interfaces/IVisualScript/INode/IGetThisEntity/IGetThisEntity.h"
+
 #ifdef VISUALSCRIPTMANAGER_EXPORTS
 #define VISUALSCRIPTMANAGER_API __declspec(dllexport)
 #else
 #define VISUALSCRIPTMANAGER_API __declspec(dllimport)
 #endif
 
-class GetThisEntity : public Node
+class GetThisEntity : public Node, public IGetThisEntity
 {
 public:
 	//execution
-	VISUALSCRIPTMANAGER_API Value				  Evaluate(Pin* pin) override;
+	VISUALSCRIPTMANAGER_API Value				  Evaluate(std::shared_ptr<IPin> pin) override;
 
 	//getters and setters
 	VISUALSCRIPTMANAGER_API void				  SetPins() override;
@@ -21,11 +23,16 @@ public:
 	}
 
 	//clone
-	VISUALSCRIPTMANAGER_API std::shared_ptr<Node> clone() override {
+	VISUALSCRIPTMANAGER_API std::shared_ptr<INode> clone() override {
 		return std::make_shared<GetThisEntity>(*this);
 	}
-public:
+
+	void SetEntity(std::shared_ptr<IEntity> entity) override {
+		this->entity = entity;
+	}
+
+private:
 	//Entity ptr
-	IEntity* entity = nullptr;
+	std::shared_ptr<IEntity> entity = nullptr;
 };
 
