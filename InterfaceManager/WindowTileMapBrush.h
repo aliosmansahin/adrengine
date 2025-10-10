@@ -11,9 +11,8 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
-#include "TileMap.h"
 
-#include "WindowTileMapViewer.h"
+#include "interfaces/IEntity/ISprite2D/ITileMap/ITileMap.h"
 
 class WindowTileMapBrush
 {
@@ -27,7 +26,7 @@ private:
 	INTERFACEMANAGER_API WindowTileMapBrush& operator=(const WindowTileMapBrush&) = delete;
 public:
 	bool showWindow = false;
-	TileMap* editingTileMap = nullptr;
+	std::shared_ptr<ITileMap> editingTileMap = nullptr;
 	bool editing = false;
 	std::pair<int, int> selectedTile = { -1, -1 };
 };

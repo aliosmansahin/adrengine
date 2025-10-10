@@ -9,8 +9,7 @@ PROJECT_API bool Project::OpenProject(
     std::string& projectName,
     GLFWwindow* window,
     ImGuiContext* context,
-    ImNodesContext* nodesContext,
-    std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
+    ImNodesContext* nodesContext)
 {
     /*
         Setup project specifications.
@@ -45,32 +44,23 @@ PROJECT_API bool Project::OpenProject(
         return false;
 
     //scene manager
-    if (!SceneManager::GetInstance().InitializeManager())
+    if (!ServiceLocator::Get<ISceneManager>()->InitializeManager())
         return false;
 
     //visual script manager
-    if (!VisualScriptManager::GetInstance().InitManager(context, nodesContext))
+    if (!ServiceLocator::Get<IVisualScriptManager>()->InitManager(context, nodesContext))
         return false;
 
     //loads all scenes and scripts that belong to the project
     for (auto& scene : projectJson["scenes"]) {
-        SceneManager::GetInstance().scenes.insert(std::pair<std::string, std::string>(scene, scene));
+        ServiceLocator::Get<ISceneManager>()->GetScenes().insert(std::pair<std::string, std::string>(scene, scene));
     }
 
     if (projectJson.contains("opened-scene")) {
         //it is a scene so load the scene
-        Scene* scene = SceneManager::GetInstance().LoadScene(projectJson["opened-scene"], projectDir, entityTypes);
+        std::shared_ptr<IScene> scene = ServiceLocator::Get<ISceneManager>()->LoadScene(projectJson["opened-scene"]);
         if (!scene)
             return false;
-
-        //Create a tab and insert it to tabs
-        std::shared_ptr<Utils::Tab> tab = std::make_shared<Utils::Tab>();
-        tab->id = scene->sceneId;
-        tab->tabType = Utils::SceneEditor;
-        InterfaceManager::GetInstance().tabs.insert(std::pair<std::string, std::shared_ptr<Utils::Tab>>(tab->id, tab));
-
-        InterfaceManager::GetInstance().openedTab = tab.get();
-        InterfaceManager::GetInstance().selectedTabId = tab->id;
     }
 
     //Close project dialog window and set project opened state true
@@ -93,34 +83,34 @@ PURPOSE: To save the project
 bool Project::SaveProject() {
     //get scene id
     std::string sceneId = "";
-    if (SceneManager::GetInstance().openedScene.get())
-        sceneId = SceneManager::GetInstance().openedScene->sceneId;
+    if (ServiceLocator::Get<ISceneManager>()->GetOpenedScene())
+        sceneId = ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetSceneId();
 
     //saves the project to the project file
-    std::string projectFile = Project::Get().GetProjectFileLocation();
-    std::string projectDir = Project::Get().GetProjectDir();
-    nlohmann::json projectJson = Utils::CreateProjectJson(SceneManager::GetInstance().scenes, sceneId);
+    std::string projectFile = GetProjectFileLocation();
+    std::string projectDir = GetProjectDir();
+    nlohmann::json projectJson = Utils::CreateProjectJson(ServiceLocator::Get<ISceneManager>()->GetScenes(), sceneId);
     AssetSaver::SaveProjectToFile(projectFile, projectJson);
 
     //save assets
     AssetDatabase::GetInstance().SaveDatabase(projectDir + "asset_database.adrenginedatabase");
 
     //saves each opened-scenes and each entity that belong to the scene
-    Scene* scene = SceneManager::GetInstance().openedScene.get();
+    std::shared_ptr<IScene> scene = ServiceLocator::Get<ISceneManager>()->GetOpenedScene();
     if (scene) {
         AssetSaver::SaveSceneToFile(scene->ToJson(), projectDir, sceneId);
 
         if (scene->GetEntityManager()) {
             for (auto& entity : scene->GetEntityManager()->GetEntities()) {
-                AssetSaver::SaveEntityToFile(entity.second->ToJson(), projectDir, entity.second->GetEntityParams()->id);
+                AssetSaver::SaveEntityToFile(entity.second->ToJson(), projectDir, entity.second->GetEntityParams()->GetId());
             }
         }
     }
 
     //saves each opened-scripts
-    for (auto& scriptIter : VisualScriptManager::GetInstance().openedScripts) {
+    for (auto& scriptIter : ServiceLocator::Get<IVisualScriptManager>()->GetOpenedScripts()) {
         auto script = scriptIter.second.get();
-        AssetSaver::SaveScriptToFile(script->ToJson(), projectDir, script->scriptId);
+        AssetSaver::SaveScriptToFile(script->ToJson(), projectDir, script->GetScriptId());
     }
 
     return true;
@@ -136,8 +126,7 @@ bool Project::CreateProject(
     std::string projectName,
     GLFWwindow* window,
     ImGuiContext* context,
-    ImNodesContext* nodesContext,
-    std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
+    ImNodesContext* nodesContext)
 {
     //Setup some variables
     this->projectName = projectName;
@@ -154,7 +143,7 @@ bool Project::CreateProject(
         return false;
 
     //Open the project
-    if (!OpenProject(projectPath, projectName, window, context, nodesContext, entityTypes))
+    if (!OpenProject(projectPath, projectName, window, context, nodesContext))
         return false;
 
     return true;
@@ -166,10 +155,9 @@ PURPOSE: Closes the project
 
 */
 bool Project::CloseProject() {
-    InterfaceManager::GetInstance().ResetInterface();
     InputManager::GetInstance().ReleaseEngine();
-    SceneManager::GetInstance().ClearManager();
-    VisualScriptManager::GetInstance().ReleaseManager();
+    ServiceLocator::Get<ISceneManager>()->ClearManager();
+    ServiceLocator::Get<IVisualScriptManager>()->ReleaseManager();
 
     projectOpened = false;
     return true;
@@ -315,16 +303,6 @@ PROJECT_API std::vector<std::string>& Project::GetLatestProjects()
 
 /*
 
-PURPOSE: Gets the instance of the class
-
-*/
-Project& Project::Get() {
-    static Project project;
-    return project;
-}
-
-/*
-
 PURPOSE: Returns main file location of the project
 
 */
@@ -339,4 +317,13 @@ PURPOSE: Returns directory of the project
 */
 std::string& Project::GetProjectDir() {
     return projectDir;
+}
+
+/*
+
+PURPOSE: Returns true if a project is opened, otherwise returns false
+
+*/
+bool Project::GetProjectOpened() {
+    return projectOpened;
 }

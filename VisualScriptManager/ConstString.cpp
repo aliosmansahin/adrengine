@@ -4,14 +4,14 @@
 /*
 PURPOSE: Draws begin node
 */
-void ConstString::Draw(NodeVisual* nodeVisual)
+void ConstString::Draw(std::shared_ptr<NodeVisual> nodeVisual)
 {
     ImGui::SetNextItemWidth(100);
     ImGui::InputText("Text", buf, sizeof(buf));
 
     for (size_t i = 0; i < outputPins.size(); ++i) {
-        ImNodes::BeginOutputAttribute(nodeVisual->outputIds[i], outputPins[i]->type == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
-        ImGui::Text(outputPins[i]->name.c_str());
+        ImNodes::BeginOutputAttribute(nodeVisual->outputIds[i], outputPins[i]->GetType() == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
+        ImGui::Text(outputPins[i]->GetName().c_str());
         ImNodes::EndOutputAttribute();
     }
 }
@@ -19,7 +19,7 @@ void ConstString::Draw(NodeVisual* nodeVisual)
 /*
 PURPOSE: Returns result of this node, other nodes can access it with this function
 */
-Value ConstString::Evaluate(Pin* pin)
+Value ConstString::Evaluate(std::shared_ptr<IPin> pin)
 {
     buf[sizeof(buf) - 1] = '\0';
     std::string value = buf;
@@ -31,8 +31,10 @@ PURPOSE: Sets pins for this node
 */
 void ConstString::SetPins()
 {
+	std::shared_ptr<INode> thisNode = shared_from_this();
+
     outputPins = {
-        std::make_shared<Pin>("Value", PinType::String, PinDirection::Output, this),
+        std::make_shared<Pin>("Value", PinType::String, PinDirection::Output, thisNode),
     };
 }
 

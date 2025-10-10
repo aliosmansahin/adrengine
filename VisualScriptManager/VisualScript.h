@@ -26,28 +26,41 @@
 
 #include "interfaces/IScene/IScene.h"
 
-class VisualScript
+#include "interfaces/IVisualScript/IVisualScript.h"
+
+class VisualScript : public IVisualScript
 {
 public:
 	//main functions
-	VISUALSCRIPTMANAGER_API bool		   CreateScript(std::string scriptId, std::string belongsEntity, std::string belongsScene);
+	VISUALSCRIPTMANAGER_API bool		   CreateScript(std::string scriptId, std::string belongsEntity, std::string belongsScene) override;
 	VISUALSCRIPTMANAGER_API void		   DrawScript();
-	VISUALSCRIPTMANAGER_API void		   ReleaseScript();
-	VISUALSCRIPTMANAGER_API void		   ExecuteBeginScript();
+	VISUALSCRIPTMANAGER_API void		   ReleaseScript() override;
+	VISUALSCRIPTMANAGER_API void		   ExecuteBeginScript() override;
 	//json
-	VISUALSCRIPTMANAGER_API nlohmann::json ToJson();
-	VISUALSCRIPTMANAGER_API void		   FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<Node>>& types, IScene* scene);
+	VISUALSCRIPTMANAGER_API nlohmann::json ToJson() override;
+	VISUALSCRIPTMANAGER_API void		   FromJson(nlohmann::json json, std::unordered_map<std::string, std::shared_ptr<INode>>& types, std::shared_ptr<IScene> scene) override;
 
 	//Find
-	VISUALSCRIPTMANAGER_API Pin*		   FindPinById(int id);
-public:
+	VISUALSCRIPTMANAGER_API std::shared_ptr<IPin> FindPinById(int id) override;
+
+	//Getters
+	VISUALSCRIPTMANAGER_API std::string	   GetScriptId() override;
+	VISUALSCRIPTMANAGER_API std::string	   GetBelongsEntity() override;
+	VISUALSCRIPTMANAGER_API int GetNextId() override;
+	VISUALSCRIPTMANAGER_API std::unordered_map<int, std::shared_ptr<NodeVisual>>& GetNodes() override;
+	VISUALSCRIPTMANAGER_API std::unordered_map<int, std::pair<int, int>>& GetLinks() override;
+
+	//Setters
+	VISUALSCRIPTMANAGER_API void		   SetNextId(int nextId) override;
+
+private:
 	//script variables
 	std::string scriptId = "";
 	std::string belongsEntity = "";
 	std::string belongsScene = "";
 
 	//nodes
-	std::unordered_map<int, NodeVisual> nodes;
+	std::unordered_map<int, std::shared_ptr<NodeVisual>> nodes;
 	std::unordered_map<int, std::pair<int, int>> links;
 
 	//The id will start from 1000 and will increment by the node

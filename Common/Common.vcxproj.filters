@@ -82,6 +82,93 @@
     <ClInclude Include="interfaces\IEntity\IObject\IObject.h">
       <Filter>interfaces\IEntity\IObject</Filter>
     </ClInclude>
+    <ClInclude Include="interfaces\IEntity\IObject\IObjectParams.h">
+      <Filter>interfaces\IEntity\IObject</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ISprite2D\ISprite2D.h">
+      <Filter>interfaces\IEntity\ISprite2D</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ISprite2D\ISprite2DParams.h">
+      <Filter>interfaces\IEntity\ISprite2D</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ILight\ILight.h">
+      <Filter>interfaces\IEntity\ILight</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ILight\ILightParams.h">
+      <Filter>interfaces\IEntity\ILight</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ILight\ISpotLight\ISpotLight.h">
+      <Filter>interfaces\IEntity\ILight\ISpotLight</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ILight\ISpotLight\ISpotLightParams.h">
+      <Filter>interfaces\IEntity\ILight\ISpotLight</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ILight\IPointLight\IPointLight.h">
+      <Filter>interfaces\IEntity\ILight\IPointLight</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ILight\IPointLight\IPointLightParams.h">
+      <Filter>interfaces\IEntity\ILight\IPointLight</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ILight\IDirectionalLight\IDirectionalLight.h">
+      <Filter>interfaces\IEntity\ILight\IDirectionalLight</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ILight\IDirectionalLight\IDirectionalLightParams.h">
+      <Filter>interfaces\IEntity\ILight\IDirectionalLight</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ISprite2D\IFlipBook\IFlipBook.h">
+      <Filter>interfaces\IEntity\ISprite2D\IFlipBook</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ISprite2D\IFlipBook\IFlipBookParams.h">
+      <Filter>interfaces\IEntity\ISprite2D\IFlipBook</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ISprite2D\IFlipBook\IFlipBookFrame\IFlipBookFrame.h">
+      <Filter>interfaces\IEntity\ISprite2D\IFlipBook\IFlipBookFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ICamera\ICamera.h">
+      <Filter>interfaces\IEntity\ICamera</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ICamera\ICameraParams.h">
+      <Filter>interfaces\IEntity\ICamera</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ISprite2D\ITileMap\ITileMap.h">
+      <Filter>interfaces\IEntity\ISprite2D\ITileMap</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ISprite2D\ITileMap\ITileMapParams.h">
+      <Filter>interfaces\IEntity\ISprite2D\ITileMap</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEntity\ISprite2D\ITileMap\ITile\ITile.h">
+      <Filter>interfaces\IEntity\ISprite2D\ITileMap\ITile</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IVisualScript\IVisualScript.h">
+      <Filter>interfaces\IVisualScript</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IVisualScriptManager\IVisualScriptManager.h">
+      <Filter>interfaces\IVisualScriptManager</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\ISceneManager\ISceneManager.h">
+      <Filter>interfaces\ISceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IEngine\IEngine.h">
+      <Filter>interfaces\IEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IProject\IProject.h">
+      <Filter>interfaces\IProject</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IPhysics\IPhysics.h">
+      <Filter>interfaces\IPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IRigidBody\IRigidBody.h">
+      <Filter>interfaces\IRigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IVisualScript\INode\INode.h">
+      <Filter>interfaces\IVisualScript\INode</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IVisualScript\IPin\IPin.h">
+      <Filter>interfaces\IVisualScript\IPin</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces\IVisualScript\INode\IGetThisEntity\IGetThisEntity.h">
+      <Filter>interfaces\IVisualScript\INode\IGetThisEntity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp">
@@ -129,6 +216,93 @@
     <ClCompile Include="interfaces\IEntity\IObject\IObject.cpp">
       <Filter>interfaces\IEntity\IObject</Filter>
     </ClCompile>
+    <ClCompile Include="interfaces\IEntity\IObject\IObjectParams.cpp">
+      <Filter>interfaces\IEntity\IObject</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ISprite2D\ISprite2D.cpp">
+      <Filter>interfaces\IEntity\ISprite2D</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ISprite2D\ISprite2DParams.cpp">
+      <Filter>interfaces\IEntity\ISprite2D</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ILight\ILight.cpp">
+      <Filter>interfaces\IEntity\ILight</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ILight\ILightParams.cpp">
+      <Filter>interfaces\IEntity\ILight</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ILight\ISpotLight\ISpotLight.cpp">
+      <Filter>interfaces\IEntity\ILight\ISpotLight</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ILight\ISpotLight\ISpotLightParams.cpp">
+      <Filter>interfaces\IEntity\ILight\ISpotLight</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ILight\IPointLight\IPointLightParams.cpp">
+      <Filter>interfaces\IEntity\ILight\IPointLight</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ILight\IPointLight\IPointLight.cpp">
+      <Filter>interfaces\IEntity\ILight\IPointLight</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ILight\IDirectionalLight\IDirectionalLight.cpp">
+      <Filter>interfaces\IEntity\ILight\IDirectionalLight</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ILight\IDirectionalLight\IDirectionalLightParams.cpp">
+      <Filter>interfaces\IEntity\ILight\IDirectionalLight</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ISprite2D\IFlipBook\IFlipBook.cpp">
+      <Filter>interfaces\IEntity\ISprite2D\IFlipBook</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ISprite2D\IFlipBook\IFlipBookParams.cpp">
+      <Filter>interfaces\IEntity\ISprite2D\IFlipBook</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ISprite2D\IFlipBook\IFlipBookFrame\IFlipBookFrame.cpp">
+      <Filter>interfaces\IEntity\ISprite2D\IFlipBook\IFlipBookFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ICamera\ICamera.cpp">
+      <Filter>interfaces\IEntity\ICamera</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ICamera\ICameraParams.cpp">
+      <Filter>interfaces\IEntity\ICamera</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ISprite2D\ITileMap\ITileMap.cpp">
+      <Filter>interfaces\IEntity\ISprite2D\ITileMap</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ISprite2D\ITileMap\ITileMapParams.cpp">
+      <Filter>interfaces\IEntity\ISprite2D\ITileMap</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEntity\ISprite2D\ITileMap\ITile\ITile.cpp">
+      <Filter>interfaces\IEntity\ISprite2D\ITileMap\ITile</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IVisualScript\IVisualScript.cpp">
+      <Filter>interfaces\IVisualScript</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IVisualScriptManager\IVisualScriptManager.cpp">
+      <Filter>interfaces\IVisualScriptManager</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\ISceneManager\ISceneManager.cpp">
+      <Filter>interfaces\ISceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IEngine\IEngine.cpp">
+      <Filter>interfaces\IEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IProject\IProject.cpp">
+      <Filter>interfaces\IProject</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IPhysics\IPhysics.cpp">
+      <Filter>interfaces\IPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IRigidBody\IRigidBody.cpp">
+      <Filter>interfaces\IRigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IVisualScript\INode\INode.cpp">
+      <Filter>interfaces\IVisualScript\INode</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IVisualScript\IPin\IPin.cpp">
+      <Filter>interfaces\IVisualScript\IPin</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces\IVisualScript\INode\IGetThisEntity\IGetThisEntity.cpp">
+      <Filter>interfaces\IVisualScript\INode\IGetThisEntity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="glad">
@@ -169,6 +343,66 @@
     </Filter>
     <Filter Include="interfaces\IEntity\IObject">
       <UniqueIdentifier>{d25968f1-471a-424b-8544-451636fe1764}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ISprite2D">
+      <UniqueIdentifier>{b1030f8a-f9d4-44a2-b5ed-b9d3568747eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ILight">
+      <UniqueIdentifier>{be8c3fd8-8e49-460f-b282-5ebfda082d54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ILight\ISpotLight">
+      <UniqueIdentifier>{d4dcebb8-0251-4586-a95e-5492a9786e15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ILight\IPointLight">
+      <UniqueIdentifier>{adf8a75f-6c12-4a6c-93d7-fb5f5c7a50ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ILight\IDirectionalLight">
+      <UniqueIdentifier>{79ce33e3-36f4-4dc2-9d18-a7017f9b4956}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ISprite2D\IFlipBook">
+      <UniqueIdentifier>{b36b1371-2da9-406e-8529-0993300fa40e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ISprite2D\IFlipBook\IFlipBookFrame">
+      <UniqueIdentifier>{c166ba4e-d2ff-4f37-bf90-1bb790ccf02b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ICamera">
+      <UniqueIdentifier>{5e36a7dc-ad87-4be9-97ba-fc8b9dcb8975}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ISprite2D\ITileMap">
+      <UniqueIdentifier>{c2088210-a7fc-4af0-8244-9fa973628a04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEntity\ISprite2D\ITileMap\ITile">
+      <UniqueIdentifier>{2c1f0665-e826-4551-be4c-e5bb1fe10478}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IVisualScript">
+      <UniqueIdentifier>{766d49dc-2121-413b-8d68-4d8947de76ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IVisualScriptManager">
+      <UniqueIdentifier>{5e0d8132-0c4d-4d09-9cd7-9d897a6aee9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\ISceneManager">
+      <UniqueIdentifier>{bd753158-a180-439e-b971-a6f4e56d803f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IEngine">
+      <UniqueIdentifier>{4e9ba421-94ac-4fd7-9c22-9794b9ac183b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IProject">
+      <UniqueIdentifier>{5e66dcad-335f-4922-b7a7-37f0cbbe1cd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IPhysics">
+      <UniqueIdentifier>{bab4433b-b0f2-4629-be3a-8a3d66dab6dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IRigidBody">
+      <UniqueIdentifier>{e22ab2be-22f4-4aaf-87c3-421f341fa07c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IVisualScript\INode">
+      <UniqueIdentifier>{7fb82dcc-4d55-402f-80db-f54bc1a7ba1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IVisualScript\IPin">
+      <UniqueIdentifier>{fbde4219-3a00-4ab3-8af1-70b531243f5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces\IVisualScript\INode\IGetThisEntity">
+      <UniqueIdentifier>{d2c4f874-27aa-4263-bd0c-fa3d4cce69bc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

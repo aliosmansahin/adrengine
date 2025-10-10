@@ -14,11 +14,15 @@
 
 #include "Logger.h"
 
+#include "interfaces/IProject/IProject.h"
+
+#include "ServiceLocator.h"
+
 class WindowAddAsset
 {
 public:
 	//main functions
-	INTERFACEMANAGER_API void					DrawWindow(std::string& projectDir, std::string& assetExplorerType);
+	INTERFACEMANAGER_API void					DrawWindow(std::string& assetExplorerType);
 	INTERFACEMANAGER_API static WindowAddAsset& GetInstance();
 private:
 	//singleton

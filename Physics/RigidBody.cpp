@@ -6,20 +6,20 @@
 PURPOSE: Creates a RigidBody object and returns it
 
 */
-btRigidBody* RigidBody::Create()
+std::shared_ptr<btRigidBody> RigidBody::Create()
 {
 	//Setup rigidbody
 	shape = std::make_shared<btBoxShape>(btVector3(1, 1, 1));
 
-	motionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 50, 0)));
+	motionState = std::make_shared<btDefaultMotionState>(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 50, 0)));
 
-	props = new RigidBodyProperties();
+	props = std::make_shared<RigidBodyProperties>();
 	props->shapeProps.halfExtentsForBox = glm::vec3(1.0f);
 
 	btVector3 inertia = btVector3(props->inertia.x, props->inertia.y, props->inertia.z);
 	shape->calculateLocalInertia(props->mass, inertia);
 
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(props->mass, motionState, shape.get(), inertia);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(props->mass, motionState.get(), shape.get(), inertia);
 
 	rigidBody = std::make_shared<btRigidBody>(fallRigidBodyCI);
 
@@ -32,7 +32,7 @@ btRigidBody* RigidBody::Create()
 	flags |= btCollisionObject::CF_KINEMATIC_OBJECT;
 	rigidBody->setCollisionFlags(flags);
 
-	return rigidBody.get();
+	return rigidBody;
 }
 
 /*
@@ -42,10 +42,10 @@ PURPOSE: Clears unnecessary data
 */
 void RigidBody::Delete()
 {
-	if (motionState)
-		delete motionState;
-	if (props)
-		delete props;
+	motionState = nullptr;
+	shape = nullptr;
+	rigidBody = nullptr;
+	props = nullptr;
 }
 
 /*

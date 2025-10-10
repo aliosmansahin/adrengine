@@ -1,14 +1,12 @@
 #include "pch.h"
 #include "Entity.h"
 
-#include "VisualScript.h"
-
 /*
 PURPOSE: Initializes the entity
 */
-bool Entity::CreateEntity(std::shared_ptr<EntityParams> params)
+bool Entity::CreateEntity(std::shared_ptr<IEntityParams> params)
 {
-    this->params = params;
+    this->params = std::dynamic_pointer_cast<EntityParams>(params);
     return true;
 }
 
@@ -17,8 +15,8 @@ PURPOSE: Unitializes the entity
 */
 void Entity::DeleteEntity()
 {
-    if(params->script)
-        params->script->ReleaseScript();
+    if(params->GetVisualScript())
+        params->GetVisualScript()->ReleaseScript();
 }
 
 /*
@@ -39,9 +37,9 @@ void Entity::Draw(glm::vec3 currentSceneCameraPos)
 /*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
-EntityParams* Entity::GetEntityParams()
+std::shared_ptr<IEntityParams> Entity::GetEntityParams()
 {
-    return params.get();
+    return params;
 }
 
 /*
@@ -56,4 +54,14 @@ nlohmann::json Entity::ToJson()
         j = params->ToJson();
     }
     return j;
+}
+
+/*
+PURPOSE: Sets transform params of this entity
+*/
+ENTITYMANAGER_API void Entity::SetTransform(glm::vec3 newRealPos, glm::vec3 newRealRot, glm::vec3 newRealSca)
+{
+    realPos = newRealPos;
+    realRot = newRealRot;
+    realSca = newRealSca;
 }

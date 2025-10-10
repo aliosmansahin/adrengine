@@ -11,7 +11,10 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
-#include "TileMap.h"
+
+#include "interfaces/IEntity/ISprite2D/ITileMap/ITileMap.h"
+
+#include "AssetDatabase.h"
 
 class WindowTileMapEdit
 {
@@ -27,5 +30,5 @@ private:
 	INTERFACEMANAGER_API WindowTileMapEdit& operator=(const WindowTileMapEdit&) = delete;
 public:
 	bool showWindow = true;
-	TileMap* editingTileMap = nullptr;
+	std::shared_ptr<ITileMap> editingTileMap = nullptr;
 };

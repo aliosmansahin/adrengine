@@ -4,16 +4,16 @@
 /*
 PURPOSE: Gets InExec pin of the next node
 */
-VISUALSCRIPTMANAGER_API	Node* Node::GetNextExecNode(Pin* execOutputPin) {
-	if (execOutputPin->connectedTo)
-		return execOutputPin->connectedTo->parentNode;
+VISUALSCRIPTMANAGER_API	std::shared_ptr<INode> Node::GetNextExecNode(std::shared_ptr<IPin> execOutputPin) {
+	if (execOutputPin->GetConnectedPin())
+		return execOutputPin->GetConnectedPin()->GetParentNode();
 	return nullptr;
 }
 
 /*
 PURPOSE: Begin the node
 */
-VISUALSCRIPTMANAGER_API void Node::BeginDraw(NodeVisual* nodeVisual)
+VISUALSCRIPTMANAGER_API void Node::BeginDraw(std::shared_ptr<NodeVisual> nodeVisual)
 {
     //In the first frame, set the node position
     if (first) {
@@ -37,17 +37,17 @@ VISUALSCRIPTMANAGER_API void Node::BeginDraw(NodeVisual* nodeVisual)
 /*
 PURPOSE: Draws print node
 */
-VISUALSCRIPTMANAGER_API void Node::Draw(NodeVisual* nodeVisual)
+VISUALSCRIPTMANAGER_API void Node::Draw(std::shared_ptr<NodeVisual> nodeVisual)
 {
     for (size_t i = 0; i < inputPins.size(); ++i) {
-        ImNodes::BeginInputAttribute(nodeVisual->inputIds[i], inputPins[i]->type == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
-        ImGui::Text(inputPins[i]->name.c_str());
+        ImNodes::BeginInputAttribute(nodeVisual->inputIds[i], inputPins[i]->GetType() == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
+        ImGui::Text(inputPins[i]->GetName().c_str());
         ImNodes::EndInputAttribute();
     }
 
     for (size_t i = 0; i < outputPins.size(); ++i) {
-        ImNodes::BeginOutputAttribute(nodeVisual->outputIds[i], outputPins[i]->type == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
-        ImGui::Text(outputPins[i]->name.c_str());
+        ImNodes::BeginOutputAttribute(nodeVisual->outputIds[i], outputPins[i]->GetType() == PinType::Exec ? ImNodesPinShape_TriangleFilled : ImNodesPinShape_CircleFilled);
+        ImGui::Text(outputPins[i]->GetName().c_str());
         ImNodes::EndOutputAttribute();
     }
 }
@@ -80,7 +80,7 @@ VISUALSCRIPTMANAGER_API void Node::Execute()
 PURPOSE: Base Evaluate function,
 	Returns result of this node, other nodes can access it with this function
 */
-VISUALSCRIPTMANAGER_API Value Node::Evaluate(Pin* pin)
+VISUALSCRIPTMANAGER_API Value Node::Evaluate(std::shared_ptr<IPin> pin)
 {
 	return std::monostate{};
 }
@@ -88,12 +88,12 @@ VISUALSCRIPTMANAGER_API Value Node::Evaluate(Pin* pin)
 /*
 PURPOSE: Gets value from input pin
 */
-VISUALSCRIPTMANAGER_API Value Node::EvaluateInput(Pin* pin)
+VISUALSCRIPTMANAGER_API Value Node::EvaluateInput(std::shared_ptr<IPin> pin)
 {
-    if (!pin || !pin->connectedTo) return std::monostate{};
+    if (!pin || !pin->GetConnectedPin()) return std::monostate{};
 
-    Node* source = pin->connectedTo->parentNode;
-    return source->Evaluate(pin->connectedTo);
+    std::shared_ptr<Node> source = std::dynamic_pointer_cast<Node>(pin->GetConnectedPin()->GetParentNode());
+    return source->Evaluate(pin->GetConnectedPin());
 }
 
 /*

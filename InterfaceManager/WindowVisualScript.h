@@ -11,21 +11,22 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "imnodes/imnodes.h"
-#include "Begin.h"
-#include "VisualScriptManager.h"
+
+#include "interfaces/IVisualScriptManager/IVisualScriptManager.h"
+#include "interfaces/IVisualScript/INode/INode.h"
+#include "interfaces/ISceneManager/ISceneManager.h"
+
+#include "interfaces/IVisualScript/INode/IGetThisEntity/IGetThisEntity.h"
 
 #include "utils/Utils.h"
+
+#include "ServiceLocator.h"
 
 class WindowVisualScript
 {
 public:
 	//main functions
-	INTERFACEMANAGER_API void DrawWindow(
-		int tabHeight,
-		std::string& projectDir,
-		Utils::Tab*& openedTab,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs
-		);
+	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API static WindowVisualScript& GetInstance();
 private:
 	//singleton

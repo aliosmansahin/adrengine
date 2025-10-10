@@ -10,7 +10,7 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
         showWindow = false;
         return;
     }
-    FlipBookParams* params = dynamic_cast<FlipBookParams*>(edittingFlipBook->GetEntityParams());
+    std::shared_ptr<IFlipBookParams> params = std::dynamic_pointer_cast<IFlipBookParams>(edittingFlipBook->GetEntityParams());
     if (!params) {
         showWindow = false;
         return;
@@ -21,7 +21,7 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
 
 
     //Store entity id
-    std::string textureIdStr = params->textureId;
+    std::string textureIdStr = params->GetTextureId();
 
     static char textureIdBuf[32] = "";
 
@@ -33,13 +33,13 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
     //Get texture Id
     if (ImGui::InputText("Texture Id", textureIdBuf, sizeof(textureIdBuf), ImGuiInputTextFlags_EnterReturnsTrue)) { //CHANGE IT TO OPTION PANEL THAT CONTAINS ALL TEXTURES
         if (textureIdBuf[0] == '\0') {// if the input is empty
-            strncpy_s(textureIdBuf, params->name.c_str(), sizeof(textureIdBuf));
+            strncpy_s(textureIdBuf, params->GetName().c_str(), sizeof(textureIdBuf));
             textureIdBuf[sizeof(textureIdBuf) - 1] = '\0';
         }
         else {
             if (AssetDatabase::GetInstance().GetTexture(std::string(textureIdBuf)).get()) {
-                params->textureId = std::string(textureIdBuf);
-                params->texture = AssetDatabase::GetInstance().GetTexture(std::string(textureIdBuf))->texture;
+                params->SetTextureId(std::string(textureIdBuf));
+                params->SetTexture(AssetDatabase::GetInstance().GetTexture(std::string(textureIdBuf))->texture);
             }
         }
     }
@@ -56,8 +56,8 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
             if (textureIter != textures.end()) {
                 auto& texture = textureIter->second;
                 if (texture.get()) {
-                    params->textureId = texture->id;
-                    params->texture = texture->texture;
+                    params->SetTextureId(texture->id);
+                    params->SetTexture(texture->texture);
                 }
             }
         }
@@ -65,9 +65,9 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
     }
 
     //Draw the inspector texture for tile map
-    if (!params->textureId.empty()) {
+    if (!params->GetTextureId().empty()) {
         auto& textures = AssetDatabase::GetInstance().GetTextures();
-        auto textureIter = textures.find(params->textureId);
+        auto textureIter = textures.find(params->GetTextureId());
         int textureWidth = textureIter->second->width;
         int textureHeight = textureIter->second->height;
 
@@ -124,19 +124,19 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                 ImVec2 startPos = ImGui::GetCursorScreenPos();
 
                 for (int i = 0; i < createdFrames.size(); ++i) {
-                    FlipBookFrame* frame = createdFrames[i].second.get();
+                    std::shared_ptr<IFlipBookFrame> frame = createdFrames[i].second;
 
                     pos = ImGui::GetCursorScreenPos();
 
                     //Pass the coordinates
-                    int tileX = frame->x;
-                    int tileY = frame->y;
-                    int currentTileWidth = frame->width;
-                    int currentTileHeight = frame->height;
-                    float u = frame->u;
-                    float v = frame->v;
-                    float tw = frame->textureWidth;
-                    float th = frame->textureHeight;
+                    int tileX = frame->GetXY().first;
+                    int tileY = frame->GetXY().second;
+                    int currentTileWidth = frame->GetSize().first;
+                    int currentTileHeight = frame->GetSize().second;
+                    float u = frame->GetUV().first;
+                    float v = frame->GetUV().second;
+                    float tw = frame->GetTextureSize().first;
+                    float th = frame->GetTextureSize().second;
 
                     //Set the position of the preview of the tile
                     pos.x += tileX * (frameWidth + padding);
@@ -167,7 +167,7 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                     //Draw the tile
                     if (ImGui::ImageButton(
                         imageButtonId.c_str(),
-                        (ImTextureID)(intptr_t)params->texture,
+                        (ImTextureID)(intptr_t)params->GetTexture(),
                         imageSize,
                         ImVec2(u, v),
                         ImVec2(u + tw, v + th)
@@ -199,13 +199,13 @@ INTERFACEMANAGER_API void WindowFlipBookEdit::DrawWindow()
                     auto currentFrame = edittingFlipBook->GetCurrentFrame();
 
                     std::string imageButtonId = "##current_frame_image";
-                    ImVec2 imageSize = ImVec2((float)currentFrame->width, (float)currentFrame->height);
+                    ImVec2 imageSize = ImVec2((float)currentFrame->GetSize().first, (float)currentFrame->GetSize().second);
 
                     ImGui::Image(
-                        (ImTextureID)(intptr_t)params->texture,
+                        (ImTextureID)(intptr_t)params->GetTexture(),
                         imageSize,
-                        ImVec2(currentFrame->u, currentFrame->v),
-                        ImVec2(currentFrame->u + currentFrame->textureWidth, currentFrame->v + currentFrame->textureHeight));
+                        ImVec2(currentFrame->GetUV().first, currentFrame->GetUV().second),
+                        ImVec2(currentFrame->GetUV().first + currentFrame->GetTextureSize().first, currentFrame->GetUV().first + currentFrame->GetTextureSize().second));
                 }
 
                 if (ImGui::Button("Done")) {

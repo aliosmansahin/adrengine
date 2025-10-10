@@ -1,15 +1,10 @@
 #include "pch.h"
 #include "WindowVisualScript.h"
-#include "SceneManager.h"
 
 /*
 PURPOSE: Draws the window
 */
-void WindowVisualScript::DrawWindow(
-    int tabHeight,
-    std::string& projectDir,
-    Utils::Tab*& openedTab,
-    std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs)
+void WindowVisualScript::DrawWindow()
 {
     //TODO: Active it when it became necessary
     // 
@@ -48,9 +43,9 @@ void WindowVisualScript::DrawWindow(
     ImNodes::BeginNodeEditor();
 
     //Draw each nodes
-    for (auto& node : VisualScriptManager::GetInstance().currentScript->nodes) {
-        NodeVisual* vis = &node.second;
-        Node* node = vis->logicNode.get();
+    for (auto& node : ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetNodes()) {
+        std::shared_ptr<NodeVisual> vis = node.second;
+        std::shared_ptr<INode> node = vis->logicNode;
 
         node->BeginDraw(vis);
         node->Draw(vis);
@@ -58,7 +53,7 @@ void WindowVisualScript::DrawWindow(
     }
 
     //Draw each link
-    for (const auto link : VisualScriptManager::GetInstance().currentScript->links) {
+    for (const auto& link : ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetLinks()) {
         ImNodes::Link(link.first, link.second.first, link.second.second);
     }
 
@@ -77,10 +72,10 @@ void WindowVisualScript::DrawWindow(
                 int node_id = selected_node_ids[i];
 
                 // Delete node
-                auto& nodes = VisualScriptManager::GetInstance().currentScript->nodes;
+                auto& nodes = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetNodes();
 
                 for (auto it = nodes.begin(); it != nodes.end(); ) {
-                    if (it->second.id == node_id) {
+                    if (it->second->id == node_id) {
                         it = nodes.erase(it);
                     }
                     else {
@@ -89,7 +84,7 @@ void WindowVisualScript::DrawWindow(
                 }
 
                 // Delete link
-                auto& links = VisualScriptManager::GetInstance().currentScript->links;
+                auto& links = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetLinks();
 
                 for (auto it = links.begin(); it != links.end(); ) {
                     if (it->second.first == node_id || it->second.second == node_id) {
@@ -108,31 +103,36 @@ void WindowVisualScript::DrawWindow(
 
     //When user creates a link
     if (ImNodes::IsLinkCreated(&start_attr, &end_attr)) {
-        Pin* from = VisualScriptManager::GetInstance().currentScript->FindPinById(start_attr);
-        Pin* to = VisualScriptManager::GetInstance().currentScript->FindPinById(end_attr);
+        std::shared_ptr<IPin> from = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->FindPinById(start_attr);
+        std::shared_ptr<IPin> to = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->FindPinById(end_attr);
         
-        if (from && to && (from->type == to->type || from->type == PinType::Any || to->type == PinType::Any)) {
-            to->connectedTo = from;
-            from->connectedTo = to;
-            VisualScriptManager::GetInstance().currentScript->links.insert({ VisualScriptManager::GetInstance().currentScript->nextId++, {from->id, to->id} });
+        if (from && to && (from->GetType() == to->GetType() || from->GetType() == PinType::Any || to->GetType() == PinType::Any)) {
+            to->SetConnectedPin(from);
+            from->SetConnectedPin(to);
+
+            int nextId = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetNextId();
+
+            ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetLinks().insert({nextId++, {from->GetId(), to->GetId()}});
+
+            ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->SetNextId(nextId);
         }
     }
 
     //When user deletes a link
     int linkId;
     if (ImNodes::IsLinkHovered(&linkId) && ImGui::IsKeyReleased(ImGuiKey_Delete)) {
-        auto link = VisualScriptManager::GetInstance().currentScript->links.find(linkId);
+        auto link = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetLinks().find(linkId);
 
-        if (link != VisualScriptManager::GetInstance().currentScript->links.end()) {
-            Pin* from = VisualScriptManager::GetInstance().currentScript->FindPinById(link->second.first);
-            Pin* to = VisualScriptManager::GetInstance().currentScript->FindPinById(link->second.second);
+        if (link != ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetLinks().end()) {
+            std::shared_ptr<IPin> from = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->FindPinById(link->second.first);
+            std::shared_ptr<IPin> to = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->FindPinById(link->second.second);
 
-            if (to && to->connectedTo == from) {
-                to->connectedTo = nullptr;
-                from->connectedTo = nullptr;
+            if (to && to->GetConnectedPin() == from) {
+                to->SetConnectedPin(nullptr);
+                from->SetConnectedPin(nullptr);
             }
 
-            VisualScriptManager::GetInstance().currentScript->links.erase(link);
+            ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetLinks().erase(link);
         }
     }
 
@@ -182,7 +182,7 @@ void WindowVisualScript::DrawWindow(
                     });
 
                 //Compare each node type with input
-                for (auto& typeIter : VisualScriptManager::GetInstance().types) {
+                for (auto& typeIter : ServiceLocator::Get<IVisualScriptManager>()->GetTypes()) {
                     std::string type = typeIter.first;
                     std::string typeToUp = type;
                     std::transform(typeToUp.begin(), typeToUp.end(), typeToUp.begin(), [](unsigned char c) {
@@ -205,63 +205,64 @@ void WindowVisualScript::DrawWindow(
         for (auto& type : types) {
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
             if (ImGui::Selectable(type.c_str())) {
-                auto& manager = VisualScriptManager::GetInstance();
-                auto it = manager.types.find(type);
+                auto manager = ServiceLocator::Get<IVisualScriptManager>();
+                auto it = manager->GetTypes().find(type);
 
-                if (it == manager.types.end()) return;
+                if (it == manager->GetTypes().end()) return;
 
                 //If the Begin node exists, won't create another one
-                if (type == "Begin" && VisualScriptManager::GetInstance().currentScript->nodes.find(0) != VisualScriptManager::GetInstance().currentScript->nodes.end())
+                if (type == "Begin" && manager->GetCurrentScript()->GetNodes().find(0) != manager->GetCurrentScript()->GetNodes().end())
                     break;
 
-                std::shared_ptr<Node> node = it->second->clone();
+                std::shared_ptr<INode> node = it->second->clone();
 
                 //Set ids for each type
                 node->SetPos((int)pos.x, (int)pos.y);
                 node->SetPins();
 
                 if (type == "GetThisEntity") {
-                    GetThisEntity* entityNode = dynamic_cast<GetThisEntity*>(node.get());
+                    std::shared_ptr<IGetThisEntity> entityNode = std::dynamic_pointer_cast<IGetThisEntity>(node);
 
                     if (entityNode) {
-                        entityNode->entity = SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntityById(VisualScriptManager::GetInstance().currentScript->belongsEntity);
+                        entityNode->SetEntity(ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetEntityManager()->GetEntityById(ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetBelongsEntity()));
                     }
                 }
 
                 //Add a new node
-                NodeVisual nodeVisual;
-                nodeVisual.logicNode = node;
+                std::shared_ptr<NodeVisual> nodeVisual = std::make_shared<NodeVisual>();
+                nodeVisual->logicNode = node;
 
                 //Store node id into another variable
-                int idForThisNode = VisualScriptManager::GetInstance().currentScript->nextId;
+                int idForThisNode = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetNextId();
 
                 //Set id for special nodes
-                if (nodeVisual.logicNode->GetType() == "Begin") {
+                if (nodeVisual->logicNode->GetType() == "Begin") {
                     idForThisNode = 0; //Begin node always has id 0
                 }
-                nodeVisual.id = idForThisNode++;
+                nodeVisual->id = idForThisNode++;
 
                 //Set pin ids
-                for (auto& pin : node->inputPins) {
-                    pin->id = idForThisNode++;
+                for (auto& pin : node->GetInputPins()) {
+                    pin->SetId(idForThisNode++);
 
-                    nodeVisual.inputIds.push_back(pin->id);
+                    nodeVisual->inputIds.push_back(pin->GetId());
                 }
 
-                for (auto& pin : node->outputPins) {
-                    pin->id = idForThisNode++;
+                for (auto& pin : node->GetOutputPins()) {
+                    pin->SetId(idForThisNode++);
 
-                    nodeVisual.outputIds.push_back(pin->id);
+                    nodeVisual->outputIds.push_back(pin->GetId());
                 }
 
-                VisualScriptManager::GetInstance().currentScript->nodes[nodeVisual.id] = nodeVisual;
-                
+                ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetNodes()[nodeVisual->id] = nodeVisual;
+
                 //Set the next id from the stored id
-                if (nodeVisual.logicNode->GetType() == "Begin") {
-                    VisualScriptManager::GetInstance().currentScript->nextId += idForThisNode;
+                if (nodeVisual->logicNode->GetType() == "Begin") {
+                    int nextId = ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->GetNextId();
+                    ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->SetNextId(nextId + idForThisNode);
                 }
                 else
-                    VisualScriptManager::GetInstance().currentScript->nextId = idForThisNode;
+                    ServiceLocator::Get<IVisualScriptManager>()->GetCurrentScript()->SetNextId(idForThisNode);
 
                 //Close the window and clear input buffer
                 showAddNode = false;

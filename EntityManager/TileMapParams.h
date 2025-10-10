@@ -2,13 +2,15 @@
 
 #include "Sprite2DParams.h"
 
+#include "interfaces/IEntity/ISprite2D/ITileMap/ITileMapParams.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class TileMapParams : public Sprite2DParams
+class TileMapParams : public virtual Sprite2DParams, public virtual ITileMapParams
 {
 public:
 	/*
@@ -21,7 +23,7 @@ public:
 	/*
 	PURPOSE: Clones the current entity and returns it
 	*/
-	ENTITYMANAGER_API std::shared_ptr<EntityParams> clone() const override {
+	ENTITYMANAGER_API std::shared_ptr<IEntityParams> clone() const override {
 		return std::make_shared<TileMapParams>(*this);
 	}
 
@@ -47,10 +49,6 @@ public:
 	};
 
 	//json
-	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) override;
-
-	//tilemap texture
-	std::string textureId = "";
-	unsigned int texture = 0;
+	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, std::shared_ptr<IScene> scene) override;
 };
 

@@ -4,7 +4,7 @@
 /*
 PURPOSE: Draws the window
 */
-void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
+void WindowProjectDialog::DrawWindow() {
     //Begin the window
     ImGui::Begin("Create or Open a Project", (bool*)false, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
     ImGui::SetWindowFontScale(1.5f);
@@ -76,11 +76,11 @@ void WindowProjectDialog::DrawWindow(std::vector<std::string>& latestProjects) {
     /* Latest projects */
 
     ImGui::SeparatorText("Latest Projects");
-    if (latestProjects.empty()) {
+    if (ServiceLocator::Get<IProject>()->GetLatestProjects().empty()) {
         ImGui::TextColored(ImVec4(0, 255, 0, 255), "There is no project");
     }
     else {
-        for (auto& project : latestProjects) {
+        for (auto& project : ServiceLocator::Get<IProject>()->GetLatestProjects()) {
             //Split the path
             std::filesystem::path parentPath = std::filesystem::path(project).parent_path();
 

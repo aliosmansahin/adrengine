@@ -2,13 +2,15 @@
 
 #include "Sprite2DParams.h"
 
+#include "interfaces/IEntity/ISprite2D/IFlipBook/IFlipBookParams.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class FlipBookParams : public Sprite2DParams
+class FlipBookParams : public virtual Sprite2DParams, public virtual IFlipBookParams
 {
 public:
 	/*
@@ -21,7 +23,7 @@ public:
 	/*
 	PURPOSE: Clones the current entity and returns it
 	*/
-	ENTITYMANAGER_API std::shared_ptr<EntityParams> clone() const override {
+	ENTITYMANAGER_API std::shared_ptr<IEntityParams> clone() const override {
 		return std::make_shared<FlipBookParams>(*this);
 	}
 
@@ -49,12 +51,37 @@ public:
 	};
 
 	//json
-	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) override;
+	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, std::shared_ptr<IScene> scene) override;
 
-	//flipbook texture
-	std::string textureId = "";
-	unsigned int texture = 0;
+	/*
+	PURPOSE: Returns frameWait
+	*/
+	ENTITYMANAGER_API float GetFrameWait() override {
+		return frameWait;
+	}
 
+	/*
+	PURPOSE: Returns loop
+	*/
+	ENTITYMANAGER_API bool GetLoop() override {
+		return loop;
+	}
+
+	/*
+	PURPOSE: Sets frameWait
+	*/
+	ENTITYMANAGER_API void SetFrameWait(float frameWait) override {
+		this->frameWait = frameWait;
+	}
+
+	/*
+	PURPOSE: Returns loop
+	*/
+	ENTITYMANAGER_API void SetLoop(bool loop) override {
+		this->loop = loop;
+	}
+
+private:
 	//showing frames
 	float frameWait = 0.1f; //Seconds, duration between each frame
 	bool loop = true;

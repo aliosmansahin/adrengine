@@ -4,10 +4,10 @@
 /*
 PURPOSE: Initializes the entity
 */
-bool PointLight::CreateEntity(std::shared_ptr<EntityParams> params)
+bool PointLight::CreateEntity(std::shared_ptr<IEntityParams> params)
 {
 	//Cast EntityParams to PointLightParams to use its properties
-	auto casted = std::dynamic_pointer_cast<PointLightParams>(params);
+	auto casted = std::dynamic_pointer_cast<IPointLightParams>(params);
 	if (!casted) {
 		Logger::Log("E", "Casting failed at dynamic_cast<PointLightParams*>(params)");
 		return false;
@@ -88,9 +88,9 @@ void PointLight::Draw(glm::vec3 currentSceneCameraPos)
 /*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
-EntityParams* PointLight::GetEntityParams()
-{
-	return params.get();
+std::shared_ptr<IEntityParams> PointLight::GetEntityParams()
+{	
+	return params;
 }
 
 /*
@@ -105,4 +105,12 @@ nlohmann::json PointLight::ToJson()
 		j = params->ToJson();
 	}
 	return j;
+}
+
+/*
+PURPOSE: Getter for far_plane
+*/
+ENTITYMANAGER_API float PointLight::GetFarPlane()
+{
+	return far_plane;
 }

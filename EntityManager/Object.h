@@ -4,11 +4,7 @@
 #include "ObjectParams.h"
 #include "ShaderManager.h"
 
-#include "Physical.h"
-#include "Collision.h"
 #include "Timer.h"
-
-#include "RigidBody.h"
 
 #include "interfaces/IEntity/IObject/IObject.h"
 
@@ -18,29 +14,29 @@
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class Object : public Entity, public IObject
+class Object : public virtual Entity, public virtual IObject
 {
 public:
 	//main functions
-	ENTITYMANAGER_API bool CreateEntity(std::shared_ptr<EntityParams> params) override;
+	ENTITYMANAGER_API bool CreateEntity(std::shared_ptr<IEntityParams> params) override;
 	ENTITYMANAGER_API void DeleteEntity() override;
 	ENTITYMANAGER_API void Update() override;
 	ENTITYMANAGER_API void Draw(glm::vec3 currentSceneCameraPos) override;
 
 	ENTITYMANAGER_API void AddImpulse(glm::vec3 impulse) override;
-	ENTITYMANAGER_API void ResetPhysics();
+	ENTITYMANAGER_API void ResetPhysics() override;
 
 	/*
 	PURPOSE: Clones the entity and return it
 	*/
-	ENTITYMANAGER_API std::shared_ptr<Entity> clone() const override {
+	ENTITYMANAGER_API std::shared_ptr<IEntity> clone() const override {
 		return std::make_shared<Object>(*this);
 	}
 
 	//properties
-	ENTITYMANAGER_API EntityParams* GetEntityParams() override;
+	ENTITYMANAGER_API std::shared_ptr<IEntityParams> GetEntityParams() override;
 
-	ENTITYMANAGER_API glm::mat4 GetModelMatrix() {
+	ENTITYMANAGER_API glm::mat4 GetModelMatrix() override {
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, realPos);
 		model = glm::rotate(model, glm::radians(realRot.x), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -50,15 +46,21 @@ public:
 		return model;
 	}
 
+	//Rigidody
+	ENTITYMANAGER_API std::shared_ptr<IRigidBody>& GetRigidBody() override;
+	ENTITYMANAGER_API void SetRigidBody(std::shared_ptr<IRigidBody> rigidBody) override;
+	
 	//json
 	ENTITYMANAGER_API nlohmann::json ToJson() override;
+
+private:
 	glm::vec3 lastPos = glm::vec3(0.0f);
 
 	//physics
-	RigidBody* rigidBody = nullptr;
-private:
+	std::shared_ptr<IRigidBody> rigidBody = nullptr;
 
+private:
 	//properties
-	std::shared_ptr<ObjectParams> params;
+	std::shared_ptr<IObjectParams> params;
 };
 

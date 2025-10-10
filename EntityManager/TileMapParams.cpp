@@ -4,7 +4,7 @@
 /*
 PURPOSE: Sets properties of the entity from its json
 */
-void TileMapParams::FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene)
+void TileMapParams::FromJson(const nlohmann::json& j, std::string& projectDir, std::shared_ptr<IScene> scene)
 {
 	/*
 		Its kind of "super" function.

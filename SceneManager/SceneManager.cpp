@@ -2,8 +2,6 @@
 #include "SceneManager.h"
 #include "AssetSaver.h"
 #include "InputManager.h"
-#include "VisualScriptManager.h"
-#include <GLFW/glfw3.h>
 
 /*
 PURPOSE: Initializes the scene manager
@@ -33,13 +31,12 @@ void SceneManager::ClearManager()
 /*
 PURPOSE: Creates a scene and opens it
 */
-bool SceneManager::CreateScene(
-    Utils::SceneType sceneType,
-    std::string& projectDir)
+std::shared_ptr<IScene> SceneManager::CreateScene(
+    Utils::SceneType sceneType)
 {
     //If there is a old scene, release it
     if (openedScene.get()) {
-        CloseScene(openedScene->sceneId, projectDir);
+        CloseScene(openedScene->GetSceneId());
     }
 
     //Set the scene id
@@ -53,45 +50,44 @@ bool SceneManager::CreateScene(
     }
 
     //Create a scene
-    Scene* scene = new Scene();
+	std::shared_ptr<IScene> scene = ServiceLocator::Get<IEngine>()->CreateScene();
     if (!scene->CreateScene(sceneId, sceneType)) {
         Logger::Log("E", "Scene could not created");
-        return false;
+        return nullptr;
     }
 
     //Insert it to all scenes
-    scenes.insert(std::pair<std::string, std::string>(scene->sceneId, scene->sceneName));
+    scenes.insert(std::pair<std::string, std::string>(scene->GetSceneId(), scene->GetSceneName()));
 
     //Save the scene
-    AssetSaver::SaveSceneToFile(scene->ToJson(), projectDir, sceneId);
+    AssetSaver::SaveSceneToFile(scene->ToJson(), ServiceLocator::Get<IProject>()->GetProjectDir(), sceneId);
 
-    openedScene = std::shared_ptr<Scene>(scene);
+    openedScene = scene;
 
-    return true;
+    return scene;
 }
 
 /*
 PURPOSE: Loads the scene and opens it
 */
-Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
-    std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
+std::shared_ptr<IScene> SceneManager::LoadScene(std::string sceneId)
 {
     //If there is a old scene, release it
     if (openedScene.get()) {
-        CloseScene(openedScene->sceneId, projectDir);
+        CloseScene(openedScene->GetSceneId());
     }
 
     //Load the scene
-    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(projectDir, sceneId);
+    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(ServiceLocator::Get<IProject>()->GetProjectDir(), sceneId);
 
     if (sceneJson.is_null())
         return nullptr;
 
     //Create a scene from its json
-    Scene* scene = new Scene();
-    scene->FromJson(sceneJson, projectDir, entityTypes);
+    std::shared_ptr<IScene> scene = ServiceLocator::Get<IEngine>()->CreateScene();
+    scene->FromJson(sceneJson);
 
-    openedScene = std::shared_ptr<Scene>(scene);
+    openedScene = scene;
 
     return scene;
 }
@@ -99,14 +95,14 @@ Scene* SceneManager::LoadScene(std::string sceneId, std::string& projectDir,
 /*
 PURPOSE: Saves and closes the scene
 */
-bool SceneManager::CloseScene(std::string sceneId, std::string& projectDir)
+bool SceneManager::CloseScene(std::string sceneId)
 {
     //If the scene or tab doesn't exists, interrupt the function
     if (!openedScene.get())
         return false;
 
     //Save the scene
-    AssetSaver::SaveSceneToFile(openedScene->ToJson(), projectDir, sceneId);
+    AssetSaver::SaveSceneToFile(openedScene->ToJson(), ServiceLocator::Get<IProject>()->GetProjectDir(), sceneId);
 
     //Release the scene
     openedScene->ReleaseScene();
@@ -118,17 +114,17 @@ bool SceneManager::CloseScene(std::string sceneId, std::string& projectDir)
 /*
 PURPOSE: Deletes scene object and its folder
 */
-bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
+bool SceneManager::DeleteScene(std::string sceneId)
 {
     //If the scene doesn't exist, interrupt the function
     auto sceneIter = scenes.find(sceneId);
     if (sceneIter == scenes.end())
         return false;
 
-    std::string scenesDir = projectDir + "scenes/";
+    std::string scenesDir = ServiceLocator::Get<IProject>()->GetProjectDir() + "scenes/";
     std::string sceneDir = scenesDir + sceneId + "/";
 
-    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(projectDir, sceneId);
+    nlohmann::json sceneJson = AssetSaver::LoadSceneFromFile(ServiceLocator::Get<IProject>()->GetProjectDir(), sceneId);
 
     //Delete each entity that belong to the scene
     if (!sceneJson.is_null()) {
@@ -136,23 +132,23 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
             auto& entities = sceneJson["entities"];
 
             for (auto& entity : entities) {
-                std::string entitiesDir = projectDir + "entities/";
+                std::string entitiesDir = ServiceLocator::Get<IProject>()->GetProjectDir() + "entities/";
                 std::string entityDir = entitiesDir + entity.get<std::string>() + "/";
 
                 //Load entity json
-                nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(projectDir, entity.get<std::string>());
+                nlohmann::json entityJson = AssetSaver::LoadEntityFromFile(ServiceLocator::Get<IProject>()->GetProjectDir(), entity.get<std::string>());
                 
                 //Delete script that belongs to the entity
                 std::string scriptId = entityJson.value("scriptId", "");
 
                 if (!scriptId.empty()) {
-                    std::string scriptsDir = projectDir + "scripts/";
+                    std::string scriptsDir = ServiceLocator::Get<IProject>()->GetProjectDir() + "scripts/";
                     std::string scriptDir = scriptsDir + scriptId + "/";
 
                     //Delete opened script
-                    auto script = VisualScriptManager::GetInstance().openedScripts.find(scriptId);
-                    if (script != VisualScriptManager::GetInstance().openedScripts.end()) {
-                        VisualScriptManager::GetInstance().openedScripts.erase(script);
+                    auto script = ServiceLocator::Get<IVisualScriptManager>()->GetOpenedScripts().find(scriptId);
+                    if (script != ServiceLocator::Get<IVisualScriptManager>()->GetOpenedScripts().end()) {
+                        ServiceLocator::Get<IVisualScriptManager>()->GetOpenedScripts().erase(script);
                     }
 
                     std::filesystem::remove_all(scriptDir);
@@ -165,7 +161,7 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
     }
 
     //Check if the scene that will be deleted is an opened scene
-    if (openedScene.get() && openedScene->sceneId == sceneId) {
+    if (openedScene.get() && openedScene->GetSceneId() == sceneId) {
         //Remove the opened scene
         openedScene->ReleaseScene();
         openedScene = nullptr;
@@ -181,10 +177,17 @@ bool SceneManager::DeleteScene(std::string sceneId, std::string& projectDir)
 }
 
 /*
-PURPOSE: Gets the instance of the class
+PURPOSE: Returns scenes
 */
-SceneManager& SceneManager::GetInstance()
+SCENEMANAGER_API std::map<std::string, std::string>& SceneManager::GetScenes()
 {
-    static SceneManager manager;
-    return manager;
+    return scenes;
+}
+
+/*
+PURPOSE: Returns opened scene as a smart pointer
+*/
+SCENEMANAGER_API std::shared_ptr<IScene> SceneManager::GetOpenedScene()
+{
+    return openedScene;
 }

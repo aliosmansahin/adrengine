@@ -10,7 +10,7 @@ void WindowTileMapEdit::DrawWindow()
         showWindow = false;
         return;
     }
-    TileMapParams* params = dynamic_cast<TileMapParams*>(editingTileMap->GetEntityParams());
+    std::shared_ptr<ITileMapParams> params = std::dynamic_pointer_cast<ITileMapParams>(editingTileMap->GetEntityParams());
     if (!params) {
         showWindow = false;
         return;
@@ -20,7 +20,7 @@ void WindowTileMapEdit::DrawWindow()
     ImGui::SetWindowFontScale(1.5f);
 
     //Store entity id
-    std::string textureIdStr = params->textureId;
+    std::string textureIdStr = params->GetTextureId();
 
     static char textureIdBuf[32] = "";
 
@@ -32,13 +32,13 @@ void WindowTileMapEdit::DrawWindow()
     //Get texture Id
     if (ImGui::InputText("Texture Id", textureIdBuf, sizeof(textureIdBuf), ImGuiInputTextFlags_EnterReturnsTrue)) { //CHANGE IT TO OPTION PANEL THAT CONTAINS ALL TEXTURES
         if (textureIdBuf[0] == '\0') {// if the input is empty
-            strncpy_s(textureIdBuf, params->name.c_str(), sizeof(textureIdBuf));
+            strncpy_s(textureIdBuf, params->GetName().c_str(), sizeof(textureIdBuf));
             textureIdBuf[sizeof(textureIdBuf) - 1] = '\0';
         }
         else {
             if (AssetDatabase::GetInstance().GetTexture(std::string(textureIdBuf)).get()) {
-                params->textureId = std::string(textureIdBuf);
-                params->texture = AssetDatabase::GetInstance().GetTexture(std::string(textureIdBuf))->texture;
+                params->SetTextureId(std::string(textureIdBuf));
+                params->SetTexture(AssetDatabase::GetInstance().GetTexture(std::string(textureIdBuf))->texture);
             }
         }
     }
@@ -55,8 +55,8 @@ void WindowTileMapEdit::DrawWindow()
             if (textureIter != textures.end()) {
                 auto& texture = textureIter->second;
                 if (texture.get()) {
-                    params->textureId = texture->id;
-                    params->texture = texture->texture;
+                    params->SetTextureId(texture->id);
+                    params->SetTexture(texture->texture);
                 }
             }
         }
@@ -64,10 +64,10 @@ void WindowTileMapEdit::DrawWindow()
     }
 
     //Draw the inspector texture for tile map
-    if (!params->textureId.empty()) {
+    if (!params->GetTextureId().empty()) {
         //Get texture size
         auto& textures = AssetDatabase::GetInstance().GetTextures();
-        auto textureIter = textures.find(params->textureId);
+        auto textureIter = textures.find(params->GetTextureId());
         int textureWidth = textureIter->second->width;
         int textureHeight = textureIter->second->height;
 
@@ -132,14 +132,14 @@ void WindowTileMapEdit::DrawWindow()
                     pos = ImGui::GetCursorScreenPos();
                     
                     //Pass the coordinates
-                    int tileX             = tile.second->x;
-                    int tileY             = tile.second->y;
-                    int currentTileWidth  = tile.second->width;
-                    int currentTileHeight = tile.second->height;
-                    float u               = tile.second->u;
-                    float v               = tile.second->v;
-                    float tw              = tile.second->textureWidth;
-                    float th              = tile.second->textureHeight;
+                    int tileX             = tile.second->GetXY().first;
+                    int tileY             = tile.second->GetXY().second;
+                    int currentTileWidth  = tile.second->GetSize().first;
+                    int currentTileHeight = tile.second->GetSize().second;
+                    float u               = tile.second->GetUV().first;
+                    float v               = tile.second->GetUV().second;
+                    float tw              = tile.second->GetTextureSize().first;
+                    float th              = tile.second->GetTextureSize().second;
 
                     //Set the position of the preview of the tile
                     pos.x += tileX * (tileWidth + padding);
@@ -147,7 +147,7 @@ void WindowTileMapEdit::DrawWindow()
 
                     //Draw the tile
                     ImGui::GetWindowDrawList()->AddImage(
-                        (ImTextureID)(intptr_t)params->texture,
+                        (ImTextureID)(intptr_t)params->GetTexture(),
                         ImVec2(pos.x,                            pos.y),
                         ImVec2(pos.x + currentTileWidth, pos.y + currentTileHeight),
                         ImVec2(u,      v),

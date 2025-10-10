@@ -4,10 +4,10 @@
 /*
 PURPOSE: Initializes the entity
 */
-bool TileMap::CreateEntity(std::shared_ptr<EntityParams> params)
+bool TileMap::CreateEntity(std::shared_ptr<IEntityParams> params)
 {
 	//Cast EntityParams to TileMapParams to use its properties
-	auto casted = std::dynamic_pointer_cast<TileMapParams>(params);
+	auto casted = std::dynamic_pointer_cast<ITileMapParams>(params);
 	if (!casted) {
 		Logger::Log("E", "Casting failed at dynamic_cast<TileMapParams*>(params)");
 		return false;
@@ -48,7 +48,7 @@ void TileMap::Draw(glm::vec3 currentSceneCameraPos)
 {
 	//Set the texture for tiles
 	adr_glActiveTexture(GL_TEXTURE0);
-	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
+	adr_glBindTexture(GL_TEXTURE_2D, params->GetTexture());
 
 	//Shader uniforms
 	if (ShaderManager::GetInstance().GetCurrentType() == Utils::SHADER_2D)
@@ -105,7 +105,9 @@ ENTITYMANAGER_API void TileMap::AddTileToMap(int mouseX, int mouseY, float camer
 
 	//Add a tile if there is not
 	if (tileIter == tiles.end()) {
-		std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTileIter->second.get());
+		//Cast interface to Tile to create Tile object
+		auto createdTile = std::dynamic_pointer_cast<Tile>(createdTileIter->second);
+		std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTile.get());
 		tiles.insert({ { tilePos.first, tilePos.second }, tile });
 	}
 }
@@ -379,7 +381,7 @@ ENTITYMANAGER_API void TileMap::DrawInspect(int width, int height, int tileW, in
 
 	//Set the texture
 	adr_glActiveTexture(GL_TEXTURE0);
-	adr_glBindTexture(GL_TEXTURE_2D, params->texture);
+	adr_glBindTexture(GL_TEXTURE_2D, params->GetTexture());
 	ShaderManager::GetInstance().ApplyTexture("texture1");
 
 	//Draw the texture
@@ -424,7 +426,7 @@ ENTITYMANAGER_API unsigned int TileMap::GetInspectTexture()
 /*
 PURPOSE: Returns createdTiles
 */
-ENTITYMANAGER_API std::map<std::pair<int, int>, std::shared_ptr<Tile>>& TileMap::GetCreatedTiles()
+ENTITYMANAGER_API std::map<std::pair<int, int>, std::shared_ptr<ITile>>& TileMap::GetCreatedTiles()
 {
 	return createdTiles;
 }
@@ -432,9 +434,9 @@ ENTITYMANAGER_API std::map<std::pair<int, int>, std::shared_ptr<Tile>>& TileMap:
 /*
 PURPOSE: Returns properties of the entity as a pure pointer
 */
-EntityParams* TileMap::GetEntityParams()
+std::shared_ptr<IEntityParams> TileMap::GetEntityParams()
 {
-	return params.get();
+	return params;
 }
 
 /*
@@ -523,7 +525,8 @@ ENTITYMANAGER_API void TileMap::FromJson(nlohmann::json json)
 
 			//Add a tile if there is not
 			if (tileIter == tiles.end()) {
-				std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTileIter->second.get());
+				auto createdTile = std::dynamic_pointer_cast<Tile>(createdTileIter->second);
+				std::shared_ptr<Tile> tile = std::make_shared<Tile>(*createdTile.get());
 				tiles.insert({ { x, y }, tile });
 			}
 		}

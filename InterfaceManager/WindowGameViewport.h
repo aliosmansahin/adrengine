@@ -11,17 +11,23 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
-#include "EntityManager.h"
 #include "Graphics.h"
+
+#include "glad_wrapper.h"
+
+#include "interfaces/IEntity/IObject/IObject.h"
+#include "interfaces/IEntity/ISprite2D/ITileMap/ITileMap.h"
+#include "interfaces/ISceneManager/ISceneManager.h"
+
+#include "interfaces/IEngine/IEngine.h"
+
+#include "ServiceLocator.h"
 
 class WindowGameViewport
 {
 public:
 	//main functions
-	INTERFACEMANAGER_API void DrawWindow(
-		float engineFPS,
-		float engineMS
-	);
+	INTERFACEMANAGER_API void DrawWindow();
 
 	INTERFACEMANAGER_API static WindowGameViewport& GetInstance();
 private:

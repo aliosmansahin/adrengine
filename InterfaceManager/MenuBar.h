@@ -6,11 +6,14 @@
 #define INTERFACEMANAGER_API __declspec(dllimport)
 #endif
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
+
+#include "AssetSaver.h"
 
 /*
 	All window classes will be included here
@@ -32,13 +35,12 @@
 #include "WindowFlipBookEdit.h"
 #include "WindowProjectDialog.h"
 #include "WindowModalDialog.h"
-#include "AssetSaver.h"
 
 class INTERFACEMANAGER_API MenuBar
 {
 public:
 	//functions
-	void			DrawMenuBar(std::function<void()>& saveFunc, std::function<void()>& closeFunc, bool openedProject);
+	void			DrawMenuBar();
 	static MenuBar& GetInstance();
 private:
 	//singleton

@@ -13,25 +13,33 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
-#include "EntityManager.h"
-
-#include "WindowTileMapEdit.h"
-#include "WindowTileMapBrush.h"
-#include "WindowFlipBookEdit.h"
 
 #include "utils/Utils.h"
+
+#include "interfaces/IEntity/IEntity.h"
+#include "interfaces/IEntity/IObject/IObject.h"
+#include "interfaces/IEntity/ISprite2D/ISprite2D.h"
+#include "interfaces/IEntity/ILight/IDirectionalLight/IDirectionalLight.h"
+#include "interfaces/IEntity/ILight/ISpotLight/ISpotLight.h"
+#include "interfaces/IEntity/ILight/IPointLight/IPointLight.h"
+#include "interfaces/IEntity/ISprite2D/ITileMap/ITileMap.h"
+#include "interfaces/IEntity/ISprite2D/IFlipBook/IFlipBook.h"
+
+#include "interfaces/ISceneManager/ISceneManager.h"
+#include "interfaces/IVisualScriptManager/IVisualScriptManager.h"
+#include "interfaces/IProject/IProject.h"
+
+#include "AssetSaver.h"
+#include "AssetDatabase.h"
+
+#include "ServiceLocator.h"
 
 class WindowEntityProperties
 {
 public:
 	//main functions
-	INTERFACEMANAGER_API void DrawWindow(
-		std::string& projectDir,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-		Utils::Tab*& openedTab,
-		std::string& selectedTabId
-	);
-	INTERFACEMANAGER_API void SelectEntity(Entity* entity);
+	INTERFACEMANAGER_API void DrawWindow();
+	INTERFACEMANAGER_API void SelectEntity(std::shared_ptr<IEntity> entity);
 	INTERFACEMANAGER_API static WindowEntityProperties& GetInstance();
 private:
 	//singleton
@@ -42,5 +50,5 @@ private:
 public:
 	//variables
 	bool showWindow = true;
-	Entity* currentEntity;
+	std::shared_ptr<IEntity> currentEntity;
 };

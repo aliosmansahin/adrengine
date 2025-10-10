@@ -6,26 +6,23 @@
 #define INTERFACEMANAGER_API __declspec(dllimport)
 #endif
 
+#include <unordered_map>
+
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
-#include "SceneManager.h"
-#include "WindowEntityProperties.h"
-#include "WindowScene.h"
+
+#include "utils/Utils.h"
+
+#include "ServiceLocator.h"
 
 class WindowAddScene
 {
 public:
 	//main functions
-	INTERFACEMANAGER_API void DrawWindow(
-		std::string& projectDir,
-		std::string& projectFilePath,
-		std::unordered_map<std::string, std::shared_ptr<Utils::Tab>>& tabs,
-		Utils::Tab*& openedTab,
-		std::string& selectedTabId
-	);
+	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API static WindowAddScene& GetInstance();
 private:
 	//singleton

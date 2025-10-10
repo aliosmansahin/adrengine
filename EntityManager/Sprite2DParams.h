@@ -3,13 +3,15 @@
 #include "EntityParams.h"
 #include "AssetDatabase.h"
 
+#include "interfaces/IEntity/ISprite2D/ISprite2DParams.h"
+
 #ifdef ENTITYMANAGER_EXPORTS
 #define ENTITYMANAGER_API __declspec(dllexport)
 #else
 #define ENTITYMANAGER_API __declspec(dllimport)
 #endif
 
-class Sprite2DParams : public EntityParams {
+class Sprite2DParams : public virtual EntityParams , public virtual ISprite2DParams {
 public:
 	/*
 	PURPOSE: Returns the type of the entity
@@ -21,7 +23,7 @@ public:
 	/*
 	PURPOSE: Clones the current entity and returns it
 	*/
-	ENTITYMANAGER_API std::shared_ptr<EntityParams> clone() const override {
+	ENTITYMANAGER_API std::shared_ptr<IEntityParams> clone() const override {
 		return std::make_shared<Sprite2DParams>(*this);
 	}
 
@@ -53,10 +55,29 @@ public:
 	};
 
 	//json
-	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, IScene* scene) override;
+	ENTITYMANAGER_API void FromJson(const nlohmann::json& j, std::string& projectDir, std::shared_ptr<IScene> scene) override;
 
+	//Getters for the texture
+	ENTITYMANAGER_API unsigned int GetTexture() override {
+		return texture;
+	}
+	ENTITYMANAGER_API std::string GetTextureId() override {
+		return textureId;
+	}
+
+	//Setters for the texture
+	ENTITYMANAGER_API void SetTexture(unsigned int texture) override {
+		this->texture = texture;
+	}
+	ENTITYMANAGER_API void SetTextureId(std::string textureId) override {
+		this->textureId = textureId;
+	}
+
+protected:
 	//Variables for the Sprite2D
 	std::string textureId = "";
 	unsigned int texture = 0;
+
+private:
 	float r = 0, b = 0, g = 0, a = 0;
 };

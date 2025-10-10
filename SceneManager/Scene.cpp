@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Scene.h"
 
+#include "ServiceLocator.h"
+
 /*
 PURPOSE: Sets a scene parameters and creates an entity manager
 */
@@ -12,29 +14,34 @@ bool Scene::CreateScene(std::string sceneId, Utils::SceneType sceneType)
 	this->sceneType = sceneType;
 
 	//Create an entity manager
-	entityManager = new EntityManager();
-	entityManager->InitEntityManager();
+	entityManager = ServiceLocator::Get<IEngine>()->CreateEntityManager();
+	if (!entityManager->InitEntityManager())
+		return false;
 
 	//Some mouse position setups
 	firstMouseX = InputManager::GetInstance().GetMouseX();
 	firstMouseY = InputManager::GetInstance().GetMouseY();
 
-	//Create parameters for the camera of the editor
-	CameraParams* cameraParams = new CameraParams();
+	//Create camera entity of the editor
+	std::shared_ptr<IEntity> i_entity = ServiceLocator::Get<IEngine>()->CreateEntity("Camera");
+
+	editorCamera = std::dynamic_pointer_cast<ICamera>(i_entity);
+
+	if (!editorCamera)
+		return false;
+
+	std::shared_ptr<ICameraParams> cameraParams = std::dynamic_pointer_cast<ICameraParams>(editorCamera->GetEntityParams());
 
 	//Set type of projection
 	if (sceneType == Utils::SCENE_2D)
-		cameraParams->projectionType = CameraProjection::ORTHOGRAPHIC;
+		cameraParams->SetProjectionType(CameraProjection::ORTHOGRAPHIC);
 	if (sceneType == Utils::SCENE_3D)
-		cameraParams->projectionType = CameraProjection::PERPECTIVE;
+		cameraParams->SetProjectionType(CameraProjection::PERPECTIVE);
 
-	//Create camera entity of the editor
-	editorCamera = new Camera();
-	editorCamera->CreateEntity(std::shared_ptr<CameraParams>(cameraParams));
 	currentCamera = editorCamera;
 
 	//Initialize physics
-	physics = new BulletPhysics();
+	physics = ServiceLocator::Get<IEngine>()->CreatePhysics();
 	physics->Init();
 
 	return true;
@@ -57,16 +64,13 @@ void Scene::UpdateScene(
 	bool isPlaying,
 	bool windowGameViewportIsHovered,
 	bool windowGameViewportIsFocused,
-	int screenWidth,
-	int screenHeight,
 	int window_width,
 	int window_height,
 	bool windowSceneFocused,
 	bool windowSceneDeletePressed,
 	bool& pendingDelete,
 	std::string selectedId,
-	std::function<void(std::string)> extraDeletingFunc,
-	std::string& projectDir)
+	std::function<void(std::string)> extraDeletingFunc)
 {
 	//Setups for mouse positions
 	int currentMouseX = InputManager::GetInstance().GetMouseX();
@@ -88,8 +92,6 @@ void Scene::UpdateScene(
 			currentMouseY,
 			window_width,
 			window_height,
-			screenWidth,
-			screenHeight,
 			windowGameViewportIsFocused,
 			isPlaying
 		);
@@ -108,7 +110,7 @@ void Scene::UpdateScene(
 
 	//Update rigidbodies from entities
 	if (entityManager) {
-		entityManager->SetRigitbodiesFromEntities(physics);
+		entityManager->SetRigitbodiesFromEntities();
 	}
 
 	//Update physics
@@ -117,12 +119,12 @@ void Scene::UpdateScene(
 	//Update each entity via entity manager
 	if (entityManager) {
 		nlohmann::json sceneJson = ToJson();
-		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, isPlaying, selectedId, extraDeletingFunc, projectDir, sceneId, sceneJson, gameCamera, physics);
+		entityManager->UpdateEntities(windowSceneFocused, windowSceneDeletePressed, pendingDelete, isPlaying, selectedId, extraDeletingFunc, sceneId, sceneJson, gameCamera);
 	}
 
 	//Update entities from rigidbodies
 	if (entityManager) {
-		entityManager->SetEntitiesFromRigidbodies(physics);
+		entityManager->SetEntitiesFromRigidbodies();
 	}
 }
 
@@ -133,14 +135,12 @@ void Scene::ReleaseScene()
 {
 	//Release entity manager
 	if (entityManager) {
-		entityManager->ReleaseEntityManager(physics);
-		delete entityManager;
+		entityManager->ReleaseEntityManager();
 	}
 
 	//Release physics
 	if (physics) {
 		physics->Shutdown();
-		delete physics;
 	}
 }
 
@@ -163,7 +163,7 @@ nlohmann::json Scene::ToJson()
 	if (entityManager) {
 		for (auto& entity : entityManager->GetEntities()) {
 			if(entity.second && entity.second->GetEntityParams())
-				j["entities"].push_back(entity.second->GetEntityParams()->id);
+				j["entities"].push_back(entity.second->GetEntityParams()->GetId());
 		}
 	}
 	return j;
@@ -172,28 +172,28 @@ nlohmann::json Scene::ToJson()
 /*
 PURPOSE: Creates a scene from its json content
 */
-void Scene::FromJson(
-	const nlohmann::json& json,
-	std::string projectDir,
-	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes)
+void Scene::FromJson(const nlohmann::json& json)
 {
 	//Scene properties
 	sceneId = json.value("id", "");
 	sceneName = json.value("name", "");
 	sceneType = (Utils::SceneType)json.value("type", Utils::SCENE_2D);
 
-	//Create editor camera and set it
-	editorCamera = new Camera();
-	CameraParams* cameraParams = new CameraParams();
+	//Create camera entity of the editor
+	std::shared_ptr<IEntity> i_entity = ServiceLocator::Get<IEngine>()->CreateEntity("Camera");
+
+	editorCamera = std::dynamic_pointer_cast<ICamera>(i_entity);
+
+	if (!editorCamera)
+		return;
+
+	std::shared_ptr<ICameraParams> cameraParams = std::dynamic_pointer_cast<ICameraParams>(editorCamera->GetEntityParams());
 
 	//Set type of projection
 	if (sceneType == Utils::SCENE_2D)
-		cameraParams->projectionType = CameraProjection::ORTHOGRAPHIC;
+		cameraParams->SetProjectionType(CameraProjection::ORTHOGRAPHIC);
 	if (sceneType == Utils::SCENE_3D)
-		cameraParams->projectionType = CameraProjection::PERPECTIVE;
-
-	//Setup the editor camera
-	editorCamera->CreateEntity(std::shared_ptr<CameraParams>(cameraParams));
+		cameraParams->SetProjectionType(CameraProjection::PERPECTIVE);
 
 	glm::vec3 cameraPos = glm::vec3(0.0f);
 	cameraPos.x = json.value("cameraX", 0.0f);
@@ -209,18 +209,86 @@ void Scene::FromJson(
 	currentCamera = editorCamera;
 
 	//Create an entity manager
-	entityManager = new EntityManager();
+	entityManager = ServiceLocator::Get<IEngine>()->CreateEntityManager();
 	entityManager->InitEntityManager();
 
 	//Initialize physics
-	physics = new BulletPhysics();
+	physics = ServiceLocator::Get<IEngine>()->CreatePhysics();
 	physics->Init();
 
 	//Load each entity
-	entityManager->LoadEntitiesFromJson(json, projectDir, entityTypes, this, physics);
+	entityManager->LoadEntitiesFromJson(json, shared_from_this());
 
 	//Setup parent child relationships
 	entityManager->BuildEntityHierarchy();
+}
+
+/*
+PURPOSE: Returns scene id
+*/
+SCENEMANAGER_API std::string Scene::GetSceneId()
+{
+	return sceneId;
+}
+
+/*
+PURPOSE: Returns scene id
+*/
+SCENEMANAGER_API std::string Scene::GetSceneName()
+{
+	return sceneName;
+}
+
+/*
+PURPOSE: Returns scene type
+*/
+SCENEMANAGER_API Utils::SceneType Scene::GetSceneType()
+{
+	return sceneType;
+}
+
+/*
+PURPOSE: Returns current camera of the scene as a smart pointer
+*/
+SCENEMANAGER_API std::shared_ptr<ICamera> Scene::GetCurrentCamera()
+{
+	return currentCamera;
+}
+
+/*
+PURPOSE: Returns physics object as a smart pointers
+*/
+SCENEMANAGER_API std::shared_ptr<IPhysics> Scene::GetPhysics()
+{
+	return physics;
+}
+
+/*
+PURPOSE: Returns delta x and y of the cursor as a std::pair
+	first -> deltaX
+	second -> deltaY
+*/
+SCENEMANAGER_API std::pair<float, float> Scene::GetDeltaXY()
+{
+	return { deltaX, deltaY };
+}
+
+/*
+PURPOSE: Returns true if mouse left is pressed
+	otherwise, returns false
+*/
+SCENEMANAGER_API bool Scene::GetLeftPressed()
+{
+	return leftPressed;
+}
+
+/*
+PURPOSE: Returns true if key delete is pressed
+	otherwise, returns false
+*/
+SCENEMANAGER_API bool Scene::GetDeletePressed()
+{
+	return deletePressed;
 }
 
 /*
@@ -231,8 +299,6 @@ void Scene::UpdateEditorCamera(
 	int currentMouseY,
 	int window_width,
 	int window_height,
-	int screenWidth,
-	int screenHeight,
 	bool windowGameViewportIsFocused,
 	bool isPlaying)
 {
@@ -283,6 +349,10 @@ void Scene::UpdateEditorCamera(
 		//Store window size
 		int windowWidth = window_width;
 		int windowHeight = window_height;
+
+		//Store screen size
+		float screenWidth = (float)ServiceLocator::Get<IEngine>()->GetScreenSize().first;
+		float screenHeight = (float)ServiceLocator::Get<IEngine>()->GetScreenSize().second;
 
 		//Mouse movement effects the scene depends on the window size
 		float resX = (float)deltaMouseX * (float)windowWidth / (float)screenWidth;

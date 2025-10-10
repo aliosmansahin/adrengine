@@ -1,18 +1,15 @@
 #include "pch.h"
 #include "WindowGameViewport.h"
-#include "SceneManager.h"
-#include "VisualScriptManager.h"
+
 #include "WindowTileMapBrush.h"
 
 /*
 PURPOSE: Draws the window
 */
-void WindowGameViewport::DrawWindow(
-    float engineFPS,
-    float engineMS)
+void WindowGameViewport::DrawWindow()
 {
     //We will use tileMapBrush when "start drawing" button clicked
-    TileMap* edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
+    std::shared_ptr<ITileMap> edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
 
     //Begin the window
     ImGui::Begin("Game Viewport", &showWindow);
@@ -44,13 +41,13 @@ void WindowGameViewport::DrawWindow(
     if (isPlaying) {
         if (ImGui::Selectable("Stop", false, ImGuiSelectableFlags_None, ImVec2(100, (float)toolbarHeight))) {
             //Reset runtime values
-            SceneManager::GetInstance().openedScene->GetEntityManager()->ResetEntitiesRuntimeValues();
+            ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetEntityManager()->ResetEntitiesRuntimeValues();
 
             //End physics simulation for each rigidbody of objects
-            for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
-                Object* object = dynamic_cast<Object*>(entity.second.get());
+            for (auto& entity : ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetEntityManager()->GetEntities()) {
+                std::shared_ptr<IObject> object = std::dynamic_pointer_cast<IObject>(entity.second);
                 if (object != nullptr) {
-                    SceneManager::GetInstance().openedScene->physics->EndEmulationForRigidBody(object->rigidBody);
+                    ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetPhysics()->EndEmulationForRigidBody(object->GetRigidBody());
                 }
             }
             isPlaying = false;
@@ -59,13 +56,13 @@ void WindowGameViewport::DrawWindow(
     else {
         if (ImGui::Selectable("Play", false, ImGuiSelectableFlags_None, ImVec2(100, (float)toolbarHeight))) {
             //When user plays the scene, run the scripts
-            SceneManager::GetInstance().openedScene->GetEntityManager()->RunEntitiesScriptBegin();
+            ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetEntityManager()->RunEntitiesScriptBegin();
 
             //Start physics simulation for each rigidbody of objects
-            for (auto& entity : SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities()) {
-                Object* object = dynamic_cast<Object*>(entity.second.get());
+            for (auto& entity : ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetEntityManager()->GetEntities()) {
+                std::shared_ptr<IObject> object = std::dynamic_pointer_cast<IObject>(entity.second);
                 if (object != nullptr) {
-                    SceneManager::GetInstance().openedScene->physics->StartEmulationForRigidBody(object->rigidBody);
+                    ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetPhysics()->StartEmulationForRigidBody(object->GetRigidBody());
                 }
             }
             isPlaying = true;
@@ -76,21 +73,25 @@ void WindowGameViewport::DrawWindow(
     ImGui::SetWindowFontScale(1.2f);
 
     //Draw the stats
-    std::string fpsMsInfo = "FPS: " + std::to_string(engineFPS) + " / " + "Frame Rate: " + std::to_string(engineMS) + "ms / ";
+    std::pair<float, float> engineFPSandMS = ServiceLocator::Get<IEngine>()->GetFPSandMS();
+
+    std::string fpsMsInfo = "FPS: " + std::to_string(engineFPSandMS.first) + " / " + "Frame Rate: " + std::to_string(engineFPSandMS.second) + "ms / ";
     ImGui::Text(fpsMsInfo.c_str());
 
     ImGui::SameLine();
 
-    std::string cameraInfo = "CamX: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->GetPosition().x) + " / ";
+    glm::vec3 currentCameraPosition = ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetCurrentCamera()->GetEntityParams()->GetPosition();
+
+    std::string cameraInfo = "CamX: " + std::to_string(currentCameraPosition.x) + " / ";
     ImGui::Text(cameraInfo.c_str());
     ImGui::SameLine();
 
-    cameraInfo = "CamY: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->GetPosition().y) + " / ";
+    cameraInfo = "CamY: " + std::to_string(currentCameraPosition.y) + " / ";
     ImGui::Text(cameraInfo.c_str());
     ImGui::SameLine();
 
-    if (SceneManager::GetInstance().openedScene->sceneType == Utils::SCENE_3D) {
-        cameraInfo = "CamZ: " + std::to_string(SceneManager::GetInstance().openedScene->currentCamera->GetEntityParams()->GetPosition().z) + " / ";
+    if (ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetSceneType() == Utils::SCENE_3D) {
+        cameraInfo = "CamZ: " + std::to_string(currentCameraPosition.z) + " / ";
         ImGui::Text(cameraInfo.c_str());
         ImGui::SameLine();
     }
@@ -116,13 +117,13 @@ void WindowGameViewport::DrawWindow(
 
     //Handle for resizing
     Graphics::GetInstance().GetMainFramebuffer()->RescaleFramebuffer((int)window_width, (int)window_height);
-    adr_glViewport(0, 0, (GLsizei)window_width, (GLsizei)window_height);
+    adr::adr_glViewport(0, 0, (GLsizei)window_width, (GLsizei)window_height);
 
     /*
         Draw the scene, this function stores the frame into the frameBufferTex texture,
         after that, draw the texture as a texture via ImGui
     */
-    SceneManager::GetInstance().openedScene->DrawScene(
+    ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->DrawScene(
         (int)window_width,
         (int)window_height);
 

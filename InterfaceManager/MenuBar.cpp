@@ -1,26 +1,35 @@
 #include "pch.h"
 #include "MenuBar.h"
 
+#include "ServiceLocator.h"
+#include "interfaces/IProject/IProject.h"
+
+#include "InterfaceManager.h"
+
 /*
 PURPOSE: Draws menu bar
 */
-void MenuBar::DrawMenuBar(std::function<void()>& saveFunc, std::function<void()>& closeFunc, bool openedProject)
+void MenuBar::DrawMenuBar()
 {
 	if (ImGui::BeginMainMenuBar()) {
-		if (openedProject) {
+		auto projectInterface = ServiceLocator::Get<IProject>();
+
+		if (projectInterface->GetProjectOpened()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("Save Project")) {
-					saveFunc();
+					projectInterface->SaveProject();
 				}
 				ImGui::Separator();
 				if (ImGui::MenuItem("Close Project")) {
-					closeFunc();
+					projectInterface->CloseProject();
+					InterfaceManager::GetInstance().ResetInterface();
+					WindowProjectDialog::GetInstance().ResetInputs();
 				}
 				ImGui::EndMenu();
 			}
 		}
 		if (ImGui::BeginMenu(Localization::GetString("interface_main_menu_window"))) {
-			if (openedProject) {
+			if (projectInterface->GetProjectOpened()) {
 				ImGui::MenuItem(Localization::GetString("interface_main_menu_item_scene"), NULL, &WindowScene::GetInstance().showWindow);
 				ImGui::MenuItem("All Scenes", NULL, &WindowAllScenes::GetInstance().showWindow);
 				ImGui::MenuItem(Localization::GetString("interface_main_menu_item_game_viewport"), NULL, &WindowGameViewport::GetInstance().showWindow);

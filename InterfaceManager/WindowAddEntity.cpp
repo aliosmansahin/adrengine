@@ -1,13 +1,12 @@
 #include "pch.h"
 #include "WindowAddEntity.h"
 
+#include "WindowScene.h"
+
 /*
 PURPOSE: Draws window
 */
-void WindowAddEntity::DrawWindow(
-	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>>& entityTypes,
-	std::string& projectDir,
-	std::shared_ptr<Entity>& windowSceneAddParent)
+void WindowAddEntity::DrawWindow()
 {
 	//Begin window
 	ImGui::Begin("Add Entity", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
@@ -48,7 +47,7 @@ void WindowAddEntity::DrawWindow(
 				});
 
 			//Compare each entity type with the input
-			for (auto& type : entityTypes) {
+			for (auto& type : ServiceLocator::Get<IEngine>()->GetEntityTypes()) {
 				std::string typeToUp = type.first;
 				std::transform(typeToUp.begin(), typeToUp.end(), typeToUp.begin(), [](unsigned char c) {
 					return std::toupper(c);
@@ -75,11 +74,11 @@ void WindowAddEntity::DrawWindow(
 
 			//If the user selects a type
 			if (ImGui::Selectable(type.c_str())) {
-				nlohmann::json sceneJson = SceneManager::GetInstance().openedScene->ToJson();
-				std::string id = SceneManager::GetInstance().openedScene->GetEntityManager()->CreateEntity(type, projectDir, entityTypes, SceneManager::GetInstance().openedScene->sceneId, sceneJson, windowSceneAddParent, SceneManager::GetInstance().openedScene->physics);
-				auto iter = SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities().find(id);
-				if (id != "" && iter != SceneManager::GetInstance().openedScene->GetEntityManager()->GetEntities().end()) {
-					std::string findId = iter->second->GetEntityParams()->id;
+				nlohmann::json sceneJson = ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->ToJson();
+				std::string id = ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetEntityManager()->CreateEntity(type, ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetSceneId(), sceneJson, WindowScene::GetInstance().addParent);
+				auto iter = ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetEntityManager()->GetEntities().find(id);
+				if (id != "" && iter != ServiceLocator::Get<ISceneManager>()->GetOpenedScene()->GetEntityManager()->GetEntities().end()) {
+					std::string findId = iter->second->GetEntityParams()->GetId();
 					showWindow = false;
 					memset(typeBuf, 0, sizeof(typeBuf));
 					types.clear();

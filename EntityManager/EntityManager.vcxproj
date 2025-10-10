@@ -118,7 +118,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\BulletStaticLib;..\GladWrapper;..\VisualScriptManager;..\Localization;..\Timer;..\Asset;..\Common;..\Graphics;..\Logger;..\Physics</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\GladWrapper;..\Localization;..\Timer;..\Asset;..\Common;..\Graphics;..\Logger;..\ServiceLocator;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -126,7 +126,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BulletStaticLib.lib;GladWrapper.lib;Common.lib;Asset.lib;Timer.lib;Logger.lib;Graphics.lib;VisualScriptManager.lib;Physics.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GladWrapper.lib;ServiceLocator.lib;Common.lib;Asset.lib;Timer.lib;Logger.lib;Graphics.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,7 +139,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\GladWrapper;..\BulletStaticLib;..\VisualScriptManager;..\Localization;..\Timer;..\Asset;..\Common;..\Graphics;..\Logger;..\Physics</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\GladWrapper;..\Localization;..\Timer;..\Asset;..\Common;..\Graphics;..\Logger;..\ServiceLocator;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,7 +149,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BulletStaticLib.lib;GladWrapper.lib;Common.lib;Asset.lib;Timer.lib;Logger.lib;Graphics.lib;VisualScriptManager.lib;Physics.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GladWrapper.lib;ServiceLocator.lib;Common.lib;Asset.lib;Timer.lib;Logger.lib;Graphics.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -17,17 +17,41 @@
 #include "AssetDatabase.h"
 #include "AssetSaver.h"
 #include "Project.h"
+#include "BulletPhysics.h"
 
-//TODO: ADD SCRIPT SAVING / LOADING
+#include "interfaces/IEngine/IEngine.h"
+#include "interfaces/IProject/IProject.h"
 
-class Engine
+#include "ServiceLocator.h"
+
+class Engine : public IEngine
 {
 public:
 	//main funcs
-	ENGINE_API bool InitEngine(GLFWwindow* window);
-	ENGINE_API void Update();
-	ENGINE_API void Draw();
-	ENGINE_API void CloseEngine();
+	ENGINE_API bool InitEngine(GLFWwindow* window) override;
+	ENGINE_API void Update() override;
+	ENGINE_API void Draw() override;
+	ENGINE_API void CloseEngine() override;
+
+	//Factory
+	ENGINE_API std::shared_ptr<IEntityManager> CreateEntityManager() override;
+	ENGINE_API std::shared_ptr<IEntity> CreateEntity(std::string entityType) override;
+	ENGINE_API std::shared_ptr<IScene> CreateScene() override;
+	ENGINE_API std::shared_ptr<IPhysics> CreatePhysics() override;
+	ENGINE_API std::shared_ptr<IRigidBody> CreateRigidBody() override;
+
+	//Getters
+	ENGINE_API std::unordered_map<std::string, std::pair<std::shared_ptr<IEntity>, std::shared_ptr<IEntityParams>>>& GetEntityTypes() override;
+	ENGINE_API std::pair<int, int> GetScreenSize() override;
+	ENGINE_API std::pair<float, float> GetFPSandMS() override;
+
+public:
+	//Singleton
+	static Engine& GetInstance()
+	{
+		static Engine instance;
+		return instance;
+	}
 
 private:
 	//helpers
@@ -37,21 +61,18 @@ private:
 	void PerformDeleteActions();
 	void UpdateEngineWhenProjectIsNotOpened();
 	void UpdateEngineWhenProjectIsOpened();
-	void PerformSceneDeletion(std::string& projectDir, std::string& projectFile);
-	void PerformTabDeletion(std::string& projectDir, std::string& projectFile);
+	void PerformSceneDeletion();
+	void PerformTabDeletion();
 	void HandleProjectOpeningOrCreation();
 	bool HandleProjectCreation();
 	bool HandleProjectOpeningWithPath();
 	bool HandleProjectOpeningWithLatestProjects();
+
 public:
 	//getters
 	ENGINE_API GLFWwindow* GetWindow() { return window; }
 
 public:
-	//getter for the instance
-	ENGINE_API static Engine& GetInstance();
-
-private:
 	//singleton
 	Engine() = default;
 	~Engine() = default;
@@ -66,7 +87,7 @@ private:
 	ImGuiContext* context = nullptr;
 	ImNodesContext* nodesContext = nullptr;
 
-public:
+private:
 	//store screen width and height
 	int screenWidth = 0;
 	int screenHeight = 0;
@@ -76,6 +97,6 @@ public:
 	float ms = 0;
 
 	//store all of entity types to use it when user add them to the scene
-	std::unordered_map<std::string, std::pair<std::shared_ptr<Entity>, std::shared_ptr<EntityParams>>> entityTypes;
+	std::unordered_map<std::string, std::pair<std::shared_ptr<IEntity>, std::shared_ptr<IEntityParams>>> entityTypes;
 };
 
