@@ -22,6 +22,7 @@ INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, Im
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.IniFilename = NULL; //disable imgui.ini because we save editor settings in our own file, we also have own layout saving system
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 	ImGuiStyle& style = ImGui::GetStyle();
