@@ -6,6 +6,9 @@
 
 #include "MenuBar.h"
 
+/*
+PURPOSE: Adds a layout to the profiles map
+*/
 void LayoutProfile::AddLayout(const std::shared_ptr<WindowLayout>& layout)
 {
 	if (layout)
@@ -14,6 +17,9 @@ void LayoutProfile::AddLayout(const std::shared_ptr<WindowLayout>& layout)
 	}
 }
 
+/*
+PURPOSE: Gets a layout from the profiles map by its name
+*/
 std::shared_ptr<WindowLayout> LayoutProfile::GetLayout(const std::string& name) const
 {
 	auto it = layouts.find(name);
@@ -24,6 +30,9 @@ std::shared_ptr<WindowLayout> LayoutProfile::GetLayout(const std::string& name) 
 	return nullptr;
 }
 
+/*
+PURPOSE: Applies the profile to all windows
+*/
 void LayoutProfile::ApplyProfileToWindow()
 {
 	for (const auto& [layoutName, layout] : layouts) {
@@ -33,6 +42,9 @@ void LayoutProfile::ApplyProfileToWindow()
 	}
 }
 
+/*
+PURPOSE: Converts the profile to json
+*/
 nlohmann::json LayoutProfile::ToJson() const
 {
 	nlohmann::json j;
@@ -48,6 +60,9 @@ nlohmann::json LayoutProfile::ToJson() const
 	return j;
 }
 
+/*
+PURPOSE: Loads the profile from json
+*/
 void LayoutProfile::FromJson(const nlohmann::json& j)
 {
 	if (j.contains("profile-name")) profileName = j["profile-name"].get<std::string>();
@@ -62,6 +77,9 @@ void LayoutProfile::FromJson(const nlohmann::json& j)
 	}
 }
 
+/*
+PURPOSE: Creates a default layout profile
+*/
 void LayoutProfile::CreateDefault(const std::string& profileName) {
 	this->profileName = profileName;
 
