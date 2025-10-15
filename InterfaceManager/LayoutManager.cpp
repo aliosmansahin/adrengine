@@ -187,7 +187,8 @@ void LayoutManager::DeleteCurrentProfile()
 
 	profiles.erase(iter);
 
-	//TODO: Delete the folder of this profile
+	//Delete the file of this profile
+	std::filesystem::remove("Layout/Profiles/" + currentProfile + ".cfg");
 
 	if (profiles.size() > 0) {
 		//Get first profile from map to use it
@@ -197,7 +198,8 @@ void LayoutManager::DeleteCurrentProfile()
 		UseDefaultLayout();
 	}
 
-	//TODO: Save new layout
+	//Save new layout via saving all profiles
+	SaveLayout();
 }
 
 /*
