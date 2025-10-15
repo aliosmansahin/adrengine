@@ -44,6 +44,7 @@ public:
 	ENGINE_API std::unordered_map<std::string, std::pair<std::shared_ptr<IEntity>, std::shared_ptr<IEntityParams>>>& GetEntityTypes() override;
 	ENGINE_API std::pair<int, int> GetScreenSize() override;
 	ENGINE_API std::pair<float, float> GetFPSandMS() override;
+	ENGINE_API std::pair<int, int> GetMainWindowSize() override;
 
 public:
 	//Singleton
@@ -68,6 +69,8 @@ private:
 	bool HandleProjectOpeningWithPath();
 	bool HandleProjectOpeningWithLatestProjects();
 
+	void SetMainWindowSize(GLFWwindow* mainWindow);
+
 public:
 	//getters
 	ENGINE_API GLFWwindow* GetWindow() { return window; }
@@ -91,6 +94,10 @@ private:
 	//store screen width and height
 	int screenWidth = 0;
 	int screenHeight = 0;
+
+	//store main window width and height
+	int mainWindowWidth = 0;
+	int mainWindowHeight = 0;
 
 	//store frames per second(FPS) and elapsed time to draw next frame(ms)
 	float FPS = 0;

@@ -1,12 +1,32 @@
 #include "pch.h"
 #include "WindowProjectDialog.h"
 
+#include "ServiceLocator.h"
+#include "interfaces/IEngine/IEngine.h"
+
 /*
 PURPOSE: Draws the window
 */
 void WindowProjectDialog::DrawWindow() {
+	/* Apply the window layout for the first time */
+
+    //Set the dock id
+    ImGui::SetNextWindowDockID(windowLayout->dockId);
+
+    //Set initial size and position
+    if (firstFrame) {
+        firstFrame = false;
+        ImGui::SetNextWindowSize(ImVec2(windowLayout->width, windowLayout->height));
+        ImGui::SetNextWindowPos(ImVec2(windowLayout->posX, windowLayout->posY));
+    }
+
     //Begin the window
-    ImGui::Begin("Create or Open a Project", (bool*)false, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin("Create or Open a Project", (bool*)false, windowLayout->windowFlags);
+
+	//Update the window layout
+	windowLayout->posX = ImGui::GetWindowPos().x;
+	windowLayout->posY = ImGui::GetWindowPos().y;
+
     ImGui::SetWindowFontScale(1.5f);
 
     /* Create a project */
@@ -166,4 +186,32 @@ WindowProjectDialog& WindowProjectDialog::GetInstance()
 {
 	static WindowProjectDialog menubar;
 	return menubar;
+}
+
+/*
+PURPOSE: Sets the default layout of the window
+*/
+INTERFACEMANAGER_API void WindowProjectDialog::SetDefaultLayout()
+{
+    windowLayout->name = "window_project_dialog";
+    windowLayout->isOpen = true;
+    windowLayout->dockId = 0;
+    windowLayout->dockFlags = ImGuiDockNodeFlags_None;
+    windowLayout->windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking;
+    windowLayout->width = 1000.0f;
+    windowLayout->height = 600.0f;
+
+    windowLayout->posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - windowLayout->width) / 2.0f;
+    windowLayout->posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - windowLayout->height) / 2.0f;
+
+    firstFrame = true;
+}
+
+/*
+PURPOSE: Changes layout of this window, and changes firstFrame variable to true to apply parameters of imgui window
+*/
+INTERFACEMANAGER_API void WindowProjectDialog::ApplyLayout(std::shared_ptr<WindowLayout> newWindowLayout)
+{
+    windowLayout = newWindowLayout;
+    firstFrame = true;
 }

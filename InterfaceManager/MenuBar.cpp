@@ -6,6 +6,8 @@
 
 #include "InterfaceManager.h"
 
+#include "LayoutManager.h"
+
 /*
 PURPOSE: Draws menu bar
 */
@@ -27,6 +29,26 @@ void MenuBar::DrawMenuBar()
 				}
 				ImGui::EndMenu();
 			}
+		}
+		if (ImGui::BeginMenu("Layout")) {
+			if (ImGui::MenuItem("Create a new default profile")) {
+				LayoutManager::GetInstance().UseDefaultLayout();
+			}
+			if (ImGui::MenuItem("Delete this profile")) {
+				WindowModalDialog::GetInstance().ShowModalQuestion("Delete Profile", "Are you sure you want to delete this profile?",
+					[]() {
+						LayoutManager::GetInstance().DeleteCurrentProfile();
+					}
+				);
+			}
+
+			ImGui::SeparatorText("Profiles");
+			for(const auto& [name, profile] : LayoutManager::GetInstance().GetProfiles()) {
+				if (ImGui::MenuItem(name.c_str(), NULL, LayoutManager::GetInstance().IsProfileSelected(name))) {
+					LayoutManager::GetInstance().UseProfile(name);
+				}
+			}
+			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu(Localization::GetString("interface_main_menu_window"))) {
 			if (projectInterface->GetProjectOpened()) {

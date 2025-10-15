@@ -28,5 +28,6 @@ public:
 	virtual std::unordered_map<std::string, std::pair<std::shared_ptr<IEntity>, std::shared_ptr<IEntityParams>>>& GetEntityTypes() = 0;
 	virtual std::pair<int, int> GetScreenSize() = 0;
 	virtual std::pair<float, float> GetFPSandMS() = 0;
+	virtual std::pair<int, int> GetMainWindowSize() = 0;
 };
 

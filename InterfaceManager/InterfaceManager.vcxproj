@@ -159,6 +159,8 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="InterfaceManager.h" />
+    <ClInclude Include="LayoutManager.h" />
+    <ClInclude Include="LayoutProfile.h" />
     <ClInclude Include="MenuBar.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="WindowAddAsset.h" />
@@ -182,6 +184,8 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="InterfaceManager.cpp" />
+    <ClCompile Include="LayoutManager.cpp" />
+    <ClCompile Include="LayoutProfile.cpp" />
     <ClCompile Include="MenuBar.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -22,6 +22,8 @@
 
 #include "ServiceLocator.h"
 
+#include "LayoutManager.h"
+
 class WindowProjectDialog
 {
 public:
@@ -29,6 +31,8 @@ public:
 	INTERFACEMANAGER_API void						 DrawWindow();
 	INTERFACEMANAGER_API void						 ResetInputs();
 	INTERFACEMANAGER_API static WindowProjectDialog& GetInstance();
+	INTERFACEMANAGER_API void						 SetDefaultLayout();
+	INTERFACEMANAGER_API void						 ApplyLayout(std::shared_ptr<WindowLayout> newWindowLayout);
 private:
 	//singleton
 	WindowProjectDialog() = default;
@@ -36,6 +40,10 @@ private:
 	WindowProjectDialog(const WindowProjectDialog&) = delete;
 	WindowProjectDialog& operator=(const WindowProjectDialog&) = delete;
 public:
+	//Window layout
+	std::shared_ptr<WindowLayout> windowLayout = nullptr;
+	bool firstFrame = true;
+
 	//turns true when creating or opening a project
 	bool isCreatingProject = false;
 	bool isOpeningProject = false;

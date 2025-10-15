@@ -60,6 +60,12 @@
     <Filter Include="WindowModalDialog">
       <UniqueIdentifier>{a4e699cd-a0d3-4025-a197-ebef1f4086a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LayoutManager">
+      <UniqueIdentifier>{11b06e04-d0d0-4b1b-876b-befec3de8131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LayoutManager\LayoutProfile">
+      <UniqueIdentifier>{b88c11a5-327c-4d31-97a1-79f6a232f354}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -123,6 +129,12 @@
     <ClInclude Include="WindowModalDialog.h">
       <Filter>WindowModalDialog</Filter>
     </ClInclude>
+    <ClInclude Include="LayoutManager.h">
+      <Filter>LayoutManager</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutProfile.h">
+      <Filter>LayoutManager\LayoutProfile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowVisualScript.cpp">
@@ -185,6 +197,12 @@
     </ClCompile>
     <ClCompile Include="WindowModalDialog.cpp">
       <Filter>WindowModalDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="LayoutManager.cpp">
+      <Filter>LayoutManager</Filter>
+    </ClCompile>
+    <ClCompile Include="LayoutProfile.cpp">
+      <Filter>LayoutManager\LayoutProfile</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

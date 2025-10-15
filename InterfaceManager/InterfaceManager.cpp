@@ -3,6 +3,8 @@
 
 #include "MenuBar.h"
 
+#include "LayoutManager.h"
+
 /*
 PURPOSE: Initialize interface manager
 */
@@ -12,6 +14,9 @@ INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, Im
 	Logger::Log("P", "Initializing interface");
 
 	this->window = window;
+
+	//Load layout file
+	LayoutManager::GetInstance().LoadLayout();
 
 	//Initialize imgui
 	IMGUI_CHECKVERSION();
@@ -50,6 +55,9 @@ PURPOSE: Closes interface manager and releases other things
 */
 void InterfaceManager::CloseInterface()
 {
+	//Save layout file
+	LayoutManager::GetInstance().SaveLayout();
+
 	//releases tabs
 	ResetInterface();
 

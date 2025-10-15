@@ -2,19 +2,10 @@
 
 #include <string>
 #include <unordered_map>
+#include <fstream>
+#include <filesystem>
 
-#include "imgui/imgui.h"
-
-struct WindowLayout
-{
-	std::string name;
-	bool isOpen = true;
-	ImGuiID dockId = 0;
-	ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_None;
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
-	float widthRatio = 0.2f; // Ratio of the window width to the total width
-	float heightRatio = 0.2f; // Ratio of the window height to the total height
-};
+#include "LayoutProfile.h"
 
 class LayoutManager
 {
@@ -30,6 +21,16 @@ public:
 	//Handle layout
 	void SaveLayout();
 	void LoadLayout();
+	void UseDefaultLayout();
+	void UseProfile(const std::string& profileName);
+
+	void CreateDefaultProfile(const std::string& profileName);
+	void LoadProfileFromJson(const std::string& profileName, const nlohmann::json& json);
+	void DeleteCurrentProfile();
+
+	std::unordered_map<std::string, std::shared_ptr<LayoutProfile>>& GetProfiles() { return profiles; }
+	bool IsProfileSelected(std::string profileName);
+	std::string CreateProfileId();
 
 private:
 	//Singleton pattern
@@ -42,5 +43,12 @@ private:
 
 private:
 	//Stores all layouts by name
-	std::unordered_map<std::string, WindowLayout> layouts;
+	std::unordered_map<std::string, std::shared_ptr<LayoutProfile>> profiles;
+
+	//Current layout profile
+	std::string currentProfile = "default";
+	std::string defaultProfileName = "default";
+
+	//Store the previous profile name
+	std::string previousProfileName = "default";
 };
