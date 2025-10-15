@@ -9,16 +9,7 @@ PURPOSE: Draws the window
 */
 void WindowProjectDialog::DrawWindow() {
 	/* Apply the window layout for the first time */
-
-    //Set the dock id
-    ImGui::SetNextWindowDockID(windowLayout->dockId);
-
-    //Set initial size and position
-    if (firstFrame) {
-        firstFrame = false;
-        ImGui::SetNextWindowSize(ImVec2(windowLayout->width, windowLayout->height));
-        ImGui::SetNextWindowPos(ImVec2(windowLayout->posX, windowLayout->posY));
-    }
+    HasLayout::UpdateFirstFrame();
 
     //Begin the window
     ImGui::Begin("Create or Open a Project", (bool*)false, windowLayout->windowFlags);
@@ -204,14 +195,5 @@ INTERFACEMANAGER_API void WindowProjectDialog::SetDefaultLayout()
     windowLayout->posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - windowLayout->width) / 2.0f;
     windowLayout->posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - windowLayout->height) / 2.0f;
 
-    firstFrame = true;
-}
-
-/*
-PURPOSE: Changes layout of this window, and changes firstFrame variable to true to apply parameters of imgui window
-*/
-INTERFACEMANAGER_API void WindowProjectDialog::ApplyLayout(std::shared_ptr<WindowLayout> newWindowLayout)
-{
-    windowLayout = newWindowLayout;
     firstFrame = true;
 }

@@ -85,7 +85,7 @@ void LayoutProfile::CreateDefault(const std::string& profileName) {
 
 	std::shared_ptr<WindowLayout> windowProjectLayout = std::make_shared<WindowLayout>();
 
-	WindowProjectDialog::GetInstance().windowLayout = windowProjectLayout;
+	WindowProjectDialog::GetInstance().SetWindowLayout(windowProjectLayout);
 	WindowProjectDialog::GetInstance().SetDefaultLayout();
 	
 	layouts[windowProjectLayout->name] = windowProjectLayout;

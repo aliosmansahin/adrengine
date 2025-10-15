@@ -66,6 +66,9 @@
     <Filter Include="LayoutManager\LayoutProfile">
       <UniqueIdentifier>{b88c11a5-327c-4d31-97a1-79f6a232f354}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HasLayout">
+      <UniqueIdentifier>{d22f8aaf-5448-43f5-a285-917432a9b37d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -135,6 +138,9 @@
     <ClInclude Include="LayoutProfile.h">
       <Filter>LayoutManager\LayoutProfile</Filter>
     </ClInclude>
+    <ClInclude Include="HasLayout.h">
+      <Filter>HasLayout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowVisualScript.cpp">
@@ -203,6 +209,9 @@
     </ClCompile>
     <ClCompile Include="LayoutProfile.cpp">
       <Filter>LayoutManager\LayoutProfile</Filter>
+    </ClCompile>
+    <ClCompile Include="HasLayout.cpp">
+      <Filter>HasLayout</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

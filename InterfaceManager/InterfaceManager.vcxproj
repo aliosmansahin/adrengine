@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="HasLayout.h" />
     <ClInclude Include="InterfaceManager.h" />
     <ClInclude Include="LayoutManager.h" />
     <ClInclude Include="LayoutProfile.h" />
@@ -183,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="HasLayout.cpp" />
     <ClCompile Include="InterfaceManager.cpp" />
     <ClCompile Include="LayoutManager.cpp" />
     <ClCompile Include="LayoutProfile.cpp" />
