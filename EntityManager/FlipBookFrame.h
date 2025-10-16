@@ -15,6 +15,8 @@ using namespace adr;
 
 class FlipBookFrame : public IFlipBookFrame {
 public:
+	ENTITYMANAGER_API virtual ~FlipBookFrame() = default;
+
 	//main funcs
 	ENTITYMANAGER_API void Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH) override;
 	ENTITYMANAGER_API void Update() override;

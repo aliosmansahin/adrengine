@@ -13,6 +13,8 @@
 class SpotLightParams : public virtual LightParams , public virtual ISpotLightParams
 {
 public:
+	ENTITYMANAGER_API virtual ~SpotLightParams() = default;
+
 	/*
 	PURPOSE: Returns the type of the entity
 	*/

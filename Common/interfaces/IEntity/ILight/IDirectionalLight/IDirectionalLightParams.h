@@ -4,5 +4,7 @@
 
 class IDirectionalLightParams : public virtual ILightParams
 {
+public:
+	virtual ~IDirectionalLightParams() = default;
 };
 

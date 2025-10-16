@@ -8,6 +8,8 @@
 class ITileMap : public virtual ISprite2D
 {
 public:
+	virtual ~ITileMap() = default;
+
 	virtual void CreateTiles(float textureWidth, float textureHeight, float tileWidth, float tileHeight) = 0;
 	virtual void CreateInspectFrameBuffer(float width, float height, int tileW, int tileH, float scale) = 0;
 	virtual void UpdateInspect() = 0;

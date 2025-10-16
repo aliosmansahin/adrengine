@@ -13,6 +13,8 @@
 class CameraParams : public virtual EntityParams, public virtual ICameraParams
 {
 public:
+	ENTITYMANAGER_API virtual ~CameraParams() = default;
+
 	/*
 	PURPOSE: Returns the type of the entity
 	*/

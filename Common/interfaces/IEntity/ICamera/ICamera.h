@@ -6,6 +6,8 @@
 class ICamera : public virtual IEntity
 {
 public:
+	virtual ~ICamera() = default;
+
 	virtual std::pair<float, float> GetYawPitch() = 0;
 
 	virtual void AddPosition(glm::vec3 posAdd, bool isPlaying) = 0;

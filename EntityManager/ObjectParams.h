@@ -14,6 +14,8 @@
 class ObjectParams : public virtual EntityParams, public virtual IObjectParams
 {
 public:
+	ENTITYMANAGER_API virtual ~ObjectParams() = default;
+
 	/*
 	PURPOSE: Returns the type of the entity
 	*/

@@ -6,6 +6,8 @@
 class ISpotLight : public virtual ILight
 {
 public:
+	virtual ~ISpotLight() = default;
+
 	virtual glm::mat4 GetLightSpaceMatrix() = 0;
 };
 

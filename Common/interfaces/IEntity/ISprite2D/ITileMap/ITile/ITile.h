@@ -5,6 +5,8 @@
 class ITile
 {
 public:
+	virtual ~ITile() = default;
+
 	//main funcs
 	virtual void Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH, std::pair<int, int> tileType) = 0;
 	virtual void Update() = 0;

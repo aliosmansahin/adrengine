@@ -14,6 +14,8 @@
 class Tile : public ITile
 {
 public:
+	virtual ~Tile() = default;
+
 	//main funcs
 	void Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH, std::pair<int, int> tileType) override;
 	void Update() override;

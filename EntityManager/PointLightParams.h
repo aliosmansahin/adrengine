@@ -13,6 +13,8 @@
 class PointLightParams : public virtual LightParams, public virtual IPointLightParams
 {
 public:
+	ENTITYMANAGER_API virtual ~PointLightParams() = default;
+
 	/*
 	PURPOSE: Returns the type of the entity
 	*/

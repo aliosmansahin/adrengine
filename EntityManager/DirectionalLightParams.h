@@ -13,6 +13,8 @@
 class DirectionalLightParams : public virtual LightParams, public virtual IDirectionalLightParams
 {
 public:
+	ENTITYMANAGER_API virtual ~DirectionalLightParams() = default;
+
 	/*
 	PURPOSE: Returns the type of the entity
 	*/

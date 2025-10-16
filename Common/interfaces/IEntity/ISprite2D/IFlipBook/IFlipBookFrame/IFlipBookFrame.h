@@ -6,6 +6,8 @@
 class IFlipBookFrame
 {
 public:
+	virtual ~IFlipBookFrame() = default;
+
 	//main
 	virtual void Create(int x, int y, int width, int height, float u, float v, float textureW, float textureH) = 0;
 	virtual void Update() = 0;

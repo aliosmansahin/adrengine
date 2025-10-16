@@ -13,6 +13,8 @@
 class FlipBookParams : public virtual Sprite2DParams, public virtual IFlipBookParams
 {
 public:
+	ENTITYMANAGER_API virtual ~FlipBookParams() = default;
+
 	/*
 	PURPOSE: Returns the type of the entity
 	*/

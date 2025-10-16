@@ -27,6 +27,9 @@ enum class RigidBodyShape {
 class IRigidBody
 {
 public:
+	virtual ~IRigidBody() = default;
+
+public:
 	virtual std::shared_ptr<btRigidBody> Create() = 0;
 	virtual void					     Delete() = 0;
 	virtual std::shared_ptr<btRigidBody> Get() = 0;

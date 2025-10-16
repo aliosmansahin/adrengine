@@ -16,6 +16,8 @@ struct ImNodesContext;
 class IVisualScriptManager
 {
 public:
+	virtual ~IVisualScriptManager() = default;
+
     //Handle manager
     virtual bool InitManager(ImGuiContext* imguiContext, ImNodesContext* nodesContext) = 0;
     virtual void ReleaseManager() = 0;

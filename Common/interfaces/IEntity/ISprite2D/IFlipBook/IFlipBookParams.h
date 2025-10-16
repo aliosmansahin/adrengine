@@ -5,6 +5,8 @@
 class IFlipBookParams : public virtual ISprite2DParams
 {
 public:
+	virtual ~IFlipBookParams() = default;
+
 	//Getters for parameters
 	virtual float GetFrameWait() = 0;
 	virtual bool  GetLoop() = 0;

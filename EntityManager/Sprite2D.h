@@ -18,6 +18,8 @@ using namespace adr;
 class Sprite2D : public virtual Entity, public virtual ISprite2D
 {
 public:
+	ENTITYMANAGER_API virtual ~Sprite2D() = default;
+
 	//main functions
 	ENTITYMANAGER_API bool CreateEntity(std::shared_ptr<IEntityParams> params) override;
 	ENTITYMANAGER_API void DeleteEntity() override;

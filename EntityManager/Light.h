@@ -14,6 +14,8 @@
 class Light : public virtual Entity, public virtual ILight
 {
 public:
+	ENTITYMANAGER_API virtual ~Light() = default;
+
 	ENTITYMANAGER_API int GetIndex() override {
 		return index;
 	};

@@ -13,6 +13,8 @@
 class TileMapParams : public virtual Sprite2DParams, public virtual ITileMapParams
 {
 public:
+	ENTITYMANAGER_API virtual ~TileMapParams() = default;
+
 	/*
 	PURPOSE: Returns the type of the entity
 	*/

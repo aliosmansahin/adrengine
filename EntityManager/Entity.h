@@ -18,6 +18,8 @@
 class Entity : public virtual IEntity
 {
 public:
+	ENTITYMANAGER_API virtual ~Entity() = default;
+
 	//main funcs
 	ENTITYMANAGER_API virtual bool CreateEntity(std::shared_ptr<IEntityParams> params) override;
 	ENTITYMANAGER_API virtual void DeleteEntity() override;

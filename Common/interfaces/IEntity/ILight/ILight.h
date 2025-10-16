@@ -5,6 +5,8 @@
 class ILight : public virtual IEntity
 {
 public:
+	virtual ~ILight() = default;
+
 	virtual int  GetIndex() = 0;
 	virtual void SetIndex(int newIndex) = 0;
 

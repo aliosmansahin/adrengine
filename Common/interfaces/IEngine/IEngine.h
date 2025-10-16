@@ -11,6 +11,8 @@ struct GLFWwindow;
 class IEngine
 {
 public:
+	virtual ~IEngine() = default;
+
 	//main funcs
 	virtual bool InitEngine(GLFWwindow* window) = 0;
 	virtual void Update() = 0;

@@ -4,5 +4,7 @@
 
 class IPointLightParams : public virtual ILightParams
 {
+public:
+	virtual ~IPointLightParams() = default;
 };
 
