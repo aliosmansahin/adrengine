@@ -10,7 +10,7 @@ void LayoutManager::SaveLayout()
 {
 	//Save current profile to file
 	if (!std::filesystem::create_directory("Layout")) {
-		Logger::Log("I", "Couldn't create layout folder, might be created before");
+		Logger::Log("W", "Couldn't create layout folder, might be created before");
 	}
 
 	std::ofstream currentProfileFile("Layout/current_profile.cfg");
@@ -38,7 +38,7 @@ void LayoutManager::SaveLayout()
 
 	//Save each profile
 	if (!std::filesystem::create_directory("Layout/Profiles")) {
-		Logger::Log("I", "Couldn't create Layout/Profiles folder, might be created before");
+		Logger::Log("W", "Couldn't create Layout/Profiles folder, might be created before");
 	}
 
 	for (const auto& [profileName, profile] : profiles) {
@@ -71,11 +71,12 @@ void LayoutManager::LoadLayout()
 		std::getline(currentProfileFile, currentProfile);
 		currentProfileFile.close();
 	} else {
-		Logger::Log("E", "Failed to open Layout/current_profile.cfg for loading current profile name");
+		Logger::Log("W", "Failed to open Layout/current_profile.cfg for loading current profile name");
 	}
 
 	// If the current profile is the default profile, use the default layout
 	if (currentProfile == defaultProfileName) {
+		Logger::Log("I", "Using default layout");
 		UseDefaultLayout();
 		return;
 	}
@@ -92,6 +93,13 @@ void LayoutManager::LoadLayout()
 	}
 	else {
 		Logger::Log("E", "Failed to open Layout/profiles.cfg for loading profile names");
+	}
+
+	//If there is no profile to be loaded, use the default layout
+	if (profilesToBeLoaded.empty()) {
+		Logger::Log("W", "No profiles to be loaded, using default layout");
+		UseDefaultLayout();
+		return;
 	}
 
 	//Load each profile from their files using their names
@@ -114,6 +122,12 @@ void LayoutManager::LoadLayout()
 			errorStr += ".cfg for loading profile";
 
 			Logger::Log("E", errorStr.c_str());
+
+			/*
+				Create a default profile if the file couldn't be opened
+				This is to prevent issues if the user deletes the profile file manually
+			*/
+			CreateDefaultProfile(profileName);
 		}
 	}
 
