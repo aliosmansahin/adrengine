@@ -45,6 +45,28 @@ void WindowModalDialog::DrawWindow()
 			}
 			break;
 		}
+		case ModalType::Input: {
+			//Focus input text when window appears
+			if(ImGui::IsWindowAppearing()) {
+				ImGui::SetKeyboardFocusHere();
+			}
+
+			//Input text
+			static char buf[256] = "";
+			bool returned = ImGui::InputText("##input", buf, sizeof(buf), ImGuiInputTextFlags_EnterReturnsTrue);
+
+			//Position "OK" button to the bottom-right corner
+			ImVec2 buttonsStartPos = ImVec2(windowSize.x - (buttonSize.x + buttonPaddingSize.x), windowSize.y - buttonSize.y - buttonPaddingSize.y);
+			ImGui::SetCursorPos(buttonsStartPos);
+
+			//When user clicks "OK" button or presses "Enter" key in input text, we call the callback function
+			if (ImGui::Button("OK", buttonSize) || returned) {
+				okCallback(buf);
+				CloseModalWindow();
+				memset(buf, 0, sizeof(buf));
+			}
+			break;
+		}
 		default:
 			CloseModalWindow();
 			break;
@@ -74,6 +96,19 @@ INTERFACEMANAGER_API void WindowModalDialog::ShowModalAlert(std::string title, s
 {
 	type = ModalType::Alert;
 
+	SetupModal(title, caption);
+}
+
+/*
+PURPOSE: Setups and shows an input window
+	the parameter "okCallback" will be executed when "ok" button is clicked
+	okCallback will return the input value as string
+*/
+INTERFACEMANAGER_API void WindowModalDialog::ShowModalInput(std::string title, std::string caption, std::function<void(std::string)> okCallback)
+{
+	this->okCallback = okCallback;
+	type = ModalType::Input;
+	
 	SetupModal(title, caption);
 }
 
