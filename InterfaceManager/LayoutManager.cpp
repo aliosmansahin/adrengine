@@ -221,7 +221,22 @@ PURPOSE: Renames the current profile with given name
 */
 void LayoutManager::RenameCurrentProfile(const std::string& newName)
 {
-	
+	//Get current profile
+	auto iter = profiles.find(currentProfile);
+
+	if (iter == profiles.end())
+		return;
+
+	if (!iter->second)
+		return;
+
+	auto& profile = iter->second;
+
+	//Set the profile name to the new
+	iter->second->SetProfileName(newName);
+
+	//Save layout to save new name
+	SaveLayout();
 }
 
 /*

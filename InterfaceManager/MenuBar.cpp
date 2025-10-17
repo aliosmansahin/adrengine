@@ -51,7 +51,7 @@ void MenuBar::DrawMenuBar()
 
 			ImGui::SeparatorText("Profiles");
 			for(const auto& [name, profile] : LayoutManager::GetInstance().GetProfiles()) {
-				if (ImGui::MenuItem(name.c_str(), NULL, LayoutManager::GetInstance().IsProfileSelected(name))) {
+				if (ImGui::MenuItem(profile->GetProfileName().c_str(), NULL, LayoutManager::GetInstance().IsProfileSelected(name))) {
 					LayoutManager::GetInstance().UseProfile(name);
 				}
 			}
