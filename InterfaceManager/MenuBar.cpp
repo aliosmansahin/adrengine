@@ -44,7 +44,7 @@ void MenuBar::DrawMenuBar()
 			if(ImGui::MenuItem("Rename this profile")) {
 				WindowModalDialog::GetInstance().ShowModalInput("Rename Profile", "Enter a new name for this profile:",
 					[](std::string input) {
-						//TODO: LayoutManager::GetInstance().RenameCurrentProfile(input);
+						LayoutManager::GetInstance().RenameCurrentProfile(input);
 					}
 				);
 			}

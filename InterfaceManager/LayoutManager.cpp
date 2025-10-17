@@ -75,7 +75,7 @@ void LayoutManager::LoadLayout()
 	}
 
 	// If the current profile is the default profile, use the default layout
-	if (currentProfile == defaultProfileName) {
+	if (currentProfile == defaultProfileId) {
 		Logger::Log("I", "Using default layout");
 		UseDefaultLayout();
 		return;
@@ -149,17 +149,17 @@ void LayoutManager::UseDefaultLayout()
 /*
 PURPOSE: Changes the current profile, then applies to all windows
 */
-void LayoutManager::UseProfile(const std::string& profileName)
+void LayoutManager::UseProfile(const std::string& profileId)
 {
-	this->currentProfile = profileName;
-
 	//Find the profile from all profiles
-	auto iter = profiles.find(profileName);
+	auto iter = profiles.find(profileId);
 	if (iter == profiles.end())
 		return;
 
 	if (!iter->second)
 		return;
+
+	this->currentProfile = profileId;
 
 	iter->second->ApplyProfileToWindow();
 }
@@ -167,25 +167,25 @@ void LayoutManager::UseProfile(const std::string& profileName)
 /*
 PURPOSE: Creates a new layout profile
 */
-void LayoutManager::CreateDefaultProfile(const std::string& profileName)
+void LayoutManager::CreateDefaultProfile(const std::string& profileId)
 {
 	std::shared_ptr<LayoutProfile> profile = std::make_shared<LayoutProfile>();
 
-	profile->CreateDefault(profileName);
+	profile->CreateDefault(profileId);
 
-	profiles[profileName] = profile;
+	profiles[profileId] = profile;
 }
 
 /*
 PURPOSE: Loads a profile from its json content
 */
-void LayoutManager::LoadProfileFromJson(const std::string& profileName, const nlohmann::json& json)
+void LayoutManager::LoadProfileFromJson(const std::string& profileId, const nlohmann::json& json)
 {
 	std::shared_ptr<LayoutProfile> profile = std::make_shared<LayoutProfile>();
 
 	profile->FromJson(json);
 
-	profiles[profileName] = profile;
+	profiles[profileId] = profile;
 }
 
 /*
@@ -217,6 +217,14 @@ void LayoutManager::DeleteCurrentProfile()
 }
 
 /*
+PURPOSE: Renames the current profile with given name
+*/
+void LayoutManager::RenameCurrentProfile(const std::string& newName)
+{
+	
+}
+
+/*
 PURPOSE: Checks for if a profile that has the given name is selected
 */
 bool LayoutManager::IsProfileSelected(std::string profileName)
@@ -230,7 +238,7 @@ PURPOSE: Returns a profile id which is not used by any profile
 std::string LayoutManager::CreateProfileId()
 {
 	int profileIndex = 0;
-	std::string profileSuffix = "Profile ";
+	std::string profileSuffix = "Profile";
 	std::string uniqueProfileId = "";
 
 	while (true) {

@@ -22,14 +22,15 @@ public:
 	void SaveLayout();
 	void LoadLayout();
 	void UseDefaultLayout();
-	void UseProfile(const std::string& profileName);
+	void UseProfile(const std::string& profileId);
 
-	void CreateDefaultProfile(const std::string& profileName);
-	void LoadProfileFromJson(const std::string& profileName, const nlohmann::json& json);
+	void CreateDefaultProfile(const std::string& profileId);
+	void LoadProfileFromJson(const std::string& profileId, const nlohmann::json& json);
 	void DeleteCurrentProfile();
+	void RenameCurrentProfile(const std::string& newName);
 
 	std::unordered_map<std::string, std::shared_ptr<LayoutProfile>>& GetProfiles() { return profiles; }
-	bool IsProfileSelected(std::string profileName);
+	bool IsProfileSelected(std::string profileId);
 	std::string CreateProfileId();
 
 private:
@@ -42,13 +43,13 @@ private:
 	LayoutManager& operator=(LayoutManager&&) = delete;
 
 private:
-	//Stores all layouts by name
+	//Stores all layouts by name : first -> id, second -> the object of the profile
 	std::unordered_map<std::string, std::shared_ptr<LayoutProfile>> profiles;
 
-	//Current layout profile
+	//Current layout profile id
 	std::string currentProfile = "default";
-	std::string defaultProfileName = "default";
+	std::string defaultProfileId = "default";
 
-	//Store the previous profile name
-	std::string previousProfileName = "default";
+	//Store the previous profile id
+	std::string previousProfileId = "default";
 };

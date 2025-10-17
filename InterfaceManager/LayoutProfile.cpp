@@ -49,6 +49,7 @@ nlohmann::json LayoutProfile::ToJson() const
 {
 	nlohmann::json j;
 	j["profile-name"] = profileName;
+	j["profile-id"] = profileId;
 	j["layouts"] = nlohmann::json::array();
 	for (const auto& [name, layout] : layouts)
 	{
@@ -65,6 +66,7 @@ PURPOSE: Loads the profile from json
 */
 void LayoutProfile::FromJson(const nlohmann::json& j)
 {
+	if (j.contains("profile-id")) profileId = j["profile-id"].get<std::string>();
 	if (j.contains("profile-name")) profileName = j["profile-name"].get<std::string>();
 	if (j.contains("layouts") && j["layouts"].is_array())
 	{
@@ -80,8 +82,9 @@ void LayoutProfile::FromJson(const nlohmann::json& j)
 /*
 PURPOSE: Creates a default layout profile
 */
-void LayoutProfile::CreateDefault(const std::string& profileName) {
-	this->profileName = profileName;
+void LayoutProfile::CreateDefault(const std::string& profileId) {
+	this->profileId = profileId; //When the profile has created the name and the id will be the profile id
+	this->profileName = profileId;
 
 	std::shared_ptr<WindowLayout> windowProjectLayout = std::make_shared<WindowLayout>();
 

@@ -35,7 +35,7 @@ public:
 		if (j.contains("pos-y")) posY = j["pos-y"].get<float>();
 	}
 public:
-	std::string name;
+	std::string name; //Stores which window will use this windowlayout
 	bool isOpen = true;
 	ImGuiID dockId = 0;
 	ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_None;
@@ -57,7 +57,7 @@ public:
 	nlohmann::json ToJson() const;
 	void FromJson(const nlohmann::json& j);
 
-	void CreateDefault(const std::string& profileName);
+	void CreateDefault(const std::string& profileId);
 
 public:
 	void SetProfileName(const std::string& newProfileName) { profileName = newProfileName; }
@@ -65,5 +65,6 @@ public:
 
 private:
 	std::string profileName;
+	std::string profileId;
 	std::unordered_map<std::string, std::shared_ptr<WindowLayout>> layouts;
 };
