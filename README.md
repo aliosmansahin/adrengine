@@ -15,6 +15,9 @@ A game engine
 * Project system
 
 ## Building With
+* C++
+* OpenGL
+* GLM
 * [GLFW][glfw-url]
 * [GLAD][glad-url]
 * [stb_image][stb-image-url]
