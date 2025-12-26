@@ -31,5 +31,7 @@ public:
 	virtual std::pair<int, int> GetScreenSize() = 0;
 	virtual std::pair<float, float> GetFPSandMS() = 0;
 	virtual std::pair<int, int> GetMainWindowSize() = 0;
+
+	virtual void CloseEditor() = 0;
 };
 

@@ -1,13 +1,23 @@
 #include "pch.h"
 #include "WindowEditorSettings.h"
 
+#include "interfaces/IEngine/IEngine.h"
+
+#include "ServiceLocator.h"
+
 /*
 PURPOSE: Draws the window
 */
 void WindowEditorSettings::DrawWindow(bool* darkTheme, std::function<void()> setDarkThemeFunc)
 {
+    float posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - defSize.x) / 2.0f;
+    float posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - defSize.y) / 2.0f;
+
+    ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(defSize, ImGuiCond_FirstUseEver);
+
     //Begin the window
-    ImGui::Begin(Localization::GetString("interface_main_menu_item_editor_settings"), &showWindow, ImGuiWindowFlags_NoDocking);
+    ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow, ImGuiWindowFlags_NoDocking);
     ImGui::SetWindowFontScale(1.5f);
 
     //Checkbox for the theme, if user selects it, the theme will be dark

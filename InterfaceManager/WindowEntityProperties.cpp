@@ -20,7 +20,7 @@ void WindowEntityProperties::DrawWindow()
 	auto selectedTabId = InterfaceManager::GetInstance().GetSelectedTabId();
 
     //Begins the window
-    ImGui::Begin(Localization::GetString("interface_main_menu_item_entity_properties"), &showWindow);
+    ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow);
     ImGui::SetWindowFontScale(1.5f);
 
     //Some variables

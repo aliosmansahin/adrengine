@@ -7,6 +7,7 @@
 #include "AssetSaver.h"
 
 #include "interfaces/IProject/IProject.h"
+#include "interfaces/IEngine/IEngine.h"
 
 #include "InterfaceManager.h"
 
@@ -15,8 +16,14 @@ PURPOSE: Draws the window
 */
 void WindowAddScene::DrawWindow()
 {
+    float posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - defSize.x) / 2.0f;
+    float posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - defSize.y) / 2.0f;
+
+    ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(defSize, ImGuiCond_FirstUseEver);
+
     //Begin the window
-    ImGui::Begin("Add Scene", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
     ImGui::SetWindowFontScale(1.5f);
 
     ImGui::Text("Scene Type"); ImGui::SameLine();

@@ -23,6 +23,16 @@ public:
 
 	//getter for the intance
 	INTERFACEMANAGER_API static WindowFlipBookEdit& GetInstance();
+
+	INTERFACEMANAGER_API std::string GetWindowId() {
+		return "window_flipbook_edit";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Edit Flip Book";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowFlipBookEdit() = default;
@@ -32,4 +42,7 @@ private:
 public:
 	bool showWindow = false;
 	std::shared_ptr<IFlipBook> edittingFlipBook = nullptr;
+
+private:
+	ImVec2 defSize{ 600.0f, 600.0f };
 };

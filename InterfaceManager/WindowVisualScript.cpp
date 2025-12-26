@@ -39,7 +39,7 @@ void WindowVisualScript::DrawWindow()
     //TODO: Error handling
 
     //Begin the script editor
-    ImGui::Begin("Visual Script", &showWindow);
+    ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow);
     ImNodes::BeginNodeEditor();
 
     //Draw each nodes

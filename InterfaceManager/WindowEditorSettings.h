@@ -20,6 +20,16 @@ public:
 	//main functions
 	INTERFACEMANAGER_API void DrawWindow(bool* darkTheme, std::function<void()> setDarkThemeFunc);
 	INTERFACEMANAGER_API static WindowEditorSettings& GetInstance();
+
+	INTERFACEMANAGER_API std::string GetWindowId() {
+		return "window_editor_settings";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return Localization::GetString("interface_main_menu_item_editor_settings");
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowEditorSettings() = default;
@@ -29,4 +39,7 @@ private:
 public:
 	//variables
 	bool showWindow = false;
+
+private:
+	ImVec2 defSize{ 400.0f, 400.0f };
 };

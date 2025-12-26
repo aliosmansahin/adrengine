@@ -3,6 +3,10 @@
 
 #include "WindowTileMapViewer.h"
 
+#include "ServiceLocator.h"
+
+#include "interfaces/IEngine/IEngine.h"
+
 void WindowTileMapBrush::DrawWindow()
 {
     if (!editingTileMap) {
@@ -15,7 +19,13 @@ void WindowTileMapBrush::DrawWindow()
         return;
     }
 
-    ImGui::Begin("Tile Map Brush", &showWindow);
+    float posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - defSize.x) / 2.0f;
+    float posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - defSize.y) / 2.0f;
+
+    ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(defSize, ImGuiCond_FirstUseEver);
+
+    ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow);
     ImGui::SetWindowFontScale(1.5f);
 
     //Draw preview of tiles

@@ -9,7 +9,7 @@ PURPOSE: Draws the window
 void WindowAssetExplorer::DrawWindow()
 {
     //Begin the window
-    ImGui::Begin("Asset Explorer", &showWindow);
+    ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow);
     ImGui::SetWindowFontScale(1.5f);
 
     //Create New One button

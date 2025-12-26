@@ -6,8 +6,6 @@
 
 #include "InterfaceManager.h"
 
-#include "LayoutManager.h"
-
 /*
 PURPOSE: Draws menu bar
 */
@@ -32,12 +30,19 @@ void MenuBar::DrawMenuBar()
 		}
 		if (ImGui::BeginMenu("Layout")) {
 			if (ImGui::MenuItem("Create a new default profile")) {
-				LayoutManager::GetInstance().UseDefaultLayout();
+				WindowModalDialog::GetInstance().ShowModalQuestion("Change Layout Profile",
+					"Are you sure you want to create a new profile?\nRestart required to apply profile changes",
+					[]() {
+						LayoutManager::GetInstance().CreateProfile();
+						ServiceLocator::Get<IEngine>()->CloseEditor();
+					}
+				);
 			}
 			if (ImGui::MenuItem("Delete this profile")) {
-				WindowModalDialog::GetInstance().ShowModalQuestion("Delete Profile", "Are you sure you want to delete this profile?",
+				WindowModalDialog::GetInstance().ShowModalQuestion("Delete Profile", "Are you sure you want to delete this profile?\nRestart required to apply profile changes",
 					[]() {
 						LayoutManager::GetInstance().DeleteCurrentProfile();
+						ServiceLocator::Get<IEngine>()->CloseEditor();
 					}
 				);
 			}
@@ -50,9 +55,15 @@ void MenuBar::DrawMenuBar()
 			}
 
 			ImGui::SeparatorText("Profiles");
-			for(const auto& [name, profile] : LayoutManager::GetInstance().GetProfiles()) {
-				if (ImGui::MenuItem(profile->GetProfileName().c_str(), NULL, LayoutManager::GetInstance().IsProfileSelected(name))) {
-					LayoutManager::GetInstance().UseProfile(name);
+			for (auto& [id, name] : LayoutManager::GetInstance().GetProfilesList()) {
+				if (ImGui::MenuItem(name.c_str(), NULL, LayoutManager::GetInstance().IsProfileSelected(id))) {
+					WindowModalDialog::GetInstance().ShowModalQuestion("Change Layout Profile",
+						"Are you sure you want to change profile to " + name + "?\nRestart required to apply profile changes",
+						[&id]() {
+							LayoutManager::GetInstance().ChangeProfile(id);
+							ServiceLocator::Get<IEngine>()->CloseEditor();
+						}
+					);
 				}
 			}
 			ImGui::EndMenu();

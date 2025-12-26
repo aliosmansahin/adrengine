@@ -34,6 +34,8 @@
 
 #include "ServiceLocator.h"
 
+#include "Localization.h"
+
 class WindowEntityProperties
 {
 public:
@@ -41,6 +43,15 @@ public:
 	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API void SelectEntity(std::shared_ptr<IEntity> entity);
 	INTERFACEMANAGER_API static WindowEntityProperties& GetInstance();
+	INTERFACEMANAGER_API std::string				 GetWindowId() {
+		return "window_entity_properties";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return Localization::GetString("interface_main_menu_item_entity_properties");
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowEntityProperties() = default;

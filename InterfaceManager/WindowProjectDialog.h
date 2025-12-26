@@ -22,17 +22,24 @@
 
 #include "ServiceLocator.h"
 
-#include "HasLayout.h"
+#include "LayoutManager.h"
 
-class WindowProjectDialog : public HasLayout
+class WindowProjectDialog
 {
 public:
 	//functions
 	INTERFACEMANAGER_API void						 DrawWindow();
 	INTERFACEMANAGER_API void						 ResetInputs();
 	INTERFACEMANAGER_API static WindowProjectDialog& GetInstance();
-	INTERFACEMANAGER_API void						 SetDefaultLayout() override;
-	
+	INTERFACEMANAGER_API std::string				 GetWindowId() {
+		return "window_project_dialog";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Create or Open a Project";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowProjectDialog() = default;
@@ -58,5 +65,8 @@ public:
 	char createPathBuf[256] = { 0 };
 	char openPathBuf[256] = { 0 };
 	char nameBuf[32] = { 0 };
+
+private:
+	ImVec2 defSize{ 1000.0f, 600.0f };
 };
 

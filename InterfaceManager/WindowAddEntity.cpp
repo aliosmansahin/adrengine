@@ -8,8 +8,14 @@ PURPOSE: Draws window
 */
 void WindowAddEntity::DrawWindow()
 {
+	float posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - defSize.x) / 2.0f;
+	float posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - defSize.y) / 2.0f;
+
+	ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(defSize, ImGuiCond_FirstUseEver);
+
 	//Begin window
-	ImGui::Begin("Add Entity", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+	ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
 	ImGui::SetWindowFontScale(1.5f);
 	//ImGui::TextColored(ImVec4(0, 255, 0, 255), "Search for type");
 

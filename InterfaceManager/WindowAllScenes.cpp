@@ -7,13 +7,17 @@
 
 #include "InterfaceManager.h"
 
+#include "ServiceLocator.h"
+#include "interfaces/IEngine/IEngine.h"
+
 /*
 PURPOSE: Draws the window
 */
 void WindowAllScenes::DrawWindow()
 {
 	//Begin the window
-	ImGui::Begin("All Scenes", &showWindow);
+	ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow);
+	
 	ImGui::SetWindowFontScale(1.5f);
 
 	//Some text

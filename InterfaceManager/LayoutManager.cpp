@@ -1,275 +1,239 @@
 #include "pch.h"
 #include "LayoutManager.h"
 
+#include "ServiceLocator.h"
+#include "interfaces/IProject/IProject.h"
+
+#include "imgui/imgui_internal.h"
+
 #include "MenuBar.h"
 
+#include "InterfaceManager.h"
+
 /*
-PURPOSE: Saves the current layout to a file
+	FILE STRUCTURE:
+		-- Layout/
+			-- Profiles/
+				-- <profile_id>.ini
+			-- profiles_list.cfg
+			-- current_profile.cfg
 */
-void LayoutManager::SaveLayout()
+
+std::string layoutDirectory = "Layout/";
+std::string profilesDirectory = layoutDirectory + "Profiles/";
+std::string profilesListFile = layoutDirectory + "profiles_list.cfg";
+std::string currentProfileFile = layoutDirectory + "current_profile.cfg";
+
+/*
+PURPOSE: Returns filepath of the current profile
+*/
+std::string LayoutManager::GetCurrentProfileFilePath()
 {
-	//Save current profile to file
-	if (!std::filesystem::create_directory("Layout")) {
-		Logger::Log("W", "Couldn't create layout folder, might be created before");
-	}
-
-	std::ofstream currentProfileFile("Layout/current_profile.cfg");
-
-	if (currentProfileFile.is_open()) {
-		currentProfileFile << currentProfile;
-		currentProfileFile.close();
-	} else {
-		Logger::Log("E", "Failed to open Layout/current_profile.cfg for saving current profile name");
-	}
-
-	//Save all profiles
-	std::ofstream profilesFile("Layout/profiles.cfg");
-
-	if (profilesFile.is_open()) {
-		for (const auto& [profileName, profiles] : profiles) {
-			profilesFile << profileName << std::endl;
-		}
-
-		profilesFile.close();
-	}
-	else {
-		Logger::Log("E", "Failed to open Layout/profiles.cfg for saving profile names");
-	}
-
-	//Save each profile
-	if (!std::filesystem::create_directory("Layout/Profiles")) {
-		Logger::Log("W", "Couldn't create Layout/Profiles folder, might be created before");
-	}
-
-	for (const auto& [profileName, profile] : profiles) {
-		std::ofstream profileFile("Layout/Profiles/" + profileName + ".cfg");
-
-		if (profileFile.is_open()) {
-			profileFile << profile->ToJson().dump();
-			profileFile.close();
-		}
-		else {
-			std::string errorStr = "Couldn't open Layout/Profiles/";
-			errorStr += profileName;
-			errorStr += ".cfg for saving profile file";
-
-			Logger::Log("E", errorStr.c_str());
-		}
-	}
-
-	Logger::Log("P", "Layout saved");
+	return std::string(profilesDirectory + currentProfileId + ".ini");
 }
 
 /*
-PURPOSE: Loads a layout from a file
+PURPOSE: Returns true if a default layout must be created
 */
-void LayoutManager::LoadLayout()
+bool LayoutManager::NeedDefaultLayout()
 {
-	//Get current profile from file
-	std::ifstream currentProfileFile("Layout/current_profile.cfg");
-	if(currentProfileFile.is_open()) {
-		std::getline(currentProfileFile, currentProfile);
-		currentProfileFile.close();
-	} else {
-		Logger::Log("W", "Failed to open Layout/current_profile.cfg for loading current profile name");
-	}
-
-	// If the current profile is the default profile, use the default layout
-	if (currentProfile == defaultProfileId) {
-		Logger::Log("I", "Using default layout");
-		UseDefaultLayout();
-		return;
-	}
-
-	//Load each profile names line by line
-	std::vector<std::string> profilesToBeLoaded;
-	std::ifstream profilesFile("Layout/profiles.cfg");
-	if (profilesFile.is_open()) {
-		std::string profileName;
-		while (std::getline(profilesFile, profileName)) {
-			profilesToBeLoaded.push_back(profileName);
-		}
-		profilesFile.close();
-	}
-	else {
-		Logger::Log("E", "Failed to open Layout/profiles.cfg for loading profile names");
-	}
-
-	//If there is no profile to be loaded, use the default layout
-	if (profilesToBeLoaded.empty()) {
-		Logger::Log("W", "No profiles to be loaded, using default layout");
-		UseDefaultLayout();
-		return;
-	}
-
-	//Load each profile from their files using their names
-	for (const auto& profileName : profilesToBeLoaded) {
-		std::ifstream profileFile("Layout/Profiles/" + profileName + ".cfg");
-		
-		if (profileFile.is_open()) {
-			//Load each profile from their files
-			nlohmann::json json;
-
-			profileFile >> json;
-
-			LoadProfileFromJson(profileName, json);
-
-			profileFile.close();
-		}
-		else {
-			std::string errorStr = "Couldn't open Layout/Profiles/";
-			errorStr += profileName;
-			errorStr += ".cfg for loading profile";
-
-			Logger::Log("E", errorStr.c_str());
-
-			/*
-				Create a default profile if the file couldn't be opened
-				This is to prevent issues if the user deletes the profile file manually
-			*/
-			CreateDefaultProfile(profileName);
-		}
-	}
-
-	UseProfile(currentProfile);
+	return !std::filesystem::exists(profilesDirectory + currentProfileId + ".ini");
 }
 
 /*
-PURPOSE: Sets layout parameters to default
+PURPOSE: Creates a layout for first profile openings
 */
-void LayoutManager::UseDefaultLayout()
+void LayoutManager::CreateDefaultLayout()
 {
-	//Create a unique profile id
-	std::string uniqueProfileId = CreateProfileId();
+	ImGuiID dockspaceId = ImHashStr("DockSpace");
 
-	CreateDefaultProfile(uniqueProfileId);
-	currentProfile = uniqueProfileId;
+	ImGuiID allScenes_DockId, gameViewport_AssetExplorer_Scene_EntityProperties_DockId;
+	ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Right, 0.15f, &allScenes_DockId, &gameViewport_AssetExplorer_Scene_EntityProperties_DockId);
+
+	ImGui::DockBuilderDockWindow(WindowAllScenes::GetInstance().GetWindowTitleWithID().c_str(), allScenes_DockId);
+
+	ImGuiID gameViewport_AssetExplorer_DockId, scene_EntityProperties_DockId;
+	ImGui::DockBuilderSplitNode(gameViewport_AssetExplorer_Scene_EntityProperties_DockId, ImGuiDir_Right, 0.75f, &gameViewport_AssetExplorer_DockId, &scene_EntityProperties_DockId);
+
+	ImGuiID gameViewport_DockId, assetExplorer_DockId;
+	ImGui::DockBuilderSplitNode(gameViewport_AssetExplorer_DockId, ImGuiDir_Up, 0.75f, &gameViewport_DockId, &assetExplorer_DockId);
+
+	ImGuiID scene_DockId, entityProperties_DockId;
+	ImGui::DockBuilderSplitNode(scene_EntityProperties_DockId, ImGuiDir_Up, 0.5f, &scene_DockId, &entityProperties_DockId);
+
+	ImGui::DockBuilderDockWindow(WindowScene::GetInstance().GetWindowTitleWithID().c_str(), scene_DockId);
+	ImGui::DockBuilderDockWindow(WindowEntityProperties::GetInstance().GetWindowTitleWithID().c_str(), entityProperties_DockId);
+	ImGui::DockBuilderDockWindow(WindowGameViewport::GetInstance().GetWindowTitleWithID().c_str(), gameViewport_DockId);
+	ImGui::DockBuilderDockWindow(WindowAssetExplorer::GetInstance().GetWindowTitleWithID().c_str(), assetExplorer_DockId);
+
+	ImGui::DockBuilderDockWindow(WindowVisualScript::GetInstance().GetWindowTitleWithID().c_str(), entityProperties_DockId); //Dock into entityProperties_DockId
+
+	ImGui::DockBuilderFinish(dockspaceId);
 }
 
 /*
-PURPOSE: Changes the current profile, then applies to all windows
+PURPOSE: This function creates a pair and inserts it into profileList
+	After restart the editor opens the new profile
 */
-void LayoutManager::UseProfile(const std::string& profileId)
+void LayoutManager::CreateProfile()
 {
-	//Find the profile from all profiles
-	auto iter = profiles.find(profileId);
-	if (iter == profiles.end())
-		return;
+	currentProfileId = CreateProfileId();
+	profileList.insert({ currentProfileId, currentProfileId });
 
-	if (!iter->second)
-		return;
-
-	this->currentProfile = profileId;
-
-	iter->second->ApplyProfileToWindow();
+	Logger::Log("P", std::string("LayoutManager::CreateDefaultProfile: Created default profile with ID: " + currentProfileId).c_str());
 }
 
 /*
-PURPOSE: Creates a new layout profile
+PURPOSE: Changes current profile to given profile id
+	Restart required after this
 */
-void LayoutManager::CreateDefaultProfile(const std::string& profileId)
+void LayoutManager::ChangeProfile(std::string profileId)
 {
-	std::shared_ptr<LayoutProfile> profile = std::make_shared<LayoutProfile>();
-
-	profile->CreateDefault(profileId);
-
-	profiles[profileId] = profile;
-}
-
-/*
-PURPOSE: Loads a profile from its json content
-*/
-void LayoutManager::LoadProfileFromJson(const std::string& profileId, const nlohmann::json& json)
-{
-	std::shared_ptr<LayoutProfile> profile = std::make_shared<LayoutProfile>();
-
-	profile->FromJson(json);
-
-	profiles[profileId] = profile;
+	currentProfileId = profileId;
 }
 
 /*
 PURPOSE: Deletes the current profile
+	Restart required after this
 */
 void LayoutManager::DeleteCurrentProfile()
 {
-	//Delete current profile
-	auto iter = profiles.find(currentProfile);
-	
-	if (iter == profiles.end())
+	auto iter = profileList.find(currentProfileId);
+	if (iter == profileList.end()) {
+		Logger::Log("I", "LayoutManager::DeleteCurrentProfile: Current profile not found from the profiles list.");
 		return;
-
-	profiles.erase(iter);
-
-	//Delete the file of this profile
-	std::filesystem::remove("Layout/Profiles/" + currentProfile + ".cfg");
-
-	if (profiles.size() > 0) {
-		//Get first profile from map to use it
-		UseProfile(profiles.begin()->first);
-	} else {
-		//If there is no profile, create a new default profile
-		UseDefaultLayout();
 	}
 
-	//Save new layout via saving all profiles
-	SaveLayout();
+	profileList.erase(iter);
+
+	std::filesystem::remove_all(profilesDirectory + currentProfileId + ".ini");
+
+	// If there are still profiles left, set currentProfileId to the first profile
+	if (!profileList.empty()) {
+		currentProfileId = profileList.begin()->first; //Set to first profile
+	}
+	else {
+		currentProfileId.clear(); // Clear currentProfileId if no profiles left
+	}
 }
 
 /*
-PURPOSE: Renames the current profile with given name
+PURPOSE: Renames the current profile
 */
-void LayoutManager::RenameCurrentProfile(const std::string& newName)
+void LayoutManager::RenameCurrentProfile(std::string newName)
 {
-	//Get current profile
-	auto iter = profiles.find(currentProfile);
-
-	if (iter == profiles.end())
+	auto profileIter = profileList.find(currentProfileId);
+	if (profileIter == profileList.end()) {
+		Logger::Log("E", std::string("LayoutManager::RenameCurrentProfile: Could not change current profile name: " + newName).c_str());
 		return;
+	}
 
-	if (!iter->second)
-		return;
+	profileIter->second = newName;
 
-	auto& profile = iter->second;
-
-	//Set the profile name to the new
-	iter->second->SetProfileName(newName);
-
-	//Save layout to save new name
-	SaveLayout();
+	Logger::Log("P", std::string("LayoutManager::RenameCurrentProfile: Renamed current profile to: " + newName).c_str());
 }
 
 /*
-PURPOSE: Checks for if a profile that has the given name is selected
+PURPOSE: This function loads profileList and current profile id
+Warning: Call this before ImGui initialization
 */
-bool LayoutManager::IsProfileSelected(std::string profileName)
+void LayoutManager::LoadData()
 {
-	return profileName == currentProfile;
+	/* Load all profile ids to load each of them */
+	std::ifstream profilesFile(profilesListFile);
+
+	if (!profilesFile.is_open()) {
+		Logger::Log("I", std::string("LayoutManager::LoadProfiles: Could not open profiles list file: " + profilesListFile).c_str());
+	}
+	else {
+		std::string profileId;
+
+		while (profilesFile >> profileId)
+		{
+			std::string profileName;
+
+			std::getline(profilesFile, profileName);
+
+			if (profileName.empty()) {
+				profileList.insert({ profileId, profileId });
+				break;
+			}
+
+			profileName.erase(profileName.begin());
+
+			profileList.insert({ profileId, profileName });
+		}
+
+		profilesFile.close();
+	}
+
+	/* Load current profile id */
+	std::ifstream currentFile(currentProfileFile);
+	if (!currentFile.is_open()) {
+		Logger::Log("I", std::string("LayoutManager::LoadProfiles: Could not open current profile file: " + currentProfileFile).c_str());
+
+		/* Set first profile as current profile */
+		if (!profileList.empty())
+			currentProfileId = profileList.begin()->first;
+		else
+			CreateProfile();
+	}
+	else {
+		currentFile >> currentProfileId;
+
+		currentFile.close();
+	}
+
+	Logger::Log("P", "Loaded layout data");
 }
 
 /*
-PURPOSE: Returns a profile id which is not used by any profile
+PURPOSE: This function saves profileList and current profile id
+*/
+void LayoutManager::SaveData()
+{
+	/* Create necessary folders */
+	if (!std::filesystem::exists(layoutDirectory)) {
+		std::filesystem::create_directories(layoutDirectory);
+	}
+
+	if (!std::filesystem::exists(profilesDirectory)) {
+		std::filesystem::create_directories(profilesDirectory);
+	}
+
+	/* Save profilesList */
+	std::ofstream profilesFile(profilesListFile);
+
+	for (const auto& [id, name] : profileList) {
+		profilesFile << id << " " << name << std::endl;
+	}
+
+	profilesFile.close();
+
+	/* Save current profile */
+	std::ofstream currentFile(currentProfileFile);
+
+	currentFile << currentProfileId;
+
+	currentFile.close();
+	
+	Logger::Log("P", "Saved layout data");
+}
+
+/*
+PURPOSE: Creates a unique profile id
 */
 std::string LayoutManager::CreateProfileId()
 {
-	int profileIndex = 0;
-	std::string profileSuffix = "Profile";
-	std::string uniqueProfileId = "";
-
+	//Generate a unique profile id via checking existing ids
+	int index = 0;
+	std::string profileId;
 	while (true) {
-		uniqueProfileId = profileSuffix + std::to_string(profileIndex);
-
-		++profileIndex; //Increase profile id for next id to be checked
-
-		auto iter = profiles.find(uniqueProfileId);
-
-		//Check for profile id if it exists in all profiles
-		if (iter != profiles.end())
-			continue;
-
-		break;
-
+		profileId = "profile" + std::to_string(index);
+		if (profileList.find(profileId) == profileList.end())
+			break;
+		++index;
 	}
 
-	return uniqueProfileId;
+	return profileId;
 }

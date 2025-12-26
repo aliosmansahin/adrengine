@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "WindowTileMapEdit.h"
 
+#include "ServiceLocator.h"
+
+#include "interfaces/IEngine/IEngine.h"
+
 /*
 PURPOSE: Draws the window
 */
@@ -16,7 +20,13 @@ void WindowTileMapEdit::DrawWindow()
         return;
     }
 
-	ImGui::Begin("Edit Tile Map", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+    float posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - defSize.x) / 2.0f;
+    float posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - defSize.y) / 2.0f;
+
+    ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(defSize, ImGuiCond_FirstUseEver);
+
+	ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
     ImGui::SetWindowFontScale(1.5f);
 
     //Store entity id

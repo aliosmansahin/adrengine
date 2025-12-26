@@ -28,6 +28,15 @@ public:
 	//main functions
 	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API static WindowVisualScript& GetInstance();
+	INTERFACEMANAGER_API std::string GetWindowId() {
+		return "window_visual_script";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Visual Script";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowVisualScript() = default;

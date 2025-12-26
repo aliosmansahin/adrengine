@@ -46,6 +46,7 @@ public:
 	INTERFACEMANAGER_API void ActivateTab(std::string tabId);
 	INTERFACEMANAGER_API void RemoveTab(std::string tabId);
 	INTERFACEMANAGER_API void RemoveAllTabs();
+	INTERFACEMANAGER_API int  GetTabHeight() const { return tabHeight; };
 
 	//Getters for tabs
 	INTERFACEMANAGER_API std::shared_ptr<Utils::Tab> GetTabById(std::string tabId);
@@ -57,6 +58,7 @@ public:
 	//Pending tab delete
 	INTERFACEMANAGER_API bool GetPendingTabDelete() { return pendingTabDelete; }
 	INTERFACEMANAGER_API void SetPendingTabDelete(bool pending) { pendingTabDelete = pending; }
+
 private:
 	void DrawDockSpace();
 	void DrawTabbar();

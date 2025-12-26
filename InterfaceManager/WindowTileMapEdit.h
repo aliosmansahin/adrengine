@@ -22,6 +22,15 @@ public:
 	//main functions
 	INTERFACEMANAGER_API void						DrawWindow();
 	INTERFACEMANAGER_API static WindowTileMapEdit& GetInstance();
+	INTERFACEMANAGER_API std::string GetWindowId() {
+		return "window_tilemap_edit";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Edit Tile Map";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	INTERFACEMANAGER_API WindowTileMapEdit() = default;
@@ -31,4 +40,7 @@ private:
 public:
 	bool showWindow = true;
 	std::shared_ptr<ITileMap> editingTileMap = nullptr;
+
+private:
+	ImVec2 defSize{ 600.0f, 600.0f };
 };

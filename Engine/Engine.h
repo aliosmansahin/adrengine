@@ -46,6 +46,9 @@ public:
 	ENGINE_API std::pair<float, float> GetFPSandMS() override;
 	ENGINE_API std::pair<int, int> GetMainWindowSize() override;
 
+	//Close editor
+	ENGINE_API void CloseEditor() override { glfwSetWindowShouldClose(window, true); };
+
 public:
 	//Singleton
 	static Engine& GetInstance()

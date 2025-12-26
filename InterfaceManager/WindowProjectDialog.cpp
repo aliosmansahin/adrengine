@@ -7,17 +7,16 @@
 /*
 PURPOSE: Draws the window
 */
-void WindowProjectDialog::DrawWindow() {
-	/* Apply the window layout for the first time */
-    HasLayout::UpdateFirstFrame();
+void WindowProjectDialog::DrawWindow()
+{
+    float posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - defSize.x) / 2.0f;
+    float posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - defSize.y) / 2.0f;
+
+    ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(defSize, ImGuiCond_FirstUseEver);
 
     //Begin the window
-    ImGui::Begin("Create or Open a Project", (bool*)false, windowLayout->windowFlags);
-
-	//Update the window layout
-	windowLayout->posX = ImGui::GetWindowPos().x;
-	windowLayout->posY = ImGui::GetWindowPos().y;
-
+    ImGui::Begin(GetWindowTitleWithID().c_str(), (bool*)false, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize);
     ImGui::SetWindowFontScale(1.5f);
 
     /* Create a project */
@@ -177,23 +176,4 @@ WindowProjectDialog& WindowProjectDialog::GetInstance()
 {
 	static WindowProjectDialog menubar;
 	return menubar;
-}
-
-/*
-PURPOSE: Sets the default layout of the window
-*/
-INTERFACEMANAGER_API void WindowProjectDialog::SetDefaultLayout()
-{
-    windowLayout->name = "window_project_dialog";
-    windowLayout->isOpen = true;
-    windowLayout->dockId = 0;
-    windowLayout->dockFlags = ImGuiDockNodeFlags_None;
-    windowLayout->windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking;
-    windowLayout->width = 1000.0f;
-    windowLayout->height = 600.0f;
-
-    windowLayout->posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - windowLayout->width) / 2.0f;
-    windowLayout->posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - windowLayout->height) / 2.0f;
-
-    firstFrame = true;
 }
