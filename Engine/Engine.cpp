@@ -21,6 +21,9 @@ bool Engine::InitEngine(GLFWwindow* window)
     //set class variables
     this->window = window;
 
+	//set main window width and height before initializing interface manager
+	SetMainWindowSize(window);
+
     //initialize all of entity types into the unordered_map
     InitEntityTypes();
 
@@ -228,6 +231,16 @@ ENGINE_API std::pair<float, float> Engine::GetFPSandMS()
 }
 
 /*
+PURPOSE: Returns main window width and height as a std::pair
+    first -> width
+	second -> height
+*/
+ENGINE_API std::pair<int, int> Engine::GetMainWindowSize()
+{
+    return { mainWindowWidth, mainWindowHeight };
+}
+
+/*
 PURPOSE: Calculates FPS and MS
 */
 void Engine::CalcFPSandMS()
@@ -319,8 +332,11 @@ void Engine::UpdateEngineWhenProjectIsOpened()
     */
     GLFWwindow* window = InterfaceManager::GetInstance().GetFocusedViewport();
     if (window) {
+        SetMainWindowSize(window);
+
         InputManager::GetInstance().Update(window);
     }
+
 
     //Calculate ms and fps
     CalcFPSandMS();
@@ -498,4 +514,15 @@ bool Engine::HandleProjectOpeningWithLatestProjects()
     }
 
     return true;
+}
+
+/*
+PURPOSE: Sets main window size
+    This function will be used in only the engine class
+*/
+void Engine::SetMainWindowSize(GLFWwindow* mainWindow)
+{
+    if (mainWindow) {
+        glfwGetWindowSize(mainWindow, &mainWindowWidth, &mainWindowHeight);
+	}
 }

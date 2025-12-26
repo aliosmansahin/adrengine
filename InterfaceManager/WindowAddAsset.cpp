@@ -2,13 +2,21 @@
 #include "WindowAddAsset.h"
 #include "AssetDatabase.h"
 
+#include "interfaces/IEngine/IEngine.h"
+
 /*
 PURPOSE: Draws window
 */
 void WindowAddAsset::DrawWindow(std::string& assetExplorerType)
 {
+    float posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - defSize.x) / 2.0f;
+    float posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - defSize.y) / 2.0f;
+
+    ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(defSize, ImGuiCond_FirstUseEver);
+
     //Begin the window
-    ImGui::Begin("Add New Asset", &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
     ImGui::SetWindowFontScale(1.5f);
 
     //The combobox of asset types
@@ -36,7 +44,7 @@ void WindowAddAsset::DrawWindow(std::string& assetExplorerType)
         IGFD::FileDialogConfig config;
         config.path = ".";
         config.countSelectionMax = 1;
-        ImGuiFileDialog::Instance()->OpenDialog("AddAssetFileDialog", "Select a file", ".obj", config);
+        ImGuiFileDialog::Instance()->OpenDialog("#window_add_asset_file_dialog", "Select a file", ".obj", config);
     }
 
     //Inputbox of asset name
@@ -72,7 +80,7 @@ void WindowAddAsset::DrawWindow(std::string& assetExplorerType)
     ImGui::End();
 
     //Open file dialog
-    if (ImGuiFileDialog::Instance()->Display("AddAssetFileDialog")) {
+    if (ImGuiFileDialog::Instance()->Display("#window_add_asset_file_dialog", ImGuiWindowFlags_NoDocking, ImVec2(700.0f, 500.0f))) {
         if (ImGuiFileDialog::Instance()->IsOk()) {
             //Get the file path with file name
             std::string filePath = ImGuiFileDialog::Instance()->GetFilePathName();

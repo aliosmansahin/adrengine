@@ -8,6 +8,8 @@
 class IObject : public virtual IEntity
 {
 public:
+	virtual ~IObject() = default;
+
 	virtual void AddImpulse(glm::vec3 impulse) = 0;
 
 	virtual void ResetPhysics() = 0;

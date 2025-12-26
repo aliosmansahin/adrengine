@@ -14,6 +14,8 @@
 class Camera : public virtual Entity, public virtual ICamera
 {
 public:
+	ENTITYMANAGER_API virtual ~Camera() = default;
+
 	//main functions
 	ENTITYMANAGER_API bool CreateEntity(std::shared_ptr<IEntityParams> params) override;
 	ENTITYMANAGER_API void DeleteEntity() override;

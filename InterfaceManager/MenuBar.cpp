@@ -28,6 +28,46 @@ void MenuBar::DrawMenuBar()
 				ImGui::EndMenu();
 			}
 		}
+		if (ImGui::BeginMenu("Layout")) {
+			if (ImGui::MenuItem("Create a new default profile")) {
+				WindowModalDialog::GetInstance().ShowModalQuestion("Change Layout Profile",
+					"Are you sure you want to create a new profile?\nRestart required to apply profile changes",
+					[]() {
+						LayoutManager::GetInstance().CreateProfile();
+						ServiceLocator::Get<IEngine>()->CloseEditor();
+					}
+				);
+			}
+			if (ImGui::MenuItem("Delete this profile")) {
+				WindowModalDialog::GetInstance().ShowModalQuestion("Delete Profile", "Are you sure you want to delete this profile?\nRestart required to apply profile changes",
+					[]() {
+						LayoutManager::GetInstance().DeleteCurrentProfile();
+						ServiceLocator::Get<IEngine>()->CloseEditor();
+					}
+				);
+			}
+			if(ImGui::MenuItem("Rename this profile")) {
+				WindowModalDialog::GetInstance().ShowModalInput("Rename Profile", "Enter a new name for this profile:",
+					[](std::string input) {
+						LayoutManager::GetInstance().RenameCurrentProfile(input);
+					}
+				);
+			}
+
+			ImGui::SeparatorText("Profiles");
+			for (auto& [id, name] : LayoutManager::GetInstance().GetProfilesList()) {
+				if (ImGui::MenuItem(name.c_str(), NULL, LayoutManager::GetInstance().IsProfileSelected(id))) {
+					WindowModalDialog::GetInstance().ShowModalQuestion("Change Layout Profile",
+						"Are you sure you want to change profile to " + name + "?\nRestart required to apply profile changes",
+						[&id]() {
+							LayoutManager::GetInstance().ChangeProfile(id);
+							ServiceLocator::Get<IEngine>()->CloseEditor();
+						}
+					);
+				}
+			}
+			ImGui::EndMenu();
+		}
 		if (ImGui::BeginMenu(Localization::GetString("interface_main_menu_window"))) {
 			if (projectInterface->GetProjectOpened()) {
 				ImGui::MenuItem(Localization::GetString("interface_main_menu_item_scene"), NULL, &WindowScene::GetInstance().showWindow);

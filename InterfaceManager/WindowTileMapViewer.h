@@ -28,6 +28,16 @@ public:
 
 	//singleton
 	INTERFACEMANAGER_API static WindowTileMapViewer& GetInstance();
+
+	INTERFACEMANAGER_API std::string GetWindowId() {
+		return "window_tilemap_viewer";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Tile Map Viewer";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	WindowTileMapViewer() = default;
 	~WindowTileMapViewer() = default;
@@ -54,4 +64,7 @@ public:
 	int firstMouseY = 0;
 	bool isDragging = false;
 	bool skipThisFrame = false;
+
+private:
+	ImVec2 defSize{ 800.0f, 600.0f };
 };

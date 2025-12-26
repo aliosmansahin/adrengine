@@ -8,6 +8,8 @@ class RigidBody;
 class IObjectParams : public virtual IEntityParams
 {
 public:
+	virtual ~IObjectParams() = default;
+
 	virtual std::shared_ptr<Mesh> GetMesh() = 0;
 	virtual std::string GetObjId() = 0;
 

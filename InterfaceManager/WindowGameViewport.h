@@ -30,6 +30,16 @@ public:
 	INTERFACEMANAGER_API void DrawWindow();
 
 	INTERFACEMANAGER_API static WindowGameViewport& GetInstance();
+
+	INTERFACEMANAGER_API std::string				 GetWindowId() {
+		return "window_game_viewport";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Game Viewport";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowGameViewport() = default;

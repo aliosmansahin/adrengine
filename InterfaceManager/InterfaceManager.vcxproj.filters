@@ -60,6 +60,9 @@
     <Filter Include="WindowModalDialog">
       <UniqueIdentifier>{a4e699cd-a0d3-4025-a197-ebef1f4086a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LayoutManager">
+      <UniqueIdentifier>{a13efd7a-d021-40f4-9df8-a49e3bc3a7ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -123,6 +126,9 @@
     <ClInclude Include="WindowModalDialog.h">
       <Filter>WindowModalDialog</Filter>
     </ClInclude>
+    <ClInclude Include="LayoutManager.h">
+      <Filter>LayoutManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowVisualScript.cpp">
@@ -185,6 +191,9 @@
     </ClCompile>
     <ClCompile Include="WindowModalDialog.cpp">
       <Filter>WindowModalDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="LayoutManager.cpp">
+      <Filter>LayoutManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

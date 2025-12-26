@@ -5,6 +5,8 @@
 class ILightParams : public virtual IEntityParams
 {
 public:
+	virtual ~ILightParams() = default;
+
 	//Getters for parameters
 	virtual glm::vec3 GetColor() = 0;
 	virtual glm::vec3 GetDirection() = 0;

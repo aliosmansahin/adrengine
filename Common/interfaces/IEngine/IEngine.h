@@ -11,6 +11,8 @@ struct GLFWwindow;
 class IEngine
 {
 public:
+	virtual ~IEngine() = default;
+
 	//main funcs
 	virtual bool InitEngine(GLFWwindow* window) = 0;
 	virtual void Update() = 0;
@@ -28,5 +30,8 @@ public:
 	virtual std::unordered_map<std::string, std::pair<std::shared_ptr<IEntity>, std::shared_ptr<IEntityParams>>>& GetEntityTypes() = 0;
 	virtual std::pair<int, int> GetScreenSize() = 0;
 	virtual std::pair<float, float> GetFPSandMS() = 0;
+	virtual std::pair<int, int> GetMainWindowSize() = 0;
+
+	virtual void CloseEditor() = 0;
 };
 

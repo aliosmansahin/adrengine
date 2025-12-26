@@ -11,6 +11,8 @@ class IScene;
 class IVisualScript
 {
 public:
+	virtual ~IVisualScript() = default;
+
 	virtual bool CreateScript(std::string scriptId, std::string belongsEntity, std::string belongsScene) = 0;
 	virtual void ReleaseScript() = 0;
 	virtual void ExecuteBeginScript() = 0;

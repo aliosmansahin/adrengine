@@ -13,6 +13,8 @@
 
 class Sprite2DParams : public virtual EntityParams , public virtual ISprite2DParams {
 public:
+	ENTITYMANAGER_API virtual ~Sprite2DParams() = default;
+
 	/*
 	PURPOSE: Returns the type of the entity
 	*/

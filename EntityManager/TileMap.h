@@ -20,6 +20,8 @@
 class TileMap : public virtual Sprite2D, public virtual ITileMap
 {
 public:
+	ENTITYMANAGER_API virtual ~TileMap() = default;
+
 	//main functions
 	ENTITYMANAGER_API bool CreateEntity(std::shared_ptr<IEntityParams> params) override;
 	ENTITYMANAGER_API void DeleteEntity() override;

@@ -24,6 +24,15 @@ public:
 	//main functions
 	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API static WindowAllScenes& GetInstance();
+	INTERFACEMANAGER_API std::string				 GetWindowId() {
+		return "window_all_scenes";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "All Scenes";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowAllScenes() = default;

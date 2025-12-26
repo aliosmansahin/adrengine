@@ -8,6 +8,8 @@
 class IFlipBook : public virtual ISprite2D
 {
 public:
+	virtual ~IFlipBook() = default;
+
 	virtual void CreateFrames(float textureWidth, float textureHeight, float frameWidth, float frameHeight) = 0;
 	virtual void CreateInspectFrameBuffer(float textureWidth, float textureHeight, int frameWidth, int frameHeight) = 0;
 	virtual bool IsInspectCreated() = 0;

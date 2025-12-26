@@ -11,6 +11,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "Logger.h"
+#include "Localization.h"
 
 #include "interfaces/IEntity/IEntity.h"
 
@@ -22,6 +23,15 @@ public:
 	INTERFACEMANAGER_API void DrawEntity(std::shared_ptr<IEntity>& entity, int depth = 0);
 	INTERFACEMANAGER_API void CheckForChildren(bool& toChildren, std::shared_ptr<IEntity> entity, std::string droppedId);
 	INTERFACEMANAGER_API static WindowScene& GetInstance();
+	INTERFACEMANAGER_API std::string GetWindowId() {
+		return "window_scene";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return Localization::GetString("interface_main_menu_item_scene");
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowScene() = default;

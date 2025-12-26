@@ -24,6 +24,15 @@ public:
 	//main functions
 	INTERFACEMANAGER_API void					DrawWindow(std::string& assetExplorerType);
 	INTERFACEMANAGER_API static WindowAddAsset& GetInstance();
+	INTERFACEMANAGER_API std::string GetWindowId() {
+		return "window_add_asset";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Add New Asset";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowAddAsset() = default;
@@ -34,5 +43,8 @@ public:
 	//variables
 	bool showWindow = false;
 	char buf[256];
+
+private:
+	ImVec2 defSize{ 700.0f, 400.0f };
 };
 

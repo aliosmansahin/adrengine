@@ -16,7 +16,8 @@
 
 enum class ModalType {
 	Question,
-	Alert
+	Alert,
+	Input
 };
 
 class WindowModalDialog
@@ -26,6 +27,7 @@ public:
 	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API void ShowModalQuestion(std::string title, std::string caption, std::function<void()> yesCallback);
 	INTERFACEMANAGER_API void ShowModalAlert(std::string title, std::string caption);
+	INTERFACEMANAGER_API void ShowModalInput(std::string title, std::string caption, std::function<void(std::string)> okCallback);
 	INTERFACEMANAGER_API void OpenModalIfNeeded();
 	INTERFACEMANAGER_API void CloseModalWindow();
 
@@ -46,6 +48,7 @@ private:
 	bool willShowModal = false;
 
 	std::function<void()> yesCallback;
+	std::function<void(std::string)> okCallback;
 
 	ModalType type;
 	std::string title;

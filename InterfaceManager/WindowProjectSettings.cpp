@@ -8,7 +8,7 @@ TODO: This function will be rewrited to edit the settings of the project,
 */
 void WindowProjectSettings::DrawWindow()
 {
-	ImGui::ShowDemoWindow(&WindowProjectSettings::GetInstance().showWindow);
+	if(false) ImGui::ShowDemoWindow(&WindowProjectSettings::GetInstance().showWindow);
 }
 
 /*

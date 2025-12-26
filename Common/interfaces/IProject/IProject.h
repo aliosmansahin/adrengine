@@ -13,6 +13,8 @@ struct ImNodesContext;
 class IProject
 {
 public:
+	virtual ~IProject() = default;
+
 	//Handle project
 	virtual bool CreateProject(
 		std::string projectPath,

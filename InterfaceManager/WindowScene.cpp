@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "WindowScene.h"
-#include "Localization.h"
 
 #include "WindowEntityProperties.h"
 #include "WindowAddEntity.h"
@@ -11,7 +10,7 @@ PURPOSE: Draws the window
 void WindowScene::DrawWindow()
 {
 	//Begin the window
-	ImGui::Begin(Localization::GetString("interface_main_menu_item_scene"), &showWindow);
+	ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow);
 	ImGui::SetWindowFontScale(1.5f);
 
 	//Some variables

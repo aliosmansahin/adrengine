@@ -17,6 +17,7 @@
 class LightParams : public virtual EntityParams, public virtual ILightParams
 {
 public:
+	ENTITYMANAGER_API virtual ~LightParams() = default;
 
 	/*
 	PURPOSE: Creates json content from properties of the entity

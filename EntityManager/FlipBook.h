@@ -21,6 +21,8 @@
 class FlipBook : public virtual Sprite2D, public virtual IFlipBook
 {
 public:
+	ENTITYMANAGER_API virtual ~FlipBook() = default;
+
 	//main functions
 	ENTITYMANAGER_API bool CreateEntity(std::shared_ptr<IEntityParams> params) override;
 	ENTITYMANAGER_API void DeleteEntity() override;

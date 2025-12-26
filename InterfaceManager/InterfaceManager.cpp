@@ -13,6 +13,8 @@ INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, Im
 
 	this->window = window;
 
+	LayoutManager::GetInstance().LoadData();
+
 	//Initialize imgui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -22,6 +24,7 @@ INTERFACEMANAGER_API bool InterfaceManager::InitInterface(GLFWwindow* window, Im
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.IniFilename = ImStrdup(LayoutManager::GetInstance().GetCurrentProfileFilePath().c_str());
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -49,6 +52,8 @@ PURPOSE: Closes interface manager and releases other things
 */
 void InterfaceManager::CloseInterface()
 {
+	LayoutManager::GetInstance().SaveData();
+
 	//releases tabs
 	ResetInterface();
 
@@ -117,6 +122,18 @@ void InterfaceManager::DrawInterface()
 
 	//Draws dock space
 	DrawDockSpace();
+
+	/* Build Layout */
+	static bool firstFrame = true;
+	if (firstFrame) {
+		firstFrame = false;
+
+		if (LayoutManager::GetInstance().NeedDefaultLayout()) {
+			/* We need to create a default layout */
+			Logger::Log("I", "Creating default layout");
+			LayoutManager::GetInstance().CreateDefaultLayout();
+		}
+	}
 
 	//Draw all windows
 	DrawWindows();
@@ -230,7 +247,7 @@ void InterfaceManager::DrawDockSpace()
 	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 	ImGui::Begin("Main", nullptr, window_flags);
 	ImGui::PopStyleVar(3);
-	ImGui::DockSpace(ImGui::GetID("DockSpace"), ImVec2(0, 0));
+	ImGui::DockSpace(ImHashStr("DockSpace"), ImVec2(0, 0));
 	ImGui::End();
 }
 

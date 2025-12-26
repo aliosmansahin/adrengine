@@ -5,5 +5,7 @@
 
 class ISprite2D : public virtual IEntity
 {
+public:
+	virtual ~ISprite2D() = default;
 };
 

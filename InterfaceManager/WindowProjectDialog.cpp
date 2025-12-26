@@ -1,12 +1,22 @@
 #include "pch.h"
 #include "WindowProjectDialog.h"
 
+#include "ServiceLocator.h"
+#include "interfaces/IEngine/IEngine.h"
+
 /*
 PURPOSE: Draws the window
 */
-void WindowProjectDialog::DrawWindow() {
+void WindowProjectDialog::DrawWindow()
+{
+    float posX = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().first - defSize.x) / 2.0f;
+    float posY = (ServiceLocator::Get<IEngine>()->GetMainWindowSize().second - defSize.y) / 2.0f;
+
+    ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(defSize, ImGuiCond_FirstUseEver);
+
     //Begin the window
-    ImGui::Begin("Create or Open a Project", (bool*)false, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin(GetWindowTitleWithID().c_str(), (bool*)false, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize);
     ImGui::SetWindowFontScale(1.5f);
 
     /* Create a project */

@@ -27,6 +27,15 @@ public:
 	//main funcions
 	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API static WindowAddEntity& GetInstance();
+	INTERFACEMANAGER_API std::string GetWindowId() {
+		return "window_add_entity";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Add Entity";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowAddEntity() = default;
@@ -39,4 +48,7 @@ public:
 	bool shouldFocus = true;
 	std::vector<std::string> types;
 	char typeBuf[32] = {};
+
+private:
+	ImVec2 defSize{ 400.0f, 400.0f };
 };

@@ -24,6 +24,15 @@ public:
 	//main functions
 	INTERFACEMANAGER_API void DrawWindow();
 	INTERFACEMANAGER_API static WindowAddScene& GetInstance();
+	INTERFACEMANAGER_API std::string GetWindowId() {
+		return "window_add_scene";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Add Scene";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
 private:
 	//singleton
 	WindowAddScene() = default;
@@ -33,5 +42,8 @@ private:
 public:
 	//variables
 	bool showWindow = false;
+
+private:
+	ImVec2 defSize{ 400.0f, 400.0f };
 };
 

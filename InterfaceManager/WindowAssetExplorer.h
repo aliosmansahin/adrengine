@@ -20,6 +20,17 @@ public:
 	INTERFACEMANAGER_API void DrawTexturesPage();
 	INTERFACEMANAGER_API void DrawMeshesPage();
 	INTERFACEMANAGER_API static WindowAssetExplorer& GetInstance();
+
+	INTERFACEMANAGER_API std::string				 GetWindowId() {
+		return "window_asset_explorer";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitle() {
+		return "Asset Explorer";
+	}
+	INTERFACEMANAGER_API std::string GetWindowTitleWithID() {
+		return GetWindowTitle() + "###" + GetWindowId();
+	}
+
 private:
 	//singleton
 	WindowAssetExplorer() = default;

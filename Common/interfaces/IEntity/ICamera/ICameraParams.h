@@ -10,6 +10,8 @@ enum CameraProjection {
 class ICameraParams : public virtual IEntityParams
 {
 public:
+	virtual ~ICameraParams() = default;
+
 	//Getters for parameters
 	virtual CameraProjection GetProjectionType() = 0;
 	virtual float			 GetFOV() = 0;

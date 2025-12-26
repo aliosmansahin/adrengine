@@ -10,6 +10,8 @@
 class ISceneManager
 {
 public:
+	virtual ~ISceneManager() = default;
+
 	//main functions
 	virtual bool InitializeManager() = 0;
 	virtual void ClearManager() = 0;

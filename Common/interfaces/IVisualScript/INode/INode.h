@@ -19,6 +19,8 @@ struct NodeVisual {
 class INode
 {
 public:
+	virtual ~INode() = default;
+
 	virtual void			BeginDraw(std::shared_ptr<NodeVisual> nodeVisual) = 0;
 	virtual void			Draw(std::shared_ptr<NodeVisual> nodeVisual) = 0;
 	virtual void			EndDraw() = 0;

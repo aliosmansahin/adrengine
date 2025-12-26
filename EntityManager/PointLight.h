@@ -15,6 +15,8 @@
 class PointLight : public virtual Light, public virtual IPointLight
 {
 public:
+	ENTITYMANAGER_API virtual ~PointLight() = default;
+
 	//main functions
 	ENTITYMANAGER_API bool CreateEntity(std::shared_ptr<IEntityParams> params) override;
 	ENTITYMANAGER_API void DeleteEntity() override;

@@ -17,6 +17,8 @@
 class Object : public virtual Entity, public virtual IObject
 {
 public:
+	ENTITYMANAGER_API virtual ~Object() = default;
+
 	//main functions
 	ENTITYMANAGER_API bool CreateEntity(std::shared_ptr<IEntityParams> params) override;
 	ENTITYMANAGER_API void DeleteEntity() override;

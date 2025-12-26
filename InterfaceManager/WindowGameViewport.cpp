@@ -10,9 +10,9 @@ void WindowGameViewport::DrawWindow()
 {
     //We will use tileMapBrush when "start drawing" button clicked
     std::shared_ptr<ITileMap> edittingTileMap = WindowTileMapBrush::GetInstance().editing ? WindowTileMapBrush::GetInstance().editingTileMap : nullptr;
-
+    
     //Begin the window
-    ImGui::Begin("Game Viewport", &showWindow);
+    ImGui::Begin(GetWindowTitleWithID().c_str(), &showWindow);
 
     //Store if the window is focused
     if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
