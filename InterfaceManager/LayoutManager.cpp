@@ -80,7 +80,7 @@ void LayoutManager::CreateProfile()
 	currentProfileId = CreateProfileId();
 	profileList.insert({ currentProfileId, currentProfileId });
 
-	Logger::Log("P", std::string("LayoutManager::CreateDefaultProfile: Created default profile with ID: " + currentProfileId).c_str());
+	Logger::Log("P", std::string("LayoutManager::CreateProfile: Created default profile with ID: " + currentProfileId).c_str());
 }
 
 /*
@@ -143,7 +143,7 @@ void LayoutManager::LoadData()
 	std::ifstream profilesFile(profilesListFile);
 
 	if (!profilesFile.is_open()) {
-		Logger::Log("I", std::string("LayoutManager::LoadProfiles: Could not open profiles list file: " + profilesListFile).c_str());
+		Logger::Log("I", std::string("LayoutManager::LoadData: Could not open profiles list file: " + profilesListFile).c_str());
 	}
 	else {
 		std::string profileId;
@@ -170,7 +170,7 @@ void LayoutManager::LoadData()
 	/* Load current profile id */
 	std::ifstream currentFile(currentProfileFile);
 	if (!currentFile.is_open()) {
-		Logger::Log("I", std::string("LayoutManager::LoadProfiles: Could not open current profile file: " + currentProfileFile).c_str());
+		Logger::Log("I", std::string("LayoutManager::LoadData: Could not open current profile file: " + currentProfileFile).c_str());
 
 		/* Set first profile as current profile */
 		if (!profileList.empty())
