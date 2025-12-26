@@ -43,7 +43,7 @@ A game engine
 ```sh
 git clone https://github.com/aliosmansahin/adrengine.git
 ```
-2- Open the solution with VS 2022 <br><br>
+2- Open the solution with VS 2026 <br><br>
 3- Build and run the solution with "Local Windows Debugger" <br><br>
 
 ## How to Use
