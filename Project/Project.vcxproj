@@ -118,7 +118,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\Physics;..\ServiceLocator;..\BulletStaticLib;..\GladWrapper;..\Common;..\Localization;..\Asset;..\Graphics;..\Logger;..\InputManager;..\Timer</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ServiceLocator;..\GladWrapper;..\Common;..\Localization;..\Asset;..\Graphics;..\Logger;..\InputManager;..\Timer</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -126,7 +126,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);..\Common\glfw\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib;ServiceLocator.lib;Common.lib;Physics.lib;BulletStaticLib.lib;GladWrapper.lib;Timer.lib;InputManager.lib;Asset.lib;Graphics.lib;Logger.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ServiceLocator.lib;Common.lib;GladWrapper.lib;Timer.lib;InputManager.lib;Asset.lib;Graphics.lib;Logger.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,7 +139,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\Physics;..\ServiceLocator;..\BulletStaticLib;..\GladWrapper;..\Common;..\Localization;..\Asset;..\Graphics;..\Logger;..\InputManager;..\Timer</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ServiceLocator;..\GladWrapper;..\Common;..\Localization;..\Asset;..\Graphics;..\Logger;..\InputManager;..\Timer</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -147,7 +147,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\Adrengine\$(IntDir);..\Common\glfw\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib;ServiceLocator.lib;Common.lib;Physics.lib;BulletStaticLib.lib;GladWrapper.lib;Timer.lib;InputManager.lib;Asset.lib;Graphics.lib;Logger.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ServiceLocator.lib;Common.lib;GladWrapper.lib;Timer.lib;InputManager.lib;Asset.lib;Graphics.lib;Logger.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
